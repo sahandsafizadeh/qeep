@@ -1,0 +1,44 @@
+name: qeep-going
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+
+env:
+  GO_VERSION: ${{ '1.20' }}
+  SCRIPTS_ROOT: ./.github/scripts
+  MIN_COVERAGE_PERCENT: ${{ 85.0 }}
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      # ----- Preparation -----
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Setup Sources
+        uses: actions/checkout@v4
+
+      # ----- Integration -----
+      - name: Build
+        run: bash $SCRIPTS_ROOT/gobuild.sh
+
+      - name: Format
+        run: bash $SCRIPTS_ROOT/gofmt.sh
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.59
+
+      - name: Test
+        run: bash $SCRIPTS_ROOT/gotest.sh

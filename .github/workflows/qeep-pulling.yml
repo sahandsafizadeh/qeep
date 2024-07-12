@@ -2,10 +2,7 @@ name: qeep pulling
 
 on:
   pull_request:
-    types:
-      - opened
-      - edited
-      - reopened
+    types: [opened, edited, reopened]
 
 env:
   PR_TITLE_REGEX: '^(feat|fix|test|perf|refactor|docs)\((\w+)\)\: (.{1,50})$'

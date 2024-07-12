@@ -20,3 +20,10 @@ jobs:
             echo "PR title must match the pattern: $TITLE_PATTERN"
             exit 1
           fi
+
+      - name: Body Validation
+        run: |
+          if [[ $BODY =~ $BODY_NOT_PATTERN ]]; then
+            echo "PR body has lines that match the pattern: $BODY_NOT_PATTERN"
+            exit 1
+          fi

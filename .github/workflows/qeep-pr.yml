@@ -5,7 +5,9 @@ on:
     types: [opened, edited, reopened]
 
 env:
+  BODY: ${{ github.event.pull_request.body }}
   TITLE: ${{ github.event.pull_request.title }}
+  BODY_PATTERN: "^.{73,}$"
   TITLE_PATTERN: '^(feat|fix|test|perf|refactor|docs)\((\w+)\)\: (.{1,50})$'
 
 jobs:
@@ -14,9 +16,7 @@ jobs:
     steps:
       - name: Title Validation
         run: |
-          echo $TITLE
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          if [[ ! "$PR_TITLE" =~ $PR_TITLE_REGEX ]]; then
-            echo "Invalid PR title: $PR_TITLE"
+          if [[ ! $TITLE =~ $TITLE_PATTERN ]]; then
+            echo "PR title does not match pattern: $TITLE_PATTERN"
             exit 1
           fi

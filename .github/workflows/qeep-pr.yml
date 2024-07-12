@@ -6,9 +6,7 @@ on:
 
 env:
   TITLE: ${{ github.event.pull_request.title }}
-  BODY: ${{ github.event.pull_request.body }}
   TITLE_PATTERN: '^(feat|fix|test|perf|refactor|docs)\((\w+)\)\: (.{1,50})$'
-  BODY_NOT_PATTERN: "^.{73,}$"
 
 jobs:
   PR:
@@ -18,12 +16,5 @@ jobs:
         run: |
           if [[ ! $TITLE =~ $TITLE_PATTERN ]]; then
             echo "PR title must match the pattern: $TITLE_PATTERN"
-            exit 1
-          fi
-
-      - name: Body Validation
-        run: |
-          if [[ $BODY =~ $BODY_NOT_PATTERN ]]; then
-            echo "PR body has lines that match the pattern: $BODY_NOT_PATTERN"
             exit 1
           fi

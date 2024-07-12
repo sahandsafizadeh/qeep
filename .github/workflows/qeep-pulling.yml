@@ -6,11 +6,11 @@ on:
 
 env:
   PR_TITLE_REGEX: '^(feat|fix|test|perf|refactor|docs)\((\w+)\)\: (.{1,50})$'
-  PR_DESCRIPTION_REGEX: "^(.{0,72}$).*"
-  SCRIPTS_ROOT: ./.github/scripts
+  PR_BODY_REGEX: "^(.{0,72}$).*"
+  SCRIPTS_ROOT: ./.github/scripts/qeep-pulling
 
 jobs:
-  validate-title:
+  PR:
     runs-on: ubuntu-latest
 
     steps:

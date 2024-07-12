@@ -1,0 +1,20 @@
+name: qeep pr
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+
+env:
+  TITLE: ${{ github.event.pull_request.title }}
+  TITLE_PATTERN: '^(feat|fix|test|perf|refactor|docs)\((\w+)\)\: (.{1,50})$'
+
+jobs:
+  PR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Title Validation
+        run: |
+          if [[ ! $TITLE =~ $TITLE_PATTERN ]]; then
+            echo "PR title must match the pattern: $TITLE_PATTERN"
+            exit 1
+          fi

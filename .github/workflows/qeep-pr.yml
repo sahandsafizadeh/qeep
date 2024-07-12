@@ -5,10 +5,10 @@ on:
     types: [opened, edited, reopened]
 
 env:
-  BODY: ${{ github.event.pull_request.body }}
   TITLE: ${{ github.event.pull_request.title }}
-  BODY_PATTERN: "^.{73,}$"
+  BODY: ${{ github.event.pull_request.body }}
   TITLE_PATTERN: '^(feat|fix|test|perf|refactor|docs)\((\w+)\)\: (.{1,50})$'
+  BODY_NOT_PATTERN: "^.{73,}$"
 
 jobs:
   PR:
@@ -17,6 +17,6 @@ jobs:
       - name: Title Validation
         run: |
           if [[ ! $TITLE =~ $TITLE_PATTERN ]]; then
-            echo "PR title does not match pattern: $TITLE_PATTERN"
+            echo "PR title must match the pattern: $TITLE_PATTERN"
             exit 1
           fi

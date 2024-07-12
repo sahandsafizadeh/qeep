@@ -14,12 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Validate PR Title
-        run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          if [[ ! "$PR_TITLE" =~ $PR_TITLE_REGEX ]]; then
-            echo "Invalid PR title: $PR_TITLE"
-            exit 1
-          else
-            echo "Valid PR title: $PR_TITLE"
-          fi
+      - name: Set Environments
+        run: echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+
+      - name: Title Validation
+        run: bash $SCRIPTS_ROOT/prtitle.sh
+        # run: |
+        #   PR_TITLE="${{ github.event.pull_request.title }}"
+        #   if [[ ! "$PR_TITLE" =~ $PR_TITLE_REGEX ]]; then
+        #     echo "Invalid PR title: $PR_TITLE"
+        #     exit 1
+        #   else
+        #     echo "Valid PR title: $PR_TITLE"
+        #   fi

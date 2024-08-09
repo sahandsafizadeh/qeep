@@ -1,10 +1,6 @@
 package cputensor
 
-import (
-	"math/rand"
-
-	"gonum.org/v1/gonum/stat/distuv"
-)
+import "gonum.org/v1/gonum/stat/distuv"
 
 func (t *CPUTensor) initWith(initFunc initializerFunc) {
 
@@ -49,7 +45,7 @@ func uniformRandomTensor(l, u float64, dims []int32) (t *CPUTensor) {
 	t.dims = make([]int32, len(dims))
 	copy(t.dims, dims)
 	t.initWith(func() any {
-		return l + rand.Float64()*(u-l)
+		return distuv.Uniform{Min: l, Max: u}.Rand()
 	})
 
 	return t

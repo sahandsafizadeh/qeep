@@ -1,0 +1,58 @@
+package component
+
+import (
+	"fmt"
+
+	qt "github.com/sahandsafizadeh/qeep/tensor"
+)
+
+type Conv2D struct {
+	w qt.Tensor
+	b qt.Tensor
+}
+
+func (c *Conv2D) Forward(x qt.Tensor) (y qt.Tensor, err error) {
+	err = validateFCX(x)
+	if err != nil {
+		return
+	}
+
+	w, err := c.w.UnSqueeze(1)
+	if err != nil {
+		return
+	}
+
+	// last dim - 1
+	x, err = x.UnSqueeze(1)
+	if err != nil {
+		return
+	}
+
+	y, err = w.MatMul(x)
+	if err != nil {
+		return
+	}
+
+	// last dim
+	y, err = y.SumAlong(2)
+	if err != nil {
+		return
+	}
+
+	y, err = y.Add(c.b)
+	if err != nil {
+		return
+	}
+
+	return y, nil
+}
+
+func validateX(x qt.Tensor) (err error) {
+	nd := len(x.Shape())
+	if nd != 2 {
+		err = fmt.Errorf("expected FC layer's x input to have (2) dimensions for batch*xd: got (%d)", nd)
+		return
+	}
+
+	return nil
+}

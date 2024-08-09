@@ -50,6 +50,50 @@ func Eye(n int32, withGrad bool) (o tensor.Tensor, err error) {
 	return r, nil
 }
 
+func RandU(l, u float64, dims []int32, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateRandUParams(l, u)
+	if err != nil {
+		err = fmt.Errorf("random parameter validation failed: %w", err)
+		return
+	}
+
+	err = validator.ValidateInputDims(dims)
+	if err != nil {
+		err = fmt.Errorf("input dimension validation failed: %w", err)
+		return
+	}
+
+	r := uniformRandomTensor(l, u, dims)
+
+	if withGrad {
+		r.gctx = gradtrack.Root()
+	}
+
+	return r, nil
+}
+
+func RandN(u, s float64, dims []int32, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateRandNParams(u, s)
+	if err != nil {
+		err = fmt.Errorf("random parameter validation failed: %w", err)
+		return
+	}
+
+	err = validator.ValidateInputDims(dims)
+	if err != nil {
+		err = fmt.Errorf("input dimension validation failed: %w", err)
+		return
+	}
+
+	r := normalRandomTensor(u, s, dims)
+
+	if withGrad {
+		r.gctx = gradtrack.Root()
+	}
+
+	return r, nil
+}
+
 func TensorOf(data any, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDataDimUnity(data)
 	if err != nil {

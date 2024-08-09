@@ -61,6 +61,34 @@ func Eye(conf *Config, n int32) (t tensor.Tensor, err error) {
 	}
 }
 
+func RandU(conf *Config, l, u float64, dims ...int32) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
+
+	switch c.Device {
+	case CPU:
+		return cputensor.RandU(l, u, dims, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
+func RandN(conf *Config, u, s float64, dims ...int32) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
+
+	switch c.Device {
+	case CPU:
+		return cputensor.RandN(u, s, dims, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
 func TensorOf[T inputDataType](conf *Config, data T) (t tensor.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {

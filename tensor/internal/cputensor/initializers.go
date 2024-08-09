@@ -1,5 +1,11 @@
 package cputensor
 
+import (
+	"math/rand"
+
+	"gonum.org/v1/gonum/stat/distuv"
+)
+
 func (t *CPUTensor) initWith(initFunc initializerFunc) {
 
 	var fill func([]int32, *any)
@@ -34,6 +40,28 @@ func eyeMatrix(n int32) (t *CPUTensor) {
 	t = new(CPUTensor)
 	t.dims = []int32{n, n}
 	t.initWith(eyeElemGenerator(n))
+
+	return t
+}
+
+func uniformRandomTensor(l, u float64, dims []int32) (t *CPUTensor) {
+	t = new(CPUTensor)
+	t.dims = make([]int32, len(dims))
+	copy(t.dims, dims)
+	t.initWith(func() any {
+		return l + rand.Float64()*(u-l)
+	})
+
+	return t
+}
+
+func normalRandomTensor(u, s float64, dims []int32) (t *CPUTensor) {
+	t = new(CPUTensor)
+	t.dims = make([]int32, len(dims))
+	copy(t.dims, dims)
+	t.initWith(func() any {
+		return distuv.Normal{Mu: u, Sigma: s}.Rand()
+	})
 
 	return t
 }

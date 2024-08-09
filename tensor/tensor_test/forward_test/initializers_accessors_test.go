@@ -723,6 +723,50 @@ func TestZerosOnesPatch(t *testing.T) {
 	})
 }
 
+func TestRandoms(t *testing.T) {
+	runTestLogicOnDevices(func(dev tinit.Device) {
+
+		conf := &tinit.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		dims := []int32{3, 4}
+
+		ten, err := tinit.RandU(conf, -1., 1., dims...)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		dims[0] = 1
+		dims[1] = 1
+
+		shape := ten.Shape()
+		if !shapesEqual(shape, []int32{3, 4}) {
+			t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+		}
+
+		/* ------------------------------ */
+
+		dims = []int32{3, 4}
+
+		ten, err = tinit.RandN(conf, 0., 1., dims...)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		dims[0] = 1
+		dims[1] = 1
+
+		shape = ten.Shape()
+		if !shapesEqual(shape, []int32{3, 4}) {
+			t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
 func TestConcat(t *testing.T) {
 	runTestLogicOnDevices(func(dev tinit.Device) {
 
@@ -1107,6 +1151,60 @@ func TestValidationFull(t *testing.T) {
 		}
 
 		_, err = tinit.Full(conf, 2., 2, 0, 1)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive dimension")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
+func TestValidationRandU(t *testing.T) {
+	runTestLogicOnDevices(func(dev tinit.Device) {
+
+		conf := &tinit.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		_, err := tinit.RandU(conf, 0., -1.)
+		if err == nil {
+			t.Fatalf("expected error because of lower bound not being less than upper bound")
+		}
+
+		_, err = tinit.RandU(conf, 1., 1.)
+		if err == nil {
+			t.Fatalf("expected error because of lower bound not being less than upper bound")
+		}
+
+		_, err = tinit.RandU(conf, -1., 1., -1)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive dimension")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
+func TestValidationRandN(t *testing.T) {
+	runTestLogicOnDevices(func(dev tinit.Device) {
+
+		conf := &tinit.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		_, err := tinit.RandN(conf, 0., -1.)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive standard deviation")
+		}
+
+		_, err = tinit.RandN(conf, -1., 0.)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive standard deviation")
+		}
+
+		_, err = tinit.RandN(conf, 0., 1., -1)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive dimension")
 		}

@@ -13,6 +13,24 @@ func ValidateInputDims(dims []int32) (err error) {
 	return nil
 }
 
+func ValidateRandUParams(l, u float64) (err error) {
+	if !(l < u) {
+		err = fmt.Errorf("expected uniform random lower bound to be less than the upper bound: (%f) >= (%f)", l, u)
+		return
+	}
+
+	return nil
+}
+
+func ValidateRandNParams(_, s float64) (err error) {
+	if !(s > 0) {
+		err = fmt.Errorf("expected normal random standard deviation to be positive: got (%f)", s)
+		return
+	}
+
+	return nil
+}
+
 func ValidateInputDataDimUnity(data any) (err error) {
 	zeroLenErr := fmt.Errorf("expected data to not have zero length along any dimension")
 	dimUnityErr := fmt.Errorf("expected data to have have equal length along every dimension")

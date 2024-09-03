@@ -49,6 +49,8 @@ type Tensor interface {
 	Ge(Tensor) (Tensor, error)
 	Lt(Tensor) (Tensor, error)
 	Le(Tensor) (Tensor, error)
+	ElMin(Tensor) (Tensor, error)
+	ElMax(Tensor) (Tensor, error)
 	Add(Tensor) (Tensor, error)
 	Sub(Tensor) (Tensor, error)
 	Mul(Tensor) (Tensor, error)

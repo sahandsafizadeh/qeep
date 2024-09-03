@@ -50,6 +50,50 @@ func Eye(n int32, withGrad bool) (o tensor.Tensor, err error) {
 	return r, nil
 }
 
+func RandU(l, u float64, dims []int32, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateRandUParams(l, u)
+	if err != nil {
+		err = fmt.Errorf("random parameter validation failed: %w", err)
+		return
+	}
+
+	err = validator.ValidateInputDims(dims)
+	if err != nil {
+		err = fmt.Errorf("input dimension validation failed: %w", err)
+		return
+	}
+
+	r := uniformRandomTensor(l, u, dims)
+
+	if withGrad {
+		r.gctx = gradtrack.Root()
+	}
+
+	return r, nil
+}
+
+func RandN(u, s float64, dims []int32, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateRandNParams(u, s)
+	if err != nil {
+		err = fmt.Errorf("random parameter validation failed: %w", err)
+		return
+	}
+
+	err = validator.ValidateInputDims(dims)
+	if err != nil {
+		err = fmt.Errorf("input dimension validation failed: %w", err)
+		return
+	}
+
+	r := normalRandomTensor(u, s, dims)
+
+	if withGrad {
+		r.gctx = gradtrack.Root()
+	}
+
+	return r, nil
+}
+
 func TensorOf(data any, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDataDimUnity(data)
 	if err != nil {
@@ -647,6 +691,54 @@ func (t *CPUTensor) Le(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	return t.le(cu), nil
+}
+
+func (t *CPUTensor) ElMin(u tensor.Tensor) (o tensor.Tensor, err error) {
+	cu, err := assertCPUTensor(u)
+	if err != nil {
+		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		return
+	}
+
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	if err != nil {
+		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		return
+	}
+
+	r := t.elmin(cu)
+
+	if gradtrack.ForbiddenForAny(t, cu) {
+		r.gctx = gradtrack.Forbidden()
+	} else if gradtrack.RequiredForAny(t, cu) {
+		r.gctx = gradtrack.ElMin(r, t, cu)
+	}
+
+	return r, nil
+}
+
+func (t *CPUTensor) ElMax(u tensor.Tensor) (o tensor.Tensor, err error) {
+	cu, err := assertCPUTensor(u)
+	if err != nil {
+		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		return
+	}
+
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	if err != nil {
+		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		return
+	}
+
+	r := t.elmax(cu)
+
+	if gradtrack.ForbiddenForAny(t, cu) {
+		r.gctx = gradtrack.Forbidden()
+	} else if gradtrack.RequiredForAny(t, cu) {
+		r.gctx = gradtrack.ElMax(r, t, cu)
+	}
+
+	return r, nil
 }
 
 func (t *CPUTensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {

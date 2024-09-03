@@ -1642,6 +1642,268 @@ func TestLe(t *testing.T) {
 	})
 }
 
+func TestElMin(t *testing.T) {
+	runTestLogicOnDevices(func(dev tinit.Device) {
+
+		conf := &tinit.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		t1, err := tinit.TensorOf(conf, 1.)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err := tinit.TensorOf(conf, 1.)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err := t1.ElMin(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err := tinit.TensorOf(conf, 1.)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMin(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tinit.TensorOf(conf, []float64{0., math.E})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = tinit.TensorOf(conf, [][]float64{
+			{1., 2., 3.},
+			{-1., -2., -3.},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = tinit.TensorOf(conf, [][]float64{
+			{-1., -2., -3.},
+			{1., 2., 3.},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMin(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tinit.TensorOf(conf, [][]float64{
+			{-1., -2., -3.},
+			{-1., -2., -3.},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMin(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
+func TestElMax(t *testing.T) {
+	runTestLogicOnDevices(func(dev tinit.Device) {
+
+		conf := &tinit.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		t1, err := tinit.TensorOf(conf, 1.)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err := tinit.TensorOf(conf, 1.)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err := t1.ElMax(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err := tinit.TensorOf(conf, 1.)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMax(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = tinit.TensorOf(conf, [][]float64{
+			{1., 2., 3.},
+			{-1., -2., -3.},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = tinit.TensorOf(conf, [][]float64{
+			{-1., -2., -3.},
+			{1., 2., 3.},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMax(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tinit.TensorOf(conf, [][]float64{
+			{1., 2., 3.},
+			{1., 2., 3.},
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMax(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tinit.Ones(conf, 1, 2, 3, 4)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
 func TestAdd(t *testing.T) {
 	runTestLogicOnDevices(func(dev tinit.Device) {
 

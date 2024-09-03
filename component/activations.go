@@ -45,22 +45,28 @@ type Relu struct {
 
 func (c *Relu) Forward(x qt.Tensor) (y qt.Tensor, err error) {
 	_0 := x.Scale(0)
-	_ = _0
 
-	// TODO: y = elemwise max(_0, x)
-
-	return nil, nil
+	return _0.ElMax(x)
 }
 
 type LeakyRelu struct {
-	m float64
+	m float64 // default = 0.01
 }
 
 func (c *LeakyRelu) Forward(x qt.Tensor) (y qt.Tensor, err error) {
 	_0 := x.Scale(0)
-	_ = _0
 
-	// TODO: y = elemwisemax(_0, x) + elemwisemin(_0, x).Scale(c.m)
+	s1, err := _0.ElMax(x)
+	if err != nil {
+		return
+	}
 
-	return nil, nil
+	s2, err := _0.ElMin(x)
+	if err != nil {
+		return
+	}
+
+	s2 = s2.Scale(c.m)
+
+	return s1.Add(s2)
 }

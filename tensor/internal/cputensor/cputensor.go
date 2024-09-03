@@ -693,6 +693,54 @@ func (t *CPUTensor) Le(u tensor.Tensor) (o tensor.Tensor, err error) {
 	return t.le(cu), nil
 }
 
+func (t *CPUTensor) ElMin(u tensor.Tensor) (o tensor.Tensor, err error) {
+	cu, err := assertCPUTensor(u)
+	if err != nil {
+		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		return
+	}
+
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	if err != nil {
+		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		return
+	}
+
+	r := t.elmin(cu)
+
+	if gradtrack.ForbiddenForAny(t, cu) {
+		r.gctx = gradtrack.Forbidden()
+	} else if gradtrack.RequiredForAny(t, cu) {
+		r.gctx = gradtrack.ElMin(r, t, cu)
+	}
+
+	return r, nil
+}
+
+func (t *CPUTensor) ElMax(u tensor.Tensor) (o tensor.Tensor, err error) {
+	cu, err := assertCPUTensor(u)
+	if err != nil {
+		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		return
+	}
+
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	if err != nil {
+		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		return
+	}
+
+	r := t.elmax(cu)
+
+	if gradtrack.ForbiddenForAny(t, cu) {
+		r.gctx = gradtrack.Forbidden()
+	} else if gradtrack.RequiredForAny(t, cu) {
+		r.gctx = gradtrack.ElMax(r, t, cu)
+	}
+
+	return r, nil
+}
+
 func (t *CPUTensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {

@@ -531,6 +531,72 @@ func Tanh(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 	}
 }
 
+func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	return &GradContext{
+		backEdges: []*backwardEdge{
+			{
+				target: a,
+				gradFn: func() (o tensor.Tensor, err error) {
+					gy := y.Gradient()
+
+					ga, err := y.Eq(a)
+					if err != nil {
+						return
+					}
+
+					return gy.Mul(ga)
+				},
+			},
+			{
+				target: b,
+				gradFn: func() (o tensor.Tensor, err error) {
+					gy := y.Gradient()
+
+					gb, err := y.Eq(b)
+					if err != nil {
+						return
+					}
+
+					return gy.Mul(gb)
+				},
+			},
+		},
+	}
+}
+
+func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	return &GradContext{
+		backEdges: []*backwardEdge{
+			{
+				target: a,
+				gradFn: func() (o tensor.Tensor, err error) {
+					gy := y.Gradient()
+
+					ga, err := y.Eq(a)
+					if err != nil {
+						return
+					}
+
+					return gy.Mul(ga)
+				},
+			},
+			{
+				target: b,
+				gradFn: func() (o tensor.Tensor, err error) {
+					gy := y.Gradient()
+
+					gb, err := y.Eq(b)
+					if err != nil {
+						return
+					}
+
+					return gy.Mul(gb)
+				},
+			},
+		},
+	}
+}
+
 func Add(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
 	return &GradContext{
 		backEdges: []*backwardEdge{

@@ -2,10 +2,10 @@ package component
 
 import qt "github.com/sahandsafizadeh/qeep/tensor"
 
-type MSE struct {
+type MSELoss struct {
 }
 
-func (c *MSE) Forward(yp, yt qt.Tensor) (l qt.Tensor, err error) {
+func (c *MSELoss) Forward(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
 	l, err = yt.Sub(yp)
 	if err != nil {
 		return
@@ -13,73 +13,74 @@ func (c *MSE) Forward(yp, yt qt.Tensor) (l qt.Tensor, err error) {
 
 	l = l.Pow(2)
 
-	return l.MeanAlong(0)
+	l, err = l.MeanAlong(0)
+	if err != nil {
+		return
+	}
+
+	return l, nil
 }
 
-type BinaryCrossEntropy struct {
+type BCELoss struct {
 }
 
-func (c *BinaryCrossEntropy) Forward(yp, yt qt.Tensor) (y qt.Tensor, err error) {
-	// 1D inputs, each for a batch entry, output of a sigmoid
+func (c *BCELoss) Forward(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
+	t1 := yt
+	y1 := yp
+
+	s1, err := t1.Mul(y1.Log())
+	if err != nil {
+		return
+	}
 
 	_1 := yp.Pow(0)
 
-	yp1 := yp.Log()
-
-	a, err := yt.Mul(yp1)
+	t2, err := _1.Sub(yt)
 	if err != nil {
 		return
 	}
 
-	x, err := _1.Sub(yp)
+	y2, err := _1.Sub(yp)
 	if err != nil {
 		return
 	}
 
-	t, err := _1.Sub(yt)
+	s2, err := t2.Mul(y2.Log())
 	if err != nil {
 		return
 	}
 
-	b, err := x.Mul(t)
+	l, err = s1.Add(s2)
 	if err != nil {
 		return
 	}
 
-	y, err = a.Add(b)
+	l, err = l.MeanAlong(0)
 	if err != nil {
 		return
 	}
 
-	y, err = y.MeanAlong(0)
-	if err != nil {
-		return
-	}
-
-	return y.Scale(-1), nil
+	return l.Scale(-1), nil
 }
 
-type CrossEntropy struct {
+type CELoss struct {
 }
 
-func (c *CrossEntropy) Forward(yp, yt qt.Tensor) (y qt.Tensor, err error) {
-	// 2D inputs, first dim for batch and second dim, output of a softmax probability for each class
-	yp = yp.Log()
-
-	y, err = yt.Mul(yp)
+func (c *CELoss) Forward(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
+	l, err = yt.Mul(yp.Log())
 	if err != nil {
 		return
 	}
 
-	y, err = y.SumAlong(1)
+	l, err = l.SumAlong(1)
 	if err != nil {
 		return
 	}
 
-	y, err = y.MeanAlong(0)
+	l, err = l.MeanAlong(0)
 	if err != nil {
 		return
 	}
 
-	return y.Scale(-1), nil
+	return l.Scale(-1), nil
 }

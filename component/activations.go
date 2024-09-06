@@ -5,8 +5,12 @@ import qt "github.com/sahandsafizadeh/qeep/tensor"
 type Tanh struct {
 }
 
-func (c *Tanh) Forward(x qt.Tensor) (y qt.Tensor, err error) {
+func (c *Tanh) Trigger(x qt.Tensor) (y qt.Tensor, err error) {
 	return x.Tanh(), nil
+}
+
+func NewTanh() *Tanh {
+	return &Tanh{}
 }
 
 type Sigmoid struct {

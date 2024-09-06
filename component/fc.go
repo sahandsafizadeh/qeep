@@ -56,3 +56,6 @@ func validateFCX(x qt.Tensor) (err error) {
 
 	return nil
 }
+
+// dense, conv1d, conv2d, conv3d, lstm, gru, embedding, batchnorm, layernorm, multiheadattention,
+// conv2dtranspose, attention

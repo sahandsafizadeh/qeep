@@ -1,12 +1,16 @@
-package queue
+package queue_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/sahandsafizadeh/qeep/model/internal/queue"
+)
 
 func TestQueue(t *testing.T) {
 
 	/* ------------------------------ */
 
-	q := new(Queue[int])
+	q := new(queue.Queue[int])
 
 	/* ------------------------------ */
 

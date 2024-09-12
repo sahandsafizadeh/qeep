@@ -17,8 +17,6 @@ type Model struct {
 	optimFunc qc.OptimizerFunc
 }
 
-type nodeFunc func(node.Node) error
-
 func (m *Model) Fit(x qt.Tensor, y qt.Tensor) (err error) {
 	for i := range 300 {
 		// batch generation
@@ -34,23 +32,28 @@ func (m *Model) Fit(x qt.Tensor, y qt.Tensor) (err error) {
 	return nil
 }
 
-func (m *Model) Predict() (o qt.Tensor, err error) {
-	return
+func (m *Model) Predict(x qt.Tensor) (o qt.Tensor, err error) {
+	// create input node
+	_ = x
+
+	err = m.forward()
+	if err != nil {
+		return
+	}
+
+	return m.leaf.Output(), nil
 }
 
 func trainStep(m *Model, x qt.Tensor, y qt.Tensor) (err error) {
 	// create input node
 	_ = x
 
-	err = applyBFS(m.roots, func(n node.Node) error { return n.Forward() })
+	err = m.forward()
 	if err != nil {
 		return
 	}
 
-	yt := y
-	yp := m.leaf.Output()
-
-	l, err := m.lossFunc(yp, yt)
+	l, err := m.lossFunc(m.leaf.Output(), y)
 	if err != nil {
 		return
 	}
@@ -60,7 +63,7 @@ func trainStep(m *Model, x qt.Tensor, y qt.Tensor) (err error) {
 		return
 	}
 
-	err = applyBFS(m.roots, func(n node.Node) error { return n.Optimize(m.optimFunc) })
+	err = m.optimize()
 	if err != nil {
 		return
 	}
@@ -68,7 +71,15 @@ func trainStep(m *Model, x qt.Tensor, y qt.Tensor) (err error) {
 	return nil
 }
 
-func applyBFS(roots []node.Node, applyFn nodeFunc) (err error) {
+func (m *Model) forward() (err error) {
+	return traverseBFS(m.roots, func(n node.Node) error { return n.Forward() })
+}
+
+func (m *Model) optimize() (err error) {
+	return traverseBFS(m.roots, func(n node.Node) error { return n.Optimize(m.optimFunc) })
+}
+
+func traverseBFS(roots []node.Node, applyFunc func(node.Node) error) (err error) {
 	q := queue.NewQueue[node.Node]()
 	q.Enqueue(roots)
 
@@ -80,7 +91,7 @@ func applyBFS(roots []node.Node, applyFn nodeFunc) (err error) {
 			return
 		}
 
-		err = applyFn(cn)
+		err = applyFunc(cn)
 		if err != nil {
 			return
 		}

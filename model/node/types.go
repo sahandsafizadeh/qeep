@@ -1,18 +1,21 @@
 package node
 
-import qt "github.com/sahandsafizadeh/qeep/tensor"
+import (
+	qc "github.com/sahandsafizadeh/qeep/component"
+	qt "github.com/sahandsafizadeh/qeep/tensor"
+)
 
 type Node interface {
-	/*--------------- implement --------------*/
-	Forward() (qt.Tensor, error)
-
-	/*--------------- built in ---------------*/
-	Output() qt.Tensor
-	SetOutput(qt.Tensor)
 	AddChild(Node)
+	Children() []Node
+	Output() qt.Tensor
+	Forward() error
+	Optimize(qc.OptimizerFunc) error
 }
 
-type NodeBase struct {
-	output   qt.Tensor
-	children []Node
+type ModelNode struct {
+	parents   []Node
+	children  []Node
+	component qc.Component
+	output    qt.Tensor
 }

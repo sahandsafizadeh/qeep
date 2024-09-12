@@ -15,7 +15,7 @@ type WeightedComponent interface {
 	Weights() []*qt.Tensor
 }
 
-type lossFunc func(yp qt.Tensor, yt qt.Tensor) (qt.Tensor, error)
+type LossFunc func(yp qt.Tensor, yt qt.Tensor) (qt.Tensor, error)
 type OptimizerFunc func(*qt.Tensor) error
 
 type FC struct {

@@ -40,10 +40,9 @@ func TestQueue(t *testing.T) {
 
 	/* ------------------------------ */
 
-	q.Enqueue(2)
-	q.Enqueue(3)
-	q.Enqueue(4)
-	q.Enqueue(5)
+	q.Enqueue(2, 3, 4)
+	q.Enqueue(5, 6)
+	q.Enqueue(7)
 
 	value, err = q.Dequeue()
 	if err != nil {
@@ -71,6 +70,20 @@ func TestQueue(t *testing.T) {
 		t.Fatal(err)
 	} else if value != 5 {
 		t.Fatalf("expected (5) as dequeue value: got %d", value)
+	}
+
+	value, err = q.Dequeue()
+	if err != nil {
+		t.Fatal(err)
+	} else if value != 6 {
+		t.Fatalf("expected (6) as dequeue value: got %d", value)
+	}
+
+	value, err = q.Dequeue()
+	if err != nil {
+		t.Fatal(err)
+	} else if value != 7 {
+		t.Fatalf("expected (7) as dequeue value: got %d", value)
 	}
 
 	/* ------------------------------ */

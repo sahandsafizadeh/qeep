@@ -10,8 +10,8 @@ func (q *Queue[T]) IsEmpty() (is bool) {
 	return len(q.data) == 0
 }
 
-func (q *Queue[T]) Enqueue(value T) {
-	q.data = append(q.data, value)
+func (q *Queue[T]) Enqueue(values ...T) {
+	q.data = append(q.data, values...)
 }
 
 func (q *Queue[T]) Dequeue() (value T, err error) {

@@ -10,7 +10,7 @@ func TestQueue(t *testing.T) {
 
 	/* ------------------------------ */
 
-	q := new(queue.Queue[int])
+	q := queue.NewQueue[int]()
 
 	/* ------------------------------ */
 

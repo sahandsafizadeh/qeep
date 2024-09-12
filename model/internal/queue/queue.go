@@ -6,6 +6,10 @@ type Queue[T any] struct {
 	data []T
 }
 
+func NewQueue[T any]() (q *Queue[T]) {
+	return new(Queue[T])
+}
+
 func (q *Queue[T]) IsEmpty() (is bool) {
 	return len(q.data) == 0
 }

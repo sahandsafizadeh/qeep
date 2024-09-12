@@ -25,7 +25,7 @@ func TestQueue(t *testing.T) {
 
 	/* ------------------------------ */
 
-	q.Enqueue(1)
+	q.Enqueue([]int{1})
 
 	if q.IsEmpty() {
 		t.Fatalf("expected queue not to be empty")
@@ -40,9 +40,9 @@ func TestQueue(t *testing.T) {
 
 	/* ------------------------------ */
 
-	q.Enqueue(2, 3, 4)
-	q.Enqueue(5, 6)
-	q.Enqueue(7)
+	q.Enqueue([]int{2, 3, 4})
+	q.Enqueue([]int{5, 6})
+	q.Enqueue([]int{7})
 
 	value, err = q.Dequeue()
 	if err != nil {

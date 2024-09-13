@@ -5,6 +5,21 @@ import (
 	qt "github.com/sahandsafizadeh/qeep/tensor"
 )
 
+func NewNode(compInitFunc componentInitializerFunc) (n *Node, err error) {
+	comp, err := compInitFunc()
+	if err != nil {
+		return
+	}
+
+	return &Node{
+		component: comp,
+	}, nil
+}
+
+func (n *Node) AddParent(c *Node) {
+	n.parents = append(n.parents, c)
+}
+
 func (n *Node) AddChild(c *Node) {
 	n.children = append(n.children, c)
 }

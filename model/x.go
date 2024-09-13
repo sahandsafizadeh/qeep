@@ -60,5 +60,3 @@ func testFunc() {
 
 	_ = x
 }
-
-// path, stream

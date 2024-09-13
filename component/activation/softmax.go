@@ -7,7 +7,7 @@ import (
 )
 
 type Softmax struct {
-	dim int32
+	dim int32 // default = 0
 }
 
 func NewSoftmax(dim int32) (c *Softmax) {

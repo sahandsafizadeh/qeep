@@ -5,19 +5,19 @@ import (
 	qt "github.com/sahandsafizadeh/qeep/tensor"
 )
 
-func (n *ModelNode) AddChild(c Node) {
+func (n *Node) AddChild(c *Node) {
 	n.children = append(n.children, c)
 }
 
-func (n *ModelNode) Children() (children []Node) {
+func (n *Node) Children() (children []*Node) {
 	return n.children
 }
 
-func (n *ModelNode) Output() (o qt.Tensor) {
+func (n *Node) Output() (o qt.Tensor) {
 	return n.output
 }
 
-func (n *ModelNode) Forward() (err error) {
+func (n *Node) Forward() (err error) {
 	inputs := make([]qt.Tensor, len(n.parents))
 	for i, p := range n.parents {
 		inputs[i] = p.Output()
@@ -33,7 +33,7 @@ func (n *ModelNode) Forward() (err error) {
 	return nil
 }
 
-func (n *ModelNode) Optimize(optimFunc qc.OptimizerFunc) (err error) {
+func (n *Node) Optimize(optimFunc qc.OptimizerFunc) (err error) {
 	wComp, ok := n.component.(qc.WeightedComponent)
 	if !ok {
 		return nil

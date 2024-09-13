@@ -11,8 +11,8 @@ import (
 )
 
 type Model struct {
-	roots     []node.Node
-	leaf      node.Node
+	roots     []*node.Node
+	leaf      *node.Node
 	lossFunc  qc.LossFunc
 	optimFunc qc.OptimizerFunc
 }
@@ -72,18 +72,18 @@ func trainStep(m *Model, x qt.Tensor, y qt.Tensor) (err error) {
 }
 
 func (m *Model) forward() (err error) {
-	return traverseBFS(m.roots, func(n node.Node) error { return n.Forward() })
+	return traverseBFS(m.roots, func(n *node.Node) error { return n.Forward() })
 }
 
 func (m *Model) optimize() (err error) {
-	return traverseBFS(m.roots, func(n node.Node) error { return n.Optimize(m.optimFunc) })
+	return traverseBFS(m.roots, func(n *node.Node) error { return n.Optimize(m.optimFunc) })
 }
 
-func traverseBFS(roots []node.Node, applyFunc func(node.Node) error) (err error) {
-	q := queue.NewQueue[node.Node]()
+func traverseBFS(roots []*node.Node, applyFunc func(*node.Node) error) (err error) {
+	q := queue.NewQueue[*node.Node]()
 	q.Enqueue(roots)
 
-	var cn node.Node
+	var cn *node.Node
 
 	for !q.IsEmpty() {
 		cn, err = q.Dequeue()

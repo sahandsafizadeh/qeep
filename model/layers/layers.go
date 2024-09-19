@@ -18,8 +18,20 @@ func Sigmoid() node.StreamFunc1 {
 	})
 }
 
+func Softmax(conf *qca.SoftmaxConfig) node.StreamFunc1 {
+	return node.NextStreamFunc1(func() (qc.Component, error) {
+		return qca.NewSoftmax(conf)
+	})
+}
+
 func Relu() node.StreamFunc1 {
 	return node.NextStreamFunc1(func() (qc.Component, error) {
 		return qca.NewRelu(), nil
+	})
+}
+
+func LeakyRelu(conf *qca.LeakyReluConfig) node.StreamFunc1 {
+	return node.NextStreamFunc1(func() (qc.Component, error) {
+		return qca.NewLeakyRelu(conf), nil
 	})
 }

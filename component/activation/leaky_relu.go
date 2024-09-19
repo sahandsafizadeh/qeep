@@ -11,7 +11,7 @@ type LeakyRelu struct {
 }
 
 type LeakyReluConfig struct {
-	m float64
+	M float64
 }
 
 const leakyReluDefaultM = 0.01
@@ -44,7 +44,7 @@ func (c *LeakyRelu) forward(x qt.Tensor) (y qt.Tensor, err error) {
 		return
 	}
 
-	s2 = s2.Scale(c.m)
+	s2 = s2.Scale(c.M)
 
 	return s1.Add(s2)
 }
@@ -54,7 +54,7 @@ func (c *LeakyRelu) forward(x qt.Tensor) (y qt.Tensor, err error) {
 func toValidLeakyReluConfig(iconf *LeakyReluConfig) (conf *LeakyReluConfig) {
 	if iconf == nil {
 		iconf = &LeakyReluConfig{
-			m: leakyReluDefaultM,
+			M: leakyReluDefaultM,
 		}
 	}
 

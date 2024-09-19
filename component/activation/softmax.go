@@ -11,7 +11,7 @@ type Softmax struct {
 }
 
 type SoftmaxConfig struct {
-	dim int32
+	Dim int32
 }
 
 const softmaxDefaultDim = 0
@@ -37,7 +37,7 @@ func (c *Softmax) Forward(xs ...qt.Tensor) (y qt.Tensor, err error) {
 func (c *Softmax) forward(x qt.Tensor) (y qt.Tensor, err error) {
 	x = x.Exp()
 
-	s, err := x.SumAlong(c.dim)
+	s, err := x.SumAlong(c.Dim)
 	if err != nil {
 		return
 	}
@@ -50,15 +50,15 @@ func (c *Softmax) forward(x qt.Tensor) (y qt.Tensor, err error) {
 func toValidSoftmaxConfig(iconf *SoftmaxConfig) (conf *SoftmaxConfig, err error) {
 	if iconf == nil {
 		iconf = &SoftmaxConfig{
-			dim: softmaxDefaultDim,
+			Dim: softmaxDefaultDim,
 		}
 	}
 
 	conf = new(SoftmaxConfig)
 	*conf = *iconf
 
-	if conf.dim < 0 {
-		err = fmt.Errorf("expected softmax dim not to be negative: got (%d)", conf.dim)
+	if conf.Dim < 0 {
+		err = fmt.Errorf("expected softmax dim not to be negative: got (%d)", conf.Dim)
 		return
 	}
 

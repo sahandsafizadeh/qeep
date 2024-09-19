@@ -7,13 +7,22 @@ import (
 )
 
 type Softmax struct {
-	dim int32 // default = 0
+	SoftmaxConfig
 }
 
-func NewSoftmax(dim int32) (c *Softmax) {
-	return &Softmax{
-		dim: dim,
+type SoftmaxConfig struct {
+	dim int32
+}
+
+const softmaxDefaultDim = 0
+
+func NewSoftmax(conf *SoftmaxConfig) (c *Softmax, err error) {
+	conf, err = toValidSoftmaxConfig(conf)
+	if err != nil {
+		return
 	}
+
+	return &Softmax{*conf}, nil
 }
 
 func (c *Softmax) Forward(xs ...qt.Tensor) (y qt.Tensor, err error) {
@@ -37,6 +46,24 @@ func (c *Softmax) forward(x qt.Tensor) (y qt.Tensor, err error) {
 }
 
 /* ----- helpers ----- */
+
+func toValidSoftmaxConfig(iconf *SoftmaxConfig) (conf *SoftmaxConfig, err error) {
+	if iconf == nil {
+		iconf = &SoftmaxConfig{
+			dim: softmaxDefaultDim,
+		}
+	}
+
+	conf = new(SoftmaxConfig)
+	*conf = *iconf
+
+	if conf.dim < 0 {
+		err = fmt.Errorf("expected softmax dim not to be negative: got (%d)", conf.dim)
+		return
+	}
+
+	return conf, nil
+}
 
 func toValidSoftmaxInputs(xs []qt.Tensor) (x qt.Tensor, err error) {
 	if len(xs) != 1 {

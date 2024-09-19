@@ -7,13 +7,19 @@ import (
 )
 
 type LeakyRelu struct {
-	m float64 // default = 0.01
+	LeakyReluConfig
 }
 
-func NewLeakyRelu(m float64) (c *LeakyRelu) {
-	return &LeakyRelu{
-		m: m,
-	}
+type LeakyReluConfig struct {
+	m float64
+}
+
+const leakyReluDefaultM = 0.01
+
+func NewLeakyRelu(conf *LeakyReluConfig) (c *LeakyRelu) {
+	conf = toValidLeakyReluConfig(conf)
+
+	return &LeakyRelu{*conf}
 }
 
 func (c *LeakyRelu) Forward(xs ...qt.Tensor) (y qt.Tensor, err error) {
@@ -44,6 +50,19 @@ func (c *LeakyRelu) forward(x qt.Tensor) (y qt.Tensor, err error) {
 }
 
 /* ----- helpers ----- */
+
+func toValidLeakyReluConfig(iconf *LeakyReluConfig) (conf *LeakyReluConfig) {
+	if iconf == nil {
+		iconf = &LeakyReluConfig{
+			m: leakyReluDefaultM,
+		}
+	}
+
+	conf = new(LeakyReluConfig)
+	*conf = *iconf
+
+	return conf
+}
 
 func toValidLeakyReluInputs(xs []qt.Tensor) (x qt.Tensor, err error) {
 	if len(xs) != 1 {

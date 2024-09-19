@@ -58,7 +58,7 @@ func toValidSoftmaxConfig(iconf *SoftmaxConfig) (conf *SoftmaxConfig, err error)
 	*conf = *iconf
 
 	if conf.Dim < 0 {
-		err = fmt.Errorf("expected softmax dim not to be negative: got (%d)", conf.Dim)
+		err = fmt.Errorf("expected softmax 'Dim' not to be negative: got (%d)", conf.Dim)
 		return
 	}
 

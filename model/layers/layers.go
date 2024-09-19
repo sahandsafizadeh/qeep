@@ -3,6 +3,7 @@ package layers
 import (
 	qc "github.com/sahandsafizadeh/qeep/component"
 	qca "github.com/sahandsafizadeh/qeep/component/activation"
+	qcm "github.com/sahandsafizadeh/qeep/component/module"
 	"github.com/sahandsafizadeh/qeep/model/node"
 )
 
@@ -33,5 +34,11 @@ func Relu() node.StreamFunc1 {
 func LeakyRelu(conf *qca.LeakyReluConfig) node.StreamFunc1 {
 	return node.NextStreamFunc1(func() (qc.Component, error) {
 		return qca.NewLeakyRelu(conf), nil
+	})
+}
+
+func FC(conf *qcm.FCConfig) node.StreamFunc1 {
+	return node.NextStreamFunc1(func() (qc.Component, error) {
+		return qcm.NewFC(conf)
 	})
 }

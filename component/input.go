@@ -1,4 +1,4 @@
-package activation
+package component
 
 import qt "github.com/sahandsafizadeh/qeep/tensor"
 

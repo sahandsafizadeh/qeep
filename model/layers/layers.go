@@ -9,7 +9,7 @@ import (
 
 func Input() *stream.Stream {
 	return stream.NewStream(func() (qc.Component, error) {
-		return qca.NewInput(), nil
+		return qc.NewInput(), nil
 	}, nil)
 }
 

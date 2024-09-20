@@ -7,7 +7,7 @@ import (
 )
 
 type LeakyRelu struct {
-	LeakyReluConfig
+	m float64
 }
 
 type LeakyReluConfig struct {
@@ -19,7 +19,9 @@ const leakyReluDefaultM = 0.01
 func NewLeakyRelu(conf *LeakyReluConfig) (c *LeakyRelu) {
 	conf = toValidLeakyReluConfig(conf)
 
-	return &LeakyRelu{*conf}
+	return &LeakyRelu{
+		m: conf.M,
+	}
 }
 
 func (c *LeakyRelu) Forward(xs ...qt.Tensor) (y qt.Tensor, err error) {
@@ -44,7 +46,7 @@ func (c *LeakyRelu) forward(x qt.Tensor) (y qt.Tensor, err error) {
 		return
 	}
 
-	s2 = s2.Scale(c.M)
+	s2 = s2.Scale(c.m)
 
 	return s1.Add(s2)
 }

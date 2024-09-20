@@ -7,7 +7,7 @@ import (
 )
 
 type Softmax struct {
-	SoftmaxConfig
+	dim int32
 }
 
 type SoftmaxConfig struct {
@@ -22,7 +22,9 @@ func NewSoftmax(conf *SoftmaxConfig) (c *Softmax, err error) {
 		return
 	}
 
-	return &Softmax{*conf}, nil
+	return &Softmax{
+		dim: conf.Dim,
+	}, nil
 }
 
 func (c *Softmax) Forward(xs ...qt.Tensor) (y qt.Tensor, err error) {
@@ -37,7 +39,7 @@ func (c *Softmax) Forward(xs ...qt.Tensor) (y qt.Tensor, err error) {
 func (c *Softmax) forward(x qt.Tensor) (y qt.Tensor, err error) {
 	x = x.Exp()
 
-	s, err := x.SumAlong(c.Dim)
+	s, err := x.SumAlong(c.dim)
 	if err != nil {
 		return
 	}

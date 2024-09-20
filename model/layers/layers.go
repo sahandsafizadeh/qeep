@@ -7,6 +7,12 @@ import (
 	"github.com/sahandsafizadeh/qeep/model/stream"
 )
 
+func Input() *stream.Stream {
+	return stream.NewStream(func() (qc.Component, error) {
+		return qca.NewInput(), nil
+	}, nil)
+}
+
 func Tanh() stream.StreamFunc1 {
 	return stream.NextStreamFunc1(func() (qc.Component, error) {
 		return qca.NewTanh(), nil

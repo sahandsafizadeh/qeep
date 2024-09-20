@@ -28,14 +28,14 @@ func (n *Node) Children() (children []*Node) {
 	return n.children
 }
 
-func (n *Node) Output() (o qt.Tensor) {
-	return n.output
+func (n *Node) Result() (o qt.Tensor) {
+	return n.result
 }
 
 func (n *Node) Forward() (err error) {
 	inputs := make([]qt.Tensor, len(n.parents))
 	for i, p := range n.parents {
-		inputs[i] = p.Output()
+		inputs[i] = p.Result()
 	}
 
 	o, err := n.component.Forward(inputs...)
@@ -43,7 +43,7 @@ func (n *Node) Forward() (err error) {
 		return err
 	}
 
-	n.output = o
+	n.result = o
 
 	return nil
 }

@@ -9,7 +9,7 @@ type Node struct {
 	parents   []*Node
 	children  []*Node
 	component qc.Component
-	output    qt.Tensor
+	result    qt.Tensor
 }
 
 type Stream struct {

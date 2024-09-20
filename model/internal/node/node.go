@@ -30,6 +30,10 @@ func NewNode(compInitFunc ComponentInitializerFunc) (n *Node, err error) {
 	}, nil
 }
 
+func (n *Node) Component() qc.Component {
+	return n.component
+}
+
 func (n *Node) Result() qt.Tensor {
 	return n.result
 }

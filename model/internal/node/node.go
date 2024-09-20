@@ -1,66 +1,77 @@
 package node
 
 import (
+	"fmt"
+
 	qc "github.com/sahandsafizadeh/qeep/component"
 	qt "github.com/sahandsafizadeh/qeep/tensor"
 )
 
 type Node struct {
-	isInput   bool
-	parents   []*Node
-	children  []*Node
 	component qc.Component
 	result    qt.Tensor
+	parents   []*Node
+	children  []*Node
 }
 
 type ComponentInitializerFunc func() (qc.Component, error)
 
-func NewInputNode() (n *Node) {
-	return &Node{
-		isInput: true,
-	}
-}
-
-func NewCompNode(compInitFunc ComponentInitializerFunc) (n *Node, err error) {
+func NewNode(compInitFunc ComponentInitializerFunc) (n *Node, err error) {
 	comp, err := compInitFunc()
 	if err != nil {
+		return
+	} else if comp == nil {
+		err = fmt.Errorf("expected compInitFunc not to return nil")
 		return
 	}
 
 	return &Node{
-		isInput:   false,
 		component: comp,
 	}, nil
 }
 
-func (n *Node) AddParent(c *Node) {
-	n.parents = append(n.parents, c)
-}
-
-func (n *Node) AddChild(c *Node) {
-	n.children = append(n.children, c)
-}
-
-func (n *Node) Children() (children []*Node) {
-	return n.children
-}
-
-func (n *Node) SetResult(r qt.Tensor) {
-	n.result = r
-}
-
-func (n *Node) Result() (r qt.Tensor) {
+func (n *Node) Result() (result qt.Tensor) {
 	return n.result
 }
 
-func (n *Node) Forward() (err error) {
-	if n.isInput {
-		return nil
+func (n *Node) Parents() (parents []*Node) {
+	parents = make([]*Node, len(n.parents))
+	copy(parents, n.parents)
+	return parents
+}
+
+func (n *Node) Children() (children []*Node) {
+	children = make([]*Node, len(n.children))
+	copy(children, n.children)
+	return children
+}
+
+func (n *Node) AddParent(p *Node) (err error) {
+	if p == nil {
+		err = fmt.Errorf("expected parent not to be nil")
+		return
 	}
 
+	n.parents = append(n.parents, p)
+
+	return nil
+}
+
+func (n *Node) AddChild(c *Node) (err error) {
+	if c == nil {
+		err = fmt.Errorf("expected child not to be nil")
+		return
+	}
+
+	n.children = append(n.children, c)
+
+	return nil
+}
+
+func (n *Node) Forward() (err error) {
 	xs := make([]qt.Tensor, len(n.parents))
 	for i, p := range n.parents {
-		xs[i] = p.Result()
+		xs[i] = p.result
 	}
 
 	y, err := n.component.Forward(xs...)
@@ -68,16 +79,12 @@ func (n *Node) Forward() (err error) {
 		return err
 	}
 
-	n.SetResult(y)
+	n.result = y
 
 	return nil
 }
 
 func (n *Node) Optimize(optimFunc qc.OptimizerFunc) (err error) {
-	if n.isInput {
-		return nil
-	}
-
 	wComp, ok := n.component.(qc.WeightedComponent)
 	if !ok {
 		return nil

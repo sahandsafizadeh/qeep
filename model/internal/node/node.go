@@ -5,7 +5,16 @@ import (
 	qt "github.com/sahandsafizadeh/qeep/tensor"
 )
 
-func NewNode(compInitFunc componentInitializerFunc) (n *Node, err error) {
+type Node struct {
+	parents   []*Node
+	children  []*Node
+	component qc.Component
+	result    qt.Tensor
+}
+
+type ComponentInitializerFunc func() (qc.Component, error)
+
+func NewNode(compInitFunc ComponentInitializerFunc) (n *Node, err error) {
 	comp, err := compInitFunc()
 	if err != nil {
 		return
@@ -28,7 +37,11 @@ func (n *Node) Children() (children []*Node) {
 	return n.children
 }
 
-func (n *Node) Result() (o qt.Tensor) {
+func (n *Node) SetResult(r qt.Tensor) {
+	n.result = r
+}
+
+func (n *Node) Result() (r qt.Tensor) {
 	return n.result
 }
 
@@ -43,7 +56,7 @@ func (n *Node) Forward() (err error) {
 		return err
 	}
 
-	n.result = y
+	n.SetResult(y)
 
 	return nil
 }

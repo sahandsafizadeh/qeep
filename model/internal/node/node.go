@@ -6,6 +6,7 @@ import (
 )
 
 type Node struct {
+	isInput   bool
 	parents   []*Node
 	children  []*Node
 	component qc.Component
@@ -14,13 +15,20 @@ type Node struct {
 
 type ComponentInitializerFunc func() (qc.Component, error)
 
-func NewNode(compInitFunc ComponentInitializerFunc) (n *Node, err error) {
+func NewInputNode() (n *Node) {
+	return &Node{
+		isInput: true,
+	}
+}
+
+func NewCompNode(compInitFunc ComponentInitializerFunc) (n *Node, err error) {
 	comp, err := compInitFunc()
 	if err != nil {
 		return
 	}
 
 	return &Node{
+		isInput:   false,
 		component: comp,
 	}, nil
 }
@@ -46,6 +54,10 @@ func (n *Node) Result() (r qt.Tensor) {
 }
 
 func (n *Node) Forward() (err error) {
+	if n.isInput {
+		return nil
+	}
+
 	xs := make([]qt.Tensor, len(n.parents))
 	for i, p := range n.parents {
 		xs[i] = p.Result()
@@ -62,6 +74,10 @@ func (n *Node) Forward() (err error) {
 }
 
 func (n *Node) Optimize(optimFunc qc.OptimizerFunc) (err error) {
+	if n.isInput {
+		return nil
+	}
+
 	wComp, ok := n.component.(qc.WeightedComponent)
 	if !ok {
 		return nil

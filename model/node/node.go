@@ -33,17 +33,17 @@ func (n *Node) Result() (o qt.Tensor) {
 }
 
 func (n *Node) Forward() (err error) {
-	inputs := make([]qt.Tensor, len(n.parents))
+	xs := make([]qt.Tensor, len(n.parents))
 	for i, p := range n.parents {
-		inputs[i] = p.Result()
+		xs[i] = p.Result()
 	}
 
-	o, err := n.component.Forward(inputs...)
+	y, err := n.component.Forward(xs...)
 	if err != nil {
 		return err
 	}
 
-	n.result = o
+	n.result = y
 
 	return nil
 }

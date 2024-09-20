@@ -30,20 +30,16 @@ func NewNode(compInitFunc ComponentInitializerFunc) (n *Node, err error) {
 	}, nil
 }
 
-func (n *Node) Result() (result qt.Tensor) {
+func (n *Node) Result() qt.Tensor {
 	return n.result
 }
 
-func (n *Node) Parents() (parents []*Node) {
-	parents = make([]*Node, len(n.parents))
-	copy(parents, n.parents)
-	return parents
+func (n *Node) Parents() []*Node {
+	return makeCopy(n.parents)
 }
 
-func (n *Node) Children() (children []*Node) {
-	children = make([]*Node, len(n.children))
-	copy(children, n.children)
-	return children
+func (n *Node) Children() []*Node {
+	return makeCopy(n.children)
 }
 
 func (n *Node) AddParent(p *Node) (err error) {
@@ -98,4 +94,12 @@ func (n *Node) Optimize(optimFunc qc.OptimizerFunc) (err error) {
 	}
 
 	return nil
+}
+
+/* ----- helpers ----- */
+
+func makeCopy[T any](src []T) (dst []T) {
+	dst = make([]T, len(src))
+	copy(dst, src)
+	return dst
 }

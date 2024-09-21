@@ -29,7 +29,7 @@ func NewHeUniform(conf *HeUniformConfig) (c *HeUniform, err error) {
 
 func (c *HeUniform) Init(dev tinit.Device, shape []int32) (x qt.Tensor, err error) {
 	r := math.Sqrt(6. / float64(c.fanIn))
-	return tinit.RandU(tensorConf(dev), -r, r, shape...)
+	return tinit.RandU(tensorInitConf(dev), -r, r, shape...)
 }
 
 /* ----- helpers ----- */

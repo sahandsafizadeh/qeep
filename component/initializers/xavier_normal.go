@@ -32,7 +32,7 @@ func NewXavierNormal(conf *XavierNormalConfig) (c *XavierNormal, err error) {
 
 func (c *XavierNormal) Init(dev tinit.Device, shape []int32) (x qt.Tensor, err error) {
 	s := math.Sqrt(2. / float64(c.fanIn+c.fanOut))
-	return tinit.RandN(tensorConf(dev), 0., s, shape...)
+	return tinit.RandN(tensorInitConf(dev), 0., s, shape...)
 }
 
 /* ----- helpers ----- */

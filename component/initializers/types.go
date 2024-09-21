@@ -6,5 +6,5 @@ import (
 )
 
 type Initializer interface {
-	Init(conf *tinit.Config, shape []int32) (qt.Tensor, error)
+	Init(dev tinit.Device, shape []int32) (qt.Tensor, error)
 }

@@ -2,8 +2,8 @@ package layers
 
 import (
 	qc "github.com/sahandsafizadeh/qeep/component"
-	qca "github.com/sahandsafizadeh/qeep/component/activation"
-	qcm "github.com/sahandsafizadeh/qeep/component/module"
+	qca "github.com/sahandsafizadeh/qeep/component/activations"
+	qcw "github.com/sahandsafizadeh/qeep/component/weighteds"
 	"github.com/sahandsafizadeh/qeep/model/stream"
 )
 
@@ -43,8 +43,8 @@ func LeakyRelu(conf *qca.LeakyReluConfig) stream.StreamFunc1 {
 	})
 }
 
-func FC(conf *qcm.FCConfig) stream.StreamFunc1 {
+func FC(conf *qcw.FCConfig) stream.StreamFunc1 {
 	return stream.NextStreamFunc1(func() (qc.Component, error) {
-		return qcm.NewFC(conf)
+		return qcw.NewFC(conf)
 	})
 }

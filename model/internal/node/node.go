@@ -4,24 +4,26 @@ import (
 	"fmt"
 
 	qc "github.com/sahandsafizadeh/qeep/component"
+	qcw "github.com/sahandsafizadeh/qeep/component/weighteds"
 	qt "github.com/sahandsafizadeh/qeep/tensor"
 )
 
 type Node struct {
-	component qc.Component
-	result    qt.Tensor
-	parents   []*Node
-	children  []*Node
+	component     qc.Component
+	result        qt.Tensor
+	parents       []*Node
+	children      []*Node
+	isInitialized bool
 }
 
-type ComponentInitializerFunc func() (qc.Component, error)
+type ComponentCreatorFunc func() (qc.Component, error)
 
-func NewNode(compInitFunc ComponentInitializerFunc) (n *Node, err error) {
-	comp, err := compInitFunc()
+func NewNode(compCreatorFunc ComponentCreatorFunc) (n *Node, err error) {
+	comp, err := compCreatorFunc()
 	if err != nil {
 		return
 	} else if comp == nil {
-		err = fmt.Errorf("expected compInitFunc not to return nil")
+		err = fmt.Errorf("expected compCreatorFunc not to return nil")
 		return
 	}
 
@@ -69,6 +71,11 @@ func (n *Node) AddChild(c *Node) (err error) {
 }
 
 func (n *Node) Forward() (err error) {
+	err = n.InitializeOnce()
+	if err != nil {
+		return
+	}
+
 	xs := make([]qt.Tensor, len(n.parents))
 	for i, p := range n.parents {
 		xs[i] = p.result
@@ -84,13 +91,33 @@ func (n *Node) Forward() (err error) {
 	return nil
 }
 
-func (n *Node) Optimize(optimFunc qc.OptimizerFunc) (err error) {
-	wComp, ok := n.component.(qc.WeightedComponent)
+func (n *Node) InitializeOnce() (err error) {
+	wComp, ok := n.component.(qcw.WeightedComponent)
 	if !ok {
 		return nil
 	}
 
-	for _, w := range wComp.Weights() {
+	if n.isInitialized {
+		return nil
+	}
+
+	err = wComp.InitWeights()
+	if err != nil {
+		return
+	}
+
+	n.isInitialized = true
+
+	return nil
+}
+
+func (n *Node) Optimize(optimFunc qc.OptimizerFunc) (err error) {
+	wComp, ok := n.component.(qcw.WeightedComponent)
+	if !ok {
+		return nil
+	}
+
+	for _, w := range wComp.TrainableWeights() {
 		err = optimFunc(w)
 		if err != nil {
 			return

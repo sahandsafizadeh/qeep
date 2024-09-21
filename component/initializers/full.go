@@ -23,8 +23,8 @@ func NewFull(conf *FullConfig) (c *Full) {
 	}
 }
 
-func (c *Full) Init(dev tinit.Device, shape []int32) (x qt.Tensor, err error) {
-	return tinit.Full(tensorInitConf(dev), c.value, shape...)
+func (c *Full) Init(shape []int32) (x qt.Tensor, err error) {
+	return tinit.Full(tensorInitConf(), c.value, shape...)
 }
 
 /* ----- helpers ----- */

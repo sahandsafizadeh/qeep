@@ -32,8 +32,8 @@ func NewUniform(conf *UniformConfig) (c *Uniform, err error) {
 	}, nil
 }
 
-func (c *Uniform) Init(dev tinit.Device, shape []int32) (x qt.Tensor, err error) {
-	return tinit.RandU(tensorInitConf(dev), c.lower, c.upper, shape...)
+func (c *Uniform) Init(shape []int32) (x qt.Tensor, err error) {
+	return tinit.RandU(tensorInitConf(), c.lower, c.upper, shape...)
 }
 
 /* ----- helpers ----- */

@@ -1,10 +1,7 @@
 package initializers
 
-import (
-	qt "github.com/sahandsafizadeh/qeep/tensor"
-	"github.com/sahandsafizadeh/qeep/tensor/tinit"
-)
+import qt "github.com/sahandsafizadeh/qeep/tensor"
 
 type Initializer interface {
-	Init(dev tinit.Device, shape []int32) (qt.Tensor, error)
+	Init(shape []int32) (qt.Tensor, error)
 }

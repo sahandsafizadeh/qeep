@@ -32,8 +32,8 @@ func NewNormal(conf *NormalConfig) (c *Normal, err error) {
 	}, nil
 }
 
-func (c *Normal) Init(dev tinit.Device, shape []int32) (x qt.Tensor, err error) {
-	return tinit.RandN(tensorInitConf(dev), c.mean, c.stdDev, shape...)
+func (c *Normal) Init(shape []int32) (x qt.Tensor, err error) {
+	return tinit.RandN(tensorInitConf(), c.mean, c.stdDev, shape...)
 }
 
 /* ----- helpers ----- */

@@ -1,8 +1,15 @@
-package losses
+package loss
 
 import qt "github.com/sahandsafizadeh/qeep/tensor"
 
-func CELoss(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
+type CELoss struct {
+}
+
+func NewCE() (c *CELoss) {
+	return new(CELoss)
+}
+
+func (c *CELoss) Compute(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
 	l, err = yt.Mul(yp.Log())
 	if err != nil {
 		return

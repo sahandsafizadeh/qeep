@@ -1,8 +1,15 @@
-package losses
+package loss
 
 import qt "github.com/sahandsafizadeh/qeep/tensor"
 
-func BCELoss(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
+type BCELoss struct {
+}
+
+func NewBCE() (c *BCELoss) {
+	return new(BCELoss)
+}
+
+func (c *BCELoss) Compute(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
 	t1 := yt
 	y1 := yp
 

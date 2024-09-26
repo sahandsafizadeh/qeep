@@ -2,6 +2,23 @@ package component
 
 import qt "github.com/sahandsafizadeh/qeep/tensor"
 
-type Component interface {
+type Initializer interface {
+	Init(shape []int32) (qt.Tensor, error)
+}
+
+type Forwarder interface {
 	Forward(...qt.Tensor) (qt.Tensor, error)
+}
+
+type WeightedForwarder interface {
+	Forwarder
+	TrainableWeights() []*qt.Tensor
+}
+
+type LossFunction interface {
+	Compute(yp qt.Tensor, yt qt.Tensor) (qt.Tensor, error)
+}
+
+type Optimizer interface {
+	Update(*qt.Tensor) error
 }

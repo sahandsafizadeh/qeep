@@ -1,9 +1,10 @@
-package modules
+package weighted
 
 import (
 	"fmt"
 
-	qci "github.com/sahandsafizadeh/qeep/component/initializers"
+	qc "github.com/sahandsafizadeh/qeep/component"
+	qci "github.com/sahandsafizadeh/qeep/component/initializer"
 	qt "github.com/sahandsafizadeh/qeep/tensor"
 )
 
@@ -15,7 +16,7 @@ type FC struct {
 type FCConfig struct {
 	Inputs       int32
 	Outputs      int32
-	Initializers map[string]qci.Initializer
+	Initializers map[string]qc.Initializer
 }
 
 const (
@@ -116,7 +117,7 @@ func toValidFCConfig(iconf *FCConfig) (conf *FCConfig, err error) {
 	}
 
 	if conf.Initializers == nil {
-		conf.Initializers = make(map[string]qci.Initializer)
+		conf.Initializers = make(map[string]qc.Initializer)
 	}
 
 	if _, ok := conf.Initializers[fcWeightKey]; !ok {

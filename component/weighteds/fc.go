@@ -8,18 +8,20 @@ import (
 )
 
 type FC struct {
-	n         int32
-	w         qt.Tensor
-	b         qt.Tensor
-	wInitFunc qci.Initializer
-	bInitFunc qci.Initializer
+	Weight qt.Tensor
+	Bias   qt.Tensor
 }
 
 type FCConfig struct {
-	N         int32
-	WInitFunc qci.Initializer
-	BInitFunc qci.Initializer
+	Inputs       int32
+	Outputs      int32
+	Initializers map[string]qci.Initializer
 }
+
+const (
+	fcWeightKey = "Weight"
+	fcBiasKey   = "Bias"
+)
 
 func NewFC(conf *FCConfig) (c *FC, err error) {
 	conf, err = toValidFCConfig(conf)
@@ -27,7 +29,29 @@ func NewFC(conf *FCConfig) (c *FC, err error) {
 		return
 	}
 
-	return &FC{}, nil
+	var (
+		win = conf.Initializers[fcWeightKey]
+		bin = conf.Initializers[fcBiasKey]
+	)
+
+	w, err := win.Init([]int32{conf.Outputs})
+	if err != nil {
+		return
+	}
+
+	b, err := bin.Init([]int32{conf.Outputs})
+	if err != nil {
+		return
+	}
+
+	return &FC{
+		Weight: w,
+		Bias:   b,
+	}, nil
+}
+
+func (c *FC) TrainableWeights() []*qt.Tensor {
+	return []*qt.Tensor{&c.Weight, &c.Bias}
 }
 
 func (c *FC) Forward(xs ...qt.Tensor) (y qt.Tensor, err error) {
@@ -39,38 +63,15 @@ func (c *FC) Forward(xs ...qt.Tensor) (y qt.Tensor, err error) {
 	return c.forward(x)
 }
 
-func (c *FC) TrainableWeights() []*qt.Tensor {
-	return []*qt.Tensor{&c.w, &c.b}
-}
-
-func (c *FC) InitWeights() (err error) {
-	// all the weights must be initialized
-	// most of them are trainable
-
-	w, err := c.wInitFunc.Init([]int32{c.n})
-	if err != nil {
-		return
-	}
-
-	b, err := c.bInitFunc.Init([]int32{c.n})
-	if err != nil {
-		return
-	}
-
-	c.w = w
-	c.b = b
-
-	return nil
-}
-
 func (c *FC) forward(x qt.Tensor) (y qt.Tensor, err error) {
-	w, err := c.w.UnSqueeze(1)
+	w, err := c.Weight.UnSqueeze(1)
 	if err != nil {
 		return
 	}
 
-	// last dim - 1
-	x, err = x.UnSqueeze(1)
+	b := c.Bias
+
+	x, err = x.UnSqueeze(1) // last dim - 1
 	if err != nil {
 		return
 	}
@@ -80,13 +81,12 @@ func (c *FC) forward(x qt.Tensor) (y qt.Tensor, err error) {
 		return
 	}
 
-	// last dim
-	y, err = y.SumAlong(2)
+	y, err = y.SumAlong(2) // last dim
 	if err != nil {
 		return
 	}
 
-	y, err = y.Add(c.b)
+	y, err = y.Add(b)
 	if err != nil {
 		return
 	}
@@ -98,16 +98,46 @@ func (c *FC) forward(x qt.Tensor) (y qt.Tensor, err error) {
 
 func toValidFCConfig(iconf *FCConfig) (conf *FCConfig, err error) {
 	if iconf == nil {
-		err = fmt.Errorf("expected fc configuration not to be nil")
+		err = fmt.Errorf("expected fc config not to be nil")
 		return
 	}
 
 	conf = new(FCConfig)
 	*conf = *iconf
 
-	if conf.N <= 0 {
-		err = fmt.Errorf("expected fc 'N' to be positive: got (%d)", conf.N)
+	if conf.Inputs <= 0 {
+		err = fmt.Errorf("expected fc 'Inputs' to be positive: got (%d)", conf.Inputs)
 		return
+	}
+
+	if conf.Outputs <= 0 {
+		err = fmt.Errorf("expected fc 'Outputs' to be positive: got (%d)", conf.Outputs)
+		return
+	}
+
+	if conf.Initializers == nil {
+		conf.Initializers = make(map[string]qci.Initializer)
+	}
+
+	if _, ok := conf.Initializers[fcWeightKey]; !ok {
+		conf.Initializers[fcWeightKey], err = qci.NewXavierUniform(
+			&qci.XavierUniformConfig{
+				FanIn:  conf.Inputs,
+				FanOut: conf.Outputs,
+			})
+		if err != nil {
+			return
+		}
+	}
+
+	if _, ok := conf.Initializers[fcBiasKey]; !ok {
+		conf.Initializers[fcBiasKey] = qci.NewFull(
+			&qci.FullConfig{
+				Value: 0.,
+			})
+		if err != nil {
+			return
+		}
 	}
 
 	return conf, nil

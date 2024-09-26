@@ -9,21 +9,20 @@ import (
 )
 
 type Node struct {
-	component     qc.Component
-	result        qt.Tensor
-	parents       []*Node
-	children      []*Node
-	isInitialized bool
+	component qc.Component
+	result    qt.Tensor
+	parents   []*Node
+	children  []*Node
 }
 
-type ComponentCreatorFunc func() (qc.Component, error)
+type ComponentInitFunc func() (qc.Component, error)
 
-func NewNode(compCreatorFunc ComponentCreatorFunc) (n *Node, err error) {
-	comp, err := compCreatorFunc()
+func NewNode(compInitFunc ComponentInitFunc) (n *Node, err error) {
+	comp, err := compInitFunc()
 	if err != nil {
 		return
 	} else if comp == nil {
-		err = fmt.Errorf("expected compCreatorFunc not to return nil")
+		err = fmt.Errorf("expected compInitFunc not to return nil")
 		return
 	}
 
@@ -71,11 +70,6 @@ func (n *Node) AddChild(c *Node) (err error) {
 }
 
 func (n *Node) Forward() (err error) {
-	err = n.InitializeOnce()
-	if err != nil {
-		return
-	}
-
 	xs := make([]qt.Tensor, len(n.parents))
 	for i, p := range n.parents {
 		xs[i] = p.result
@@ -87,26 +81,6 @@ func (n *Node) Forward() (err error) {
 	}
 
 	n.result = y
-
-	return nil
-}
-
-func (n *Node) InitializeOnce() (err error) {
-	wComp, ok := n.component.(qcw.WeightedComponent)
-	if !ok {
-		return nil
-	}
-
-	if n.isInitialized {
-		return nil
-	}
-
-	err = wComp.InitWeights()
-	if err != nil {
-		return
-	}
-
-	n.isInitialized = true
 
 	return nil
 }

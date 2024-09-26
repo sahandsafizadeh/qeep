@@ -6,5 +6,4 @@ type Component interface {
 	Forward(...qt.Tensor) (qt.Tensor, error)
 }
 
-type LossFunc func(yp qt.Tensor, yt qt.Tensor) (qt.Tensor, error)
 type OptimizerFunc func(*qt.Tensor) error

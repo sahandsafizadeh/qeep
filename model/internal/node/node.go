@@ -9,13 +9,13 @@ import (
 )
 
 type Node struct {
-	component qc.Component
+	component qc.Forwarder
 	result    qt.Tensor
 	parents   []*Node
 	children  []*Node
 }
 
-type ComponentInitFunc func() (qc.Component, error)
+type ComponentInitFunc func() (qc.Forwarder, error)
 
 func NewNode(compInitFunc ComponentInitFunc) (n *Node, err error) {
 	comp, err := compInitFunc()
@@ -31,7 +31,7 @@ func NewNode(compInitFunc ComponentInitFunc) (n *Node, err error) {
 	}, nil
 }
 
-func (n *Node) Component() qc.Component {
+func (n *Node) Component() qc.Forwarder {
 	return n.component
 }
 

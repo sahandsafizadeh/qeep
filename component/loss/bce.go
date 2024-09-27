@@ -2,14 +2,14 @@ package loss
 
 import qt "github.com/sahandsafizadeh/qeep/tensor"
 
-type BCELoss struct {
+type BCE struct {
 }
 
-func NewBCE() (c *BCELoss) {
-	return new(BCELoss)
+func NewBCE() (c *BCE) {
+	return new(BCE)
 }
 
-func (c *BCELoss) Compute(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
+func (c *BCE) Compute(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
 	t1 := yt
 	y1 := yp
 

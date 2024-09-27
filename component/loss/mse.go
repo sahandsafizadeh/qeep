@@ -2,14 +2,14 @@ package loss
 
 import qt "github.com/sahandsafizadeh/qeep/tensor"
 
-type MSELoss struct {
+type MSE struct {
 }
 
-func NewMSELoss() (c *MSELoss) {
-	return new(MSELoss)
+func NewMSELoss() (c *MSE) {
+	return new(MSE)
 }
 
-func (c *MSELoss) Compute(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
+func (c *MSE) Compute(yp qt.Tensor, yt qt.Tensor) (l qt.Tensor, err error) {
 	l, err = yt.Sub(yp)
 	if err != nil {
 		return

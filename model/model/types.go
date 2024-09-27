@@ -8,8 +8,8 @@ import (
 type Model struct {
 	output    *node.Node
 	inputs    []*node.Node
-	lossFunc  qc.LossFunc
-	optimFunc qc.OptimizerFunc
+	lossFunc  qc.LossFunction
+	optimFunc qc.Optimizer
 }
 
 type FitConfig struct {

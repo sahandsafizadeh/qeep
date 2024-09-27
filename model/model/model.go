@@ -3,7 +3,6 @@ package model
 import (
 	"fmt"
 
-	qc "github.com/sahandsafizadeh/qeep/component"
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
 	"github.com/sahandsafizadeh/qeep/model/internal/queue"
 	qt "github.com/sahandsafizadeh/qeep/tensor"
@@ -69,12 +68,12 @@ func (m *Model) seed(xs []qt.Tensor) (err error) {
 		return
 	}
 
-	for i, n := range m.inputs {
-		c := n.Component()
-		c1 := c.(*qc.Input)
-		c1.SeedFunc = func() qt.Tensor {
-			return xs[i]
-		}
+	for range m.inputs {
+		// c := n.Forwarder()
+		// c1 := c.(*qc.Input)
+		// c1.SeedFunc = func() qt.Tensor {
+		// 	return xs[i]
+		// }
 	}
 
 	return nil
@@ -86,7 +85,7 @@ func (m *Model) fitStep(xs []qt.Tensor, yt qt.Tensor) (err error) {
 		return
 	}
 
-	l, err := m.lossFunc(yp, yt)
+	l, err := m.lossFunc.Compute(yp, yt)
 	if err != nil {
 		return
 	}

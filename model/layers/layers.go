@@ -2,14 +2,14 @@ package layers
 
 import (
 	qc "github.com/sahandsafizadeh/qeep/component"
-	qca "github.com/sahandsafizadeh/qeep/component/activations"
-	qcw "github.com/sahandsafizadeh/qeep/component/weighteds"
+	qca "github.com/sahandsafizadeh/qeep/component/activation"
+	qcw "github.com/sahandsafizadeh/qeep/component/weighted"
 	"github.com/sahandsafizadeh/qeep/model/stream"
 )
 
 func Input() *stream.Stream {
 	return stream.NewStream(func() (qc.Forwarder, error) {
-		return qc.NewInput(), nil
+		return NewInput(), nil
 	}, nil)
 }
 

@@ -1,8 +1,6 @@
 package stream
 
-import (
-	"github.com/sahandsafizadeh/qeep/model/internal/node"
-)
+import "github.com/sahandsafizadeh/qeep/model/internal/node"
 
 type Stream struct {
 	cursor *node.Node
@@ -14,10 +12,10 @@ type StreamFunc2 func(x1, x2 *Stream) *Stream
 type StreamFunc3 func(x1, x2, x3 *Stream) *Stream
 type StreamFunc4 func(x1, x2, x3, x4 *Stream) *Stream
 
-func NewStream(compInitFunc node.ComponentInitFunc, xs []*Stream) (y *Stream) {
+func NewStream(forwarderInitFunc node.ForwarderInitFunc, xs []*Stream) (y *Stream) {
 	errCtx := make([]error, 0)
 
-	cursor, err := node.NewNode(compInitFunc)
+	cursor, err := node.NewNode(forwarderInitFunc)
 	if err != nil {
 		errCtx = append(errCtx, err)
 	}
@@ -34,26 +32,26 @@ func NewStream(compInitFunc node.ComponentInitFunc, xs []*Stream) (y *Stream) {
 	}
 }
 
-func NextStreamFunc1(compInitFunc node.ComponentInitFunc) StreamFunc1 {
+func NextStreamFunc1(forwarderInitFunc node.ForwarderInitFunc) StreamFunc1 {
 	return func(x1 *Stream) *Stream {
-		return NewStream(compInitFunc, []*Stream{x1})
+		return NewStream(forwarderInitFunc, []*Stream{x1})
 	}
 }
 
-func NextStreamFunc2(compInitFunc node.ComponentInitFunc) StreamFunc2 {
+func NextStreamFunc2(forwarderInitFunc node.ForwarderInitFunc) StreamFunc2 {
 	return func(x1, x2 *Stream) *Stream {
-		return NewStream(compInitFunc, []*Stream{x1, x2})
+		return NewStream(forwarderInitFunc, []*Stream{x1, x2})
 	}
 }
 
-func NextStreamFunc3(compInitFunc node.ComponentInitFunc) StreamFunc3 {
+func NextStreamFunc3(forwarderInitFunc node.ForwarderInitFunc) StreamFunc3 {
 	return func(x1, x2, x3 *Stream) *Stream {
-		return NewStream(compInitFunc, []*Stream{x1, x2, x3})
+		return NewStream(forwarderInitFunc, []*Stream{x1, x2, x3})
 	}
 }
 
-func NextStreamFunc4(compInitFunc node.ComponentInitFunc) StreamFunc4 {
+func NextStreamFunc4(forwarderInitFunc node.ForwarderInitFunc) StreamFunc4 {
 	return func(x1, x2, x3, x4 *Stream) *Stream {
-		return NewStream(compInitFunc, []*Stream{x1, x2, x3, x4})
+		return NewStream(forwarderInitFunc, []*Stream{x1, x2, x3, x4})
 	}
 }

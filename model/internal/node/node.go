@@ -4,35 +4,34 @@ import (
 	"fmt"
 
 	qc "github.com/sahandsafizadeh/qeep/component"
-	qcw "github.com/sahandsafizadeh/qeep/component/weighteds"
 	qt "github.com/sahandsafizadeh/qeep/tensor"
 )
 
 type Node struct {
-	component qc.Forwarder
+	forwarder qc.Forwarder
 	result    qt.Tensor
 	parents   []*Node
 	children  []*Node
 }
 
-type ComponentInitFunc func() (qc.Forwarder, error)
+type ForwarderInitFunc func() (qc.Forwarder, error)
 
-func NewNode(compInitFunc ComponentInitFunc) (n *Node, err error) {
-	comp, err := compInitFunc()
+func NewNode(forwarderInitFunc ForwarderInitFunc) (n *Node, err error) {
+	fComp, err := forwarderInitFunc()
 	if err != nil {
 		return
-	} else if comp == nil {
-		err = fmt.Errorf("expected compInitFunc not to return nil")
+	} else if fComp == nil {
+		err = fmt.Errorf("expected forwarderInitFunc not to return nil")
 		return
 	}
 
 	return &Node{
-		component: comp,
+		forwarder: fComp,
 	}, nil
 }
 
-func (n *Node) Component() qc.Forwarder {
-	return n.component
+func (n *Node) Forwarder() qc.Forwarder {
+	return n.forwarder
 }
 
 func (n *Node) Result() qt.Tensor {
@@ -75,9 +74,9 @@ func (n *Node) Forward() (err error) {
 		xs[i] = p.result
 	}
 
-	y, err := n.component.Forward(xs...)
+	y, err := n.forwarder.Forward(xs...)
 	if err != nil {
-		return err
+		return
 	}
 
 	n.result = y
@@ -85,14 +84,14 @@ func (n *Node) Forward() (err error) {
 	return nil
 }
 
-func (n *Node) Optimize(optimFunc qc.OptimizerFunc) (err error) {
-	wComp, ok := n.component.(qcw.WeightedComponent)
+func (n *Node) Optimize(optimizer qc.Optimizer) (err error) {
+	wfComp, ok := n.forwarder.(qc.WeightedForwarder)
 	if !ok {
 		return nil
 	}
 
-	for _, w := range wComp.TrainableWeights() {
-		err = optimFunc(w)
+	for _, w := range wfComp.TrainableWeights() {
+		err = optimizer.Update(w)
 		if err != nil {
 			return
 		}

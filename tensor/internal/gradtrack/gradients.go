@@ -10,12 +10,12 @@ func Forbidden() (gctx *GradContext) {
 	return &GradContext{trackForbidden: true}
 }
 
-func Concat(y tensor.Tensor, x []tensor.Tensor, dim int32) (gctx *GradContext) {
-	backEdges := make([]*backwardEdge, len(x))
+func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int32) (gctx *GradContext) {
+	backEdges := make([]*backwardEdge, len(xs))
 
 	var base int32
 	for i := 0; i < len(backEdges); i++ {
-		shape := x[i].Shape()
+		shape := xs[i].Shape()
 		index := make([]tensor.Range, len(shape))
 
 		index[dim] = tensor.Range{
@@ -26,7 +26,7 @@ func Concat(y tensor.Tensor, x []tensor.Tensor, dim int32) (gctx *GradContext) {
 		base = index[dim].To
 
 		backEdges[i] = &backwardEdge{
-			target: x[i],
+			target: xs[i],
 			gradFn: func() (tensor.Tensor, error) {
 				return y.Gradient().Slice(index)
 			},
@@ -87,7 +87,7 @@ func Reshape(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 			{
 				target: x,
 				gradFn: func() (tensor.Tensor, error) {
-					return y.Gradient().Reshape(x.Shape()...)
+					return y.Gradient().Reshape(x.Shape())
 				},
 			},
 		},
@@ -100,7 +100,7 @@ func UnSqueeze(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 			{
 				target: x,
 				gradFn: func() (tensor.Tensor, error) {
-					return y.Gradient().Reshape(x.Shape()...)
+					return y.Gradient().Reshape(x.Shape())
 				},
 			},
 		},
@@ -113,7 +113,7 @@ func Squeeze(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 			{
 				target: x,
 				gradFn: func() (tensor.Tensor, error) {
-					return y.Gradient().Reshape(x.Shape()...)
+					return y.Gradient().Reshape(x.Shape())
 				},
 			},
 		},
@@ -126,7 +126,7 @@ func Flatten(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 			{
 				target: x,
 				gradFn: func() (tensor.Tensor, error) {
-					return y.Gradient().Reshape(x.Shape()...)
+					return y.Gradient().Reshape(x.Shape())
 				},
 			},
 		},
@@ -531,39 +531,6 @@ func Tanh(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 	}
 }
 
-func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
-	return &GradContext{
-		backEdges: []*backwardEdge{
-			{
-				target: a,
-				gradFn: func() (o tensor.Tensor, err error) {
-					gy := y.Gradient()
-
-					ga, err := y.Eq(a)
-					if err != nil {
-						return
-					}
-
-					return gy.Mul(ga)
-				},
-			},
-			{
-				target: b,
-				gradFn: func() (o tensor.Tensor, err error) {
-					gy := y.Gradient()
-
-					gb, err := y.Eq(b)
-					if err != nil {
-						return
-					}
-
-					return gy.Mul(gb)
-				},
-			},
-		},
-	}
-}
-
 func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
 	return &GradContext{
 		backEdges: []*backwardEdge{
@@ -577,6 +544,16 @@ func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext
 						return
 					}
 
+					eq, err := a.Eq(b)
+					if err != nil {
+						return
+					}
+
+					ga, err = ga.Sub(eq.Scale(0.5))
+					if err != nil {
+						return
+					}
+
 					return gy.Mul(ga)
 				},
 			},
@@ -586,6 +563,69 @@ func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext
 					gy := y.Gradient()
 
 					gb, err := y.Eq(b)
+					if err != nil {
+						return
+					}
+
+					eq, err := b.Eq(a)
+					if err != nil {
+						return
+					}
+
+					gb, err = gb.Sub(eq.Scale(0.5))
+					if err != nil {
+						return
+					}
+
+					return gy.Mul(gb)
+				},
+			},
+		},
+	}
+}
+
+func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	return &GradContext{
+		backEdges: []*backwardEdge{
+			{
+				target: a,
+				gradFn: func() (o tensor.Tensor, err error) {
+					gy := y.Gradient()
+
+					ga, err := y.Eq(a)
+					if err != nil {
+						return
+					}
+
+					eq, err := a.Eq(b)
+					if err != nil {
+						return
+					}
+
+					ga, err = ga.Sub(eq.Scale(0.5))
+					if err != nil {
+						return
+					}
+
+					return gy.Mul(ga)
+				},
+			},
+			{
+				target: b,
+				gradFn: func() (o tensor.Tensor, err error) {
+					gy := y.Gradient()
+
+					gb, err := y.Eq(b)
+					if err != nil {
+						return
+					}
+
+					eq, err := b.Eq(a)
+					if err != nil {
+						return
+					}
+
+					gb, err = gb.Sub(eq.Scale(0.5))
 					if err != nil {
 						return
 					}

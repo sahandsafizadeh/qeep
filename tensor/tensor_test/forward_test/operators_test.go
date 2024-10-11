@@ -4,24 +4,24 @@ import (
 	"math"
 	"testing"
 
-	"github.com/sahandsafizadeh/qeep/tensor/tinit"
+	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
 )
 
 func TestScale(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 1.)
+		ten, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act := ten.Scale(0.)
 
-		exp, err := tinit.TensorOf(conf, 0.)
+		exp, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -34,14 +34,14 @@ func TestScale(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, []float64{-1., 0., 1.})
+		ten, err = qti.TensorOf([]float64{-1., 0., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Scale(-1.)
 
-		exp, err = tinit.TensorOf(conf, []float64{1., 0., -1.})
+		exp, err = qti.TensorOf([]float64{1., 0., -1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -54,20 +54,20 @@ func TestScale(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, [][]float64{
+		ten, err = qti.TensorOf([][]float64{
 			{-5., 2.},
 			{3., -4.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Scale(0.5)
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{-2.5, 1.},
 			{1.5, -2.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -80,14 +80,14 @@ func TestScale(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		ten, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Scale(5.)
 
-		exp, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -104,20 +104,20 @@ func TestScale(t *testing.T) {
 }
 
 func TestPow(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, math.E)
+		ten, err := qti.TensorOf(math.E, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act := ten.Pow(0.)
 
-		exp, err := tinit.TensorOf(conf, 1.)
+		exp, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -130,14 +130,14 @@ func TestPow(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, []float64{-1., 0., 1.})
+		ten, err = qti.TensorOf([]float64{-1., 0., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Pow(1.)
 
-		exp, err = tinit.TensorOf(conf, []float64{-1., 0., 1.})
+		exp, err = qti.TensorOf([]float64{-1., 0., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -150,20 +150,20 @@ func TestPow(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, [][]float64{
+		ten, err = qti.TensorOf([][]float64{
 			{-2., 2.},
 			{-1., 0.5},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Pow(-2)
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{0.25, 0.25},
 			{1., 4.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -176,14 +176,14 @@ func TestPow(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Ones(conf, 1, 2, 3, 4)
+		ten, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Pow(1000)
 
-		exp, err = tinit.Ones(conf, 1, 2, 3, 4)
+		exp, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -200,20 +200,20 @@ func TestPow(t *testing.T) {
 }
 
 func TestExp(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 1.)
+		ten, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act := ten.Exp()
 
-		exp, err := tinit.TensorOf(conf, math.E)
+		exp, err := qti.TensorOf(math.E, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -226,14 +226,14 @@ func TestExp(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, []float64{-1., 0., 1.})
+		ten, err = qti.TensorOf([]float64{-1., 0., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Exp()
 
-		exp, err = tinit.TensorOf(conf, []float64{1 / math.E, 1., math.E})
+		exp, err = qti.TensorOf([]float64{1 / math.E, 1., math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -246,20 +246,20 @@ func TestExp(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, [][]float64{
+		ten, err = qti.TensorOf([][]float64{
 			{1., -1.},
 			{-2., 0.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Exp()
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{math.E, 1 / math.E},
 			{1 / (math.E * math.E), 1.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -272,14 +272,14 @@ func TestExp(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		ten, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Exp()
 
-		exp, err = tinit.Ones(conf, 1, 2, 3, 4)
+		exp, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -296,13 +296,13 @@ func TestExp(t *testing.T) {
 }
 
 func TestLog(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, -1.)
+		ten, err := qti.TensorOf(-1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -318,7 +318,7 @@ func TestLog(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, 0.)
+		ten, err = qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -334,14 +334,14 @@ func TestLog(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, math.E)
+		ten, err = qti.TensorOf(math.E, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Log()
 
-		exp, err := tinit.TensorOf(conf, 1.)
+		exp, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -354,14 +354,14 @@ func TestLog(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, []float64{1., math.E, math.E * math.E})
+		ten, err = qti.TensorOf([]float64{1., math.E, math.E * math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Log()
 
-		exp, err = tinit.TensorOf(conf, []float64{0., 1., 2.})
+		exp, err = qti.TensorOf([]float64{0., 1., 2.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -374,14 +374,14 @@ func TestLog(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, [][]float64{{math.E, 1.}})
+		ten, err = qti.TensorOf([][]float64{{math.E, 1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Log()
 
-		exp, err = tinit.TensorOf(conf, [][]float64{{1., 0.}})
+		exp, err = qti.TensorOf([][]float64{{1., 0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -394,14 +394,14 @@ func TestLog(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Ones(conf, 1, 2, 3, 4)
+		ten, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Log()
 
-		exp, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -418,13 +418,13 @@ func TestLog(t *testing.T) {
 }
 
 func TestSin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 0.)
+		ten, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -440,7 +440,7 @@ func TestSin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, math.Pi/6)
+		ten, err = qti.TensorOf(math.Pi/6, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -456,7 +456,7 @@ func TestSin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, math.Pi/2)
+		ten, err = qti.TensorOf(math.Pi/2, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -472,14 +472,14 @@ func TestSin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		ten, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Sin()
 
-		exp, err := tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err := qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -496,13 +496,13 @@ func TestSin(t *testing.T) {
 }
 
 func TestCos(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 0.)
+		ten, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -518,7 +518,7 @@ func TestCos(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, math.Pi/3)
+		ten, err = qti.TensorOf(math.Pi/3, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -534,7 +534,7 @@ func TestCos(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, math.Pi/2)
+		ten, err = qti.TensorOf(math.Pi/2, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -550,14 +550,14 @@ func TestCos(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		ten, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Cos()
 
-		exp, err := tinit.Ones(conf, 1, 2, 3, 4)
+		exp, err := qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -574,13 +574,13 @@ func TestCos(t *testing.T) {
 }
 
 func TestTan(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 0.)
+		ten, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -596,7 +596,7 @@ func TestTan(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, math.Pi/4)
+		ten, err = qti.TensorOf(math.Pi/4, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -612,14 +612,14 @@ func TestTan(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		ten, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Tan()
 
-		exp, err := tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err := qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -636,13 +636,13 @@ func TestTan(t *testing.T) {
 }
 
 func TestSinh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 0.)
+		ten, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -658,7 +658,7 @@ func TestSinh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, 1.)
+		ten, err = qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -675,14 +675,14 @@ func TestSinh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		ten, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Sinh()
 
-		exp, err := tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err := qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -699,13 +699,13 @@ func TestSinh(t *testing.T) {
 }
 
 func TestCosh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 0.)
+		ten, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -721,7 +721,7 @@ func TestCosh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, 1.)
+		ten, err = qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -738,14 +738,14 @@ func TestCosh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		ten, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Cosh()
 
-		exp, err := tinit.Ones(conf, 1, 2, 3, 4)
+		exp, err := qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -762,13 +762,13 @@ func TestCosh(t *testing.T) {
 }
 
 func TestTanh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 0.)
+		ten, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -784,7 +784,7 @@ func TestTanh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, math.Inf(-1))
+		ten, err = qti.TensorOf(math.Inf(-1), conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -800,7 +800,7 @@ func TestTanh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, math.Inf(+1))
+		ten, err = qti.TensorOf(math.Inf(+1), conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -816,7 +816,7 @@ func TestTanh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, 1.)
+		ten, err = qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -833,14 +833,14 @@ func TestTanh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		ten, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		act = ten.Tanh()
 
-		exp, err := tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err := qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -857,18 +857,18 @@ func TestTanh(t *testing.T) {
 }
 
 func TestEq(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 1.)
+		t1, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 1.)
+		t2, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -878,7 +878,7 @@ func TestEq(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 1.)
+		exp, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -891,12 +891,12 @@ func TestEq(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		t1, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		t2, err = qti.TensorOf([]float64{0., math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -906,7 +906,7 @@ func TestEq(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{1., 0.})
+		exp, err = qti.TensorOf([]float64{1., 0.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -919,18 +919,18 @@ func TestEq(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{1., 2., 3.},
 			{-1., -2., -3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{1., 2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -940,10 +940,10 @@ func TestEq(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{0., 0., 0.},
 			{0., 0., 0.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -956,12 +956,12 @@ func TestEq(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t1, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -971,7 +971,7 @@ func TestEq(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 1, 2, 3, 4)
+		exp, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -988,18 +988,18 @@ func TestEq(t *testing.T) {
 }
 
 func TestNe(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 1.)
+		t1, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 1.)
+		t2, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1009,7 +1009,7 @@ func TestNe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 0.)
+		exp, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1022,12 +1022,12 @@ func TestNe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		t1, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		t2, err = qti.TensorOf([]float64{0., math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1037,7 +1037,7 @@ func TestNe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{0., 1.})
+		exp, err = qti.TensorOf([]float64{0., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1050,18 +1050,18 @@ func TestNe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{1., 2., 3.},
 			{-1., -2., -3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{1., 2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1071,10 +1071,10 @@ func TestNe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{1., 1., 1.},
 			{1., 1., 1.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1087,12 +1087,12 @@ func TestNe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t1, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1102,7 +1102,7 @@ func TestNe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1119,18 +1119,18 @@ func TestNe(t *testing.T) {
 }
 
 func TestGt(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 1.)
+		t1, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 1.)
+		t2, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1140,7 +1140,7 @@ func TestGt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 0.)
+		exp, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1153,12 +1153,12 @@ func TestGt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		t1, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		t2, err = qti.TensorOf([]float64{0., math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1168,7 +1168,7 @@ func TestGt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{0., 1.})
+		exp, err = qti.TensorOf([]float64{0., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1181,18 +1181,18 @@ func TestGt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{1., 2., 3.},
 			{-1., -2., -3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{1., 2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1202,10 +1202,10 @@ func TestGt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{1., 1., 1.},
 			{0., 0., 0.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1218,12 +1218,12 @@ func TestGt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		t1, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1233,7 +1233,7 @@ func TestGt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1250,18 +1250,18 @@ func TestGt(t *testing.T) {
 }
 
 func TestGe(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 1.)
+		t1, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 1.)
+		t2, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1271,7 +1271,7 @@ func TestGe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 1.)
+		exp, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1284,12 +1284,12 @@ func TestGe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		t1, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		t2, err = qti.TensorOf([]float64{0., math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1299,7 +1299,7 @@ func TestGe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{1., 1.})
+		exp, err = qti.TensorOf([]float64{1., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1312,18 +1312,18 @@ func TestGe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{1., 2., 3.},
 			{-1., -2., -3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{1., 2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1333,10 +1333,10 @@ func TestGe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{1., 1., 1.},
 			{0., 0., 0.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1349,12 +1349,12 @@ func TestGe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		t1, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1364,7 +1364,7 @@ func TestGe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1381,18 +1381,18 @@ func TestGe(t *testing.T) {
 }
 
 func TestLt(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 1.)
+		t1, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 1.)
+		t2, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1402,7 +1402,7 @@ func TestLt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 0.)
+		exp, err := qti.TensorOf(0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1415,12 +1415,12 @@ func TestLt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		t1, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		t2, err = qti.TensorOf([]float64{0., math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1430,7 +1430,7 @@ func TestLt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{0., 0.})
+		exp, err = qti.TensorOf([]float64{0., 0.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1443,18 +1443,18 @@ func TestLt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{1., 2., 3.},
 			{-1., -2., -3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{1., 2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1464,10 +1464,10 @@ func TestLt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{0., 0., 0.},
 			{1., 1., 1.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1480,12 +1480,12 @@ func TestLt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		t1, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1495,7 +1495,7 @@ func TestLt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 1, 2, 3, 4)
+		exp, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1512,18 +1512,18 @@ func TestLt(t *testing.T) {
 }
 
 func TestLe(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 1.)
+		t1, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 1.)
+		t2, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1533,7 +1533,7 @@ func TestLe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 1.)
+		exp, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1546,12 +1546,12 @@ func TestLe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		t1, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		t2, err = qti.TensorOf([]float64{0., math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1561,7 +1561,7 @@ func TestLe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{1., 0.})
+		exp, err = qti.TensorOf([]float64{1., 0.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1574,18 +1574,18 @@ func TestLe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{1., 2., 3.},
 			{-1., -2., -3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{1., 2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1595,10 +1595,10 @@ func TestLe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{0., 0., 0.},
 			{1., 1., 1.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1611,12 +1611,12 @@ func TestLe(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		t1, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1626,138 +1626,7 @@ func TestLe(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 1, 2, 3, 4)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-	})
-}
-
-func TestElMin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
-
-		conf := &tinit.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		t1, err := tinit.TensorOf(conf, 1.)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err := tinit.TensorOf(conf, 1.)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err := t1.ElMin(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err := tinit.TensorOf(conf, 1.)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.ElMin(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.TensorOf(conf, []float64{0., math.E})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tinit.TensorOf(conf, [][]float64{
-			{1., 2., 3.},
-			{-1., -2., -3.},
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tinit.TensorOf(conf, [][]float64{
-			{-1., -2., -3.},
-			{1., 2., 3.},
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.ElMin(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.TensorOf(conf, [][]float64{
-			{-1., -2., -3.},
-			{-1., -2., -3.},
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tinit.Zeros(conf, 1, 2, 3, 4)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.ElMin(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		exp, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1774,18 +1643,18 @@ func TestElMin(t *testing.T) {
 }
 
 func TestElMax(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 1.)
+		t1, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 1.)
+		t2, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1795,7 +1664,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 1.)
+		exp, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1808,12 +1677,12 @@ func TestElMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		t1, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{0., math.E})
+		t2, err = qti.TensorOf([]float64{0., math.E}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1823,7 +1692,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{0., math.E + 1e-10})
+		exp, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1836,18 +1705,18 @@ func TestElMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{1., 2., 3.},
 			{-1., -2., -3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{1., 2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1857,10 +1726,10 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{1., 2., 3.},
 			{1., 2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1873,12 +1742,12 @@ func TestElMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 2, 3, 4)
+		t1, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1888,7 +1757,138 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 1, 2, 3, 4)
+		exp, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
+func TestElMin(t *testing.T) {
+	runTestLogicOnDevices(func(dev qti.Device) {
+
+		conf := &qti.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		t1, err := qti.TensorOf(1., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err := qti.TensorOf(1., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err := t1.ElMin(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err := qti.TensorOf(1., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = qti.TensorOf([]float64{0., math.E + 1e-10}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = qti.TensorOf([]float64{0., math.E}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMin(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.TensorOf([]float64{0., math.E}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = qti.TensorOf([][]float64{
+			{1., 2., 3.},
+			{-1., -2., -3.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = qti.TensorOf([][]float64{
+			{-1., -2., -3.},
+			{1., 2., 3.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMin(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.TensorOf([][]float64{
+			{-1., -2., -3.},
+			{-1., -2., -3.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = qti.Ones([]int32{1, 2, 3, 4}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = t1.ElMin(t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.Zeros([]int32{1, 2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1905,18 +1905,18 @@ func TestElMax(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 4.)
+		t1, err := qti.TensorOf(4., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 2.)
+		t2, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1926,7 +1926,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 6.)
+		exp, err := qti.TensorOf(6., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1939,12 +1939,12 @@ func TestAdd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{1., 2., 3.})
+		t1, err = qti.TensorOf([]float64{1., 2., 3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{4., 5., 6.})
+		t2, err = qti.TensorOf([]float64{4., 5., 6.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1954,7 +1954,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{5., 7., 9.})
+		exp, err = qti.TensorOf([]float64{5., 7., 9.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1967,20 +1967,20 @@ func TestAdd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][][]float64{
+		t1, err = qti.TensorOf([][][]float64{
 			{{-5.}, {1.}},
 			{{-9.}, {2.}},
 			{{2.}, {-1.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][][]float64{
+		t2, err = qti.TensorOf([][][]float64{
 			{{-4.}, {7.}},
 			{{6.}, {2.}},
 			{{-3.}, {4.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1990,11 +1990,11 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{{-9.}, {8.}},
 			{{-3.}, {4.}},
 			{{-1.}, {3.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2007,12 +2007,12 @@ func TestAdd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 3, 1, 5, 1, 7)
+		t1, err = qti.Zeros([]int32{3, 1, 5, 1, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4, 1, 6, 7)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4, 1, 6, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2022,7 +2022,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 1, 2, 3, 4, 5, 6, 7)
+		exp, err = qti.Ones([]int32{1, 2, 3, 4, 5, 6, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2039,18 +2039,18 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSub(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 4.)
+		t1, err := qti.TensorOf(4., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 2.)
+		t2, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2060,7 +2060,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 2.)
+		exp, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2073,12 +2073,12 @@ func TestSub(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{1., 2., 3.})
+		t1, err = qti.TensorOf([]float64{1., 2., 3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{4., 5., 6.})
+		t2, err = qti.TensorOf([]float64{4., 5., 6.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2088,7 +2088,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{-3., -3., -3.})
+		exp, err = qti.TensorOf([]float64{-3., -3., -3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2101,20 +2101,20 @@ func TestSub(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][][]float64{
+		t1, err = qti.TensorOf([][][]float64{
 			{{-5.}, {1.}},
 			{{-9.}, {2.}},
 			{{2.}, {-1.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][][]float64{
+		t2, err = qti.TensorOf([][][]float64{
 			{{-4.}, {7.}},
 			{{6.}, {2.}},
 			{{-3.}, {4.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2124,11 +2124,11 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{{-1.}, {-6.}},
 			{{-15.}, {0.}},
 			{{5.}, {-5.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2141,12 +2141,12 @@ func TestSub(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 3, 1, 5, 1, 7)
+		t1, err = qti.Ones([]int32{3, 1, 5, 1, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 1, 2, 3, 4, 1, 6, 7)
+		t2, err = qti.Zeros([]int32{1, 2, 3, 4, 1, 6, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2156,7 +2156,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 1, 2, 3, 4, 5, 6, 7)
+		exp, err = qti.Ones([]int32{1, 2, 3, 4, 5, 6, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2173,18 +2173,18 @@ func TestSub(t *testing.T) {
 }
 
 func TestMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 4.)
+		t1, err := qti.TensorOf(4., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 2.)
+		t2, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2194,7 +2194,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 8.)
+		exp, err := qti.TensorOf(8., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2207,12 +2207,12 @@ func TestMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{1., 2., 3.})
+		t1, err = qti.TensorOf([]float64{1., 2., 3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{4., 5., 6.})
+		t2, err = qti.TensorOf([]float64{4., 5., 6.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2222,7 +2222,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{4., 10., 18.})
+		exp, err = qti.TensorOf([]float64{4., 10., 18.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2235,20 +2235,20 @@ func TestMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][][]float64{
+		t1, err = qti.TensorOf([][][]float64{
 			{{-5.}, {1.}},
 			{{-9.}, {2.}},
 			{{2.}, {-1.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][][]float64{
+		t2, err = qti.TensorOf([][][]float64{
 			{{-4.}, {7.}},
 			{{6.}, {2.}},
 			{{-3.}, {4.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2258,11 +2258,11 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{{20.}, {7.}},
 			{{-54.}, {4.}},
 			{{-6.}, {-4.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2275,12 +2275,12 @@ func TestMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 3, 1, 5, 1, 7)
+		t1, err = qti.Ones([]int32{3, 1, 5, 1, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 1, 2, 3, 4, 1, 6, 7)
+		t2, err = qti.Zeros([]int32{1, 2, 3, 4, 1, 6, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2290,7 +2290,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Zeros(conf, 1, 2, 3, 4, 5, 6, 7)
+		exp, err = qti.Zeros([]int32{1, 2, 3, 4, 5, 6, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2307,18 +2307,18 @@ func TestMul(t *testing.T) {
 }
 
 func TestDiv(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, 4.)
+		t1, err := qti.TensorOf(4., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, 2.)
+		t2, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2328,7 +2328,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 2.)
+		exp, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2341,12 +2341,12 @@ func TestDiv(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{4., 5., 6.})
+		t1, err = qti.TensorOf([]float64{4., 5., 6.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{1., 2., 3.})
+		t2, err = qti.TensorOf([]float64{1., 2., 3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2356,7 +2356,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{4., 2.5, 2.})
+		exp, err = qti.TensorOf([]float64{4., 2.5, 2.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2369,20 +2369,20 @@ func TestDiv(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][][]float64{
+		t1, err = qti.TensorOf([][][]float64{
 			{{0.}, {1.}},
 			{{2.}, {3.}},
 			{{4.}, {5.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][][]float64{
+		t2, err = qti.TensorOf([][][]float64{
 			{{-1.}, {1.}},
 			{{-2.}, {2.}},
 			{{-4.}, {5.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2392,11 +2392,11 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{{0.}, {1.}},
 			{{-1.}, {1.5}},
 			{{-1.}, {1.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2409,12 +2409,12 @@ func TestDiv(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 3, 1, 5, 1, 7)
+		t1, err = qti.Zeros([]int32{3, 1, 5, 1, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4, 1, 6, 7)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4, 1, 6, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2424,7 +2424,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Zeros(conf, 1, 2, 3, 4, 5, 6, 7)
+		exp, err = qti.Zeros([]int32{1, 2, 3, 4, 5, 6, 7}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2441,18 +2441,18 @@ func TestDiv(t *testing.T) {
 }
 
 func TestDot(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, []float64{5.})
+		t1, err := qti.TensorOf([]float64{5.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, []float64{2.})
+		t2, err := qti.TensorOf([]float64{2.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2462,7 +2462,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 10.)
+		exp, err := qti.TensorOf(10., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2475,12 +2475,12 @@ func TestDot(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, []float64{0., 1., 2.})
+		t1, err = qti.TensorOf([]float64{0., 1., 2.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, []float64{3., 4., 5.})
+		t2, err = qti.TensorOf([]float64{3., 4., 5.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2490,7 +2490,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, 14.)
+		exp, err = qti.TensorOf(14., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2503,12 +2503,12 @@ func TestDot(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 5, 1)
+		t1, err = qti.Ones([]int32{5, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 5, 1)
+		t2, err = qti.Ones([]int32{5, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2518,7 +2518,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 5)
+		exp, err = qti.Ones([]int32{5}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2531,12 +2531,12 @@ func TestDot(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 5, 4)
+		t1, err = qti.Ones([]int32{5, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 5, 4)
+		t2, err = qti.Ones([]int32{5, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2546,7 +2546,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Full(conf, 4., 5)
+		exp, err = qti.Full([]int32{5}, 4., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2559,12 +2559,12 @@ func TestDot(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 4, 5, 1, 7, 8)
+		t1, err = qti.Ones([]int32{4, 5, 1, 7, 8}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2, 3, 4, 1, 6, 1, 8)
+		t2, err = qti.Ones([]int32{1, 2, 3, 4, 1, 6, 1, 8}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2574,7 +2574,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Full(conf, 8., 1, 2, 3, 4, 5, 6, 7)
+		exp, err = qti.Full([]int32{1, 2, 3, 4, 5, 6, 7}, 8., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2591,18 +2591,18 @@ func TestDot(t *testing.T) {
 }
 
 func TestMatMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.TensorOf(conf, [][]float64{{5.}})
+		t1, err := qti.TensorOf([][]float64{{5.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.TensorOf(conf, [][]float64{{2.}})
+		t2, err := qti.TensorOf([][]float64{{2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2612,7 +2612,7 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, [][]float64{{10.}})
+		exp, err := qti.TensorOf([][]float64{{10.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2625,12 +2625,12 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{{8.}, {4.}})
+		t1, err = qti.TensorOf([][]float64{{8.}, {4.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{{2.}})
+		t2, err = qti.TensorOf([][]float64{{2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2640,7 +2640,7 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{{16.}, {8.}})
+		exp, err = qti.TensorOf([][]float64{{16.}, {8.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2653,12 +2653,12 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{{2.}})
+		t1, err = qti.TensorOf([][]float64{{2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{{8., 4.}})
+		t2, err = qti.TensorOf([][]float64{{8., 4.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2668,7 +2668,7 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{{16., 8.}})
+		exp, err = qti.TensorOf([][]float64{{16., 8.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2681,18 +2681,18 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{0., 1.},
 			{2., 3.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{4., 5.},
 			{6., 7.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2702,10 +2702,10 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{6., 7.},
 			{26., 31.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2718,19 +2718,19 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][]float64{
+		t1, err = qti.TensorOf([][]float64{
 			{1., 1., 1.},
 			{2., 2., 2.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.TensorOf(conf, [][]float64{
+		t2, err = qti.TensorOf([][]float64{
 			{3., 3.},
 			{4., 4.},
 			{5., 5.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2740,10 +2740,10 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{
+		exp, err = qti.TensorOf([][]float64{
 			{12., 12.},
 			{24., 24.},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2756,12 +2756,12 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 5, 1, 1)
+		t1, err = qti.Ones([]int32{5, 1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 5, 1, 1)
+		t2, err = qti.Ones([]int32{5, 1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2771,7 +2771,7 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 5, 1, 1)
+		exp, err = qti.Ones([]int32{5, 1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2784,12 +2784,12 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 4, 2, 1)
+		t1, err = qti.Ones([]int32{4, 2, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 4, 1, 1)
+		t2, err = qti.Ones([]int32{4, 1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2799,7 +2799,7 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 4, 2, 1)
+		exp, err = qti.Ones([]int32{4, 2, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2812,12 +2812,12 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 4, 1, 1)
+		t1, err = qti.Ones([]int32{4, 1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 4, 1, 2)
+		t2, err = qti.Ones([]int32{4, 1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2827,7 +2827,7 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Ones(conf, 4, 1, 2)
+		exp, err = qti.Ones([]int32{4, 1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2840,12 +2840,12 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 5, 4, 2, 2)
+		t1, err = qti.Ones([]int32{5, 4, 2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 5, 4, 2, 2)
+		t2, err = qti.Ones([]int32{5, 4, 2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2855,7 +2855,7 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Full(conf, 2., 5, 4, 2, 2)
+		exp, err = qti.Full([]int32{5, 4, 2, 2}, 2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2868,12 +2868,12 @@ func TestMatMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Ones(conf, 7, 6, 1, 4, 3, 2)
+		t1, err = qti.Ones([]int32{7, 6, 1, 4, 3, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 5, 1, 2, 3)
+		t2, err = qti.Ones([]int32{1, 5, 1, 2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2883,7 +2883,7 @@ func TestMatMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Full(conf, 2., 7, 6, 5, 4, 3, 3)
+		exp, err = qti.Full([]int32{7, 6, 5, 4, 3, 3}, 2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2900,93 +2900,220 @@ func TestMatMul(t *testing.T) {
 }
 
 func TestValidationBinaryOperators(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.Zeros(conf, 2)
+		t1, err := qti.Zeros([]int32{6, 5, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.Zeros(conf, 3)
+		t2, err := qti.Zeros([]int32{6, 4, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = t1.Eq(t2)
+		/* --------------- */
+
+		_, err = t1.Eq(nil)
 		if err == nil {
-			t.Fatalf("expected error because of incompatible sizes at dimension (0)")
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		/* ------------------------------ */
-
-		t1, err = tinit.Zeros(conf, 6, 5, 2)
-		if err != nil {
-			t.Fatal(err)
+		_, err = t1.Ne(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		t2, err = tinit.Zeros(conf, 6, 4, 2)
-		if err != nil {
-			t.Fatal(err)
+		_, err = t1.Gt(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
 		}
+
+		_, err = t1.Ge(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Lt(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Le(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.ElMax(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.ElMin(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Equals(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* --------------- */
 
 		_, err = t1.Eq(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		/* ------------------------------ */
-
-		t1, err = tinit.Zeros(conf, 2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tinit.Zeros(conf, 6, 4, 3)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.Eq(t2)
-		if err == nil {
-			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tinit.Zeros(conf, 5, 1)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tinit.Zeros(conf, 6, 4, 3)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.Add(t2)
+		_, err = t1.Ne(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Gt(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Ge(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Lt(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Le(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.ElMax(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.ElMin(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Equals(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 5, 2, 4, 1)
+		t1, err = qti.Zeros([]int32{1, 5, 2, 4, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 6, 4, 3)
+		t2, err = qti.Zeros([]int32{6, 4, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
+
+		_, err = t1.Add(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Sub(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Mul(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Div(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* --------------- */
 
 		_, err = t1.Add(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Sub(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Mul(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = t1.Div(t2)
+		if err == nil {
+			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
@@ -2995,45 +3122,58 @@ func TestValidationBinaryOperators(t *testing.T) {
 }
 
 func TestValidationDot(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.Zeros(conf)
+		t1, err := qti.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.Zeros(conf, 2)
+		t2, err := qti.Zeros([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
+		}
+
+		_, err = t1.Dot(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Dot(t1)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than 1 dimension")
+		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (0)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Dot(t2)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than 1 dimension")
+		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t2.Dot(t1)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than 1 dimension")
+		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (1) and (0)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 3)
+		t1, err = qti.Zeros([]int32{3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 2)
+		t2, err = qti.Zeros([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3041,23 +3181,27 @@ func TestValidationDot(t *testing.T) {
 		_, err = t1.Dot(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at last dimension")
+		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at last dimensions: (3) != (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 8, 3)
+		t1, err = qti.Zeros([]int32{8, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 5, 1, 4)
+		t2, err = qti.Zeros([]int32{5, 2, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		_, err = t1.Dot(t2)
 		if err == nil {
-			t.Fatalf("expected error because of incompatible sizes at last dimension")
+			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* -------------------- */
@@ -3066,45 +3210,58 @@ func TestValidationDot(t *testing.T) {
 }
 
 func TestValidationMatMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.Zeros(conf, 3)
+		t1, err := qti.Zeros([]int32{3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.Zeros(conf, 2, 3)
+		t2, err := qti.Zeros([]int32{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
+		}
+
+		_, err = t1.MatMul(nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.MatMul(t1)
 		if err == nil {
-			t.Fatalf("expected error because of tensors having less than 2 dimensions")
+			t.Fatalf("expected error because of tensors having less than (2) dimensions")
+		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.MatMul(t2)
 		if err == nil {
-			t.Fatalf("expected error because of tensors having less than 2 dimensions")
+			t.Fatalf("expected error because of tensors having less than (2) dimensions")
+		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t2.MatMul(t1)
 		if err == nil {
-			t.Fatalf("expected error because of tensors having less than 2 dimensions")
+			t.Fatalf("expected error because of tensors having less than (2) dimensions")
+		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (2) and (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 3, 3)
+		t1, err = qti.Zeros([]int32{3, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 2, 3)
+		t2, err = qti.Zeros([]int32{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3112,16 +3269,18 @@ func TestValidationMatMul(t *testing.T) {
 		_, err = t1.MatMul(t2)
 		if err == nil {
 			t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
+		} else if err.Error() != "tensors' dimension validation failed: expected dimension (1) of first tensor to be equal to dimension (0) of second tensor for matrix multiplication: (3) != (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 5, 3, 2)
+		t1, err = qti.Zeros([]int32{5, 5, 3, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 5, 3, 3)
+		t2, err = qti.Zeros([]int32{5, 3, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3129,23 +3288,27 @@ func TestValidationMatMul(t *testing.T) {
 		_, err = t1.MatMul(t2)
 		if err == nil {
 			t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
+		} else if err.Error() != "tensors' dimension validation failed: expected dimension (3) of first tensor to be equal to dimension (1) of second tensor for matrix multiplication: (2) != (3)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 6, 4, 3)
+		t1, err = qti.Zeros([]int32{6, 4, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 6, 1, 5, 4, 4)
+		t2, err = qti.Zeros([]int32{6, 2, 5, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		_, err = t1.MatMul(t2)
 		if err == nil {
-			t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
+			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */

@@ -69,7 +69,7 @@ func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int32) (err
 		j--
 
 		if !(srcDims[i] == dstDims[j] || srcDims[i] == 1) {
-			err = fmt.Errorf("expected target shape to be (%d) or source size to be (1) at dimension (%d): got (%d)", srcDims[i], j, dstDims[j])
+			err = fmt.Errorf("expected target shape to be (%d) or source size to be (1) at dimension (%d): got shape (%d)", srcDims[i], j, dstDims[j])
 			return
 		}
 	}

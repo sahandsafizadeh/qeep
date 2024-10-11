@@ -110,12 +110,12 @@ func (t *CPUTensor) le(u *CPUTensor) (o *CPUTensor) {
 		})
 }
 
-func (t *CPUTensor) elmin(u *CPUTensor) (o *CPUTensor) {
-	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return math.Min(a, b) })
-}
-
 func (t *CPUTensor) elmax(u *CPUTensor) (o *CPUTensor) {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return math.Max(a, b) })
+}
+
+func (t *CPUTensor) elmin(u *CPUTensor) (o *CPUTensor) {
+	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return math.Min(a, b) })
 }
 
 func (t *CPUTensor) add(u *CPUTensor) (o *CPUTensor) {

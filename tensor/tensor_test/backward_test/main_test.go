@@ -4,16 +4,16 @@ import (
 	"os"
 	"testing"
 
-	"github.com/sahandsafizadeh/qeep/tensor/tinit"
+	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
 )
 
 func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func runTestLogicOnDevices(testLogic func(tinit.Device)) {
-	devices := []tinit.Device{
-		tinit.CPU,
+func runTestLogicOnDevices(testLogic func(qti.Device)) {
+	devices := []qti.Device{
+		qti.CPU,
 	}
 	for _, dev := range devices {
 		testLogic(dev)

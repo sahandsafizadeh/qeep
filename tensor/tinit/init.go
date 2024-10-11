@@ -1,11 +1,11 @@
 package tinit
 
 import (
-	"github.com/sahandsafizadeh/qeep/tensor"
+	qt "github.com/sahandsafizadeh/qeep/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
 )
 
-func Full(conf *Config, value float64, dims ...int32) (t tensor.Tensor, err error) {
+func Full(dims []int32, value float64, conf *Config) (t qt.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -13,13 +13,13 @@ func Full(conf *Config, value float64, dims ...int32) (t tensor.Tensor, err erro
 
 	switch c.Device {
 	case CPU:
-		return cputensor.Full(value, dims, c.GradTrack)
+		return cputensor.Full(dims, value, c.GradTrack)
 	default:
 		panic("unreachable: unsupported device validated")
 	}
 }
 
-func Zeros(conf *Config, dims ...int32) (t tensor.Tensor, err error) {
+func Zeros(dims []int32, conf *Config) (t qt.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -33,7 +33,7 @@ func Zeros(conf *Config, dims ...int32) (t tensor.Tensor, err error) {
 	}
 }
 
-func Ones(conf *Config, dims ...int32) (t tensor.Tensor, err error) {
+func Ones(dims []int32, conf *Config) (t qt.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -47,7 +47,7 @@ func Ones(conf *Config, dims ...int32) (t tensor.Tensor, err error) {
 	}
 }
 
-func Eye(conf *Config, n int32) (t tensor.Tensor, err error) {
+func Eye(n int32, conf *Config) (t qt.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -61,7 +61,7 @@ func Eye(conf *Config, n int32) (t tensor.Tensor, err error) {
 	}
 }
 
-func RandU(conf *Config, l, u float64, dims ...int32) (t tensor.Tensor, err error) {
+func RandU(dims []int32, l, u float64, conf *Config) (t qt.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -69,13 +69,13 @@ func RandU(conf *Config, l, u float64, dims ...int32) (t tensor.Tensor, err erro
 
 	switch c.Device {
 	case CPU:
-		return cputensor.RandU(l, u, dims, c.GradTrack)
+		return cputensor.RandU(dims, l, u, c.GradTrack)
 	default:
 		panic("unreachable: unsupported device validated")
 	}
 }
 
-func RandN(conf *Config, u, s float64, dims ...int32) (t tensor.Tensor, err error) {
+func RandN(dims []int32, u, s float64, conf *Config) (t qt.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -83,13 +83,13 @@ func RandN(conf *Config, u, s float64, dims ...int32) (t tensor.Tensor, err erro
 
 	switch c.Device {
 	case CPU:
-		return cputensor.RandN(u, s, dims, c.GradTrack)
+		return cputensor.RandN(dims, u, s, c.GradTrack)
 	default:
 		panic("unreachable: unsupported device validated")
 	}
 }
 
-func TensorOf[T inputDataType](conf *Config, data T) (t tensor.Tensor, err error) {
+func TensorOf[T inputDataType](data T, conf *Config) (t qt.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -103,7 +103,7 @@ func TensorOf[T inputDataType](conf *Config, data T) (t tensor.Tensor, err error
 	}
 }
 
-func Concat(ts []tensor.Tensor, dim int32) (o tensor.Tensor, err error) {
+func Concat(ts []qt.Tensor, dim int32) (o qt.Tensor, err error) {
 	err = validateTensorsDeviceUnity(ts)
 	if err != nil {
 		return

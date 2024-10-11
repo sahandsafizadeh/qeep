@@ -101,11 +101,6 @@ func ValidateInputDataDimUnity(data any) (err error) {
 }
 
 func ValidateConcatTensorsDimsAlongDim(tsDims [][]int32, dim int32) (err error) {
-	if len(tsDims) < 2 {
-		err = fmt.Errorf("expected at least (2) tensors for concat: got (%d)", len(tsDims))
-		return
-	}
-
 	base := tsDims[0]
 	for i, dims := range tsDims {
 		if len(dims) == 0 {

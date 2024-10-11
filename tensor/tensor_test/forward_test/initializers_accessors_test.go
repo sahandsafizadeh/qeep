@@ -3,18 +3,18 @@ package forward_test
 import (
 	"testing"
 
-	"github.com/sahandsafizadeh/qeep/tensor"
-	"github.com/sahandsafizadeh/qeep/tensor/tinit"
+	qt "github.com/sahandsafizadeh/qeep/tensor"
+	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
 )
 
 func TestFullEyeAt(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.Full(conf, -1.)
+		ten, err := qti.Full(nil, -1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -27,7 +27,7 @@ func TestFullEyeAt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Full(conf, 9., 1)
+		ten, err = qti.Full([]int32{1}, 9., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -40,7 +40,7 @@ func TestFullEyeAt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Full(conf, 0., 1, 2)
+		ten, err = qti.Full([]int32{1, 2}, 0., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -59,7 +59,7 @@ func TestFullEyeAt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Full(conf, 5., 4, 3, 2, 1)
+		ten, err = qti.Full([]int32{4, 3, 2, 1}, 5., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -81,7 +81,7 @@ func TestFullEyeAt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Eye(conf, 1)
+		ten, err = qti.Eye(1, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -94,7 +94,7 @@ func TestFullEyeAt(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Eye(conf, 5)
+		ten, err = qti.Eye(5, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -123,7 +123,7 @@ func TestFullEyeAt(t *testing.T) {
 
 		dims := []int32{3, 4}
 
-		ten, err = tinit.Full(conf, 1., dims...)
+		ten, err = qti.Full(dims, 1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -143,13 +143,13 @@ func TestFullEyeAt(t *testing.T) {
 }
 
 func TestTensorOfSliceEquals(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 2.)
+		ten, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -159,7 +159,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 2.)
+		exp, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -172,40 +172,17 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, []float64{3.})
+		ten, err = qti.TensorOf([]float64{3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err = ten.Slice([]tensor.Range{{From: 0, To: 1}})
+		act, err = ten.Slice([]qt.Range{{From: 0, To: 1}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{3.})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tinit.TensorOf(conf, []float64{4.})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = ten.Slice([]tensor.Range{{}})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.TensorOf(conf, []float64{4.})
+		exp, err = qti.TensorOf([]float64{3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -218,17 +195,40 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, []float64{1., 4.})
+		ten, err = qti.TensorOf([]float64{4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err = ten.Slice([]tensor.Range{{From: 0, To: 1}})
+		act, err = ten.Slice([]qt.Range{{}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{1.})
+		exp, err = qti.TensorOf([]float64{4.}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		ten, err = qti.TensorOf([]float64{1., 4.}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = ten.Slice([]qt.Range{{From: 0, To: 1}})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.TensorOf([]float64{1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -241,12 +241,12 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* --------------- */
 
-		act, err = ten.Slice([]tensor.Range{{From: 1, To: 2}})
+		act, err = ten.Slice([]qt.Range{{From: 1, To: 2}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{4.})
+		exp, err = qti.TensorOf([]float64{4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -259,12 +259,12 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* --------------- */
 
-		act, err = ten.Slice([]tensor.Range{{From: 0, To: 2}})
+		act, err = ten.Slice([]qt.Range{{From: 0, To: 2}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{1., 4.})
+		exp, err = qti.TensorOf([]float64{1., 4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -277,35 +277,17 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, [][]float64{{-1.}, {-2.}})
+		ten, err = qti.TensorOf([][]float64{{-1.}, {-2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err = ten.Slice([]tensor.Range{{From: 0, To: 1}})
+		act, err = ten.Slice([]qt.Range{{From: 0, To: 1}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{{-1.}})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* --------------- */
-
-		act, err = ten.Slice([]tensor.Range{{From: 1, To: 2}})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.TensorOf(conf, [][]float64{{-2.}})
+		exp, err = qti.TensorOf([][]float64{{-1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -318,12 +300,30 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* --------------- */
 
-		act, err = ten.Slice([]tensor.Range{{}, {From: 0, To: 1}})
+		act, err = ten.Slice([]qt.Range{{From: 1, To: 2}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][]float64{{-1.}, {-2.}})
+		exp, err = qti.TensorOf([][]float64{{-2.}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = ten.Slice([]qt.Range{{}, {From: 0, To: 1}})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.TensorOf([][]float64{{-1.}, {-2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -336,7 +336,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, [][][]float64{
+		ten, err = qti.TensorOf([][][]float64{
 			{
 				{-1., 9., -5.},
 				{2., 4., 6.},
@@ -352,21 +352,21 @@ func TestTensorOfSliceEquals(t *testing.T) {
 				{1., 2., 6.},
 				{0., 1., 0.},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err = ten.Slice([]tensor.Range{{}, {From: 1, To: 2}})
+		act, err = ten.Slice([]qt.Range{{}, {From: 1, To: 2}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{{2., 4., 6.}},
 			{{9., 7., 5.}},
 			{{1., 2., 6.}},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -379,12 +379,12 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* --------------- */
 
-		act, err = ten.Slice([]tensor.Range{{From: 0, To: 2}, {}, {From: 1, To: 3}})
+		act, err = ten.Slice([]qt.Range{{From: 0, To: 2}, {}, {From: 1, To: 3}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{
 				{9., -5.},
 				{4., 6.},
@@ -395,7 +395,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 				{7., 5.},
 				{3., 9.},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -408,7 +408,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, [][][][]float64{
+		ten, err = qti.TensorOf([][][][]float64{
 			{
 				{
 					{1., 2., 3., 4.},
@@ -421,24 +421,24 @@ func TestTensorOfSliceEquals(t *testing.T) {
 					{1., 2., 3., 4.},
 				},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err = ten.Slice([]tensor.Range{{}, {From: 1, To: 2}, {From: 1, To: 3}})
+		act, err = ten.Slice([]qt.Range{{}, {From: 1, To: 2}, {From: 1, To: 3}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][][]float64{
+		exp, err = qti.TensorOf([][][][]float64{
 			{
 				{
 					{1., 2., 3., 4.},
 					{1., 2., 3., 4.},
 				},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -453,7 +453,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		d1 := []float64{5.}
 
-		ten, err = tinit.TensorOf(conf, d1)
+		ten, err = qti.TensorOf(d1, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -465,7 +465,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{5.})
+		exp, err = qti.TensorOf([]float64{5.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -480,7 +480,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		d4 := [][][][]float64{{{{5.}}}}
 
-		ten, err = tinit.TensorOf(conf, d4)
+		ten, err = qti.TensorOf(d4, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -492,7 +492,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][][]float64{{{{5.}}}})
+		exp, err = qti.TensorOf([][][][]float64{{{{5.}}}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -509,18 +509,18 @@ func TestTensorOfSliceEquals(t *testing.T) {
 }
 
 func TestZerosOnesPatch(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.Zeros(conf)
+		t1, err := qti.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.Ones(conf)
+		t2, err := qti.Ones(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -530,7 +530,7 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.TensorOf(conf, 1.)
+		exp, err := qti.TensorOf(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -543,122 +543,22 @@ func TestZerosOnesPatch(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 2)
+		t1, err = qti.Zeros([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1)
+		t2, err = qti.Ones([]int32{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err = t1.Patch([]tensor.Range{{From: 1, To: 2}}, t2)
+		act, err = t1.Patch([]qt.Range{{From: 1, To: 2}}, t2)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, []float64{0., 1.})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tinit.Zeros(conf, 3, 3)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tinit.Ones(conf, 2, 2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		/* --------------- */
-
-		act, err = t1.Patch([]tensor.Range{{From: 0, To: 2}, {From: 0, To: 2}}, t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.TensorOf(conf, [][]float64{
-			{1., 1., 0.},
-			{1., 1., 0.},
-			{0., 0., 0.},
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* --------------- */
-
-		act, err = t1.Patch([]tensor.Range{{From: 0, To: 2}, {From: 1, To: 3}}, t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.TensorOf(conf, [][]float64{
-			{0., 1., 1.},
-			{0., 1., 1.},
-			{0., 0., 0.},
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* --------------- */
-
-		act, err = t1.Patch([]tensor.Range{{From: 1, To: 3}, {From: 0, To: 2}}, t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.TensorOf(conf, [][]float64{
-			{0., 0., 0.},
-			{1., 1., 0.},
-			{1., 1., 0.},
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* --------------- */
-
-		act, err = t1.Patch([]tensor.Range{{From: 1, To: 3}, {From: 1, To: 3}}, t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.TensorOf(conf, [][]float64{
-			{0., 0., 0.},
-			{0., 1., 1.},
-			{0., 1., 1.},
-		})
+		exp, err = qti.TensorOf([]float64{0., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -671,12 +571,112 @@ func TestZerosOnesPatch(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 4, 3, 2)
+		t1, err = qti.Zeros([]int32{3, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 3, 2, 1)
+		t2, err = qti.Ones([]int32{2, 2}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act, err = t1.Patch([]qt.Range{{From: 0, To: 2}, {From: 0, To: 2}}, t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.TensorOf([][]float64{
+			{1., 1., 0.},
+			{1., 1., 0.},
+			{0., 0., 0.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = t1.Patch([]qt.Range{{From: 0, To: 2}, {From: 1, To: 3}}, t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.TensorOf([][]float64{
+			{0., 1., 1.},
+			{0., 1., 1.},
+			{0., 0., 0.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = t1.Patch([]qt.Range{{From: 1, To: 3}, {From: 0, To: 2}}, t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.TensorOf([][]float64{
+			{0., 0., 0.},
+			{1., 1., 0.},
+			{1., 1., 0.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = t1.Patch([]qt.Range{{From: 1, To: 3}, {From: 1, To: 3}}, t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.TensorOf([][]float64{
+			{0., 0., 0.},
+			{0., 1., 1.},
+			{0., 1., 1.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = qti.Zeros([]int32{4, 3, 2}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = qti.Ones([]int32{3, 2, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -686,7 +686,7 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{
 				{1., 0.},
 				{1., 0.},
@@ -707,7 +707,7 @@ func TestZerosOnesPatch(t *testing.T) {
 				{0., 0.},
 				{0., 0.},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -724,15 +724,15 @@ func TestZerosOnesPatch(t *testing.T) {
 }
 
 func TestRandoms(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
 		dims := []int32{3, 4}
 
-		ten, err := tinit.RandU(conf, -1., 1., dims...)
+		ten, err := qti.RandU(dims, -1., 1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -749,7 +749,7 @@ func TestRandoms(t *testing.T) {
 
 		dims = []int32{3, 4}
 
-		ten, err = tinit.RandN(conf, 0., 1., dims...)
+		ten, err = qti.RandN(dims, 0., 1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -768,28 +768,28 @@ func TestRandoms(t *testing.T) {
 }
 
 func TestConcat(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.Zeros(conf, 3)
+		t1, err := qti.Zeros([]int32{3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.Zeros(conf, 5)
+		t2, err := qti.Zeros([]int32{5}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err := tinit.Concat([]tensor.Tensor{t1, t2}, 0)
+		act, err := qti.Concat([]qt.Tensor{t1, t2}, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err := tinit.Zeros(conf, 8)
+		exp, err := qti.Zeros([]int32{8}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -802,70 +802,32 @@ func TestConcat(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 5, 3)
+		t1, err = qti.Zeros([]int32{1, 5, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 3, 5, 3)
+		t2, err = qti.Zeros([]int32{3, 5, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t3, err := tinit.Zeros(conf, 2, 5, 3)
+		t3, err := qti.Zeros([]int32{2, 5, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t4, err := tinit.Zeros(conf, 4, 5, 3)
+		t4, err := qti.Zeros([]int32{4, 5, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err = tinit.Concat([]tensor.Tensor{t1, t2, t3, t4}, 0)
+		act, err = qti.Concat([]qt.Tensor{t1, t2, t3, t4}, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Zeros(conf, 10, 5, 3)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tinit.Zeros(conf, 4, 2, 3)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tinit.Zeros(conf, 4, 4, 3)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t3, err = tinit.Zeros(conf, 4, 1, 3)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t4, err = tinit.Zeros(conf, 4, 3, 3)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = tinit.Concat([]tensor.Tensor{t1, t2, t3, t4}, 1)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tinit.Zeros(conf, 4, 10, 3)
+		exp, err = qti.Zeros([]int32{10, 5, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -878,12 +840,50 @@ func TestConcat(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.TensorOf(conf, [][][]float64{
+		t1, err = qti.Zeros([]int32{4, 2, 3}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t2, err = qti.Zeros([]int32{4, 4, 3}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t3, err = qti.Zeros([]int32{4, 1, 3}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t4, err = qti.Zeros([]int32{4, 3, 3}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = qti.Concat([]qt.Tensor{t1, t2, t3, t4}, 1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = qti.Zeros([]int32{4, 10, 3}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = qti.TensorOf([][][]float64{
 			{
 				{0., 1., 2.},
 				{3., 4., 5.},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -898,12 +898,12 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		act, err = tinit.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+		act, err = qti.Concat([]qt.Tensor{t1, t2, t3}, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{
 				{0., 1., 2.},
 				{3., 4., 5.},
@@ -916,7 +916,7 @@ func TestConcat(t *testing.T) {
 				{0., 1., 2.},
 				{3., 4., 5.},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -929,12 +929,12 @@ func TestConcat(t *testing.T) {
 
 		/* --------------- */
 
-		act, err = tinit.Concat([]tensor.Tensor{t1, t2, t3}, 1)
+		act, err = qti.Concat([]qt.Tensor{t1, t2, t3}, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{
 				{0., 1., 2.},
 				{3., 4., 5.},
@@ -943,7 +943,7 @@ func TestConcat(t *testing.T) {
 				{0., 1., 2.},
 				{3., 4., 5.},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -956,17 +956,17 @@ func TestConcat(t *testing.T) {
 
 		/* --------------- */
 
-		act, err = tinit.Concat([]tensor.Tensor{t1, t2, t3}, 2)
+		act, err = qti.Concat([]qt.Tensor{t1, t2, t3}, 2)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.TensorOf(conf, [][][]float64{
+		exp, err = qti.TensorOf([][][]float64{
 			{
 				{0., 1., 2., 0., 1., 2., 0., 1., 2.},
 				{3., 4., 5., 3., 4., 5., 3., 4., 5.},
 			},
-		})
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -979,29 +979,29 @@ func TestConcat(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 4)
+		t1, err = qti.Zeros([]int32{4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 6)
+		t2, err = qti.Zeros([]int32{6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		ts := []tensor.Tensor{t1, t2}
+		ts := []qt.Tensor{t1, t2}
 
-		act, err = tinit.Concat(ts, 0)
+		act, err = qti.Concat(ts, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		ts[1], err = tinit.Ones(conf, 6)
+		ts[1], err = qti.Ones([]int32{6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tinit.Zeros(conf, 10)
+		exp, err = qti.Zeros([]int32{10}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1018,13 +1018,13 @@ func TestConcat(t *testing.T) {
 }
 
 func TestNElemsShape(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.Zeros(conf)
+		ten, err := qti.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1041,7 +1041,7 @@ func TestNElemsShape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1)
+		ten, err = qti.Zeros([]int32{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1058,7 +1058,7 @@ func TestNElemsShape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 2)
+		ten, err = qti.Zeros([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1075,7 +1075,7 @@ func TestNElemsShape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 3, 4)
+		ten, err = qti.Zeros([]int32{3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1092,7 +1092,7 @@ func TestNElemsShape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 5, 4, 3, 2, 1)
+		ten, err = qti.Zeros([]int32{5, 4, 3, 2, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1109,7 +1109,7 @@ func TestNElemsShape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 2, 3)
+		ten, err = qti.Zeros([]int32{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1128,31 +1128,105 @@ func TestNElemsShape(t *testing.T) {
 	})
 }
 
-func TestValidationFull(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+func TestValidationFullZerosOnes(t *testing.T) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		_, err := tinit.Full(conf, 2., -1)
+		_, err := qti.Full([]int32{-1}, 2., conf)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive dimension")
+		} else if err.Error() != "input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.Full(conf, 2., 0)
+		_, err = qti.Full([]int32{0}, 2., conf)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive dimension")
+		} else if err.Error() != "input dimension validation failed: expected positive dimension sizes: got (0) at position (0)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.Full(conf, 2., 1, -2)
+		_, err = qti.Full([]int32{1, -2}, 2., conf)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive dimension")
+		} else if err.Error() != "input dimension validation failed: expected positive dimension sizes: got (-2) at position (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.Full(conf, 2., 2, 0, 1)
+		_, err = qti.Full([]int32{2, 0, 1}, 2., conf)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive dimension")
+		} else if err.Error() != "input dimension validation failed: expected positive dimension sizes: got (0) at position (1)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		conf = &qti.Config{Device: -1}
+
+		/* ------------------------------ */
+
+		_, err = qti.Full(nil, 2., conf)
+		if err == nil {
+			t.Fatalf("expected error because of invalid input device")
+		} else if err.Error() != "invalid input device" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.Zeros(nil, conf)
+		if err == nil {
+			t.Fatalf("expected error because of invalid input device")
+		} else if err.Error() != "invalid input device" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.Ones(nil, conf)
+		if err == nil {
+			t.Fatalf("expected error because of invalid input device")
+		} else if err.Error() != "invalid input device" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
+func TestValidationEye(t *testing.T) {
+	runTestLogicOnDevices(func(dev qti.Device) {
+
+		conf := &qti.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		_, err := qti.Eye(-1, conf)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive dimension")
+		} else if err.Error() != "input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.Eye(0, conf)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive dimension")
+		} else if err.Error() != "input dimension validation failed: expected positive dimension sizes: got (0) at position (0)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		conf = &qti.Config{Device: -1}
+
+		/* ------------------------------ */
+
+		_, err = qti.Eye(1, conf)
+		if err == nil {
+			t.Fatalf("expected error because of invalid input device")
+		} else if err.Error() != "invalid input device" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
@@ -1161,25 +1235,44 @@ func TestValidationFull(t *testing.T) {
 }
 
 func TestValidationRandU(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		_, err := tinit.RandU(conf, 0., -1.)
+		_, err := qti.RandU(nil, 0., -1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of lower bound not being less than upper bound")
+		} else if err.Error() != "random parameter validation failed: expected uniform random lower bound to be less than the upper bound: (0.000000) >= (-1.000000)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.RandU(conf, 1., 1.)
+		_, err = qti.RandU(nil, 1., 1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of lower bound not being less than upper bound")
+		} else if err.Error() != "random parameter validation failed: expected uniform random lower bound to be less than the upper bound: (1.000000) >= (1.000000)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.RandU(conf, -1., 1., -1)
+		_, err = qti.RandU([]int32{-1}, -1., 1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive dimension")
+		} else if err.Error() != "input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		conf = &qti.Config{Device: -1}
+
+		/* ------------------------------ */
+
+		_, err = qti.RandU(nil, 0., 1., conf)
+		if err == nil {
+			t.Fatalf("expected error because of invalid input device")
+		} else if err.Error() != "invalid input device" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
@@ -1188,25 +1281,44 @@ func TestValidationRandU(t *testing.T) {
 }
 
 func TestValidationRandN(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		_, err := tinit.RandN(conf, 0., -1.)
+		_, err := qti.RandN(nil, 0., -1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive standard deviation")
+		} else if err.Error() != "random parameter validation failed: expected normal random standard deviation to be positive: got (-1.000000)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.RandN(conf, -1., 0.)
+		_, err = qti.RandN(nil, -1., 0., conf)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive standard deviation")
+		} else if err.Error() != "random parameter validation failed: expected normal random standard deviation to be positive: got (0.000000)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.RandN(conf, 0., 1., -1)
+		_, err = qti.RandN([]int32{-1}, 0., 1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of non-positive dimension")
+		} else if err.Error() != "input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		conf = &qti.Config{Device: -1}
+
+		/* ------------------------------ */
+
+		_, err = qti.RandN(nil, 0., 1., conf)
+		if err == nil {
+			t.Fatalf("expected error because of invalid input device")
+		} else if err.Error() != "invalid input device" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
@@ -1215,35 +1327,66 @@ func TestValidationRandN(t *testing.T) {
 }
 
 func TestValidationTensorOf(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		_, err := tinit.TensorOf(conf, []float64{})
+		_, err := qti.TensorOf([]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
+		} else if err.Error() != "input data validation failed: expected data to not have zero length along any dimension" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.TensorOf(conf, [][]float64{{}, {}})
+		_, err = qti.TensorOf([][]float64{}, conf)
 		if err == nil {
-			t.Fatalf("expected error because of zero len along dimension (1)")
+			t.Fatalf("expected error because of zero len along dimension (0)")
+		} else if err.Error() != "input data validation failed: expected data to not have zero length along any dimension" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.TensorOf(conf, [][]float64{{-1.}, {}})
+		_, err = qti.TensorOf([][][]float64{}, conf)
 		if err == nil {
-			t.Fatalf("expected error because of zero len along dimension (1)")
+			t.Fatalf("expected error because of zero len along dimension (0)")
+		} else if err.Error() != "input data validation failed: expected data to not have zero length along any dimension" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.TensorOf(conf, [][]float64{{}, {-2.}})
+		_, err = qti.TensorOf([][][][]float64{}, conf)
 		if err == nil {
-			t.Fatalf("expected error because of zero len along dimension (1)")
+			t.Fatalf("expected error because of zero len along dimension (0)")
+		} else if err.Error() != "input data validation failed: expected data to not have zero length along any dimension" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		_, err = tinit.TensorOf(conf, [][][]float64{
+		_, err = qti.TensorOf([][]float64{{}, {}}, conf)
+		if err == nil {
+			t.Fatalf("expected error because of zero len along dimension (1)")
+		} else if err.Error() != "input data validation failed: expected data to not have zero length along any dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.TensorOf([][]float64{{}, {-1.}}, conf)
+		if err == nil {
+			t.Fatalf("expected error because of zero len along dimension (1)")
+		} else if err.Error() != "input data validation failed: expected data to not have zero length along any dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.TensorOf([][][]float64{{{}}}, conf)
+		if err == nil {
+			t.Fatalf("expected error because of zero len along dimension (1)")
+		} else if err.Error() != "input data validation failed: expected data to not have zero length along any dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		_, err = qti.TensorOf([][][]float64{
 			{
 				{2., 2., 2.},
 				{2., 2., 2.},
@@ -1259,31 +1402,65 @@ func TestValidationTensorOf(t *testing.T) {
 				{2., 2., 2.},
 				{2., 2.},
 			},
-		})
+		}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
+		} else if err.Error() != "input data validation failed: expected data to have have equal length along every dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.TensorOf([][][][]float64{
+			{
+				{
+					{3., 3., 3.},
+					{3., 3., 3.},
+					{3., 3., 3.},
+				},
+				{
+					{3., 3., 3.},
+					{3., 3., 3.},
+				},
+				{
+					{3., 3., 3.},
+					{3., 3., 3.},
+					{3., 3., 3.},
+				},
+			},
+		}, conf)
+		if err == nil {
+			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
+		} else if err.Error() != "input data validation failed: expected data to have have equal length along every dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.TensorOf([][][][]float64{
+			{
+				{{3., 3., 3.}},
+				{{3., 3., 3.}},
+				{{3., 3., 3.}},
+			},
+			{
+				{{3., 3., 3.}},
+				{{3., 3., 3.}},
+			},
+		}, conf)
+		if err == nil {
+			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
+		} else if err.Error() != "input data validation failed: expected data to have have equal length along every dimension" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		_, err = tinit.TensorOf(conf, [][][]float64{
-			{
-				{3., 3., 3.},
-				{3., 3., 3.},
-				{3., 3., 3.},
-			},
-			{
-				{3., 3., 3.},
-				{3., 3., 3.},
-			},
-			{
-				{3., 3., 3.},
-				{3., 3., 3.},
-				{3., 3., 3.},
-			},
-		})
+		conf = &qti.Config{Device: -1}
+
+		/* ------------------------------ */
+
+		_, err = qti.TensorOf([]float64{1}, conf)
 		if err == nil {
-			t.Fatalf("expected error because of inconsistent tensor len along dimension (1)")
+			t.Fatalf("expected error because of invalid input device")
+		} else if err.Error() != "invalid input device" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
@@ -1292,164 +1469,191 @@ func TestValidationTensorOf(t *testing.T) {
 }
 
 func TestValidationConcat(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		_, err := tinit.Concat(nil, 0)
-		if err == nil {
-			t.Fatalf("expected error because of the number of input tensors being less than (2)")
-		}
-
-		_, err = tinit.Concat([]tensor.Tensor{nil}, 0)
-		if err == nil {
-			t.Fatalf("expected error because of the number of input tensors being less than (2)")
-		}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.Zeros(conf)
+		_, err := qti.Concat(nil, 0)
+		if err == nil {
+			t.Fatalf("expected error because of the number of input tensors being less than (2)")
+		} else if err.Error() != "expected at least (2) tensors: got (0)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.Concat([]qt.Tensor{nil}, 0)
+		if err == nil {
+			t.Fatalf("expected error because of the number of input tensors being less than (2)")
+		} else if err.Error() != "expected at least (2) tensors: got (1)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = qti.Concat([]qt.Tensor{nil, nil}, 0)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensors")
+		} else if err.Error() != "expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		t1, err := qti.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.Zeros(conf)
+		t2, err := qti.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = tinit.Concat([]tensor.Tensor{t1, t2}, 0)
+		_, err = qti.Concat([]qt.Tensor{t1, t2}, 0)
 		if err == nil {
 			t.Fatalf("expected error because of having scalar tensors as input")
+		} else if err.Error() != "inputs' dimension validation failed: scalar tensor can not be concatenated: got tensor (0)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 2)
+		t1, err = qti.Zeros([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 2)
+		t2, err = qti.Zeros([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t3, err := tinit.Zeros(conf, 2, 2)
+		t3, err := qti.Zeros([]int32{2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = tinit.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+		_, err = qti.Concat([]qt.Tensor{t1, t2, t3}, 0)
 		if err == nil {
 			t.Fatalf("expected error because of the input tensors not having equal number of dimensions")
+		} else if err.Error() != "inputs' dimension validation failed: expected tensors to have the same number of dimensions: (2) != (1) for tensor (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1)
+		t1, err = qti.Zeros([]int32{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 3)
+		t2, err = qti.Zeros([]int32{3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = tinit.Concat([]tensor.Tensor{t1, t2}, -1)
+		_, err = qti.Concat([]qt.Tensor{t1, t2}, -1)
 		if err == nil {
 			t.Fatalf("expected error because of negative dimension")
+		} else if err.Error() != "inputs' dimension validation failed: expected concat dimension to be in range [0,1): got (-1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tinit.Concat([]tensor.Tensor{t1, t2}, 1)
+		_, err = qti.Concat([]qt.Tensor{t1, t2}, 1)
 		if err == nil {
 			t.Fatalf("expected error because of dimension (1) being out of range")
+		} else if err.Error() != "inputs' dimension validation failed: expected concat dimension to be in range [0,1): got (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 3, 3)
+		t1, err = qti.Zeros([]int32{3, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 3, 3)
+		t2, err = qti.Zeros([]int32{3, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = tinit.Concat([]tensor.Tensor{t1, t2}, 2)
+		_, err = qti.Concat([]qt.Tensor{t1, t2}, 2)
 		if err == nil {
 			t.Fatalf("expected error because of dimension (2) being out of range")
+		} else if err.Error() != "inputs' dimension validation failed: expected concat dimension to be in range [0,2): got (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 2, 2, 2)
+		t1, err = qti.Zeros([]int32{2, 2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 2, 2, 1)
+		t2, err = qti.Zeros([]int32{2, 2, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t3, err = tinit.Zeros(conf, 3, 2, 2)
+		t3, err = qti.Zeros([]int32{3, 2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = tinit.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+		_, err = qti.Concat([]qt.Tensor{t1, t2, t3}, 0)
 		if err == nil {
 			t.Fatalf("expected error because of size mismatch along dimension (2)")
+		} else if err.Error() != "inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (0): (1) != (2) for dimension (2) for tensor (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 2, 1, 2)
+		t1, err = qti.Zeros([]int32{2, 1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 2, 2, 2)
+		t2, err = qti.Zeros([]int32{2, 2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t3, err = tinit.Zeros(conf, 3, 2, 2)
+		t3, err = qti.Zeros([]int32{3, 2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = tinit.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+		_, err = qti.Concat([]qt.Tensor{t1, t2, t3}, 0)
 		if err == nil {
 			t.Fatalf("expected error because of size mismatch along dimension (1)")
+		} else if err.Error() != "inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (0): (2) != (1) for dimension (1) for tensor (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 2, 1, 2)
+		t1, err = qti.Zeros([]int32{2, 1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Zeros(conf, 1, 2, 2)
+		t2, err = qti.Zeros([]int32{1, 2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t3, err = tinit.Zeros(conf, 2, 3, 2)
+		t3, err = qti.Zeros([]int32{2, 3, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = tinit.Concat([]tensor.Tensor{t1, t2, t3}, 1)
+		_, err = qti.Concat([]qt.Tensor{t1, t2, t3}, 1)
 		if err == nil {
 			t.Fatalf("expected error because of size mismatch along dimension (0)")
+		} else if err.Error() != "inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (1): (1) != (2) for dimension (0) for tensor (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
@@ -1458,13 +1662,13 @@ func TestValidationConcat(t *testing.T) {
 }
 
 func TestValidationAt(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.Zeros(conf, 1)
+		ten, err := qti.Zeros([]int32{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1472,26 +1676,34 @@ func TestValidationAt(t *testing.T) {
 		_, err = ten.At()
 		if err == nil {
 			t.Fatalf("expected error because of incompatible index len (0) with dimension len (1)")
+		} else if err.Error() != "input index validation failed: expected index length to be equal to the number of dimensions: (0) != (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.At(0, 0)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible index len (2) with dimension len (1)")
+		} else if err.Error() != "input index validation failed: expected index length to be equal to the number of dimensions: (2) != (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.At(-1)
 		if err == nil {
 			t.Fatalf("expected error because of negative index")
+		} else if err.Error() != "input index validation failed: expected index to be in range [0,1) at dimension (0): got (-1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.At(1)
 		if err == nil {
 			t.Fatalf("expected error because of index (1) at dimension (0) being out of range [0,1)")
+		} else if err.Error() != "input index validation failed: expected index to be in range [0,1) at dimension (0): got (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		ten, err = tinit.Zeros(conf, 1, 2)
+		ten, err = qti.Zeros([]int32{1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1499,26 +1711,36 @@ func TestValidationAt(t *testing.T) {
 		_, err = ten.At(0)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible index len (1) with dimension len (2)")
+		} else if err.Error() != "input index validation failed: expected index length to be equal to the number of dimensions: (1) != (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.At(0, 1, 0)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible index len (3) with dimension len (2)")
+		} else if err.Error() != "input index validation failed: expected index length to be equal to the number of dimensions: (3) != (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.At(-2, -1)
 		if err == nil {
 			t.Fatalf("expected error because of negative index")
+		} else if err.Error() != "input index validation failed: expected index to be in range [0,1) at dimension (0): got (-2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.At(1, 0)
 		if err == nil {
 			t.Fatalf("expected error because of index (1) at dimension (0) being out of range [0,1)")
+		} else if err.Error() != "input index validation failed: expected index to be in range [0,1) at dimension (0): got (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = ten.At(1, 2)
+		_, err = ten.At(0, 2)
 		if err == nil {
 			t.Fatalf("expected error because of index (2) at dimension (1) being out of range [0,2)")
+		} else if err.Error() != "input index validation failed: expected index to be in range [0,2) at dimension (1): got (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
@@ -1527,69 +1749,85 @@ func TestValidationAt(t *testing.T) {
 }
 
 func TestValidationSlice(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tinit.TensorOf(conf, 2.)
+		ten, err := qti.TensorOf(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = ten.Slice([]tensor.Range{{From: 0, To: 0}})
+		_, err = ten.Slice([]qt.Range{{From: 0, To: 0}})
 		if err == nil {
 			t.Fatalf("expected error because of incompatible index len (1) with dimension len (0)")
+		} else if err.Error() != "input index validation failed: expected index length to be smaller than or equal to the number of dimensions: (1) > (0)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, []float64{3.})
+		ten, err = qti.TensorOf([]float64{3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = ten.Slice([]tensor.Range{{From: 0, To: 0}, {From: 0, To: 0}})
+		_, err = ten.Slice([]qt.Range{{From: 0, To: 0}, {From: 0, To: 0}})
 		if err == nil {
 			t.Fatalf("expected error because of incompatible index len (2) with dimension len (1)")
+		} else if err.Error() != "input index validation failed: expected index length to be smaller than or equal to the number of dimensions: (2) > (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = ten.Slice([]tensor.Range{{From: 1, To: 1}})
+		_, err = ten.Slice([]qt.Range{{From: 1, To: 1}})
 		if err == nil {
 			t.Fatalf("expected error because of to index (0) not being larger than from index (0)")
+		} else if err.Error() != "input index validation failed: expected range 'From' to be smaller than 'To' except for special both (0) case (fetchAll): (1) >= (1) at dimension (0)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = ten.Slice([]tensor.Range{{From: -1, To: 0}})
+		_, err = ten.Slice([]qt.Range{{From: -1, To: 0}})
 		if err == nil {
 			t.Fatalf("expected error because of negative from index (-1)")
+		} else if err.Error() != "input index validation failed: expected index to be in range [0,1) at dimension (0): got (-1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = ten.Slice([]tensor.Range{{From: 1, To: 2}})
+		_, err = ten.Slice([]qt.Range{{From: 1, To: 2}})
 		if err == nil {
 			t.Fatalf("expected error because of from index (1) being out of range [0,1) at dimension (0)")
+		} else if err.Error() != "input index validation failed: expected index to be in range [0,1) at dimension (0): got (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = ten.Slice([]tensor.Range{{From: 0, To: 2}})
+		_, err = ten.Slice([]qt.Range{{From: 0, To: 2}})
 		if err == nil {
 			t.Fatalf("expected error because of to index (2) being out of range [0,1) at dimension (0)")
+		} else if err.Error() != "input index validation failed: expected index to fall in range [0,1] at dimension (0): got [0,2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		ten, err = tinit.TensorOf(conf, []float64{1., 4.})
+		ten, err = qti.TensorOf([]float64{1., 4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = ten.Slice([]tensor.Range{{From: 2, To: 3}})
+		_, err = ten.Slice([]qt.Range{{From: 2, To: 3}})
 		if err == nil {
 			t.Fatalf("expected error because of from index (2) being out of range [0,2) at dimension (0)")
+		} else if err.Error() != "input index validation failed: expected index to be in range [0,2) at dimension (0): got (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = ten.Slice([]tensor.Range{{From: 1, To: 3}})
+		_, err = ten.Slice([]qt.Range{{From: 1, To: 3}})
 		if err == nil {
 			t.Fatalf("expected error because of to index (3) being out of range [0,2) at dimension (0)")
+		} else if err.Error() != "input index validation failed: expected index to fall in range [0,2] at dimension (0): got [1,3)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
@@ -1598,76 +1836,98 @@ func TestValidationSlice(t *testing.T) {
 }
 
 func TestValidationPatch(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{Device: dev}
+		conf := &qti.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		t1, err := tinit.Zeros(conf, 2)
+		t1, err := qti.Zeros([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err := tinit.Ones(conf)
+		_, err = t1.Patch([]qt.Range{}, nil)
+		if err == nil {
+			t.Fatalf("expected error because of nil input tensor")
+		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		t1, err = qti.Zeros([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = t1.Patch([]tensor.Range{}, t2)
+		t2, err := qti.Ones(nil, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = t1.Patch([]qt.Range{}, t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible number of dimensions")
+		} else if err.Error() != "input index or tensors' dimension validation failed: expected number of dimensions to match among source and target tensors: (0) != (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 1)
+		t1, err = qti.Zeros([]int32{1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2)
+		t2, err = qti.Ones([]int32{1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = t1.Patch([]tensor.Range{}, t2)
+		_, err = t1.Patch([]qt.Range{}, t2)
 		if err == nil {
 			t.Fatalf("expected error because of exceeding patch size at dimension (1)")
+		} else if err.Error() != "input index or tensors' dimension validation failed: expected source tensor size not to exceed that of target tensor at dimension (1): (2) > (1)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 3)
+		t1, err = qti.Zeros([]int32{3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 2)
+		t2, err = qti.Ones([]int32{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = t1.Patch([]tensor.Range{{From: 2, To: 4}}, t2)
+		_, err = t1.Patch([]qt.Range{{From: 2, To: 4}}, t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible index with target tensor")
+		} else if err.Error() != "input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to fall in range [0,3] at dimension (0): got [2,4)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		t1, err = tinit.Zeros(conf, 1, 3)
+		t1, err = qti.Zeros([]int32{1, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tinit.Ones(conf, 1, 2)
+		t2, err = qti.Ones([]int32{1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		_, err = t1.Patch([]tensor.Range{{}, {From: 2, To: 3}}, t2)
+		_, err = t1.Patch([]qt.Range{{}, {From: 2, To: 3}}, t2)
 		if err == nil {
 			t.Fatalf("expected error because of index not covering source tensor at dimension (1)")
+		} else if err.Error() != "input index or tensors' dimension validation failed: expected index to exactly cover source tensor at dimension (1): #[2,3) != (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */

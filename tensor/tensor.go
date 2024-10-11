@@ -10,11 +10,11 @@ type Tensor interface {
 
 	/*------------ shape modifiers ------------*/
 	Transpose() (Tensor, error)
-	Reshape(shape ...int32) (Tensor, error)
+	Reshape(shape []int32) (Tensor, error)
 	UnSqueeze(dim int32) (Tensor, error)
 	Squeeze(dim int32) (Tensor, error)
 	Flatten(fromDim int32) (Tensor, error)
-	Broadcast(shape ...int32) (Tensor, error)
+	Broadcast(shape []int32) (Tensor, error)
 
 	/*--------------- reducers ----------------*/
 	Sum() float64
@@ -49,8 +49,8 @@ type Tensor interface {
 	Ge(Tensor) (Tensor, error)
 	Lt(Tensor) (Tensor, error)
 	Le(Tensor) (Tensor, error)
-	ElMin(Tensor) (Tensor, error)
 	ElMax(Tensor) (Tensor, error)
+	ElMin(Tensor) (Tensor, error)
 	Add(Tensor) (Tensor, error)
 	Sub(Tensor) (Tensor, error)
 	Mul(Tensor) (Tensor, error)

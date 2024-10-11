@@ -7,6 +7,11 @@ import (
 )
 
 func assertCPUTensor(t tensor.Tensor) (ct *CPUTensor, err error) {
+	if t == nil {
+		err = fmt.Errorf("expected input tensor not to be nil")
+		return
+	}
+
 	ct, ok := t.(*CPUTensor)
 	if !ok {
 		err = fmt.Errorf("expected input tensor to be on CPU")
@@ -31,12 +36,12 @@ func assertCPUTensors(ts []tensor.Tensor) (cts []*CPUTensor, err error) {
 func broadcastForBinaryOp(ct1, ct2 *CPUTensor) (bct1, bct2 *CPUTensor, err error) {
 	shape := targetBroadcastDims(ct1.dims, ct2.dims)
 
-	t1, err := ct1.Broadcast(shape...)
+	t1, err := ct1.Broadcast(shape)
 	if err != nil {
 		return
 	}
 
-	t2, err := ct2.Broadcast(shape...)
+	t2, err := ct2.Broadcast(shape)
 	if err != nil {
 		return
 	}
@@ -57,7 +62,7 @@ func broadcastForMatMul(ct1, ct2 *CPUTensor) (bct1, bct2 *CPUTensor, err error) 
 	shape[lt-1] = ct1.dims[l1-1]
 	shape[lt-2] = ct1.dims[l1-2]
 
-	t1, err := ct1.Broadcast(shape...)
+	t1, err := ct1.Broadcast(shape)
 	if err != nil {
 		return
 	}
@@ -65,7 +70,7 @@ func broadcastForMatMul(ct1, ct2 *CPUTensor) (bct1, bct2 *CPUTensor, err error) 
 	shape[lt-1] = ct2.dims[l2-1]
 	shape[lt-2] = ct2.dims[l2-2]
 
-	t2, err := ct2.Broadcast(shape...)
+	t2, err := ct2.Broadcast(shape)
 	if err != nil {
 		return
 	}

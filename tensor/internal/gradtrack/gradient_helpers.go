@@ -16,7 +16,7 @@ func reducerBroadcasted(y tensor.Tensor, x tensor.Tensor, dim int32) (o tensor.T
 		return
 	}
 
-	o, err = o.Broadcast(x.Shape()...)
+	o, err = o.Broadcast(x.Shape())
 	if err != nil {
 		return
 	}

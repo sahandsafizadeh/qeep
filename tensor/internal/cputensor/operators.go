@@ -110,12 +110,12 @@ func (t *CPUTensor) le(u *CPUTensor) (o *CPUTensor) {
 		})
 }
 
-func (t *CPUTensor) elmin(u *CPUTensor) (o *CPUTensor) {
-	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return math.Min(a, b) })
-}
-
 func (t *CPUTensor) elmax(u *CPUTensor) (o *CPUTensor) {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return math.Max(a, b) })
+}
+
+func (t *CPUTensor) elmin(u *CPUTensor) (o *CPUTensor) {
+	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return math.Min(a, b) })
 }
 
 func (t *CPUTensor) add(u *CPUTensor) (o *CPUTensor) {
@@ -168,8 +168,8 @@ func (t *CPUTensor) equals(u *CPUTensor) (are bool) {
 
 func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) (o *CPUTensor) {
 
-	var calcData func([]int32, *any, *any)
-	calcData = func(dims []int32, a, r *any) {
+	var calcData func([]int, *any, *any)
+	calcData = func(dims []int, a, r *any) {
 		if len(dims) == 0 {
 			*r = suf((*a).(float64))
 			return
@@ -187,7 +187,7 @@ func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) (o *CPUTe
 	}
 
 	o = new(CPUTensor)
-	o.dims = make([]int32, len(t.dims))
+	o.dims = make([]int, len(t.dims))
 	copy(o.dims, t.dims)
 	calcData(t.dims, &t.data, &o.data)
 
@@ -196,8 +196,8 @@ func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) (o *CPUTe
 
 func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) (o *CPUTensor) {
 
-	var calcData func([]int32, *any, *any, *any)
-	calcData = func(dims []int32, a, b, r *any) {
+	var calcData func([]int, *any, *any, *any)
+	calcData = func(dims []int, a, b, r *any) {
 		if len(dims) == 0 {
 			*r = sbf((*a).(float64), (*b).(float64))
 			return
@@ -216,7 +216,7 @@ func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) (
 	}
 
 	o = new(CPUTensor)
-	o.dims = make([]int32, len(t1.dims))
+	o.dims = make([]int, len(t1.dims))
 	copy(o.dims, t1.dims)
 	calcData(t1.dims, &t1.data, &t2.data, &o.data)
 
@@ -228,7 +228,7 @@ func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) (
 func linearLastDimDotProductElemGenerator(t1, t2 *CPUTensor) initializerFunc {
 	dims := t1.dims
 	n := len(dims) - 1
-	state := make([]int32, n)
+	state := make([]int, n)
 
 	return func() any {
 		data1 := t1.dataAt(state)
@@ -253,7 +253,7 @@ func linearLastDimDotProductElemGenerator(t1, t2 *CPUTensor) initializerFunc {
 func linearLast2DimsMatMulElemGenerator(t1, t2 *CPUTensor) initializerFunc {
 	dims := t1.dims
 	n := len(dims) - 2
-	state := make([]int32, n)
+	state := make([]int, n)
 
 	return func() any {
 		data1 := t1.dataAt(state)
@@ -278,10 +278,10 @@ func linearLast2DimsMatMulElemGenerator(t1, t2 *CPUTensor) initializerFunc {
 func dotProductOf1DInputs(a, b any) (c any) {
 	v1 := a.([]any)
 	v2 := b.([]any)
-	n := int32(len(v1))
+	n := len(v1)
 
 	s := 0.
-	var i int32
+	var i int
 	for i = 0; i < n; i++ {
 		eiv1 := v1[i].(float64)
 		eiv2 := v2[i].(float64)
@@ -298,11 +298,11 @@ func matMulDataOf2DInputs(a, b any) (c any) {
 	r0m2 := m2[0].([]any)
 
 	// A_mn * B_nk = C_mk
-	m := int32(len(m1))
-	n := int32(len(r0m1))
-	k := int32(len(r0m2))
+	m := len(m1)
+	n := len(r0m1)
+	k := len(r0m2)
 
-	var i, j, p int32
+	var i, j, p int
 	cRows := make([]any, m)
 	for i = 0; i < m; i++ {
 		row := make([]any, k)
@@ -323,19 +323,19 @@ func matMulDataOf2DInputs(a, b any) (c any) {
 	return cRows
 }
 
-func dotDims(idims []int32) (dims []int32) {
+func dotDims(idims []int) (dims []int) {
 	td := len(idims)
 	cd := idims[:td-1]
-	dims = make([]int32, len(cd))
+	dims = make([]int, len(cd))
 	copy(dims, cd)
 
 	return dims
 }
 
-func matMulDims(dims1, dims2 []int32) (dims []int32) {
+func matMulDims(dims1, dims2 []int) (dims []int) {
 	td := len(dims1)
 	cd := dims1[:td-2]
-	dims = make([]int32, len(cd))
+	dims = make([]int, len(cd))
 	copy(dims, cd)
 
 	m := dims1[td-2]

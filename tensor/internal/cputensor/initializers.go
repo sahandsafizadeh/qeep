@@ -4,8 +4,8 @@ import "gonum.org/v1/gonum/stat/distuv"
 
 func (t *CPUTensor) initWith(initFunc initializerFunc) {
 
-	var fill func([]int32, *any)
-	fill = func(dims []int32, data *any) {
+	var fill func([]int, *any)
+	fill = func(dims []int, data *any) {
 		if len(dims) == 0 {
 			*data = initFunc()
 			return
@@ -23,26 +23,26 @@ func (t *CPUTensor) initWith(initFunc initializerFunc) {
 	fill(t.dims, &t.data)
 }
 
-func constTensor(value float64, dims []int32) (t *CPUTensor) {
+func constTensor(value float64, dims []int) (t *CPUTensor) {
 	t = new(CPUTensor)
-	t.dims = make([]int32, len(dims))
+	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 	t.initWith(func() any { return value })
 
 	return t
 }
 
-func eyeMatrix(n int32) (t *CPUTensor) {
+func eyeMatrix(n int) (t *CPUTensor) {
 	t = new(CPUTensor)
-	t.dims = []int32{n, n}
+	t.dims = []int{n, n}
 	t.initWith(eyeElemGenerator(n))
 
 	return t
 }
 
-func uniformRandomTensor(l, u float64, dims []int32) (t *CPUTensor) {
+func uniformRandomTensor(l, u float64, dims []int) (t *CPUTensor) {
 	t = new(CPUTensor)
-	t.dims = make([]int32, len(dims))
+	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 	t.initWith(func() any {
 		return distuv.Uniform{Min: l, Max: u}.Rand()
@@ -51,9 +51,9 @@ func uniformRandomTensor(l, u float64, dims []int32) (t *CPUTensor) {
 	return t
 }
 
-func normalRandomTensor(u, s float64, dims []int32) (t *CPUTensor) {
+func normalRandomTensor(u, s float64, dims []int) (t *CPUTensor) {
 	t = new(CPUTensor)
-	t.dims = make([]int32, len(dims))
+	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 	t.initWith(func() any {
 		return distuv.Normal{Mu: u, Sigma: s}.Rand()
@@ -63,17 +63,17 @@ func normalRandomTensor(u, s float64, dims []int32) (t *CPUTensor) {
 }
 
 func initTensorFromData(data any) (t *CPUTensor) {
-	var dims []int32
+	var dims []int
 	var tensorData any
 
 	switch v := data.(type) {
 	case float64:
-		dims = []int32{}
+		dims = []int{}
 		tensorData = v
 
 	case []float64:
 		d0 := len(v)
-		dims = []int32{int32(d0)}
+		dims = []int{d0}
 		data0 := make([]any, d0)
 		for i, v0 := range v {
 			data0[i] = v0
@@ -83,7 +83,7 @@ func initTensorFromData(data any) (t *CPUTensor) {
 	case [][]float64:
 		d0 := len(v)
 		d1 := len(v[0])
-		dims = []int32{int32(d0), int32(d1)}
+		dims = []int{d0, d1}
 		data0 := make([]any, d0)
 		for i, v0 := range v {
 			data1 := make([]any, d1)
@@ -98,7 +98,7 @@ func initTensorFromData(data any) (t *CPUTensor) {
 		d0 := len(v)
 		d1 := len(v[0])
 		d2 := len(v[0][0])
-		dims = []int32{int32(d0), int32(d1), int32(d2)}
+		dims = []int{d0, d1, d2}
 		data0 := make([]any, d0)
 		for i, v0 := range v {
 			data1 := make([]any, d1)
@@ -118,7 +118,7 @@ func initTensorFromData(data any) (t *CPUTensor) {
 		d1 := len(v[0])
 		d2 := len(v[0][0])
 		d3 := len(v[0][0][0])
-		dims = []int32{int32(d0), int32(d1), int32(d2), int32(d3)}
+		dims = []int{d0, d1, d2, d3}
 		data0 := make([]any, d0)
 		for i, v0 := range v {
 			data1 := make([]any, d1)
@@ -147,15 +147,15 @@ func initTensorFromData(data any) (t *CPUTensor) {
 	}
 }
 
-func initConcatResultTensor(ts []*CPUTensor, dim int32) (o *CPUTensor) {
+func initConcatResultTensor(ts []*CPUTensor, dim int) (o *CPUTensor) {
 	tsDataCopy := make([]any, len(ts))
 	for i, t := range ts {
 		tc := t.slice(nil)
 		tsDataCopy[i] = tc.data
 	}
 
-	var fillCat func([]int32, *any, []any, int32)
-	fillCat = func(dims []int32, data *any, seeds []any, depth int32) {
+	var fillCat func([]int, *any, []any, int)
+	fillCat = func(dims []int, data *any, seeds []any, depth int) {
 		if depth == dim {
 			catData := make([]any, 0, dims[0])
 			for _, seed := range seeds {
@@ -190,11 +190,11 @@ func initConcatResultTensor(ts []*CPUTensor, dim int32) (o *CPUTensor) {
 
 /* ----- helpers ----- */
 
-func eyeElemGenerator(n int32) initializerFunc {
-	var state int64
+func eyeElemGenerator(n int) initializerFunc {
+	var state int
 
 	return func() any {
-		atDiag := state%int64(n+1) == 0
+		atDiag := state%(n+1) == 0
 		state++
 
 		if atDiag {
@@ -205,14 +205,14 @@ func eyeElemGenerator(n int32) initializerFunc {
 	}
 }
 
-func getConcatDims(ts []*CPUTensor, dim int32) (dims []int32) {
-	common := int32(0)
+func getConcatDims(ts []*CPUTensor, dim int) (dims []int) {
+	common := 0
 	for _, t := range ts {
 		common += t.dims[dim]
 	}
 
 	base := ts[0].dims
-	dims = make([]int32, len(base))
+	dims = make([]int, len(base))
 	copy(dims, base)
 	dims[dim] = common
 

@@ -4,41 +4,46 @@ import (
 	"math"
 	"testing"
 
-	"github.com/sahandsafizadeh/qeep/tensor"
-	"github.com/sahandsafizadeh/qeep/tensor/tinit"
+	qt "github.com/sahandsafizadeh/qeep/tensor"
+	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
 )
 
 func TestConcat(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x1, err := tinit.Zeros(conf, 5, 1, 3)
+		x1, err := qti.RandN([]int{5, 1, 3}, 0., 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x2, err := tinit.Zeros(conf, 5, 5, 3)
+		x2, err := qti.RandN([]int{5, 5, 3}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x3, err := tinit.Zeros(conf, 5, 2, 3)
+		x3, err := qti.RandU([]int{5, 2, 3}, -1., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err := tinit.Concat([]tensor.Tensor{x1, x2, x3}, 1)
+		y, err := qti.Concat([]qt.Tensor{x1, x2, x3}, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -47,7 +52,7 @@ func TestConcat(t *testing.T) {
 
 		act := x1.Gradient()
 
-		exp, err := tinit.Ones(conf, 5, 1, 3)
+		exp, err := qti.Ones([]int{5, 1, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -56,13 +61,15 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act = x2.Gradient()
 
-		exp, err = tinit.Ones(conf, 5, 5, 3)
+		exp, err = qti.Ones([]int{5, 5, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -71,21 +78,77 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = x3.Gradient()
+
+		exp, err = qti.Ones([]int{5, 2, 3}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = x3.Gradient()
-
-		exp, err = tinit.Ones(conf, 5, 2, 3)
+		x1, err = qti.Zeros([]int{1}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		x2, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		y, err = qti.Concat([]qt.Tensor{x1, x2}, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x1, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		x2, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = qti.Concat([]qt.Tensor{x1, x2}, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -94,45 +157,50 @@ func TestConcat(t *testing.T) {
 }
 
 func TestSlice(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][]float64{
+		x, err := qti.TensorOf([][]float64{
 			{0., 1., 2., 3., 4.},
 			{5., 6., 7., 8., 9.},
 			{4., 3., 2., 1., 0.},
 			{9., 8., 7., 6., 5.},
-		})
+		}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err := x.Slice([]tensor.Range{{From: 1, To: 4}, {From: 1, To: 4}})
+		y, err := x.Slice([]qt.Range{{From: 1, To: 4}, {From: 1, To: 4}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][]float64{
+		exp, err := qti.TensorOf([][]float64{
 			{0., 0., 0., 0., 0.},
 			{0., 1., 1., 1., 0.},
 			{0., 1., 1., 1., 0.},
 			{0., 1., 1., 1., 0.},
-		})
+		}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -141,6 +209,29 @@ func TestSlice(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.Slice(nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -149,54 +240,59 @@ func TestSlice(t *testing.T) {
 }
 
 func TestPatch(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][]float64{
+		x, err := qti.TensorOf([][]float64{
 			{0., 1., 2., 3., 4.},
 			{5., 6., 7., 8., 9.},
 			{4., 3., 2., 1., 0.},
 			{9., 8., 7., 6., 5.},
-		})
+		}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		p, err := tinit.TensorOf(conf, [][]float64{
+		p, err := qti.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{-4., -5., -6.},
 			{-7., -8., -9.},
-		})
+		}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err := x.Patch([]tensor.Range{{From: 1, To: 4}, {From: 1, To: 4}}, p)
+		y, err := x.Patch([]qt.Range{{From: 1, To: 4}, {From: 1, To: 4}}, p)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][]float64{
+		exp, err := qti.TensorOf([][]float64{
 			{1., 1., 1., 1., 1.},
 			{1., 0., 0., 0., 1.},
 			{1., 0., 0., 0., 1.},
 			{1., 0., 0., 0., 1.},
-		})
+		}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -205,25 +301,107 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = p.Gradient()
+
+		exp, err = qti.TensorOf([][]float64{
+			{1., 1., 1.},
+			{1., 1., 1.},
+			{1., 1., 1.},
+		}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = p.Gradient()
-
-		exp, err = tinit.TensorOf(conf, [][]float64{
-			{1., 1., 1.},
-			{1., 1., 1.},
-			{1., 1., 1.},
-		})
+		x, err = qti.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		p, err = qti.Zeros(nil, confT)
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		y, err = x.Patch(nil, p)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		p, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.Patch(nil, p)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		p, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.Patch(nil, p)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -232,16 +410,21 @@ func TestPatch(t *testing.T) {
 }
 
 func TestTranspose(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Zeros(conf, 3, 4)
+		x, err := qti.RandU([]int{3, 4}, -1., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -251,16 +434,16 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Ones(conf, 3, 4)
+		exp, err := qti.Ones([]int{3, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -269,6 +452,29 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1, 1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.Transpose()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -277,35 +483,40 @@ func TestTranspose(t *testing.T) {
 }
 
 func TestReshape(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Zeros(conf, 3, 4)
+		x, err := qti.RandN([]int{3, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err := x.Reshape(6, 2)
+		y, err := x.Reshape([]int{6, 2})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Ones(conf, 3, 4)
+		exp, err := qti.Ones([]int{3, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -314,6 +525,29 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.Reshape(nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -322,16 +556,21 @@ func TestReshape(t *testing.T) {
 }
 
 func TestUnsqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Zeros(conf, 3, 4)
+		x, err := qti.RandN([]int{3, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -341,16 +580,16 @@ func TestUnsqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Ones(conf, 3, 4)
+		exp, err := qti.Ones([]int{3, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -359,6 +598,29 @@ func TestUnsqueeze(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.UnSqueeze(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -367,16 +629,21 @@ func TestUnsqueeze(t *testing.T) {
 }
 
 func TestSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Zeros(conf, 3, 1, 4)
+		x, err := qti.RandN([]int{3, 1, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -386,16 +653,16 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Ones(conf, 3, 1, 4)
+		exp, err := qti.Ones([]int{3, 1, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -404,6 +671,29 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.Squeeze(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -412,16 +702,21 @@ func TestSqueeze(t *testing.T) {
 }
 
 func TestFlatten(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Zeros(conf, 3, 4)
+		x, err := qti.RandN([]int{3, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -431,16 +726,16 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Ones(conf, 3, 4)
+		exp, err := qti.Ones([]int{3, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -449,6 +744,29 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.Flatten(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -457,35 +775,40 @@ func TestFlatten(t *testing.T) {
 }
 
 func TestBroadcast(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Zeros(conf, 3, 1, 4)
+		x, err := qti.RandU([]int{3, 1, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err := x.Broadcast(6, 5, 3, 2, 4)
+		y, err := x.Broadcast([]int{6, 5, 3, 3, 4})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Ones(conf, 3, 1, 4)
+		exp, err := qti.Ones([]int{3, 1, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -494,6 +817,29 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.Broadcast(nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -502,16 +848,21 @@ func TestBroadcast(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][][]float64{
+		x, err := qti.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -524,7 +875,7 @@ func TestSum(t *testing.T) {
 				{3., 3., 3., 3.},
 				{4., 4., 4., 4.},
 			},
-		})
+		}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -534,16 +885,16 @@ func TestSum(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][][]float64{
+		exp, err := qti.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{1., 1., 1., 1.},
@@ -556,7 +907,7 @@ func TestSum(t *testing.T) {
 				{1., 1., 1., 1.},
 				{1., 1., 1., 1.},
 			},
-		})
+		}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -565,6 +916,29 @@ func TestSum(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.SumAlong(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -573,16 +947,21 @@ func TestSum(t *testing.T) {
 }
 
 func TestMax(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][][]float64{
+		x, err := qti.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -595,7 +974,7 @@ func TestMax(t *testing.T) {
 				{3., 3., 3., 3.},
 				{4., 4., 4., 4.},
 			},
-		})
+		}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -605,16 +984,16 @@ func TestMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][][]float64{
+		exp, err := qti.TensorOf([][][]float64{
 			{
 				{0., 0., 0., 0.},
 				{0., 0., 0., 0.},
@@ -627,7 +1006,7 @@ func TestMax(t *testing.T) {
 				{0., 0., 0., 0.},
 				{1., 1., 1., 1.},
 			},
-		})
+		}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -636,6 +1015,29 @@ func TestMax(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.MaxAlong(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -644,16 +1046,21 @@ func TestMax(t *testing.T) {
 }
 
 func TestMin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][][]float64{
+		x, err := qti.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -666,7 +1073,7 @@ func TestMin(t *testing.T) {
 				{3., 3., 3., 3.},
 				{4., 4., 4., 4.},
 			},
-		})
+		}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -676,16 +1083,16 @@ func TestMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][][]float64{
+		exp, err := qti.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{0., 0., 0., 0.},
@@ -698,7 +1105,7 @@ func TestMin(t *testing.T) {
 				{0., 0., 0., 0.},
 				{0., 0., 0., 0.},
 			},
-		})
+		}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -707,6 +1114,29 @@ func TestMin(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.MinAlong(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -715,16 +1145,21 @@ func TestMin(t *testing.T) {
 }
 
 func TestAvg(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][][]float64{
+		x, err := qti.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -737,7 +1172,7 @@ func TestAvg(t *testing.T) {
 				{3., 3., 3., 3.},
 				{4., 4., 4., 4.},
 			},
-		})
+		}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -747,16 +1182,16 @@ func TestAvg(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][][]float64{
+		exp, err := qti.TensorOf([][][]float64{
 			{
 				{0.25, 0.25, 0.25, 0.25},
 				{0.25, 0.25, 0.25, 0.25},
@@ -769,7 +1204,7 @@ func TestAvg(t *testing.T) {
 				{0.25, 0.25, 0.25, 0.25},
 				{0.25, 0.25, 0.25, 0.25},
 			},
-		})
+		}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -778,6 +1213,29 @@ func TestAvg(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.AvgAlong(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -786,27 +1244,21 @@ func TestAvg(t *testing.T) {
 }
 
 func TestVar(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][][]float64{
-			{
-				{1., 1., 1., 1.},
-				{2., 2., 2., 2.},
-				{3., 3., 3., 3.},
-			},
-			{
-				{1., 1., 1., 1.},
-				{2., 2., 2., 2.},
-				{3., 3., 3., 3.},
-			},
-		})
+		x, err := qti.Ones([]int{5, 1, 3}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -816,27 +1268,16 @@ func TestVar(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][][]float64{
-			{
-				{-1., -1., -1., -1.},
-				{0., 0., 0., 0.},
-				{1., 1., 1., 1.},
-			},
-			{
-				{-1., -1., -1., -1.},
-				{0., 0., 0., 0.},
-				{1., 1., 1., 1.},
-			},
-		})
+		exp, err := qti.Zeros([]int{5, 1, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -845,6 +1286,85 @@ func TestVar(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.TensorOf([][][]float64{
+			{
+				{1., 1., 1., 1.},
+				{2., 2., 2., 2.},
+				{3., 3., 3., 3.},
+			},
+			{
+				{1., 1., 1., 1.},
+				{2., 2., 2., 2.},
+				{3., 3., 3., 3.},
+			},
+		}, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.VarAlong(1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act = x.Gradient()
+
+		exp, err = qti.TensorOf([][][]float64{
+			{
+				{-1., -1., -1., -1.},
+				{0., 0., 0., 0.},
+				{1., 1., 1., 1.},
+			},
+			{
+				{-1., -1., -1., -1.},
+				{0., 0., 0., 0.},
+				{1., 1., 1., 1.},
+			},
+		}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.VarAlong(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -853,27 +1373,21 @@ func TestVar(t *testing.T) {
 }
 
 func TestStd(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][][]float64{
-			{
-				{1., 1., 1., 1.},
-				{2., 2., 2., 2.},
-				{3., 3., 3., 3.},
-			},
-			{
-				{1., 1., 1., 1.},
-				{2., 2., 2., 2.},
-				{3., 3., 3., 3.},
-			},
-		})
+		x, err := qti.Ones([]int{5, 1, 3}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -883,27 +1397,16 @@ func TestStd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][][]float64{
-			{
-				{-0.5, -0.5, -0.5, -0.5},
-				{0., 0., 0., 0.},
-				{0.5, 0.5, 0.5, 0.5},
-			},
-			{
-				{-0.5, -0.5, -0.5, -0.5},
-				{0., 0., 0., 0.},
-				{0.5, 0.5, 0.5, 0.5},
-			},
-		})
+		exp, err := qti.Zeros([]int{5, 1, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -912,6 +1415,85 @@ func TestStd(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.TensorOf([][][]float64{
+			{
+				{1., 1., 1., 1.},
+				{2., 2., 2., 2.},
+				{3., 3., 3., 3.},
+			},
+			{
+				{1., 1., 1., 1.},
+				{2., 2., 2., 2.},
+				{3., 3., 3., 3.},
+			},
+		}, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.StdAlong(1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act = x.Gradient()
+
+		exp, err = qti.TensorOf([][][]float64{
+			{
+				{-0.5, -0.5, -0.5, -0.5},
+				{0., 0., 0., 0.},
+				{0.5, 0.5, 0.5, 0.5},
+			},
+			{
+				{-0.5, -0.5, -0.5, -0.5},
+				{0., 0., 0., 0.},
+				{0.5, 0.5, 0.5, 0.5},
+			},
+		}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.StdAlong(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -920,16 +1502,21 @@ func TestStd(t *testing.T) {
 }
 
 func TestMean(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.TensorOf(conf, [][][]float64{
+		x, err := qti.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -942,7 +1529,7 @@ func TestMean(t *testing.T) {
 				{3., 3., 3., 3.},
 				{4., 4., 4., 4.},
 			},
-		})
+		}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -952,16 +1539,16 @@ func TestMean(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.TensorOf(conf, [][][]float64{
+		exp, err := qti.TensorOf([][][]float64{
 			{
 				{0.25, 0.25, 0.25, 0.25},
 				{0.25, 0.25, 0.25, 0.25},
@@ -974,7 +1561,7 @@ func TestMean(t *testing.T) {
 				{0.25, 0.25, 0.25, 0.25},
 				{0.25, 0.25, 0.25, 0.25},
 			},
-		})
+		}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -983,6 +1570,29 @@ func TestMean(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = x.MeanAlong(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -991,32 +1601,37 @@ func TestMean(t *testing.T) {
 }
 
 func TestScale(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, 2.)
+		x, err := qti.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Scale(3.)
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Full(conf, 3.)
+		exp, err := qti.Full(nil, 3., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1025,6 +1640,26 @@ func TestScale(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Scale(0.)
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1033,32 +1668,37 @@ func TestScale(t *testing.T) {
 }
 
 func TestPow(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, 2.)
+		x, err := qti.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Pow(3.)
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Full(conf, 12.)
+		exp, err := qti.Full(nil, 12., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1067,6 +1707,26 @@ func TestPow(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Pow(0.)
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1075,32 +1735,37 @@ func TestPow(t *testing.T) {
 }
 
 func TestExp(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, 1.)
+		x, err := qti.Full(nil, 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Exp()
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Full(conf, math.E)
+		exp, err := qti.Full(nil, math.E, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1109,6 +1774,26 @@ func TestExp(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Exp()
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1117,32 +1802,37 @@ func TestExp(t *testing.T) {
 }
 
 func TestLog(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, 2.)
+		x, err := qti.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Log()
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
-		exp, err := tinit.Full(conf, 0.5)
+		exp, err := qti.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1151,6 +1841,26 @@ func TestLog(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Log()
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1159,28 +1869,33 @@ func TestLog(t *testing.T) {
 }
 
 func TestSin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, math.Pi/3)
+		x, err := qti.Full(nil, math.Pi/3, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Sin()
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
@@ -1189,6 +1904,26 @@ func TestSin(t *testing.T) {
 			t.Fatal(err)
 		} else if !(0.5-1e-10 < val && val < 0.5+1e-10) {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Sin()
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1197,28 +1932,33 @@ func TestSin(t *testing.T) {
 }
 
 func TestCos(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, math.Pi/6)
+		x, err := qti.Full(nil, math.Pi/6, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Cos()
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
@@ -1227,6 +1967,26 @@ func TestCos(t *testing.T) {
 			t.Fatal(err)
 		} else if !(-0.5-1e-10 < val && val < -0.5+1e-10) {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Cos()
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1235,28 +1995,33 @@ func TestCos(t *testing.T) {
 }
 
 func TestTan(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, 0.)
+		x, err := qti.Full(nil, 0., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Tan()
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
@@ -1265,6 +2030,26 @@ func TestTan(t *testing.T) {
 			t.Fatal(err)
 		} else if !(1.-1e-10 < val && val < 1.+1e-10) {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Tan()
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1273,28 +2058,33 @@ func TestTan(t *testing.T) {
 }
 
 func TestSinh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, 1.)
+		x, err := qti.Full(nil, 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Sinh()
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 		c := (math.E*math.E + 1) / (2 * math.E)
@@ -1304,6 +2094,26 @@ func TestSinh(t *testing.T) {
 			t.Fatal(err)
 		} else if !(c-1e-10 < val && val < c+1e-10) {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Sinh()
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1312,28 +2122,33 @@ func TestSinh(t *testing.T) {
 }
 
 func TestCosh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, 1.)
+		x, err := qti.Full(nil, 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Cosh()
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 		c := (math.E*math.E - 1) / (2 * math.E)
@@ -1343,6 +2158,26 @@ func TestCosh(t *testing.T) {
 			t.Fatal(err)
 		} else if !(c-1e-10 < val && val < c+1e-10) {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		x, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y = x.Cosh()
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1351,28 +2186,33 @@ func TestCosh(t *testing.T) {
 }
 
 func TestTanh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := tinit.Full(conf, 0.)
+		x, err := qti.Full(nil, 0., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Tanh()
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := x.Gradient()
 
@@ -1381,71 +2221,26 @@ func TestTanh(t *testing.T) {
 			t.Fatal(err)
 		} else if !(1.-1e-10 < val && val < 1.+1e-10) {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-	})
-}
-
-func TestElMin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
-
-		conf := &tinit.Config{
-			Device:    dev,
-			GradTrack: true,
-		}
-
-		/* ------------------------------ */
-
-		a, err := tinit.Full(conf, 3.)
+		x, err = qti.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := tinit.Full(conf, 2.)
+		y = x.Tanh()
+
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err := a.ElMin(b)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		err = tinit.BackProp(y)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		/* ------------------------------ */
-
-		act := a.Gradient()
-
-		exp, err := tinit.Full(conf, 0.)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		act = b.Gradient()
-
-		exp, err = tinit.Full(conf, 1.)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1454,21 +2249,26 @@ func TestElMin(t *testing.T) {
 }
 
 func TestElMax(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := tinit.Full(conf, 3.)
+		a, err := qti.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := tinit.Full(conf, 2.)
+		b, err := qti.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1478,16 +2278,16 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := a.Gradient()
 
-		exp, err := tinit.Full(conf, 1.)
+		exp, err := qti.Full(nil, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1496,13 +2296,54 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full(nil, 0., confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = b.Gradient()
+		a, err = qti.Full(nil, 2., confT)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		exp, err = tinit.Full(conf, 0.)
+		b, err = qti.Full(nil, 2., confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.ElMax(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act = a.Gradient()
+
+		exp, err = qti.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1511,6 +2352,311 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full(nil, 0.5, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.ElMax(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.ElMax(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.ElMax(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
+func TestElMin(t *testing.T) {
+	runTestLogicOnDevices(func(dev qti.Device) {
+
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
+			Device:    dev,
+			GradTrack: true,
+		}
+
+		/* ------------------------------ */
+
+		a, err := qti.Full(nil, 3., confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err := qti.Full(nil, 2., confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err := a.ElMin(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act := a.Gradient()
+
+		exp, err := qti.Full(nil, 0., confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full(nil, 1., confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Full(nil, 2., confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Full(nil, 2., confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.ElMin(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act = a.Gradient()
+
+		exp, err = qti.Full(nil, 0.5, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full(nil, 0.5, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.ElMin(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.ElMin(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.ElMin(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1519,21 +2665,26 @@ func TestElMax(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := tinit.Full(conf, 3.)
+		a, err := qti.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := tinit.Full(conf, 2.)
+		b, err := qti.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1543,16 +2694,16 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := a.Gradient()
 
-		exp, err := tinit.Full(conf, 1.)
+		exp, err := qti.Full(nil, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1561,21 +2712,103 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full(nil, 1., confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = b.Gradient()
-
-		exp, err = tinit.Full(conf, 1.)
+		a, err = qti.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		b, err = qti.Zeros(nil, confT)
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		y, err = a.Add(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Add(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Add(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1584,21 +2817,26 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSub(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := tinit.Full(conf, 3.)
+		a, err := qti.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := tinit.Full(conf, 2.)
+		b, err := qti.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1608,16 +2846,16 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := a.Gradient()
 
-		exp, err := tinit.Full(conf, 1.)
+		exp, err := qti.Full(nil, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1626,21 +2864,103 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full(nil, -1., confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = b.Gradient()
-
-		exp, err = tinit.Full(conf, -1.)
+		a, err = qti.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		b, err = qti.Zeros(nil, confT)
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		y, err = a.Sub(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Sub(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Sub(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1649,21 +2969,26 @@ func TestSub(t *testing.T) {
 }
 
 func TestMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := tinit.Full(conf, 3.)
+		a, err := qti.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := tinit.Full(conf, 2.)
+		b, err := qti.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1673,16 +2998,16 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := a.Gradient()
 
-		exp, err := tinit.Full(conf, 2.)
+		exp, err := qti.Full(nil, 2., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1691,21 +3016,103 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full(nil, 3., confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = b.Gradient()
-
-		exp, err = tinit.Full(conf, 3.)
+		a, err = qti.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		b, err = qti.Zeros(nil, confT)
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		y, err = a.Mul(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Mul(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Mul(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1714,21 +3121,26 @@ func TestMul(t *testing.T) {
 }
 
 func TestDiv(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := tinit.Full(conf, 3.)
+		a, err := qti.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := tinit.Full(conf, 2.)
+		b, err := qti.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1738,16 +3150,16 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := a.Gradient()
 
-		exp, err := tinit.Full(conf, 0.5)
+		exp, err := qti.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1756,21 +3168,103 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full(nil, -0.75, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = b.Gradient()
-
-		exp, err = tinit.Full(conf, -0.75)
+		a, err = qti.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		b, err = qti.Zeros(nil, confT)
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		y, err = a.Div(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Div(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros(nil, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Div(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1779,21 +3273,26 @@ func TestDiv(t *testing.T) {
 }
 
 func TestDot(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := tinit.Full(conf, 2., 2)
+		a, err := qti.Full([]int{2}, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := tinit.Full(conf, 3., 2)
+		b, err := qti.Full([]int{2}, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1803,16 +3302,16 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := a.Gradient()
 
-		exp, err := tinit.Full(conf, 3., 2)
+		exp, err := qti.Full([]int{2}, 3., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1821,21 +3320,103 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full([]int{2}, 2., confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = b.Gradient()
-
-		exp, err = tinit.Full(conf, 2., 2)
+		a, err = qti.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		b, err = qti.Zeros([]int{1}, confT)
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		y, err = a.Dot(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros([]int{1}, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Dot(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Zeros([]int{1}, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.Dot(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
@@ -1844,21 +3425,26 @@ func TestDot(t *testing.T) {
 }
 
 func TestMatmul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tinit.Device) {
+	runTestLogicOnDevices(func(dev qti.Device) {
 
-		conf := &tinit.Config{
+		confU := &qti.Config{
+			Device:    dev,
+			GradTrack: false,
+		}
+
+		confT := &qti.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := tinit.Full(conf, 2., 2, 3)
+		a, err := qti.Full([]int{2, 3}, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := tinit.Full(conf, 3., 3, 2)
+		b, err := qti.Full([]int{3, 2}, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1868,16 +3454,16 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = tinit.BackProp(y)
+		err = qti.BackProp(y)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		act := a.Gradient()
 
-		exp, err := tinit.Full(conf, 6., 2, 3)
+		exp, err := qti.Full([]int{2, 3}, 6., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1886,21 +3472,103 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		}
+
+		/* --------------- */
+
+		act = b.Gradient()
+
+		exp, err = qti.Full([]int{3, 2}, 4., confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		} else if act.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */
 
-		act = b.Gradient()
-
-		exp, err = tinit.Full(conf, 4., 3, 2)
+		a, err = qti.Eye(1, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		b, err = qti.Eye(1, confT)
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		y, err = a.MatMul(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Eye(1, confT)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Eye(1, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.MatMul(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() == nil {
+			t.Fatalf("expected gradient not to be nil")
+		}
+
+		/* ------------------------------ */
+
+		a, err = qti.Eye(1, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		b, err = qti.Eye(1, confU)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		y, err = a.MatMul(b)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = qti.BackProp(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
 		}
 
 		/* ------------------------------ */

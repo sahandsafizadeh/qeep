@@ -3,6 +3,10 @@ package gradtrack
 import "github.com/sahandsafizadeh/qeep/tensor"
 
 func (gctx *GradContext) Grad() (g tensor.Tensor) {
+	if !isTrackRequired(gctx) {
+		return nil
+	}
+
 	return gctx.grad
 }
 

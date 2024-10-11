@@ -2,19 +2,19 @@ package tensor
 
 type Tensor interface {
 	/*--------------- accessors ---------------*/
-	NElems() int64
-	Shape() []int32
-	At(index ...int32) (float64, error)
+	NElems() int
+	Shape() []int
+	At(index ...int) (float64, error)
 	Slice(index []Range) (Tensor, error)
 	Patch(index []Range, source Tensor) (Tensor, error)
 
 	/*------------ shape modifiers ------------*/
 	Transpose() (Tensor, error)
-	Reshape(shape ...int32) (Tensor, error)
-	UnSqueeze(dim int32) (Tensor, error)
-	Squeeze(dim int32) (Tensor, error)
-	Flatten(fromDim int32) (Tensor, error)
-	Broadcast(shape ...int32) (Tensor, error)
+	Reshape(shape []int) (Tensor, error)
+	UnSqueeze(dim int) (Tensor, error)
+	Squeeze(dim int) (Tensor, error)
+	Flatten(fromDim int) (Tensor, error)
+	Broadcast(shape []int) (Tensor, error)
 
 	/*--------------- reducers ----------------*/
 	Sum() float64
@@ -24,13 +24,13 @@ type Tensor interface {
 	Var() float64
 	Std() float64
 	Mean() float64
-	SumAlong(dim int32) (Tensor, error)
-	MaxAlong(dim int32) (Tensor, error)
-	MinAlong(dim int32) (Tensor, error)
-	AvgAlong(dim int32) (Tensor, error)
-	VarAlong(dim int32) (Tensor, error)
-	StdAlong(dim int32) (Tensor, error)
-	MeanAlong(dim int32) (Tensor, error)
+	SumAlong(dim int) (Tensor, error)
+	MaxAlong(dim int) (Tensor, error)
+	MinAlong(dim int) (Tensor, error)
+	AvgAlong(dim int) (Tensor, error)
+	VarAlong(dim int) (Tensor, error)
+	StdAlong(dim int) (Tensor, error)
+	MeanAlong(dim int) (Tensor, error)
 
 	/*--------------- operators ---------------*/
 	Scale(float64) Tensor
@@ -49,8 +49,8 @@ type Tensor interface {
 	Ge(Tensor) (Tensor, error)
 	Lt(Tensor) (Tensor, error)
 	Le(Tensor) (Tensor, error)
-	ElMin(Tensor) (Tensor, error)
 	ElMax(Tensor) (Tensor, error)
+	ElMin(Tensor) (Tensor, error)
 	Add(Tensor) (Tensor, error)
 	Sub(Tensor) (Tensor, error)
 	Mul(Tensor) (Tensor, error)
@@ -66,6 +66,6 @@ type Tensor interface {
 }
 
 type Range struct {
-	From int32
-	To   int32
+	From int
+	To   int
 }

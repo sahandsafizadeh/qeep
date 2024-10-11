@@ -44,6 +44,6 @@ jobs:
         run: bash $SCRIPTS_ROOT/gotest.sh
 
       - name: Security
-        uses: securego/gosec@master
+        uses: securego/gosec@v2.21.3
         with:
           args: ./...

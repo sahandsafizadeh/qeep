@@ -2,7 +2,7 @@ package validator
 
 import "fmt"
 
-func ValidateTransposeDims(dims []int32) (err error) {
+func ValidateTransposeDims(dims []int) (err error) {
 	if len(dims) < 2 {
 		err = fmt.Errorf("expected tensor to have at least (2) dimensions for transpose: got (%d)", len(dims))
 		return
@@ -11,7 +11,7 @@ func ValidateTransposeDims(dims []int32) (err error) {
 	return nil
 }
 
-func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int32) (err error) {
+func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err error) {
 	srcElems := dimsToNumElems(srcDims)
 	dstElems := dimsToNumElems(dstDims)
 
@@ -23,8 +23,8 @@ func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int32) (err e
 	return nil
 }
 
-func ValidateUnSqueezeDimAgainstDims(dim int32, dims []int32) (err error) {
-	if !(0 <= dim && dim <= int32(len(dims))) {
+func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
+	if !(0 <= dim && dim <= len(dims)) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d]: got (%d)", len(dims), dim)
 		return
 	}
@@ -32,8 +32,8 @@ func ValidateUnSqueezeDimAgainstDims(dim int32, dims []int32) (err error) {
 	return nil
 }
 
-func ValidateSqueezeDimAgainstDims(dim int32, dims []int32) (err error) {
-	if !(0 <= dim && dim < int32(len(dims))) {
+func ValidateSqueezeDimAgainstDims(dim int, dims []int) (err error) {
+	if !(0 <= dim && dim < len(dims)) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 		return
 	}
@@ -46,8 +46,8 @@ func ValidateSqueezeDimAgainstDims(dim int32, dims []int32) (err error) {
 	return nil
 }
 
-func ValidateFlattenDimAgainstDims(dim int32, dims []int32) (err error) {
-	if !(0 <= dim && dim < int32(len(dims))) {
+func ValidateFlattenDimAgainstDims(dim int, dims []int) (err error) {
+	if !(0 <= dim && dim < len(dims)) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 		return
 	}
@@ -55,7 +55,7 @@ func ValidateFlattenDimAgainstDims(dim int32, dims []int32) (err error) {
 	return nil
 }
 
-func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int32) (err error) {
+func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err error) {
 	i := len(srcDims)
 	j := len(dstDims)
 
@@ -69,7 +69,7 @@ func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int32) (err
 		j--
 
 		if !(srcDims[i] == dstDims[j] || srcDims[i] == 1) {
-			err = fmt.Errorf("expected target shape to be (%d) or source size to be (1) at dimension (%d): got (%d)", srcDims[i], j, dstDims[j])
+			err = fmt.Errorf("expected target shape to be (%d) or source size to be (1) at dimension (%d): got shape (%d)", srcDims[i], j, dstDims[j])
 			return
 		}
 	}
@@ -79,10 +79,10 @@ func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int32) (err
 
 /* ----- helpers ----- */
 
-func dimsToNumElems(dims []int32) (elems int64) {
-	elems = int64(1)
+func dimsToNumElems(dims []int) (elems int) {
+	elems = 1
 	for _, dim := range dims {
-		elems *= int64(dim)
+		elems *= dim
 	}
 
 	return elems

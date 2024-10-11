@@ -3,7 +3,7 @@ package tinit
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor"
+	qt "github.com/sahandsafizadeh/qeep/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
 )
 
@@ -22,7 +22,27 @@ func validateConfig(conf *Config) (err error) {
 	return nil
 }
 
-func validateTensorsDeviceUnity(ts []tensor.Tensor) (err error) {
+func validateTensorDevice(t qt.Tensor) (err error) {
+	switch t.(type) {
+	case *cputensor.CPUTensor:
+		return nil
+
+	case nil:
+		err = fmt.Errorf("expected input tensor not to be nil")
+		return
+
+	default:
+		err = fmt.Errorf("unsupported tensor implementation")
+		return
+	}
+}
+
+func validateTensorsDeviceUnity(ts []qt.Tensor) (err error) {
+	if len(ts) < 2 {
+		err = fmt.Errorf("expected at least (2) tensors: got (%d)", len(ts))
+		return
+	}
+
 	var dev Device
 
 	for _, t := range ts {
@@ -35,15 +55,14 @@ func validateTensorsDeviceUnity(ts []tensor.Tensor) (err error) {
 				return
 			}
 
+		case nil:
+			err = fmt.Errorf("expected input tensor not to be nil")
+			return
+
 		default:
 			err = fmt.Errorf("unsupported tensor implementation")
 			return
 		}
-	}
-
-	if dev == 0 {
-		err = fmt.Errorf("expected at least (2) tensors: got (0)")
-		return
 	}
 
 	return nil

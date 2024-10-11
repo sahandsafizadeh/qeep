@@ -54,31 +54,31 @@ func (t *CPUTensor) mean() (value float64) {
 	return t.avg()
 }
 
-func (t *CPUTensor) sumAlong(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) sumAlong(dim int) (o *CPUTensor) {
 	return t.reduceDimUsingFunc(dim, func(u *CPUTensor) float64 { return u.sum() })
 }
 
-func (t *CPUTensor) maxAlong(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) maxAlong(dim int) (o *CPUTensor) {
 	return t.reduceDimUsingFunc(dim, func(u *CPUTensor) float64 { return u.max() })
 }
 
-func (t *CPUTensor) minAlong(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) minAlong(dim int) (o *CPUTensor) {
 	return t.reduceDimUsingFunc(dim, func(u *CPUTensor) float64 { return u.min() })
 }
 
-func (t *CPUTensor) avgAlong(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) avgAlong(dim int) (o *CPUTensor) {
 	return t.reduceDimUsingFunc(dim, func(u *CPUTensor) float64 { return u.avg() })
 }
 
-func (t *CPUTensor) varAlong(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) varAlong(dim int) (o *CPUTensor) {
 	return t.reduceDimUsingFunc(dim, func(u *CPUTensor) float64 { return u._var() })
 }
 
-func (t *CPUTensor) stdAlong(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) stdAlong(dim int) (o *CPUTensor) {
 	return t.reduceDimUsingFunc(dim, func(u *CPUTensor) float64 { return u.std() })
 }
 
-func (t *CPUTensor) meanAlong(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) meanAlong(dim int) (o *CPUTensor) {
 	return t.reduceDimUsingFunc(dim, func(u *CPUTensor) float64 { return u.mean() })
 }
 
@@ -87,8 +87,8 @@ func (t *CPUTensor) meanAlong(dim int32) (o *CPUTensor) {
 func (t *CPUTensor) reduceByAssociativeFunc(af scalarBinaryFunc, identity float64) (value float64) {
 	value = identity
 
-	var trav func([]int32, any)
-	trav = func(dims []int32, data any) {
+	var trav func([]int, any)
+	trav = func(dims []int, data any) {
 		if len(dims) == 0 {
 			value = af(value, data.(float64))
 			return
@@ -105,7 +105,7 @@ func (t *CPUTensor) reduceByAssociativeFunc(af scalarBinaryFunc, identity float6
 	return value
 }
 
-func (t *CPUTensor) reduceDimUsingFunc(dim int32, trf tensorReducerFunc) (o *CPUTensor) {
+func (t *CPUTensor) reduceDimUsingFunc(dim int, trf tensorReducerFunc) (o *CPUTensor) {
 	dims := squeezeDims(dim, t.dims)
 	elemGen := t.linearElemGeneratorWithReducedDim(dim, trf)
 
@@ -116,7 +116,7 @@ func (t *CPUTensor) reduceDimUsingFunc(dim int32, trf tensorReducerFunc) (o *CPU
 	return o
 }
 
-func (t *CPUTensor) linearElemGeneratorWithReducedDim(dim int32, trf tensorReducerFunc) initializerFunc {
+func (t *CPUTensor) linearElemGeneratorWithReducedDim(dim int, trf tensorReducerFunc) initializerFunc {
 	state := make([]tensor.Range, len(t.dims))
 	for i := 0; i < len(state); i++ {
 		state[i].From = 0
@@ -129,7 +129,7 @@ func (t *CPUTensor) linearElemGeneratorWithReducedDim(dim int32, trf tensorReduc
 
 		i := len(t.dims) - 1
 		for i >= 0 {
-			if int32(i) == dim {
+			if i == dim {
 				i--
 				continue
 			}

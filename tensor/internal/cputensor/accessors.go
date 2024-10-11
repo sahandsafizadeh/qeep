@@ -2,16 +2,16 @@ package cputensor
 
 import "github.com/sahandsafizadeh/qeep/tensor"
 
-func (t *CPUTensor) numElems() (n int64) {
-	n = int64(1)
+func (t *CPUTensor) numElems() (n int) {
+	n = 1
 	for _, dim := range t.dims {
-		n *= int64(dim)
+		n *= dim
 	}
 
 	return n
 }
 
-func (t *CPUTensor) dataAt(index []int32) (data any) {
+func (t *CPUTensor) dataAt(index []int) (data any) {
 	data = t.data
 	for _, i := range index {
 		data = data.([]any)[i]
@@ -45,13 +45,13 @@ func (t *CPUTensor) copiedSliceOf(index []tensor.Range) (o *CPUTensor) {
 		index = index[1:]
 
 		for i := range dstRows {
-			copyData(index, &srcRows[i+int(idx.From)], &dstRows[i])
+			copyData(index, &srcRows[i+idx.From], &dstRows[i])
 		}
 
 		*dst = dstRows
 	}
 
-	dims := make([]int32, len(index))
+	dims := make([]int, len(index))
 	for i, idx := range index {
 		dims[i] = idx.To - idx.From
 	}
@@ -78,7 +78,7 @@ func (t *CPUTensor) copiedWithPatchOf(index []tensor.Range, u *CPUTensor) (o *CP
 		index = index[1:]
 
 		for i := range srcRows {
-			copyData(index, &srcRows[i], &dstRows[i+int(idx.From)])
+			copyData(index, &srcRows[i], &dstRows[i+idx.From])
 		}
 	}
 
@@ -88,7 +88,7 @@ func (t *CPUTensor) copiedWithPatchOf(index []tensor.Range, u *CPUTensor) (o *CP
 	return o
 }
 
-func completeIndex(index []tensor.Range, dims []int32) (cidx []tensor.Range) {
+func completeIndex(index []tensor.Range, dims []int) (cidx []tensor.Range) {
 	cidx = make([]tensor.Range, len(dims))
 	for i := range cidx {
 		// special case of all elements along dim

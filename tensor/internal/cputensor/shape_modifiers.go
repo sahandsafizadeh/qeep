@@ -11,9 +11,9 @@ func (t *CPUTensor) transpose() (o *CPUTensor) {
 	return o
 }
 
-func (t *CPUTensor) reshape(shape []int32) (o *CPUTensor) {
+func (t *CPUTensor) reshape(shape []int) (o *CPUTensor) {
 	elemGen := t.linearElemGenerator()
-	dims := make([]int32, len(shape))
+	dims := make([]int, len(shape))
 	copy(dims, shape)
 
 	o = new(CPUTensor)
@@ -23,9 +23,9 @@ func (t *CPUTensor) reshape(shape []int32) (o *CPUTensor) {
 	return o
 }
 
-func (t *CPUTensor) broadcast(shape []int32) (o *CPUTensor) {
+func (t *CPUTensor) broadcast(shape []int) (o *CPUTensor) {
 	elemGen := t.broadcastElemGenerator(shape)
-	dims := make([]int32, len(shape))
+	dims := make([]int, len(shape))
 	copy(dims, shape)
 
 	o = new(CPUTensor)
@@ -35,22 +35,22 @@ func (t *CPUTensor) broadcast(shape []int32) (o *CPUTensor) {
 	return o
 }
 
-func (t *CPUTensor) unSqueeze(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) unSqueeze(dim int) (o *CPUTensor) {
 	return t.reshape(unsqueezeDims(dim, t.dims))
 }
 
-func (t *CPUTensor) squeeze(dim int32) (o *CPUTensor) {
+func (t *CPUTensor) squeeze(dim int) (o *CPUTensor) {
 	return t.reshape(squeezeDims(dim, t.dims))
 }
 
-func (t *CPUTensor) flatten(fromDim int32) (o *CPUTensor) {
+func (t *CPUTensor) flatten(fromDim int) (o *CPUTensor) {
 	return t.reshape(flattenDims(fromDim, t.dims))
 }
 
 /* ----- helpers ----- */
 
 func (t *CPUTensor) linearElemGenerator() initializerFunc {
-	state := make([]int32, len(t.dims))
+	state := make([]int, len(t.dims))
 
 	return func() any {
 		elem := t.dataAt(state)
@@ -71,7 +71,7 @@ func (t *CPUTensor) linearElemGenerator() initializerFunc {
 }
 
 func (t *CPUTensor) transposeElemGenerator() initializerFunc {
-	state := make([]int32, len(t.dims))
+	state := make([]int, len(t.dims))
 
 	return func() any {
 		elem := t.dataAt(state)
@@ -99,9 +99,9 @@ func (t *CPUTensor) transposeElemGenerator() initializerFunc {
 	}
 }
 
-func (t *CPUTensor) broadcastElemGenerator(shape []int32) initializerFunc {
-	state := make([]int32, len(t.dims))
-	repeat := make([]int32, len(shape))
+func (t *CPUTensor) broadcastElemGenerator(shape []int) initializerFunc {
+	state := make([]int, len(t.dims))
+	repeat := make([]int, len(shape))
 
 	return func() any {
 		elem := t.dataAt(state)
@@ -142,8 +142,8 @@ func (t *CPUTensor) broadcastElemGenerator(shape []int32) initializerFunc {
 	}
 }
 
-func transposeDims(dims []int32) (res []int32) {
-	res = make([]int32, len(dims))
+func transposeDims(dims []int) (res []int) {
+	res = make([]int, len(dims))
 	copy(res, dims)
 
 	i := len(res)
@@ -152,13 +152,13 @@ func transposeDims(dims []int32) (res []int32) {
 	return res
 }
 
-func unsqueezeDims(dim int32, dims []int32) (res []int32) {
+func unsqueezeDims(dim int, dims []int) (res []int) {
 	left := dims[:dim]
-	res = make([]int32, len(left))
+	res = make([]int, len(left))
 	copy(res, left)
 	res = append(res, 1)
 
-	lastDim := int32(len(dims))
+	lastDim := len(dims)
 	if dim < lastDim {
 		right := dims[dim:]
 		res = append(res, right...)
@@ -167,12 +167,12 @@ func unsqueezeDims(dim int32, dims []int32) (res []int32) {
 	return res
 }
 
-func squeezeDims(dim int32, dims []int32) (res []int32) {
+func squeezeDims(dim int, dims []int) (res []int) {
 	left := dims[:dim]
-	res = make([]int32, len(left))
+	res = make([]int, len(left))
 	copy(res, left)
 
-	lastDim := int32(len(dims)) - 1
+	lastDim := len(dims) - 1
 	if dim < lastDim {
 		right := dims[dim+1:]
 		res = append(res, right...)
@@ -181,15 +181,14 @@ func squeezeDims(dim int32, dims []int32) (res []int32) {
 	return res
 }
 
-func flattenDims(dim int32, dims []int32) (res []int32) {
+func flattenDims(dim int, dims []int) (res []int) {
 	left := dims[:dim]
-	res = make([]int32, len(left))
+	res = make([]int, len(left))
 	copy(res, left)
 
-	// can't use int64; potential error for very large tensors
-	nElems := int32(1)
+	nElems := 1
 
-	for i := dim; i < int32(len(dims)); i++ {
+	for i := dim; i < len(dims); i++ {
 		nElems *= dims[i]
 	}
 

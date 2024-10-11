@@ -2,7 +2,7 @@ package validator
 
 import "fmt"
 
-func ValidateInputDims(dims []int32) (err error) {
+func ValidateInputDims(dims []int) (err error) {
 	for i, d := range dims {
 		if d <= 0 {
 			err = fmt.Errorf("expected positive dimension sizes: got (%d) at position (%d)", d, i)
@@ -100,12 +100,7 @@ func ValidateInputDataDimUnity(data any) (err error) {
 	return nil
 }
 
-func ValidateConcatTensorsDimsAlongDim(tsDims [][]int32, dim int32) (err error) {
-	if len(tsDims) < 2 {
-		err = fmt.Errorf("expected at least (2) tensors for concat: got (%d)", len(tsDims))
-		return
-	}
-
+func ValidateConcatTensorsDimsAlongDim(tsDims [][]int, dim int) (err error) {
 	base := tsDims[0]
 	for i, dims := range tsDims {
 		if len(dims) == 0 {
@@ -118,13 +113,13 @@ func ValidateConcatTensorsDimsAlongDim(tsDims [][]int32, dim int32) (err error) 
 			return
 		}
 
-		if !(0 <= dim && dim < int32(len(base))) {
+		if !(0 <= dim && dim < len(base)) {
 			err = fmt.Errorf("expected concat dimension to be in range [0,%d): got (%d)", len(base), dim)
 			return
 		}
 
 		for j, d := range dims {
-			if int32(j) == dim {
+			if j == dim {
 				continue
 			}
 

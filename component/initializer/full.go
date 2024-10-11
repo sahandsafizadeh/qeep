@@ -1,0 +1,43 @@
+package initializer
+
+import (
+	qt "github.com/sahandsafizadeh/qeep/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/tinit"
+)
+
+type Full struct {
+	value float64
+}
+
+type FullConfig struct {
+	Value float64
+}
+
+const fullDefaultValue = 0.
+
+func NewFull(conf *FullConfig) (c *Full) {
+	conf = toValidFullConfig(conf)
+
+	return &Full{
+		value: conf.Value,
+	}
+}
+
+func (c *Full) Init(shape []int) (x qt.Tensor, err error) {
+	return tinit.Full(shape, c.value, tensorInitConf())
+}
+
+/* ----- helpers ----- */
+
+func toValidFullConfig(iconf *FullConfig) (conf *FullConfig) {
+	if iconf == nil {
+		iconf = &FullConfig{
+			Value: fullDefaultValue,
+		}
+	}
+
+	conf = new(FullConfig)
+	*conf = *iconf
+
+	return conf
+}

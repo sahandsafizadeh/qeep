@@ -18,18 +18,19 @@ func startEdge(t tensor.Tensor) (edge *backwardEdge) {
 
 func backward(edge *backwardEdge) (err error) {
 	gctx := gradContextOf(edge.target)
-	if !isTrackRequired(gctx) {
-		return nil
-	}
 
-	gctx.trackForbidden = true
+	if !gctx.tracked {
+		return nil
+	} else {
+		gctx.bpdirty = true
+	}
 
 	grad, err := edge.gradFn()
 	if err != nil {
 		return
 	}
 
-	err = accumGrad(gctx, grad)
+	err = accumulateGrad(gctx, grad)
 	if err != nil {
 		return
 	}
@@ -44,11 +45,11 @@ func backward(edge *backwardEdge) (err error) {
 	return nil
 }
 
-func accumGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
-	if gctx.grad == nil {
-		gctx.grad = grad
+func accumulateGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
+	if gctx.gradient == nil {
+		gctx.gradient = grad
 	} else {
-		gctx.grad, err = gctx.grad.Add(grad)
+		gctx.gradient, err = gctx.gradient.Add(grad)
 		if err != nil {
 			return
 		}

@@ -2,15 +2,14 @@ package gradtrack
 
 import "github.com/sahandsafizadeh/qeep/tensor"
 
-func Root() (gctx *GradContext) {
-	return new(GradContext)
-}
-
-func Forbidden() (gctx *GradContext) {
-	return &GradContext{trackForbidden: true}
-}
-
 func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int) (gctx *GradContext) {
+	if anyIsBPDirty(xs...) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(xs...) {
+		return NewGradContext(false)
+	}
+
 	backEdges := make([]*backwardEdge, len(xs))
 
 	var base int
@@ -33,11 +32,22 @@ func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int) (gctx *GradContext) {
 		}
 	}
 
-	return &GradContext{backEdges: backEdges}
+	return &GradContext{
+		tracked:   true,
+		backEdges: backEdges,
+	}
 }
 
 func Slice(y tensor.Tensor, x tensor.Tensor, index []tensor.Range) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -50,7 +60,15 @@ func Slice(y tensor.Tensor, x tensor.Tensor, index []tensor.Range) (gctx *GradCo
 }
 
 func Patch(y tensor.Tensor, x tensor.Tensor, p tensor.Tensor, index []tensor.Range) (gctx *GradContext) {
+	if anyIsBPDirty(x, p) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x, p) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -69,7 +87,15 @@ func Patch(y tensor.Tensor, x tensor.Tensor, p tensor.Tensor, index []tensor.Ran
 }
 
 func Transpose(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -82,7 +108,15 @@ func Transpose(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Reshape(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -95,7 +129,15 @@ func Reshape(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func UnSqueeze(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -108,7 +150,15 @@ func UnSqueeze(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Squeeze(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -121,7 +171,15 @@ func Squeeze(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Flatten(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -134,7 +192,15 @@ func Flatten(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Broadcast(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -181,7 +247,15 @@ func Broadcast(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func SumAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -194,7 +268,15 @@ func SumAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
 }
 
 func MaxAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -222,7 +304,15 @@ func MaxAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
 }
 
 func MinAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -250,7 +340,15 @@ func MinAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
 }
 
 func AvgAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -270,7 +368,15 @@ func AvgAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
 }
 
 func VarAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -310,7 +416,15 @@ func VarAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
 }
 
 func StdAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -360,7 +474,15 @@ func StdAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
 }
 
 func MeanAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -380,7 +502,15 @@ func MeanAlong(y tensor.Tensor, x tensor.Tensor, dim int) (gctx *GradContext) {
 }
 
 func Scale(y tensor.Tensor, x tensor.Tensor, a float64) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -393,7 +523,15 @@ func Scale(y tensor.Tensor, x tensor.Tensor, a float64) (gctx *GradContext) {
 }
 
 func Pow(y tensor.Tensor, x tensor.Tensor, a float64) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -410,7 +548,15 @@ func Pow(y tensor.Tensor, x tensor.Tensor, a float64) (gctx *GradContext) {
 }
 
 func Exp(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -423,7 +569,15 @@ func Exp(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Log(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -436,7 +590,15 @@ func Log(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Sin(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -452,7 +614,15 @@ func Sin(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Cos(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -468,7 +638,15 @@ func Cos(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Tan(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -484,7 +662,15 @@ func Tan(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Sinh(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -500,7 +686,15 @@ func Sinh(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Cosh(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -516,7 +710,15 @@ func Cosh(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func Tanh(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: x,
@@ -532,7 +734,15 @@ func Tanh(y tensor.Tensor, x tensor.Tensor) (gctx *GradContext) {
 }
 
 func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(a, b) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(a, b) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: a,
@@ -585,7 +795,15 @@ func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext
 }
 
 func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(a, b) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(a, b) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: a,
@@ -638,7 +856,15 @@ func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext
 }
 
 func Add(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(a, b) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(a, b) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: a,
@@ -657,7 +883,15 @@ func Add(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) 
 }
 
 func Sub(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(a, b) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(a, b) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: a,
@@ -676,7 +910,15 @@ func Sub(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) 
 }
 
 func Mul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(a, b) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(a, b) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: a,
@@ -695,7 +937,15 @@ func Mul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) 
 }
 
 func Div(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(a, b) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(a, b) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: a,
@@ -724,7 +974,15 @@ func Div(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) 
 }
 
 func Dot(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(a, b) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(a, b) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: a,
@@ -743,7 +1001,15 @@ func Dot(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) 
 }
 
 func MatMul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) (gctx *GradContext) {
+	if anyIsBPDirty(a, b) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(a, b) {
+		return NewGradContext(false)
+	}
+
 	return &GradContext{
+		tracked: true,
 		backEdges: []*backwardEdge{
 			{
 				target: a,

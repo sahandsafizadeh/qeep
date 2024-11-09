@@ -18,10 +18,7 @@ func Full(dims []int, value float64, withGrad bool) (o tensor.Tensor, err error)
 	}
 
 	r := constTensor(value, dims)
-
-	if withGrad {
-		r.gctx = gradtrack.Root()
-	}
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
 }
@@ -42,10 +39,7 @@ func Eye(n int, withGrad bool) (o tensor.Tensor, err error) {
 	}
 
 	r := eyeMatrix(n)
-
-	if withGrad {
-		r.gctx = gradtrack.Root()
-	}
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
 }
@@ -64,10 +58,7 @@ func RandU(dims []int, l, u float64, withGrad bool) (o tensor.Tensor, err error)
 	}
 
 	r := uniformRandomTensor(l, u, dims)
-
-	if withGrad {
-		r.gctx = gradtrack.Root()
-	}
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
 }
@@ -86,10 +77,7 @@ func RandN(dims []int, u, s float64, withGrad bool) (o tensor.Tensor, err error)
 	}
 
 	r := normalRandomTensor(u, s, dims)
-
-	if withGrad {
-		r.gctx = gradtrack.Root()
-	}
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
 }
@@ -102,10 +90,7 @@ func TensorOf(data any, withGrad bool) (o tensor.Tensor, err error) {
 	}
 
 	r := initTensorFromData(data)
-
-	if withGrad {
-		r.gctx = gradtrack.Root()
-	}
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
 }
@@ -129,12 +114,7 @@ func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := initConcatResultTensor(cus, dim)
-
-	if gradtrack.ForbiddenForAny(ts...) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(ts...) {
-		r.gctx = gradtrack.Concat(r, ts, dim)
-	}
+	r.gctx = gradtrack.Concat(r, ts, dim)
 
 	return r, nil
 }
@@ -169,12 +149,7 @@ func (t *CPUTensor) Slice(index []tensor.Range) (o tensor.Tensor, err error) {
 	}
 
 	r := t.slice(index)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Slice(r, t, index)
-	}
+	r.gctx = gradtrack.Slice(r, t, index)
 
 	return r, nil
 }
@@ -193,12 +168,7 @@ func (t *CPUTensor) Patch(index []tensor.Range, u tensor.Tensor) (o tensor.Tenso
 	}
 
 	r := t.patch(index, cu)
-
-	if gradtrack.ForbiddenForAny(t, u) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t, u) {
-		r.gctx = gradtrack.Patch(r, t, u, index)
-	}
+	r.gctx = gradtrack.Patch(r, t, u, index)
 
 	return r, nil
 }
@@ -211,12 +181,7 @@ func (t *CPUTensor) Transpose() (o tensor.Tensor, err error) {
 	}
 
 	r := t.transpose()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Transpose(r, t)
-	}
+	r.gctx = gradtrack.Transpose(r, t)
 
 	return r, nil
 }
@@ -235,12 +200,7 @@ func (t *CPUTensor) Reshape(shape []int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.reshape(shape)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Reshape(r, t)
-	}
+	r.gctx = gradtrack.Reshape(r, t)
 
 	return r, nil
 }
@@ -253,12 +213,7 @@ func (t *CPUTensor) UnSqueeze(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.unSqueeze(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.UnSqueeze(r, t)
-	}
+	r.gctx = gradtrack.UnSqueeze(r, t)
 
 	return r, nil
 }
@@ -271,12 +226,7 @@ func (t *CPUTensor) Squeeze(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.squeeze(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Squeeze(r, t)
-	}
+	r.gctx = gradtrack.Squeeze(r, t)
 
 	return r, nil
 }
@@ -289,12 +239,7 @@ func (t *CPUTensor) Flatten(fromDim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.flatten(fromDim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Flatten(r, t)
-	}
+	r.gctx = gradtrack.Flatten(r, t)
 
 	return r, nil
 }
@@ -313,12 +258,7 @@ func (t *CPUTensor) Broadcast(shape []int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.broadcast(shape)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Broadcast(r, t)
-	}
+	r.gctx = gradtrack.Broadcast(r, t)
 
 	return r, nil
 }
@@ -359,12 +299,7 @@ func (t *CPUTensor) SumAlong(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.sumAlong(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.SumAlong(r, t, dim)
-	}
+	r.gctx = gradtrack.SumAlong(r, t, dim)
 
 	return r, nil
 }
@@ -377,12 +312,7 @@ func (t *CPUTensor) MaxAlong(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.maxAlong(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.MaxAlong(r, t, dim)
-	}
+	r.gctx = gradtrack.MaxAlong(r, t, dim)
 
 	return r, nil
 }
@@ -395,12 +325,7 @@ func (t *CPUTensor) MinAlong(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.minAlong(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.MinAlong(r, t, dim)
-	}
+	r.gctx = gradtrack.MinAlong(r, t, dim)
 
 	return r, nil
 }
@@ -413,12 +338,7 @@ func (t *CPUTensor) AvgAlong(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.avgAlong(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.AvgAlong(r, t, dim)
-	}
+	r.gctx = gradtrack.AvgAlong(r, t, dim)
 
 	return r, nil
 }
@@ -431,12 +351,7 @@ func (t *CPUTensor) VarAlong(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.varAlong(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.VarAlong(r, t, dim)
-	}
+	r.gctx = gradtrack.VarAlong(r, t, dim)
 
 	return r, nil
 }
@@ -449,12 +364,7 @@ func (t *CPUTensor) StdAlong(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.stdAlong(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.StdAlong(r, t, dim)
-	}
+	r.gctx = gradtrack.StdAlong(r, t, dim)
 
 	return r, nil
 }
@@ -467,133 +377,68 @@ func (t *CPUTensor) MeanAlong(dim int) (o tensor.Tensor, err error) {
 	}
 
 	r := t.meanAlong(dim)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.MeanAlong(r, t, dim)
-	}
+	r.gctx = gradtrack.MeanAlong(r, t, dim)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Scale(u float64) (o tensor.Tensor) {
 	r := t.scale(u)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Scale(r, t, u)
-	}
-
+	r.gctx = gradtrack.Scale(r, t, u)
 	return r
 }
 
 func (t *CPUTensor) Pow(u float64) (o tensor.Tensor) {
 	r := t.pow(u)
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Pow(r, t, u)
-	}
-
+	r.gctx = gradtrack.Pow(r, t, u)
 	return r
 }
 
 func (t *CPUTensor) Exp() (o tensor.Tensor) {
 	r := t.exp()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Exp(r, t)
-	}
-
+	r.gctx = gradtrack.Exp(r, t)
 	return r
 }
 
 func (t *CPUTensor) Log() (o tensor.Tensor) {
 	r := t.log()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Log(r, t)
-	}
-
+	r.gctx = gradtrack.Log(r, t)
 	return r
 }
 
 func (t *CPUTensor) Sin() (o tensor.Tensor) {
 	r := t.sin()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Sin(r, t)
-	}
-
+	r.gctx = gradtrack.Sin(r, t)
 	return r
 }
 
 func (t *CPUTensor) Cos() (o tensor.Tensor) {
 	r := t.cos()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Cos(r, t)
-	}
-
+	r.gctx = gradtrack.Cos(r, t)
 	return r
 }
 
 func (t *CPUTensor) Tan() (o tensor.Tensor) {
 	r := t.tan()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Tan(r, t)
-	}
-
+	r.gctx = gradtrack.Tan(r, t)
 	return r
 }
 
 func (t *CPUTensor) Sinh() (o tensor.Tensor) {
 	r := t.sinh()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Sinh(r, t)
-	}
-
+	r.gctx = gradtrack.Sinh(r, t)
 	return r
 }
 
 func (t *CPUTensor) Cosh() (o tensor.Tensor) {
 	r := t.cosh()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Cosh(r, t)
-	}
-
+	r.gctx = gradtrack.Cosh(r, t)
 	return r
 }
 
 func (t *CPUTensor) Tanh() (o tensor.Tensor) {
 	r := t.tanh()
-
-	if gradtrack.ForbiddenForAny(t) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t) {
-		r.gctx = gradtrack.Tanh(r, t)
-	}
-
+	r.gctx = gradtrack.Tanh(r, t)
 	return r
 }
 
@@ -610,7 +455,10 @@ func (t *CPUTensor) Eq(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return
 	}
 
-	return t.eq(cu), nil
+	r := t.eq(cu)
+	r.gctx = gradtrack.NewGradContext(false)
+
+	return r, nil
 }
 
 func (t *CPUTensor) Ne(u tensor.Tensor) (o tensor.Tensor, err error) {
@@ -626,7 +474,10 @@ func (t *CPUTensor) Ne(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return
 	}
 
-	return t.ne(cu), nil
+	r := t.ne(cu)
+	r.gctx = gradtrack.NewGradContext(false)
+
+	return r, nil
 }
 
 func (t *CPUTensor) Gt(u tensor.Tensor) (o tensor.Tensor, err error) {
@@ -642,7 +493,10 @@ func (t *CPUTensor) Gt(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return
 	}
 
-	return t.gt(cu), nil
+	r := t.gt(cu)
+	r.gctx = gradtrack.NewGradContext(false)
+
+	return r, nil
 }
 
 func (t *CPUTensor) Ge(u tensor.Tensor) (o tensor.Tensor, err error) {
@@ -658,7 +512,10 @@ func (t *CPUTensor) Ge(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return
 	}
 
-	return t.ge(cu), nil
+	r := t.ge(cu)
+	r.gctx = gradtrack.NewGradContext(false)
+
+	return r, nil
 }
 
 func (t *CPUTensor) Lt(u tensor.Tensor) (o tensor.Tensor, err error) {
@@ -674,7 +531,10 @@ func (t *CPUTensor) Lt(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return
 	}
 
-	return t.lt(cu), nil
+	r := t.lt(cu)
+	r.gctx = gradtrack.NewGradContext(false)
+
+	return r, nil
 }
 
 func (t *CPUTensor) Le(u tensor.Tensor) (o tensor.Tensor, err error) {
@@ -690,7 +550,10 @@ func (t *CPUTensor) Le(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return
 	}
 
-	return t.le(cu), nil
+	r := t.le(cu)
+	r.gctx = gradtrack.NewGradContext(false)
+
+	return r, nil
 }
 
 func (t *CPUTensor) ElMax(u tensor.Tensor) (o tensor.Tensor, err error) {
@@ -707,12 +570,7 @@ func (t *CPUTensor) ElMax(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	r := t.elmax(cu)
-
-	if gradtrack.ForbiddenForAny(t, cu) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t, cu) {
-		r.gctx = gradtrack.ElMax(r, t, cu)
-	}
+	r.gctx = gradtrack.ElMax(r, t, cu)
 
 	return r, nil
 }
@@ -731,12 +589,7 @@ func (t *CPUTensor) ElMin(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	r := t.elmin(cu)
-
-	if gradtrack.ForbiddenForAny(t, cu) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(t, cu) {
-		r.gctx = gradtrack.ElMin(r, t, cu)
-	}
+	r.gctx = gradtrack.ElMin(r, t, cu)
 
 	return r, nil
 }
@@ -755,12 +608,7 @@ func (t *CPUTensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	r := ct1.add(ct2)
-
-	if gradtrack.ForbiddenForAny(ct1, ct2) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(ct1, ct2) {
-		r.gctx = gradtrack.Add(r, ct1, ct2)
-	}
+	r.gctx = gradtrack.Add(r, ct1, ct2)
 
 	return r, nil
 }
@@ -779,12 +627,7 @@ func (t *CPUTensor) Sub(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	r := ct1.sub(ct2)
-
-	if gradtrack.ForbiddenForAny(ct1, ct2) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(ct1, ct2) {
-		r.gctx = gradtrack.Sub(r, ct1, ct2)
-	}
+	r.gctx = gradtrack.Sub(r, ct1, ct2)
 
 	return r, nil
 }
@@ -803,12 +646,7 @@ func (t *CPUTensor) Mul(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	r := ct1.mul(ct2)
-
-	if gradtrack.ForbiddenForAny(ct1, ct2) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(ct1, ct2) {
-		r.gctx = gradtrack.Mul(r, ct1, ct2)
-	}
+	r.gctx = gradtrack.Mul(r, ct1, ct2)
 
 	return r, nil
 }
@@ -827,12 +665,7 @@ func (t *CPUTensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	r := ct1.div(ct2)
-
-	if gradtrack.ForbiddenForAny(ct1, ct2) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(ct1, ct2) {
-		r.gctx = gradtrack.Div(r, ct1, ct2)
-	}
+	r.gctx = gradtrack.Div(r, ct1, ct2)
 
 	return r, nil
 }
@@ -857,12 +690,7 @@ func (t *CPUTensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	r := ct1.dot(ct2)
-
-	if gradtrack.ForbiddenForAny(ct1, ct2) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(ct1, ct2) {
-		r.gctx = gradtrack.Dot(r, ct1, ct2)
-	}
+	r.gctx = gradtrack.Dot(r, ct1, ct2)
 
 	return r, nil
 }
@@ -887,12 +715,7 @@ func (t *CPUTensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
 	}
 
 	r := ct1.matMul(ct2)
-
-	if gradtrack.ForbiddenForAny(ct1, ct2) {
-		r.gctx = gradtrack.Forbidden()
-	} else if gradtrack.RequiredForAny(ct1, ct2) {
-		r.gctx = gradtrack.MatMul(r, ct1, ct2)
-	}
+	r.gctx = gradtrack.MatMul(r, ct1, ct2)
 
 	return r, nil
 }
@@ -917,10 +740,10 @@ func (t *CPUTensor) GradContext() (gctx any) {
 	return t.gctx
 }
 
-func (t *CPUTensor) Gradient() (g tensor.Tensor) {
-	return t.gctx.Grad()
+func (t *CPUTensor) ResetGradContext(tracked bool) {
+	t.gctx = gradtrack.NewGradContext(tracked)
 }
 
-func (t *CPUTensor) Detach() (o tensor.Tensor) {
-	return t.slice(nil)
+func (t *CPUTensor) Gradient() (g tensor.Tensor) {
+	return t.gctx.Gradient()
 }

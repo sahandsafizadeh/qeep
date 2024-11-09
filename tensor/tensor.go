@@ -61,8 +61,8 @@ type Tensor interface {
 
 	/*--------------- gradients ---------------*/
 	GradContext() any
+	ResetGradContext(bool)
 	Gradient() Tensor
-	Detach() Tensor
 }
 
 type Range struct {

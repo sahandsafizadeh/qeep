@@ -2,18 +2,26 @@ package gradtrack
 
 import "github.com/sahandsafizadeh/qeep/tensor"
 
-func (gctx *GradContext) Grad() (g tensor.Tensor) {
-	if !isTrackRequired(gctx) {
-		return nil
-	}
-
-	return gctx.grad
+func NewGradContext(tracked bool) (gctx *GradContext) {
+	return &GradContext{tracked: tracked}
 }
 
-func ForbiddenForAny(ts ...tensor.Tensor) (ok bool) {
+func NewDirtyGradContext() (gctx *GradContext) {
+	gctx = NewGradContext(false)
+	gctx.bpdirty = true
+	return gctx
+}
+
+func (gctx *GradContext) Gradient() (g tensor.Tensor) {
+	return gctx.gradient
+}
+
+/* ----- helpers ----- */
+
+func anyIsBPDirty(ts ...tensor.Tensor) (ok bool) {
 	for _, t := range ts {
 		gctx := gradContextOf(t)
-		if isTrackForbidden(gctx) {
+		if gctx.bpdirty {
 			return true
 		}
 	}
@@ -21,29 +29,17 @@ func ForbiddenForAny(ts ...tensor.Tensor) (ok bool) {
 	return false
 }
 
-func RequiredForAny(ts ...tensor.Tensor) (ok bool) {
+func nonIsTracked(ts ...tensor.Tensor) (ok bool) {
 	for _, t := range ts {
 		gctx := gradContextOf(t)
-		if isTrackRequired(gctx) {
-			return true
+		if gctx.tracked {
+			return false
 		}
 	}
 
-	return false
+	return true
 }
 
 func gradContextOf(t tensor.Tensor) (gctx *GradContext) {
 	return t.GradContext().(*GradContext)
-}
-
-func isTrackForbidden(gctx *GradContext) (ok bool) {
-	if gctx == nil {
-		return false
-	}
-
-	return gctx.trackForbidden
-}
-
-func isTrackRequired(gctx *GradContext) (ok bool) {
-	return gctx != nil
 }

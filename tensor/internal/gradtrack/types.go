@@ -3,9 +3,10 @@ package gradtrack
 import "github.com/sahandsafizadeh/qeep/tensor"
 
 type GradContext struct {
-	grad           tensor.Tensor
-	backEdges      []*backwardEdge
-	trackForbidden bool
+	tracked   bool
+	bpdirty   bool
+	gradient  tensor.Tensor
+	backEdges []*backwardEdge
 }
 
 type backwardEdge struct {

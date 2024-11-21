@@ -43,7 +43,7 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -116,7 +116,7 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -142,7 +142,7 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -186,7 +186,7 @@ func TestSlice(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -225,7 +225,7 @@ func TestSlice(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -278,7 +278,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -343,7 +343,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -369,7 +369,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -395,7 +395,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -434,7 +434,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -468,7 +468,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -507,7 +507,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -541,7 +541,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -580,7 +580,7 @@ func TestUnsqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -614,7 +614,7 @@ func TestUnsqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -653,7 +653,7 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -687,7 +687,7 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -726,7 +726,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -760,7 +760,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -799,7 +799,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -833,7 +833,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -885,7 +885,7 @@ func TestSum(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -932,7 +932,7 @@ func TestSum(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -984,7 +984,7 @@ func TestMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1031,7 +1031,7 @@ func TestMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1083,7 +1083,7 @@ func TestMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1130,7 +1130,7 @@ func TestMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1182,7 +1182,7 @@ func TestAvg(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1229,7 +1229,7 @@ func TestAvg(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1268,7 +1268,7 @@ func TestVar(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1313,7 +1313,7 @@ func TestVar(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1358,7 +1358,7 @@ func TestVar(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1397,7 +1397,7 @@ func TestStd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1442,7 +1442,7 @@ func TestStd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1487,7 +1487,7 @@ func TestStd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1539,7 +1539,7 @@ func TestMean(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1586,7 +1586,7 @@ func TestMean(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1622,7 +1622,7 @@ func TestScale(t *testing.T) {
 
 		y := x.Scale(3.)
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1653,7 +1653,7 @@ func TestScale(t *testing.T) {
 
 		y = x.Scale(0.)
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1689,7 +1689,7 @@ func TestPow(t *testing.T) {
 
 		y := x.Pow(3.)
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1720,7 +1720,7 @@ func TestPow(t *testing.T) {
 
 		y = x.Pow(0.)
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1756,7 +1756,7 @@ func TestExp(t *testing.T) {
 
 		y := x.Exp()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1787,7 +1787,7 @@ func TestExp(t *testing.T) {
 
 		y = x.Exp()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1823,7 +1823,7 @@ func TestLog(t *testing.T) {
 
 		y := x.Log()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1854,7 +1854,7 @@ func TestLog(t *testing.T) {
 
 		y = x.Log()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1890,7 +1890,7 @@ func TestSin(t *testing.T) {
 
 		y := x.Sin()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1917,7 +1917,7 @@ func TestSin(t *testing.T) {
 
 		y = x.Sin()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1953,7 +1953,7 @@ func TestCos(t *testing.T) {
 
 		y := x.Cos()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1980,7 +1980,7 @@ func TestCos(t *testing.T) {
 
 		y = x.Cos()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2016,7 +2016,7 @@ func TestTan(t *testing.T) {
 
 		y := x.Tan()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2043,7 +2043,7 @@ func TestTan(t *testing.T) {
 
 		y = x.Tan()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2079,7 +2079,7 @@ func TestSinh(t *testing.T) {
 
 		y := x.Sinh()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2107,7 +2107,7 @@ func TestSinh(t *testing.T) {
 
 		y = x.Sinh()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2143,7 +2143,7 @@ func TestCosh(t *testing.T) {
 
 		y := x.Cosh()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2171,7 +2171,7 @@ func TestCosh(t *testing.T) {
 
 		y = x.Cosh()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2207,7 +2207,7 @@ func TestTanh(t *testing.T) {
 
 		y := x.Tanh()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2234,7 +2234,7 @@ func TestTanh(t *testing.T) {
 
 		y = x.Tanh()
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2278,7 +2278,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2334,7 +2334,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2390,7 +2390,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2416,7 +2416,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2442,7 +2442,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2486,7 +2486,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2542,7 +2542,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2598,7 +2598,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2624,7 +2624,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2650,7 +2650,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2694,7 +2694,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2750,7 +2750,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2776,7 +2776,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2802,7 +2802,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2846,7 +2846,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2902,7 +2902,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2928,7 +2928,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2954,7 +2954,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2998,7 +2998,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3054,7 +3054,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3080,7 +3080,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3106,7 +3106,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3150,7 +3150,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3206,7 +3206,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3232,7 +3232,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3258,7 +3258,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3302,7 +3302,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3358,7 +3358,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3384,7 +3384,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3410,7 +3410,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3454,7 +3454,7 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3510,7 +3510,7 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3536,7 +3536,7 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3562,7 +3562,7 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}

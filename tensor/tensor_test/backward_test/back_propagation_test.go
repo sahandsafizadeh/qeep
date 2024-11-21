@@ -24,7 +24,7 @@ func TestChainGrad(t *testing.T) {
 
 		y := a.Scale(2.).Scale(3.).Scale(5.)
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -73,7 +73,7 @@ func TestGradAccumulation(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -147,7 +147,7 @@ func TestUntrackedPaths(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = qti.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -202,7 +202,7 @@ func TestValidationBackProp(t *testing.T) {
 
 		/* ------------------------------ */
 
-		err := qti.BackProp(nil)
+		err := qti.BackPropagate(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
 		} else if err.Error() != "expected input tensor not to be nil" {

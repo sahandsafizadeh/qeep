@@ -5,7 +5,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func BackProp(t tensor.Tensor) (err error) {
+func BackPropagate(t tensor.Tensor) (err error) {
 	err = validateTensorDevice(t)
 	if err != nil {
 		return

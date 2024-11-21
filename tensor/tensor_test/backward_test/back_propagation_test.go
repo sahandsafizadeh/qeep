@@ -7,7 +7,7 @@ import (
 )
 
 func TestChainGrad(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{
 			Device:    dev,
@@ -49,7 +49,7 @@ func TestChainGrad(t *testing.T) {
 }
 
 func TestGradAccumulation(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{
 			Device:    dev,
@@ -98,7 +98,7 @@ func TestGradAccumulation(t *testing.T) {
 }
 
 func TestUntrackedPaths(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -197,7 +197,7 @@ func TestUntrackedPaths(t *testing.T) {
 }
 
 func TestValidationBackProp(t *testing.T) {
-	runTestLogicOnDevices(func(_ tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(_ tensor.Device) {
 
 		/* ------------------------------ */
 

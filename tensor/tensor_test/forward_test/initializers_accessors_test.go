@@ -7,7 +7,7 @@ import (
 )
 
 func TestFullEyeAt(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -142,7 +142,7 @@ func TestFullEyeAt(t *testing.T) {
 }
 
 func TestTensorOfSliceEquals(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -508,7 +508,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 }
 
 func TestZerosOnesPatch(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -723,7 +723,7 @@ func TestZerosOnesPatch(t *testing.T) {
 }
 
 func TestRandoms(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -767,7 +767,7 @@ func TestRandoms(t *testing.T) {
 }
 
 func TestConcat(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1017,7 +1017,7 @@ func TestConcat(t *testing.T) {
 }
 
 func TestNElemsShape(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1128,7 +1128,7 @@ func TestNElemsShape(t *testing.T) {
 }
 
 func TestValidationFullZerosOnes(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1195,7 +1195,7 @@ func TestValidationFullZerosOnes(t *testing.T) {
 }
 
 func TestValidationEye(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1234,7 +1234,7 @@ func TestValidationEye(t *testing.T) {
 }
 
 func TestValidationRandU(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1280,7 +1280,7 @@ func TestValidationRandU(t *testing.T) {
 }
 
 func TestValidationRandN(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1326,7 +1326,7 @@ func TestValidationRandN(t *testing.T) {
 }
 
 func TestValidationTensorOf(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1468,7 +1468,7 @@ func TestValidationTensorOf(t *testing.T) {
 }
 
 func TestValidationConcat(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1661,7 +1661,7 @@ func TestValidationConcat(t *testing.T) {
 }
 
 func TestValidationAt(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1748,7 +1748,7 @@ func TestValidationAt(t *testing.T) {
 }
 
 func TestValidationSlice(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1835,7 +1835,7 @@ func TestValidationSlice(t *testing.T) {
 }
 
 func TestValidationPatch(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 

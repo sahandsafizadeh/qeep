@@ -8,7 +8,7 @@ import (
 )
 
 func TestConcat(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -156,7 +156,7 @@ func TestConcat(t *testing.T) {
 }
 
 func TestSlice(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -239,7 +239,7 @@ func TestSlice(t *testing.T) {
 }
 
 func TestPatch(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -409,7 +409,7 @@ func TestPatch(t *testing.T) {
 }
 
 func TestTranspose(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -482,7 +482,7 @@ func TestTranspose(t *testing.T) {
 }
 
 func TestReshape(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -555,7 +555,7 @@ func TestReshape(t *testing.T) {
 }
 
 func TestUnsqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -628,7 +628,7 @@ func TestUnsqueeze(t *testing.T) {
 }
 
 func TestSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -701,7 +701,7 @@ func TestSqueeze(t *testing.T) {
 }
 
 func TestFlatten(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -774,7 +774,7 @@ func TestFlatten(t *testing.T) {
 }
 
 func TestBroadcast(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -847,7 +847,7 @@ func TestBroadcast(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -946,7 +946,7 @@ func TestSum(t *testing.T) {
 }
 
 func TestMax(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1045,7 +1045,7 @@ func TestMax(t *testing.T) {
 }
 
 func TestMin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1144,7 +1144,7 @@ func TestMin(t *testing.T) {
 }
 
 func TestAvg(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1243,7 +1243,7 @@ func TestAvg(t *testing.T) {
 }
 
 func TestVar(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1372,7 +1372,7 @@ func TestVar(t *testing.T) {
 }
 
 func TestStd(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1501,7 +1501,7 @@ func TestStd(t *testing.T) {
 }
 
 func TestMean(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1600,7 +1600,7 @@ func TestMean(t *testing.T) {
 }
 
 func TestScale(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1667,7 +1667,7 @@ func TestScale(t *testing.T) {
 }
 
 func TestPow(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1734,7 +1734,7 @@ func TestPow(t *testing.T) {
 }
 
 func TestExp(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1801,7 +1801,7 @@ func TestExp(t *testing.T) {
 }
 
 func TestLog(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1868,7 +1868,7 @@ func TestLog(t *testing.T) {
 }
 
 func TestSin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1931,7 +1931,7 @@ func TestSin(t *testing.T) {
 }
 
 func TestCos(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -1994,7 +1994,7 @@ func TestCos(t *testing.T) {
 }
 
 func TestTan(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -2057,7 +2057,7 @@ func TestTan(t *testing.T) {
 }
 
 func TestSinh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -2121,7 +2121,7 @@ func TestSinh(t *testing.T) {
 }
 
 func TestCosh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -2185,7 +2185,7 @@ func TestCosh(t *testing.T) {
 }
 
 func TestTanh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -2248,7 +2248,7 @@ func TestTanh(t *testing.T) {
 }
 
 func TestElMax(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -2456,7 +2456,7 @@ func TestElMax(t *testing.T) {
 }
 
 func TestElMin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -2664,7 +2664,7 @@ func TestElMin(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -2816,7 +2816,7 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSub(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -2968,7 +2968,7 @@ func TestSub(t *testing.T) {
 }
 
 func TestMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -3120,7 +3120,7 @@ func TestMul(t *testing.T) {
 }
 
 func TestDiv(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -3272,7 +3272,7 @@ func TestDiv(t *testing.T) {
 }
 
 func TestDot(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,
@@ -3424,7 +3424,7 @@ func TestDot(t *testing.T) {
 }
 
 func TestMatmul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		confU := &tensor.Config{
 			Device:    dev,

@@ -3,28 +3,27 @@ package backward_test
 import (
 	"testing"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor"
-	qti "github.com/sahandsafizadeh/qeep/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 func TestChainGrad(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{
+		conf := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full([]int{3, 2}, 1., conf)
+		a, err := tensor.Full([]int{3, 2}, 1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := a.Scale(2.).Scale(3.).Scale(5.)
 
-		err = qti.BackPropagate(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -33,7 +32,7 @@ func TestChainGrad(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full([]int{3, 2}, 30., conf)
+		exp, err := tensor.Full([]int{3, 2}, 30., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -50,16 +49,16 @@ func TestChainGrad(t *testing.T) {
 }
 
 func TestGradAccumulation(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{
+		conf := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full([]int{2, 3}, 1., conf)
+		a, err := tensor.Full([]int{2, 3}, 1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -68,12 +67,12 @@ func TestGradAccumulation(t *testing.T) {
 		x2 := a.Scale(3.)
 		x3 := a.Scale(5.)
 
-		y, err := qti.Concat([]qt.Tensor{x1, x2, x3}, 0)
+		y, err := tensor.Concat([]tensor.Tensor{x1, x2, x3}, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = qti.BackPropagate(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -82,7 +81,7 @@ func TestGradAccumulation(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full([]int{2, 3}, 10., conf)
+		exp, err := tensor.Full([]int{2, 3}, 10., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -99,31 +98,31 @@ func TestGradAccumulation(t *testing.T) {
 }
 
 func TestUntrackedPaths(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full([]int{2, 3}, 3., confT)
+		a, err := tensor.Full([]int{2, 3}, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full([]int{2, 3}, 2., confU)
+		b, err := tensor.Full([]int{2, 3}, 2., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		c, err := qti.Full([]int{2, 3}, 1., confU)
+		c, err := tensor.Full([]int{2, 3}, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -142,12 +141,12 @@ func TestUntrackedPaths(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		y, err := qti.Concat([]qt.Tensor{t1, t2}, 0)
+		y, err := tensor.Concat([]tensor.Tensor{t1, t2}, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = qti.BackPropagate(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -198,11 +197,11 @@ func TestUntrackedPaths(t *testing.T) {
 }
 
 func TestValidationBackProp(t *testing.T) {
-	runTestLogicOnDevices(func(_ qti.Device) {
+	runTestLogicOnDevices(func(_ tensor.Device) {
 
 		/* ------------------------------ */
 
-		err := qti.BackPropagate(nil)
+		err := tensor.BackPropagate(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
 		} else if err.Error() != "expected input tensor not to be nil" {

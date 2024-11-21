@@ -2,6 +2,7 @@ package tinit
 
 import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
@@ -116,6 +117,17 @@ func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 		panic("unreachable: unsupported device validated")
 	}
 }
+
+func BackPropagate(t tensor.Tensor) (err error) {
+	err = validateTensorDevice(t)
+	if err != nil {
+		return
+	}
+
+	return gradtrack.BackPropagate(t)
+}
+
+/* ----- helpers ----- */
 
 func prepareConfig(conf *Config) (c Config, err error) {
 	err = validateConfig(conf)

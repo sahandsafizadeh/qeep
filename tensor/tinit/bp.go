@@ -2,10 +2,10 @@ package tinit
 
 import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
-	qt "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func BackProp(t qt.Tensor) (err error) {
+func BackProp(t tensor.Tensor) (err error) {
 	err = validateTensorDevice(t)
 	if err != nil {
 		return

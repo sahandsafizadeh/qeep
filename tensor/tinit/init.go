@@ -2,10 +2,10 @@ package tinit
 
 import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
-	qt "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func Full(dims []int, value float64, conf *Config) (t qt.Tensor, err error) {
+func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -19,7 +19,7 @@ func Full(dims []int, value float64, conf *Config) (t qt.Tensor, err error) {
 	}
 }
 
-func Zeros(dims []int, conf *Config) (t qt.Tensor, err error) {
+func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -33,7 +33,7 @@ func Zeros(dims []int, conf *Config) (t qt.Tensor, err error) {
 	}
 }
 
-func Ones(dims []int, conf *Config) (t qt.Tensor, err error) {
+func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -47,7 +47,7 @@ func Ones(dims []int, conf *Config) (t qt.Tensor, err error) {
 	}
 }
 
-func Eye(n int, conf *Config) (t qt.Tensor, err error) {
+func Eye(n int, conf *Config) (t tensor.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -61,7 +61,7 @@ func Eye(n int, conf *Config) (t qt.Tensor, err error) {
 	}
 }
 
-func RandU(dims []int, l, u float64, conf *Config) (t qt.Tensor, err error) {
+func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -75,7 +75,7 @@ func RandU(dims []int, l, u float64, conf *Config) (t qt.Tensor, err error) {
 	}
 }
 
-func RandN(dims []int, u, s float64, conf *Config) (t qt.Tensor, err error) {
+func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -89,7 +89,7 @@ func RandN(dims []int, u, s float64, conf *Config) (t qt.Tensor, err error) {
 	}
 }
 
-func TensorOf[T inputDataType](data T, conf *Config) (t qt.Tensor, err error) {
+func TensorOf[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
 	c, err := prepareConfig(conf)
 	if err != nil {
 		return
@@ -103,7 +103,7 @@ func TensorOf[T inputDataType](data T, conf *Config) (t qt.Tensor, err error) {
 	}
 }
 
-func Concat(ts []qt.Tensor, dim int) (o qt.Tensor, err error) {
+func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 	err = validateTensorsDeviceUnity(ts)
 	if err != nil {
 		return

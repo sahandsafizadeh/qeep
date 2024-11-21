@@ -1,6 +1,6 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
 type GradContext struct {
 	tracked   bool

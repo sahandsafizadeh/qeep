@@ -1,10 +1,10 @@
-package tinit
+package tensor
 
 import (
 	"fmt"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func validateConfig(conf *Config) (err error) {
@@ -22,7 +22,7 @@ func validateConfig(conf *Config) (err error) {
 	return nil
 }
 
-func validateTensorDevice(t qt.Tensor) (err error) {
+func validateTensorDevice(t tensor.Tensor) (err error) {
 	switch t.(type) {
 	case *cputensor.CPUTensor:
 		return nil
@@ -37,7 +37,7 @@ func validateTensorDevice(t qt.Tensor) (err error) {
 	}
 }
 
-func validateTensorsDeviceUnity(ts []qt.Tensor) (err error) {
+func validateTensorsDeviceUnity(ts []tensor.Tensor) (err error) {
 	if len(ts) < 2 {
 		err = fmt.Errorf("expected at least (2) tensors: got (%d)", len(ts))
 		return

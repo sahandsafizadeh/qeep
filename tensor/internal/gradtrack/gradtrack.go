@@ -1,6 +1,6 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
 func NewGradContext(tracked bool) (gctx *GradContext) {
 	return &GradContext{tracked: tracked}

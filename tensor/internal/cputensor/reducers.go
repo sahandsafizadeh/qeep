@@ -3,7 +3,7 @@ package cputensor
 import (
 	"math"
 
-	"github.com/sahandsafizadeh/qeep/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func (t *CPUTensor) sum() (value float64) {

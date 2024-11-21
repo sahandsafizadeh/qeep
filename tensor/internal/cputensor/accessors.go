@@ -1,6 +1,6 @@
 package cputensor
 
-import "github.com/sahandsafizadeh/qeep/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
 func (t *CPUTensor) numElems() (n int) {
 	n = 1

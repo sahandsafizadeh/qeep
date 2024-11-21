@@ -1,6 +1,6 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
 func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int) (gctx *GradContext) {
 	if anyIsBPDirty(xs...) {

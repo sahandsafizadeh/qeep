@@ -4,46 +4,45 @@ import (
 	"math"
 	"testing"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor"
-	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
+	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 func TestConcat(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x1, err := qti.RandN([]int{5, 1, 3}, 0., 2., confT)
+		x1, err := tensor.RandN([]int{5, 1, 3}, 0., 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x2, err := qti.RandN([]int{5, 5, 3}, 0., 1., confT)
+		x2, err := tensor.RandN([]int{5, 5, 3}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x3, err := qti.RandU([]int{5, 2, 3}, -1., 1., confT)
+		x3, err := tensor.RandU([]int{5, 2, 3}, -1., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err := qti.Concat([]qt.Tensor{x1, x2, x3}, 1)
+		y, err := tensor.Concat([]tensor.Tensor{x1, x2, x3}, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -52,7 +51,7 @@ func TestConcat(t *testing.T) {
 
 		act := x1.Gradient()
 
-		exp, err := qti.Ones([]int{5, 1, 3}, confU)
+		exp, err := tensor.Ones([]int{5, 1, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -69,7 +68,7 @@ func TestConcat(t *testing.T) {
 
 		act = x2.Gradient()
 
-		exp, err = qti.Ones([]int{5, 5, 3}, confU)
+		exp, err = tensor.Ones([]int{5, 5, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -86,7 +85,7 @@ func TestConcat(t *testing.T) {
 
 		act = x3.Gradient()
 
-		exp, err = qti.Ones([]int{5, 2, 3}, confU)
+		exp, err = tensor.Ones([]int{5, 2, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -101,22 +100,22 @@ func TestConcat(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x1, err = qti.Zeros([]int{1}, confT)
+		x1, err = tensor.Zeros([]int{1}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x2, err = qti.Zeros([]int{1}, confU)
+		x2, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err = qti.Concat([]qt.Tensor{x1, x2}, 0)
+		y, err = tensor.Concat([]tensor.Tensor{x1, x2}, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -127,22 +126,22 @@ func TestConcat(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x1, err = qti.Zeros([]int{1}, confU)
+		x1, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x2, err = qti.Zeros([]int{1}, confU)
+		x2, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		y, err = qti.Concat([]qt.Tensor{x1, x2}, 0)
+		y, err = tensor.Concat([]tensor.Tensor{x1, x2}, 0)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -157,21 +156,21 @@ func TestConcat(t *testing.T) {
 }
 
 func TestSlice(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.TensorOf([][]float64{
+		x, err := tensor.TensorOf([][]float64{
 			{0., 1., 2., 3., 4.},
 			{5., 6., 7., 8., 9.},
 			{4., 3., 2., 1., 0.},
@@ -181,12 +180,12 @@ func TestSlice(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		y, err := x.Slice([]qt.Range{{From: 1, To: 4}, {From: 1, To: 4}})
+		y, err := x.Slice([]tensor.Range{{From: 1, To: 4}, {From: 1, To: 4}})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -195,7 +194,7 @@ func TestSlice(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.TensorOf([][]float64{
+		exp, err := tensor.TensorOf([][]float64{
 			{0., 0., 0., 0., 0.},
 			{0., 1., 1., 1., 0.},
 			{0., 1., 1., 1., 0.},
@@ -215,7 +214,7 @@ func TestSlice(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -225,7 +224,7 @@ func TestSlice(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -240,21 +239,21 @@ func TestSlice(t *testing.T) {
 }
 
 func TestPatch(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.TensorOf([][]float64{
+		x, err := tensor.TensorOf([][]float64{
 			{0., 1., 2., 3., 4.},
 			{5., 6., 7., 8., 9.},
 			{4., 3., 2., 1., 0.},
@@ -264,7 +263,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		p, err := qti.TensorOf([][]float64{
+		p, err := tensor.TensorOf([][]float64{
 			{-1., -2., -3.},
 			{-4., -5., -6.},
 			{-7., -8., -9.},
@@ -273,12 +272,12 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		y, err := x.Patch([]qt.Range{{From: 1, To: 4}, {From: 1, To: 4}}, p)
+		y, err := x.Patch([]tensor.Range{{From: 1, To: 4}, {From: 1, To: 4}}, p)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -287,7 +286,7 @@ func TestPatch(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.TensorOf([][]float64{
+		exp, err := tensor.TensorOf([][]float64{
 			{1., 1., 1., 1., 1.},
 			{1., 0., 0., 0., 1.},
 			{1., 0., 0., 0., 1.},
@@ -309,7 +308,7 @@ func TestPatch(t *testing.T) {
 
 		act = p.Gradient()
 
-		exp, err = qti.TensorOf([][]float64{
+		exp, err = tensor.TensorOf([][]float64{
 			{1., 1., 1.},
 			{1., 1., 1.},
 			{1., 1., 1.},
@@ -328,12 +327,12 @@ func TestPatch(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		p, err = qti.Zeros(nil, confT)
+		p, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -343,7 +342,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -354,12 +353,12 @@ func TestPatch(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confT)
+		x, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		p, err = qti.Zeros(nil, confU)
+		p, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -369,7 +368,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -380,12 +379,12 @@ func TestPatch(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		p, err = qti.Zeros(nil, confU)
+		p, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -395,7 +394,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -410,21 +409,21 @@ func TestPatch(t *testing.T) {
 }
 
 func TestTranspose(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.RandU([]int{3, 4}, -1., 1., confT)
+		x, err := tensor.RandU([]int{3, 4}, -1., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -434,7 +433,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -443,7 +442,7 @@ func TestTranspose(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Ones([]int{3, 4}, confU)
+		exp, err := tensor.Ones([]int{3, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -458,7 +457,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1, 1}, confU)
+		x, err = tensor.Zeros([]int{1, 1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -468,7 +467,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -483,21 +482,21 @@ func TestTranspose(t *testing.T) {
 }
 
 func TestReshape(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.RandN([]int{3, 4}, 0., 1., confT)
+		x, err := tensor.RandN([]int{3, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -507,7 +506,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -516,7 +515,7 @@ func TestReshape(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Ones([]int{3, 4}, confU)
+		exp, err := tensor.Ones([]int{3, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -531,7 +530,7 @@ func TestReshape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -541,7 +540,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -556,21 +555,21 @@ func TestReshape(t *testing.T) {
 }
 
 func TestUnsqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.RandN([]int{3, 4}, 0., 1., confT)
+		x, err := tensor.RandN([]int{3, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -580,7 +579,7 @@ func TestUnsqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -589,7 +588,7 @@ func TestUnsqueeze(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Ones([]int{3, 4}, confU)
+		exp, err := tensor.Ones([]int{3, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -604,7 +603,7 @@ func TestUnsqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -614,7 +613,7 @@ func TestUnsqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -629,21 +628,21 @@ func TestUnsqueeze(t *testing.T) {
 }
 
 func TestSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.RandN([]int{3, 1, 4}, 0., 1., confT)
+		x, err := tensor.RandN([]int{3, 1, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -653,7 +652,7 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -662,7 +661,7 @@ func TestSqueeze(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Ones([]int{3, 1, 4}, confU)
+		exp, err := tensor.Ones([]int{3, 1, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -677,7 +676,7 @@ func TestSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -687,7 +686,7 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -702,21 +701,21 @@ func TestSqueeze(t *testing.T) {
 }
 
 func TestFlatten(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.RandN([]int{3, 4}, 0., 1., confT)
+		x, err := tensor.RandN([]int{3, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -726,7 +725,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -735,7 +734,7 @@ func TestFlatten(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Ones([]int{3, 4}, confU)
+		exp, err := tensor.Ones([]int{3, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -750,7 +749,7 @@ func TestFlatten(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -760,7 +759,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -775,21 +774,21 @@ func TestFlatten(t *testing.T) {
 }
 
 func TestBroadcast(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.RandU([]int{3, 1, 4}, 0., 1., confT)
+		x, err := tensor.RandU([]int{3, 1, 4}, 0., 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -799,7 +798,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -808,7 +807,7 @@ func TestBroadcast(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Ones([]int{3, 1, 4}, confU)
+		exp, err := tensor.Ones([]int{3, 1, 4}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -823,7 +822,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -833,7 +832,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -848,21 +847,21 @@ func TestBroadcast(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.TensorOf([][][]float64{
+		x, err := tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -885,7 +884,7 @@ func TestSum(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -894,7 +893,7 @@ func TestSum(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.TensorOf([][][]float64{
+		exp, err := tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{1., 1., 1., 1.},
@@ -922,7 +921,7 @@ func TestSum(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -932,7 +931,7 @@ func TestSum(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -947,21 +946,21 @@ func TestSum(t *testing.T) {
 }
 
 func TestMax(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.TensorOf([][][]float64{
+		x, err := tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -984,7 +983,7 @@ func TestMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -993,7 +992,7 @@ func TestMax(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.TensorOf([][][]float64{
+		exp, err := tensor.TensorOf([][][]float64{
 			{
 				{0., 0., 0., 0.},
 				{0., 0., 0., 0.},
@@ -1021,7 +1020,7 @@ func TestMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1031,7 +1030,7 @@ func TestMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1046,21 +1045,21 @@ func TestMax(t *testing.T) {
 }
 
 func TestMin(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.TensorOf([][][]float64{
+		x, err := tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1083,7 +1082,7 @@ func TestMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1092,7 +1091,7 @@ func TestMin(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.TensorOf([][][]float64{
+		exp, err := tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{0., 0., 0., 0.},
@@ -1120,7 +1119,7 @@ func TestMin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1130,7 +1129,7 @@ func TestMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1145,21 +1144,21 @@ func TestMin(t *testing.T) {
 }
 
 func TestAvg(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.TensorOf([][][]float64{
+		x, err := tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1182,7 +1181,7 @@ func TestAvg(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1191,7 +1190,7 @@ func TestAvg(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.TensorOf([][][]float64{
+		exp, err := tensor.TensorOf([][][]float64{
 			{
 				{0.25, 0.25, 0.25, 0.25},
 				{0.25, 0.25, 0.25, 0.25},
@@ -1219,7 +1218,7 @@ func TestAvg(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1229,7 +1228,7 @@ func TestAvg(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1244,21 +1243,21 @@ func TestAvg(t *testing.T) {
 }
 
 func TestVar(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Ones([]int{5, 1, 3}, confT)
+		x, err := tensor.Ones([]int{5, 1, 3}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1268,7 +1267,7 @@ func TestVar(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1277,7 +1276,7 @@ func TestVar(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Zeros([]int{5, 1, 3}, confU)
+		exp, err := tensor.Zeros([]int{5, 1, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1292,7 +1291,7 @@ func TestVar(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.TensorOf([][][]float64{
+		x, err = tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1313,7 +1312,7 @@ func TestVar(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1322,7 +1321,7 @@ func TestVar(t *testing.T) {
 
 		act = x.Gradient()
 
-		exp, err = qti.TensorOf([][][]float64{
+		exp, err = tensor.TensorOf([][][]float64{
 			{
 				{-1., -1., -1., -1.},
 				{0., 0., 0., 0.},
@@ -1348,7 +1347,7 @@ func TestVar(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1358,7 +1357,7 @@ func TestVar(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1373,21 +1372,21 @@ func TestVar(t *testing.T) {
 }
 
 func TestStd(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Ones([]int{5, 1, 3}, confT)
+		x, err := tensor.Ones([]int{5, 1, 3}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1397,7 +1396,7 @@ func TestStd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1406,7 +1405,7 @@ func TestStd(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Zeros([]int{5, 1, 3}, confU)
+		exp, err := tensor.Zeros([]int{5, 1, 3}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1421,7 +1420,7 @@ func TestStd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.TensorOf([][][]float64{
+		x, err = tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1442,7 +1441,7 @@ func TestStd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1451,7 +1450,7 @@ func TestStd(t *testing.T) {
 
 		act = x.Gradient()
 
-		exp, err = qti.TensorOf([][][]float64{
+		exp, err = tensor.TensorOf([][][]float64{
 			{
 				{-0.5, -0.5, -0.5, -0.5},
 				{0., 0., 0., 0.},
@@ -1477,7 +1476,7 @@ func TestStd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1487,7 +1486,7 @@ func TestStd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1502,21 +1501,21 @@ func TestStd(t *testing.T) {
 }
 
 func TestMean(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.TensorOf([][][]float64{
+		x, err := tensor.TensorOf([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1539,7 +1538,7 @@ func TestMean(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1548,7 +1547,7 @@ func TestMean(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.TensorOf([][][]float64{
+		exp, err := tensor.TensorOf([][][]float64{
 			{
 				{0.25, 0.25, 0.25, 0.25},
 				{0.25, 0.25, 0.25, 0.25},
@@ -1576,7 +1575,7 @@ func TestMean(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros([]int{1}, confU)
+		x, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1586,7 +1585,7 @@ func TestMean(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1601,28 +1600,28 @@ func TestMean(t *testing.T) {
 }
 
 func TestScale(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, 2., confT)
+		x, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Scale(3.)
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1631,7 +1630,7 @@ func TestScale(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Full(nil, 3., confU)
+		exp, err := tensor.Full(nil, 3., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1646,14 +1645,14 @@ func TestScale(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Scale(0.)
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1668,28 +1667,28 @@ func TestScale(t *testing.T) {
 }
 
 func TestPow(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, 2., confT)
+		x, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Pow(3.)
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1698,7 +1697,7 @@ func TestPow(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Full(nil, 12., confU)
+		exp, err := tensor.Full(nil, 12., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1713,14 +1712,14 @@ func TestPow(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Pow(0.)
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1735,28 +1734,28 @@ func TestPow(t *testing.T) {
 }
 
 func TestExp(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, 1., confT)
+		x, err := tensor.Full(nil, 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Exp()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1765,7 +1764,7 @@ func TestExp(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Full(nil, math.E, confU)
+		exp, err := tensor.Full(nil, math.E, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1780,14 +1779,14 @@ func TestExp(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Exp()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1802,28 +1801,28 @@ func TestExp(t *testing.T) {
 }
 
 func TestLog(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, 2., confT)
+		x, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Log()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1832,7 +1831,7 @@ func TestLog(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := qti.Full(nil, 0.5, confU)
+		exp, err := tensor.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1847,14 +1846,14 @@ func TestLog(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Log()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1869,28 +1868,28 @@ func TestLog(t *testing.T) {
 }
 
 func TestSin(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, math.Pi/3, confT)
+		x, err := tensor.Full(nil, math.Pi/3, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Sin()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1910,14 +1909,14 @@ func TestSin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Sin()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1932,28 +1931,28 @@ func TestSin(t *testing.T) {
 }
 
 func TestCos(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, math.Pi/6, confT)
+		x, err := tensor.Full(nil, math.Pi/6, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Cos()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1973,14 +1972,14 @@ func TestCos(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Cos()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1995,28 +1994,28 @@ func TestCos(t *testing.T) {
 }
 
 func TestTan(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, 0., confT)
+		x, err := tensor.Full(nil, 0., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Tan()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2036,14 +2035,14 @@ func TestTan(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Tan()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2058,28 +2057,28 @@ func TestTan(t *testing.T) {
 }
 
 func TestSinh(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, 1., confT)
+		x, err := tensor.Full(nil, 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Sinh()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2100,14 +2099,14 @@ func TestSinh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Sinh()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2122,28 +2121,28 @@ func TestSinh(t *testing.T) {
 }
 
 func TestCosh(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, 1., confT)
+		x, err := tensor.Full(nil, 1., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Cosh()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2164,14 +2163,14 @@ func TestCosh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Cosh()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2186,28 +2185,28 @@ func TestCosh(t *testing.T) {
 }
 
 func TestTanh(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		x, err := qti.Full(nil, 0., confT)
+		x, err := tensor.Full(nil, 0., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y := x.Tanh()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2227,14 +2226,14 @@ func TestTanh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = qti.Zeros(nil, confU)
+		x, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		y = x.Tanh()
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2249,26 +2248,26 @@ func TestTanh(t *testing.T) {
 }
 
 func TestElMax(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full(nil, 3., confT)
+		a, err := tensor.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full(nil, 2., confT)
+		b, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2278,7 +2277,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2287,7 +2286,7 @@ func TestElMax(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full(nil, 1., confU)
+		exp, err := tensor.Full(nil, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2304,7 +2303,7 @@ func TestElMax(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full(nil, 0., confU)
+		exp, err = tensor.Full(nil, 0., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2319,12 +2318,12 @@ func TestElMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Full(nil, 2., confT)
+		a, err = tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Full(nil, 2., confT)
+		b, err = tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2334,7 +2333,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2343,7 +2342,7 @@ func TestElMax(t *testing.T) {
 
 		act = a.Gradient()
 
-		exp, err = qti.Full(nil, 0.5, confU)
+		exp, err = tensor.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2360,7 +2359,7 @@ func TestElMax(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full(nil, 0.5, confU)
+		exp, err = tensor.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2375,12 +2374,12 @@ func TestElMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confT)
+		b, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2390,7 +2389,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2401,12 +2400,12 @@ func TestElMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confT)
+		a, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2416,7 +2415,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2427,12 +2426,12 @@ func TestElMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2442,7 +2441,7 @@ func TestElMax(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2457,26 +2456,26 @@ func TestElMax(t *testing.T) {
 }
 
 func TestElMin(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full(nil, 3., confT)
+		a, err := tensor.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full(nil, 2., confT)
+		b, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2486,7 +2485,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2495,7 +2494,7 @@ func TestElMin(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full(nil, 0., confU)
+		exp, err := tensor.Full(nil, 0., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2512,7 +2511,7 @@ func TestElMin(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full(nil, 1., confU)
+		exp, err = tensor.Full(nil, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2527,12 +2526,12 @@ func TestElMin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Full(nil, 2., confT)
+		a, err = tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Full(nil, 2., confT)
+		b, err = tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2542,7 +2541,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2551,7 +2550,7 @@ func TestElMin(t *testing.T) {
 
 		act = a.Gradient()
 
-		exp, err = qti.Full(nil, 0.5, confU)
+		exp, err = tensor.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2568,7 +2567,7 @@ func TestElMin(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full(nil, 0.5, confU)
+		exp, err = tensor.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2583,12 +2582,12 @@ func TestElMin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confT)
+		b, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2598,7 +2597,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2609,12 +2608,12 @@ func TestElMin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confT)
+		a, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2624,7 +2623,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2635,12 +2634,12 @@ func TestElMin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2650,7 +2649,7 @@ func TestElMin(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2665,26 +2664,26 @@ func TestElMin(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full(nil, 3., confT)
+		a, err := tensor.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full(nil, 2., confT)
+		b, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2694,7 +2693,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2703,7 +2702,7 @@ func TestAdd(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full(nil, 1., confU)
+		exp, err := tensor.Full(nil, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2720,7 +2719,7 @@ func TestAdd(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full(nil, 1., confU)
+		exp, err = tensor.Full(nil, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2735,12 +2734,12 @@ func TestAdd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confT)
+		b, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2750,7 +2749,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2761,12 +2760,12 @@ func TestAdd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confT)
+		a, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2776,7 +2775,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2787,12 +2786,12 @@ func TestAdd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2802,7 +2801,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2817,26 +2816,26 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSub(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full(nil, 3., confT)
+		a, err := tensor.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full(nil, 2., confT)
+		b, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2846,7 +2845,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2855,7 +2854,7 @@ func TestSub(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full(nil, 1., confU)
+		exp, err := tensor.Full(nil, 1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2872,7 +2871,7 @@ func TestSub(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full(nil, -1., confU)
+		exp, err = tensor.Full(nil, -1., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2887,12 +2886,12 @@ func TestSub(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confT)
+		b, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2902,7 +2901,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2913,12 +2912,12 @@ func TestSub(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confT)
+		a, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2928,7 +2927,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2939,12 +2938,12 @@ func TestSub(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2954,7 +2953,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2969,26 +2968,26 @@ func TestSub(t *testing.T) {
 }
 
 func TestMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full(nil, 3., confT)
+		a, err := tensor.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full(nil, 2., confT)
+		b, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2998,7 +2997,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3007,7 +3006,7 @@ func TestMul(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full(nil, 2., confU)
+		exp, err := tensor.Full(nil, 2., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3024,7 +3023,7 @@ func TestMul(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full(nil, 3., confU)
+		exp, err = tensor.Full(nil, 3., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3039,12 +3038,12 @@ func TestMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confT)
+		b, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3054,7 +3053,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3065,12 +3064,12 @@ func TestMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confT)
+		a, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3080,7 +3079,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3091,12 +3090,12 @@ func TestMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3106,7 +3105,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3121,26 +3120,26 @@ func TestMul(t *testing.T) {
 }
 
 func TestDiv(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full(nil, 3., confT)
+		a, err := tensor.Full(nil, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full(nil, 2., confT)
+		b, err := tensor.Full(nil, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3150,7 +3149,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3159,7 +3158,7 @@ func TestDiv(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full(nil, 0.5, confU)
+		exp, err := tensor.Full(nil, 0.5, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3176,7 +3175,7 @@ func TestDiv(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full(nil, -0.75, confU)
+		exp, err = tensor.Full(nil, -0.75, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3191,12 +3190,12 @@ func TestDiv(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confT)
+		b, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3206,7 +3205,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3217,12 +3216,12 @@ func TestDiv(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confT)
+		a, err = tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3232,7 +3231,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3243,12 +3242,12 @@ func TestDiv(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros(nil, confU)
+		a, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros(nil, confU)
+		b, err = tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3258,7 +3257,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3273,26 +3272,26 @@ func TestDiv(t *testing.T) {
 }
 
 func TestDot(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full([]int{2}, 2., confT)
+		a, err := tensor.Full([]int{2}, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full([]int{2}, 3., confT)
+		b, err := tensor.Full([]int{2}, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3302,7 +3301,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3311,7 +3310,7 @@ func TestDot(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full([]int{2}, 3., confU)
+		exp, err := tensor.Full([]int{2}, 3., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3328,7 +3327,7 @@ func TestDot(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full([]int{2}, 2., confU)
+		exp, err = tensor.Full([]int{2}, 2., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3343,12 +3342,12 @@ func TestDot(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros([]int{1}, confU)
+		a, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros([]int{1}, confT)
+		b, err = tensor.Zeros([]int{1}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3358,7 +3357,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3369,12 +3368,12 @@ func TestDot(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros([]int{1}, confT)
+		a, err = tensor.Zeros([]int{1}, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros([]int{1}, confU)
+		b, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3384,7 +3383,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3395,12 +3394,12 @@ func TestDot(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Zeros([]int{1}, confU)
+		a, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Zeros([]int{1}, confU)
+		b, err = tensor.Zeros([]int{1}, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3410,7 +3409,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3425,26 +3424,26 @@ func TestDot(t *testing.T) {
 }
 
 func TestMatmul(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		confU := &qti.Config{
+		confU := &tensor.Config{
 			Device:    dev,
 			GradTrack: false,
 		}
 
-		confT := &qti.Config{
+		confT := &tensor.Config{
 			Device:    dev,
 			GradTrack: true,
 		}
 
 		/* ------------------------------ */
 
-		a, err := qti.Full([]int{2, 3}, 2., confT)
+		a, err := tensor.Full([]int{2, 3}, 2., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err := qti.Full([]int{3, 2}, 3., confT)
+		b, err := tensor.Full([]int{3, 2}, 3., confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3454,7 +3453,7 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3463,7 +3462,7 @@ func TestMatmul(t *testing.T) {
 
 		act := a.Gradient()
 
-		exp, err := qti.Full([]int{2, 3}, 6., confU)
+		exp, err := tensor.Full([]int{2, 3}, 6., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3480,7 +3479,7 @@ func TestMatmul(t *testing.T) {
 
 		act = b.Gradient()
 
-		exp, err = qti.Full([]int{3, 2}, 4., confU)
+		exp, err = tensor.Full([]int{3, 2}, 4., confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3495,12 +3494,12 @@ func TestMatmul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Eye(1, confU)
+		a, err = tensor.Eye(1, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Eye(1, confT)
+		b, err = tensor.Eye(1, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3510,7 +3509,7 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3521,12 +3520,12 @@ func TestMatmul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Eye(1, confT)
+		a, err = tensor.Eye(1, confT)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Eye(1, confU)
+		b, err = tensor.Eye(1, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3536,7 +3535,7 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3547,12 +3546,12 @@ func TestMatmul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		a, err = qti.Eye(1, confU)
+		a, err = tensor.Eye(1, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		b, err = qti.Eye(1, confU)
+		b, err = tensor.Eye(1, confU)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -3562,7 +3561,7 @@ func TestMatmul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		err = qti.BackProp(y)
+		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -1,71 +1,146 @@
 package tensor
 
-type Tensor interface {
-	/*--------------- accessors ---------------*/
-	NElems() int
-	Shape() []int
-	At(index ...int) (float64, error)
-	Slice(index []Range) (Tensor, error)
-	Patch(index []Range, source Tensor) (Tensor, error)
+import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+)
 
-	/*------------ shape modifiers ------------*/
-	Transpose() (Tensor, error)
-	Reshape(shape []int) (Tensor, error)
-	UnSqueeze(dim int) (Tensor, error)
-	Squeeze(dim int) (Tensor, error)
-	Flatten(fromDim int) (Tensor, error)
-	Broadcast(shape []int) (Tensor, error)
+func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
 
-	/*--------------- reducers ----------------*/
-	Sum() float64
-	Max() float64
-	Min() float64
-	Avg() float64
-	Var() float64
-	Std() float64
-	Mean() float64
-	SumAlong(dim int) (Tensor, error)
-	MaxAlong(dim int) (Tensor, error)
-	MinAlong(dim int) (Tensor, error)
-	AvgAlong(dim int) (Tensor, error)
-	VarAlong(dim int) (Tensor, error)
-	StdAlong(dim int) (Tensor, error)
-	MeanAlong(dim int) (Tensor, error)
-
-	/*--------------- operators ---------------*/
-	Scale(float64) Tensor
-	Pow(float64) Tensor
-	Exp() Tensor
-	Log() Tensor
-	Sin() Tensor
-	Cos() Tensor
-	Tan() Tensor
-	Sinh() Tensor
-	Cosh() Tensor
-	Tanh() Tensor
-	Eq(Tensor) (Tensor, error)
-	Ne(Tensor) (Tensor, error)
-	Gt(Tensor) (Tensor, error)
-	Ge(Tensor) (Tensor, error)
-	Lt(Tensor) (Tensor, error)
-	Le(Tensor) (Tensor, error)
-	ElMax(Tensor) (Tensor, error)
-	ElMin(Tensor) (Tensor, error)
-	Add(Tensor) (Tensor, error)
-	Sub(Tensor) (Tensor, error)
-	Mul(Tensor) (Tensor, error)
-	Div(Tensor) (Tensor, error)
-	Dot(Tensor) (Tensor, error)
-	MatMul(Tensor) (Tensor, error)
-	Equals(Tensor) (bool, error)
-
-	/*--------------- gradients ---------------*/
-	GradContext() any
-	ResetGradContext(bool)
-	Gradient() Tensor
+	switch c.Device {
+	case CPU:
+		return cputensor.Full(dims, value, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
 }
 
-type Range struct {
-	From int
-	To   int
+func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
+
+	switch c.Device {
+	case CPU:
+		return cputensor.Zeros(dims, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
+func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
+
+	switch c.Device {
+	case CPU:
+		return cputensor.Ones(dims, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
+func Eye(n int, conf *Config) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
+
+	switch c.Device {
+	case CPU:
+		return cputensor.Eye(n, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
+func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
+
+	switch c.Device {
+	case CPU:
+		return cputensor.RandU(dims, l, u, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
+func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
+
+	switch c.Device {
+	case CPU:
+		return cputensor.RandN(dims, u, s, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
+func TensorOf[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
+	c, err := prepareConfig(conf)
+	if err != nil {
+		return
+	}
+
+	switch c.Device {
+	case CPU:
+		return cputensor.TensorOf(data, c.GradTrack)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
+func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
+	err = validateTensorsDeviceUnity(ts)
+	if err != nil {
+		return
+	}
+
+	switch ts[0].(type) {
+	case *cputensor.CPUTensor:
+		return cputensor.Concat(ts, dim)
+	default:
+		panic("unreachable: unsupported device validated")
+	}
+}
+
+func BackPropagate(t tensor.Tensor) (err error) {
+	err = validateTensorDevice(t)
+	if err != nil {
+		return
+	}
+
+	return gradtrack.BackPropagate(t)
+}
+
+/* ----- helpers ----- */
+
+func prepareConfig(conf *Config) (c Config, err error) {
+	err = validateConfig(conf)
+	if err != nil {
+		return
+	}
+
+	if conf == nil {
+		return Config{
+			Device:    CPU,
+			GradTrack: false,
+		}, nil
+	}
+
+	return *conf, nil
 }

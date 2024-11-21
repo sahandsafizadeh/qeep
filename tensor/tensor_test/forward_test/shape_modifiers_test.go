@@ -3,17 +3,17 @@ package forward_test
 import (
 	"testing"
 
-	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
+	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 func TestTranspose(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.TensorOf([][]float64{{1.}}, conf)
+		ten, err := tensor.TensorOf([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -23,7 +23,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := qti.TensorOf([][]float64{{1.}}, conf)
+		exp, err := tensor.TensorOf([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -36,7 +36,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf([][]float64{{1., 0., 2.}}, conf)
+		ten, err = tensor.TensorOf([][]float64{{1., 0., 2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -46,7 +46,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][]float64{{1.}, {0.}, {2.}}, conf)
+		exp, err = tensor.TensorOf([][]float64{{1.}, {0.}, {2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -59,7 +59,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf([][]float64{{-2.}, {0.}, {-1.}}, conf)
+		ten, err = tensor.TensorOf([][]float64{{-2.}, {0.}, {-1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -69,7 +69,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][]float64{{-2., 0., -1.}}, conf)
+		exp, err = tensor.TensorOf([][]float64{{-2., 0., -1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -82,7 +82,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf([][]float64{
+		ten, err = tensor.TensorOf([][]float64{
 			{0., 1., 2., 3.},
 			{0., 1., 2., 3.},
 			{0., 1., 2., 3.},
@@ -96,7 +96,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][]float64{
+		exp, err = tensor.TensorOf([][]float64{
 			{0., 0., 0.},
 			{1., 1., 1.},
 			{2., 2., 2.},
@@ -114,7 +114,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf([][][]float64{
+		ten, err = tensor.TensorOf([][][]float64{
 			{
 				{1., 2.},
 				{3., 4.},
@@ -133,7 +133,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][][]float64{
+		exp, err = tensor.TensorOf([][][]float64{
 			{
 				{1., 3.},
 				{2., 4.},
@@ -155,7 +155,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{5, 4, 3, 2}, conf)
+		ten, err = tensor.Zeros([]int{5, 4, 3, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -165,7 +165,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{5, 4, 2, 3}, conf)
+		exp, err = tensor.Zeros([]int{5, 4, 2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -182,13 +182,13 @@ func TestTranspose(t *testing.T) {
 }
 
 func TestReshape(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros(nil, conf)
+		ten, err := tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -198,7 +198,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := qti.Zeros([]int{1, 1}, conf)
+		exp, err := tensor.Zeros([]int{1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -211,7 +211,7 @@ func TestReshape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1}, conf)
+		ten, err = tensor.Zeros([]int{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -221,7 +221,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros(nil, conf)
+		exp, err = tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -234,7 +234,7 @@ func TestReshape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1, 1, 1, 1}, conf)
+		ten, err = tensor.Zeros([]int{1, 1, 1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -244,7 +244,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{1, 1}, conf)
+		exp, err = tensor.Zeros([]int{1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -257,7 +257,7 @@ func TestReshape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{4}, conf)
+		ten, err = tensor.Zeros([]int{4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -267,7 +267,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{1, 4}, conf)
+		exp, err = tensor.Zeros([]int{1, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -285,7 +285,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{4, 1}, conf)
+		exp, err = tensor.Zeros([]int{4, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -303,7 +303,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 2}, conf)
+		exp, err = tensor.Zeros([]int{2, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -316,7 +316,7 @@ func TestReshape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1, 2, 3}, conf)
+		ten, err = tensor.Zeros([]int{1, 2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -326,7 +326,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{6}, conf)
+		exp, err = tensor.Zeros([]int{6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -344,7 +344,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{1, 6, 1}, conf)
+		exp, err = tensor.Zeros([]int{1, 6, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -362,7 +362,7 @@ func TestReshape(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{3, 2}, conf)
+		exp, err = tensor.Zeros([]int{3, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -375,7 +375,7 @@ func TestReshape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 3}, conf)
+		ten, err = tensor.Zeros([]int{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -390,7 +390,7 @@ func TestReshape(t *testing.T) {
 		shape[0] = 1
 		shape[1] = 6
 
-		exp, err = qti.Zeros([]int{3, 2}, conf)
+		exp, err = tensor.Zeros([]int{3, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -407,13 +407,13 @@ func TestReshape(t *testing.T) {
 }
 
 func TestUnSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros(nil, conf)
+		ten, err := tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -423,7 +423,7 @@ func TestUnSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := qti.Zeros([]int{1}, conf)
+		exp, err := tensor.Zeros([]int{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -436,7 +436,7 @@ func TestUnSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2}, conf)
+		ten, err = tensor.Zeros([]int{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -446,7 +446,7 @@ func TestUnSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{1, 2}, conf)
+		exp, err = tensor.Zeros([]int{1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -459,7 +459,7 @@ func TestUnSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2}, conf)
+		ten, err = tensor.Zeros([]int{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -469,7 +469,7 @@ func TestUnSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 1}, conf)
+		exp, err = tensor.Zeros([]int{2, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -482,7 +482,7 @@ func TestUnSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 3}, conf)
+		ten, err = tensor.Zeros([]int{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -492,7 +492,7 @@ func TestUnSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{1, 2, 3}, conf)
+		exp, err = tensor.Zeros([]int{1, 2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -505,7 +505,7 @@ func TestUnSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 3}, conf)
+		ten, err = tensor.Zeros([]int{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -515,7 +515,7 @@ func TestUnSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 1, 3}, conf)
+		exp, err = tensor.Zeros([]int{2, 1, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -528,7 +528,7 @@ func TestUnSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 3}, conf)
+		ten, err = tensor.Zeros([]int{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -538,7 +538,7 @@ func TestUnSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 3, 1}, conf)
+		exp, err = tensor.Zeros([]int{2, 3, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -555,13 +555,13 @@ func TestUnSqueeze(t *testing.T) {
 }
 
 func TestSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros([]int{1}, conf)
+		ten, err := tensor.Zeros([]int{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -571,7 +571,7 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := qti.Zeros(nil, conf)
+		exp, err := tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -584,7 +584,7 @@ func TestSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1, 2, 3}, conf)
+		ten, err = tensor.Zeros([]int{1, 2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -594,7 +594,7 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 3}, conf)
+		exp, err = tensor.Zeros([]int{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -607,7 +607,7 @@ func TestSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 1, 3}, conf)
+		ten, err = tensor.Zeros([]int{2, 1, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -617,7 +617,7 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 3}, conf)
+		exp, err = tensor.Zeros([]int{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -630,7 +630,7 @@ func TestSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 3, 1}, conf)
+		ten, err = tensor.Zeros([]int{2, 3, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -640,7 +640,7 @@ func TestSqueeze(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 3}, conf)
+		exp, err = tensor.Zeros([]int{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -657,13 +657,13 @@ func TestSqueeze(t *testing.T) {
 }
 
 func TestFlatten(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros([]int{1}, conf)
+		ten, err := tensor.Zeros([]int{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -673,7 +673,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := qti.Zeros([]int{1}, conf)
+		exp, err := tensor.Zeros([]int{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -686,7 +686,7 @@ func TestFlatten(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 3, 4}, conf)
+		ten, err = tensor.Zeros([]int{2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -696,7 +696,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{24}, conf)
+		exp, err = tensor.Zeros([]int{24}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -709,7 +709,7 @@ func TestFlatten(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 3, 4}, conf)
+		ten, err = tensor.Zeros([]int{2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -719,7 +719,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 12}, conf)
+		exp, err = tensor.Zeros([]int{2, 12}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -732,7 +732,7 @@ func TestFlatten(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 3, 4}, conf)
+		ten, err = tensor.Zeros([]int{2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -742,7 +742,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{2, 3, 4}, conf)
+		exp, err = tensor.Zeros([]int{2, 3, 4}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -755,7 +755,7 @@ func TestFlatten(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1, 2, 3, 4, 5, 6}, conf)
+		ten, err = tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -765,7 +765,7 @@ func TestFlatten(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Zeros([]int{1, 2, 360}, conf)
+		exp, err = tensor.Zeros([]int{1, 2, 360}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -782,13 +782,13 @@ func TestFlatten(t *testing.T) {
 }
 
 func TestBroadcast(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.TensorOf(5., conf)
+		ten, err := tensor.TensorOf(5., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -798,7 +798,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := qti.TensorOf(5., conf)
+		exp, err := tensor.TensorOf(5., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -811,7 +811,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf(5., conf)
+		ten, err = tensor.TensorOf(5., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -821,7 +821,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][]float64{{5.}, {5.}}, conf)
+		exp, err = tensor.TensorOf([][]float64{{5.}, {5.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -834,7 +834,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf([]float64{5.}, conf)
+		ten, err = tensor.TensorOf([]float64{5.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -844,7 +844,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][]float64{
+		exp, err = tensor.TensorOf([][]float64{
 			{5., 5.},
 			{5., 5.},
 			{5., 5.},
@@ -861,7 +861,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf([]float64{1., 2.}, conf)
+		ten, err = tensor.TensorOf([]float64{1., 2.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -871,7 +871,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][][]float64{
+		exp, err = tensor.TensorOf([][][]float64{
 			{
 				{1., 2.},
 				{1., 2.},
@@ -900,7 +900,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf([][][]float64{{{0.}}, {{1.}}}, conf)
+		ten, err = tensor.TensorOf([][][]float64{{{0.}}, {{1.}}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -910,7 +910,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][][]float64{
+		exp, err = tensor.TensorOf([][][]float64{
 			{
 				{0., 0., 0., 0.},
 				{0., 0., 0., 0.},
@@ -934,7 +934,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.TensorOf([][][]float64{
+		ten, err = tensor.TensorOf([][][]float64{
 			{{0., 1., 2., 3.}},
 			{{4., 5., 6., 7.}},
 		}, conf)
@@ -947,7 +947,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.TensorOf([][][][]float64{
+		exp, err = tensor.TensorOf([][][][]float64{
 			{
 				{
 					{0., 1., 2., 3.},
@@ -973,7 +973,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Ones([]int{4, 1, 1, 3}, conf)
+		ten, err = tensor.Ones([]int{4, 1, 1, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -983,7 +983,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = qti.Ones([]int{6, 5, 4, 4, 3, 3, 3}, conf)
+		exp, err = tensor.Ones([]int{6, 5, 4, 4, 3, 3, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -996,7 +996,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 1}, conf)
+		ten, err = tensor.Zeros([]int{2, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1011,7 +1011,7 @@ func TestBroadcast(t *testing.T) {
 		shape[0] = 1
 		shape[1] = 6
 
-		exp, err = qti.Zeros([]int{2, 3}, conf)
+		exp, err = tensor.Zeros([]int{2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1028,13 +1028,13 @@ func TestBroadcast(t *testing.T) {
 }
 
 func TestValidationTranspose(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros(nil, conf)
+		ten, err := tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1048,7 +1048,7 @@ func TestValidationTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{3}, conf)
+		ten, err = tensor.Zeros([]int{3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1066,13 +1066,13 @@ func TestValidationTranspose(t *testing.T) {
 }
 
 func TestValidationReshape(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros([]int{3, 2}, conf)
+		ten, err := tensor.Zeros([]int{3, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1086,7 +1086,7 @@ func TestValidationReshape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros(nil, conf)
+		ten, err = tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1100,7 +1100,7 @@ func TestValidationReshape(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2}, conf)
+		ten, err = tensor.Zeros([]int{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1118,13 +1118,13 @@ func TestValidationReshape(t *testing.T) {
 }
 
 func TestValidationUnSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros(nil, conf)
+		ten, err := tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1145,7 +1145,7 @@ func TestValidationUnSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2}, conf)
+		ten, err = tensor.Zeros([]int{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1163,13 +1163,13 @@ func TestValidationUnSqueeze(t *testing.T) {
 }
 
 func TestValidationSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros(nil, conf)
+		ten, err := tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1190,7 +1190,7 @@ func TestValidationSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1}, conf)
+		ten, err = tensor.Zeros([]int{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1204,7 +1204,7 @@ func TestValidationSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1, 2, 3}, conf)
+		ten, err = tensor.Zeros([]int{1, 2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1236,13 +1236,13 @@ func TestValidationSqueeze(t *testing.T) {
 }
 
 func TestValidationFlatten(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros(nil, conf)
+		ten, err := tensor.Zeros(nil, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1263,7 +1263,7 @@ func TestValidationFlatten(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1}, conf)
+		ten, err = tensor.Zeros([]int{1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1277,7 +1277,7 @@ func TestValidationFlatten(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1, 2, 3}, conf)
+		ten, err = tensor.Zeros([]int{1, 2, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1295,13 +1295,13 @@ func TestValidationFlatten(t *testing.T) {
 }
 
 func TestValidationBroadcast(t *testing.T) {
-	runTestLogicOnDevices(func(dev qti.Device) {
+	runTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &qti.Config{Device: dev}
+		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := qti.Zeros([]int{3, 2}, conf)
+		ten, err := tensor.Zeros([]int{3, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1315,7 +1315,7 @@ func TestValidationBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{1, 2}, conf)
+		ten, err = tensor.Zeros([]int{1, 2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1336,7 +1336,7 @@ func TestValidationBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2}, conf)
+		ten, err = tensor.Zeros([]int{2}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1357,7 +1357,7 @@ func TestValidationBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{4, 2, 1}, conf)
+		ten, err = tensor.Zeros([]int{4, 2, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1371,7 +1371,7 @@ func TestValidationBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{2, 1, 4, 1}, conf)
+		ten, err = tensor.Zeros([]int{2, 1, 4, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1385,7 +1385,7 @@ func TestValidationBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = qti.Zeros([]int{3, 1, 3, 6}, conf)
+		ten, err = tensor.Zeros([]int{3, 1, 3, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}

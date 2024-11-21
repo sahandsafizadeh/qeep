@@ -3,8 +3,8 @@ package forward_test
 import (
 	"testing"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor/tinit"
-	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
+	qt "github.com/sahandsafizadeh/qeep/tensor"
+	qti "github.com/sahandsafizadeh/qeep/tensor"
 )
 
 func TestFullEyeAt(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
+	qti "github.com/sahandsafizadeh/qeep/tensor"
 )
 
 func TestSum(t *testing.T) {

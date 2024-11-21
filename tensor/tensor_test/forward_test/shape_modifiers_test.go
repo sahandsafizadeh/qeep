@@ -3,7 +3,7 @@ package forward_test
 import (
 	"testing"
 
-	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
+	qti "github.com/sahandsafizadeh/qeep/tensor"
 )
 
 func TestTranspose(t *testing.T) {

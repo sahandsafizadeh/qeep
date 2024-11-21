@@ -4,8 +4,8 @@ import (
 	"math"
 	"testing"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor/tinit"
-	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
+	qt "github.com/sahandsafizadeh/qeep/tensor"
+	qti "github.com/sahandsafizadeh/qeep/tensor"
 )
 
 func TestConcat(t *testing.T) {

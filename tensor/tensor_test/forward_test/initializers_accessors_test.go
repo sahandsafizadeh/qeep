@@ -3,7 +3,7 @@ package forward_test
 import (
 	"testing"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor"
+	qt "github.com/sahandsafizadeh/qeep/tensor/tinit"
 	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
 )
 

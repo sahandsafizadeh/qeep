@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor"
+	qt "github.com/sahandsafizadeh/qeep/tensor/tinit"
 	qti "github.com/sahandsafizadeh/qeep/tensor/tinit"
 )
 

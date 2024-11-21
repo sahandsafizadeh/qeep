@@ -1,8 +1,8 @@
 package tinit
 
 import (
-	qt "github.com/sahandsafizadeh/qeep/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
+	qt "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func Full(dims []int, value float64, conf *Config) (t qt.Tensor, err error) {

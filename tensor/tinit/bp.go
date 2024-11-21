@@ -1,8 +1,8 @@
 package tinit
 
 import (
-	qt "github.com/sahandsafizadeh/qeep/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
+	qt "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func BackProp(t qt.Tensor) (err error) {

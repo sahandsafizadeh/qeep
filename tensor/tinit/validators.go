@@ -3,8 +3,8 @@ package tinit
 import (
 	"fmt"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
+	qt "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func validateConfig(conf *Config) (err error) {

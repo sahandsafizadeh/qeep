@@ -1,6 +1,6 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
 func toZeros(t tensor.Tensor) (o tensor.Tensor) {
 	return t.Scale(0)

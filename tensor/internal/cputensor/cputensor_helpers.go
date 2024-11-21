@@ -3,7 +3,7 @@ package cputensor
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func assertCPUTensor(t tensor.Tensor) (ct *CPUTensor, err error) {

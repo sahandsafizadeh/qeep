@@ -3,7 +3,7 @@ package validator
 import (
 	"fmt"
 
-	qt "github.com/sahandsafizadeh/qeep/tensor"
+	qt "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func ValidateAtIndexAgainstDims(index []int, dims []int) (err error) {

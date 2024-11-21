@@ -7,7 +7,7 @@ import (
 )
 
 func TestTranspose(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -182,7 +182,7 @@ func TestTranspose(t *testing.T) {
 }
 
 func TestReshape(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -407,7 +407,7 @@ func TestReshape(t *testing.T) {
 }
 
 func TestUnSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -555,7 +555,7 @@ func TestUnSqueeze(t *testing.T) {
 }
 
 func TestSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -657,7 +657,7 @@ func TestSqueeze(t *testing.T) {
 }
 
 func TestFlatten(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -782,7 +782,7 @@ func TestFlatten(t *testing.T) {
 }
 
 func TestBroadcast(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1028,7 +1028,7 @@ func TestBroadcast(t *testing.T) {
 }
 
 func TestValidationTranspose(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1066,7 +1066,7 @@ func TestValidationTranspose(t *testing.T) {
 }
 
 func TestValidationReshape(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1118,7 +1118,7 @@ func TestValidationReshape(t *testing.T) {
 }
 
 func TestValidationUnSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1163,7 +1163,7 @@ func TestValidationUnSqueeze(t *testing.T) {
 }
 
 func TestValidationSqueeze(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1236,7 +1236,7 @@ func TestValidationSqueeze(t *testing.T) {
 }
 
 func TestValidationFlatten(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1295,7 +1295,7 @@ func TestValidationFlatten(t *testing.T) {
 }
 
 func TestValidationBroadcast(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 

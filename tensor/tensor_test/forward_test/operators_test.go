@@ -8,7 +8,7 @@ import (
 )
 
 func TestScale(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -104,7 +104,7 @@ func TestScale(t *testing.T) {
 }
 
 func TestPow(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -200,7 +200,7 @@ func TestPow(t *testing.T) {
 }
 
 func TestExp(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -296,7 +296,7 @@ func TestExp(t *testing.T) {
 }
 
 func TestLog(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -418,7 +418,7 @@ func TestLog(t *testing.T) {
 }
 
 func TestSin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -496,7 +496,7 @@ func TestSin(t *testing.T) {
 }
 
 func TestCos(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -574,7 +574,7 @@ func TestCos(t *testing.T) {
 }
 
 func TestTan(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -636,7 +636,7 @@ func TestTan(t *testing.T) {
 }
 
 func TestSinh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -699,7 +699,7 @@ func TestSinh(t *testing.T) {
 }
 
 func TestCosh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -762,7 +762,7 @@ func TestCosh(t *testing.T) {
 }
 
 func TestTanh(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -857,7 +857,7 @@ func TestTanh(t *testing.T) {
 }
 
 func TestEq(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -988,7 +988,7 @@ func TestEq(t *testing.T) {
 }
 
 func TestNe(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1119,7 +1119,7 @@ func TestNe(t *testing.T) {
 }
 
 func TestGt(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1250,7 +1250,7 @@ func TestGt(t *testing.T) {
 }
 
 func TestGe(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1381,7 +1381,7 @@ func TestGe(t *testing.T) {
 }
 
 func TestLt(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1512,7 +1512,7 @@ func TestLt(t *testing.T) {
 }
 
 func TestLe(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1643,7 +1643,7 @@ func TestLe(t *testing.T) {
 }
 
 func TestElMax(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1774,7 +1774,7 @@ func TestElMax(t *testing.T) {
 }
 
 func TestElMin(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -1905,7 +1905,7 @@ func TestElMin(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -2039,7 +2039,7 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSub(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -2173,7 +2173,7 @@ func TestSub(t *testing.T) {
 }
 
 func TestMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -2307,7 +2307,7 @@ func TestMul(t *testing.T) {
 }
 
 func TestDiv(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -2441,7 +2441,7 @@ func TestDiv(t *testing.T) {
 }
 
 func TestDot(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -2591,7 +2591,7 @@ func TestDot(t *testing.T) {
 }
 
 func TestMatMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -2900,7 +2900,7 @@ func TestMatMul(t *testing.T) {
 }
 
 func TestValidationBinaryOperators(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -3122,7 +3122,7 @@ func TestValidationBinaryOperators(t *testing.T) {
 }
 
 func TestValidationDot(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
@@ -3210,7 +3210,7 @@ func TestValidationDot(t *testing.T) {
 }
 
 func TestValidationMatMul(t *testing.T) {
-	runTestLogicOnDevices(func(dev tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 

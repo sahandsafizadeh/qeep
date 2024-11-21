@@ -144,3 +144,12 @@ func prepareConfig(conf *Config) (c Config, err error) {
 
 	return *conf, nil
 }
+
+/* ----- testing helpers ----- */
+
+func RunTestLogicOnDevices(testLogic func(Device)) {
+	devices := []Device{CPU}
+	for _, dev := range devices {
+		testLogic(dev)
+	}
+}

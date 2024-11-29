@@ -306,7 +306,7 @@ func (t *CPUTensor) Mean() (value float64) {
 func (t *CPUTensor) SumAlong(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("SumAlong input dimension validation failed: %w", err)
 		return
 	}
 
@@ -319,7 +319,7 @@ func (t *CPUTensor) SumAlong(dim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) MaxAlong(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("MaxAlong input dimension validation failed: %w", err)
 		return
 	}
 
@@ -332,7 +332,7 @@ func (t *CPUTensor) MaxAlong(dim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) MinAlong(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("MinAlong input dimension validation failed: %w", err)
 		return
 	}
 
@@ -345,7 +345,7 @@ func (t *CPUTensor) MinAlong(dim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) AvgAlong(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("AvgAlong input dimension validation failed: %w", err)
 		return
 	}
 
@@ -358,7 +358,7 @@ func (t *CPUTensor) AvgAlong(dim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) VarAlong(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("VarAlong input dimension validation failed: %w", err)
 		return
 	}
 
@@ -371,7 +371,7 @@ func (t *CPUTensor) VarAlong(dim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) StdAlong(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("StdAlong input dimension validation failed: %w", err)
 		return
 	}
 
@@ -384,7 +384,7 @@ func (t *CPUTensor) StdAlong(dim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) MeanAlong(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("MeanAlong input dimension validation failed: %w", err)
 		return
 	}
 

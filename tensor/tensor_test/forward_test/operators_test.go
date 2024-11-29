@@ -2977,7 +2977,7 @@ func TestValidationBinaryOperators(t *testing.T) {
 		_, err = t1.Equals(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "Equals tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3042,7 +3042,7 @@ func TestValidationBinaryOperators(t *testing.T) {
 		_, err = t1.Equals(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "Equals tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3091,28 +3091,28 @@ func TestValidationBinaryOperators(t *testing.T) {
 		_, err = t1.Add(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
-		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+		} else if err.Error() != "tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Sub(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
-		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+		} else if err.Error() != "tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Mul(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
-		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+		} else if err.Error() != "tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Div(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
-		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+		} else if err.Error() != "tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3200,7 +3200,7 @@ func TestValidationDot(t *testing.T) {
 		_, err = t1.Dot(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
+		} else if err.Error() != "tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3307,7 +3307,7 @@ func TestValidationMatMul(t *testing.T) {
 		_, err = t1.MatMul(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
-		} else if err.Error() != "tensors' broadcasting failed: input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
+		} else if err.Error() != "tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
 			t.Fatal("unexpected error message returned")
 		}
 

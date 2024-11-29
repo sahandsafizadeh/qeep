@@ -1309,7 +1309,7 @@ func TestValidationBroadcast(t *testing.T) {
 		_, err = ten.Broadcast([]int{3, -2})
 		if err == nil {
 			t.Fatalf("expected error because of negative dimension")
-		} else if err.Error() != "input shape validation failed: expected positive dimension sizes: got (-2) at position (1)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected positive dimension sizes: got (-2) at position (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1323,14 +1323,14 @@ func TestValidationBroadcast(t *testing.T) {
 		_, err = ten.Broadcast(nil)
 		if err == nil {
 			t.Fatalf("expected error because of source number of dimensions (2) being greater than that of target (0)")
-		} else if err.Error() != "input shape validation failed: expected number of dimensions in source tensor to be less than or equal to that of target shape: (2) > (0)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected number of dimensions in source tensor to be less than or equal to that of target shape: (2) > (0)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.Broadcast([]int{2})
 		if err == nil {
 			t.Fatalf("expected error because of source number of dimensions (2) being greater than that of target (1)")
-		} else if err.Error() != "input shape validation failed: expected number of dimensions in source tensor to be less than or equal to that of target shape: (2) > (1)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected number of dimensions in source tensor to be less than or equal to that of target shape: (2) > (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1344,14 +1344,14 @@ func TestValidationBroadcast(t *testing.T) {
 		_, err = ten.Broadcast([]int{1})
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (0)")
-		} else if err.Error() != "input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (1)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.Broadcast([]int{3})
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (0)")
-		} else if err.Error() != "input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1365,7 +1365,7 @@ func TestValidationBroadcast(t *testing.T) {
 		_, err = ten.Broadcast([]int{4, 3, 5})
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1379,7 +1379,7 @@ func TestValidationBroadcast(t *testing.T) {
 		_, err = ten.Broadcast([]int{2, 3, 4, 4, 5})
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1393,7 +1393,7 @@ func TestValidationBroadcast(t *testing.T) {
 		_, err = ten.Broadcast([]int{1, 2, 3, 4, 5, 6})
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (4)")
-		} else if err.Error() != "input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
 			t.Fatal("unexpected error message returned")
 		}
 

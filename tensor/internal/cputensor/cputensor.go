@@ -259,13 +259,13 @@ func (t *CPUTensor) Flatten(fromDim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Broadcast(shape []int) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDims(shape)
 	if err != nil {
-		err = fmt.Errorf("input shape validation failed: %w", err)
+		err = fmt.Errorf("Broadcast input shape validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBroadcastSourceDimsAgainstTargetDims(t.dims, shape)
 	if err != nil {
-		err = fmt.Errorf("input shape validation failed: %w", err)
+		err = fmt.Errorf("Broadcast input shape validation failed: %w", err)
 		return
 	}
 
@@ -735,13 +735,13 @@ func (t *CPUTensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Equals(u tensor.Tensor) (are bool, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Equals tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Equals tensors' dimension validation failed: %w", err)
 		return
 	}
 

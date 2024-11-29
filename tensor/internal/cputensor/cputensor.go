@@ -609,13 +609,13 @@ func (t *CPUTensor) ElMin(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Add tensors' device validation failed: %w", err)
 		return
 	}
 
 	ct1, ct2, err := broadcastForBinaryOp(t, cu)
 	if err != nil {
-		err = fmt.Errorf("tensors' broadcasting failed: %w", err)
+		err = fmt.Errorf("Add tensors' broadcasting failed: %w", err)
 		return
 	}
 
@@ -628,13 +628,13 @@ func (t *CPUTensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Sub(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Sub tensors' device validation failed: %w", err)
 		return
 	}
 
 	ct1, ct2, err := broadcastForBinaryOp(t, cu)
 	if err != nil {
-		err = fmt.Errorf("tensors' broadcasting failed: %w", err)
+		err = fmt.Errorf("Sub tensors' broadcasting failed: %w", err)
 		return
 	}
 
@@ -647,13 +647,13 @@ func (t *CPUTensor) Sub(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Mul(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Mul tensors' device validation failed: %w", err)
 		return
 	}
 
 	ct1, ct2, err := broadcastForBinaryOp(t, cu)
 	if err != nil {
-		err = fmt.Errorf("tensors' broadcasting failed: %w", err)
+		err = fmt.Errorf("Mul tensors' broadcasting failed: %w", err)
 		return
 	}
 
@@ -666,13 +666,13 @@ func (t *CPUTensor) Mul(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Div tensors' device validation failed: %w", err)
 		return
 	}
 
 	ct1, ct2, err := broadcastForBinaryOp(t, cu)
 	if err != nil {
-		err = fmt.Errorf("tensors' broadcasting failed: %w", err)
+		err = fmt.Errorf("Div tensors' broadcasting failed: %w", err)
 		return
 	}
 

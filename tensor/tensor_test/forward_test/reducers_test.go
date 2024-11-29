@@ -1032,14 +1032,14 @@ func TestValidationReducers(t *testing.T) {
 		_, err = ten.SumAlong(-1)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (-1) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
+		} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.SumAlong(0)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (0) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
+		} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1053,7 +1053,7 @@ func TestValidationReducers(t *testing.T) {
 		_, err = ten.SumAlong(1)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (1) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
+		} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1067,49 +1067,49 @@ func TestValidationReducers(t *testing.T) {
 		_, err = ten.SumAlong(2)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (2) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+		} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.MaxAlong(2)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (2) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+		} else if err.Error() != "MaxAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.MinAlong(2)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (2) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+		} else if err.Error() != "MinAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.AvgAlong(2)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (2) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+		} else if err.Error() != "AvgAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.VarAlong(2)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (2) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+		} else if err.Error() != "VarAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.StdAlong(2)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (2) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+		} else if err.Error() != "StdAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.MeanAlong(2)
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (2) being out of range")
-		} else if err.Error() != "input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+		} else if err.Error() != "MeanAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 

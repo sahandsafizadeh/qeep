@@ -2921,56 +2921,56 @@ func TestValidationBinaryOperators(t *testing.T) {
 		_, err = t1.Eq(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "Eq tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Ne(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "Ne tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Gt(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "Gt tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Ge(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "Ge tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Lt(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "Lt tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Le(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "Le tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.ElMax(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "ElMax tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.ElMin(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "ElMin tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -2986,56 +2986,56 @@ func TestValidationBinaryOperators(t *testing.T) {
 		_, err = t1.Eq(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "Eq tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Ne(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "Ne tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Gt(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "Gt tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Ge(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "Ge tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Lt(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "Lt tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Le(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "Le tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.ElMax(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "ElMax tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.ElMin(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+		} else if err.Error() != "ElMin tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 

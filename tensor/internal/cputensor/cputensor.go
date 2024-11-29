@@ -457,13 +457,13 @@ func (t *CPUTensor) Tanh() (o tensor.Tensor) {
 func (t *CPUTensor) Eq(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Eq tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Eq tensors' dimension validation failed: %w", err)
 		return
 	}
 
@@ -476,13 +476,13 @@ func (t *CPUTensor) Eq(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Ne(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Ne tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Ne tensors' dimension validation failed: %w", err)
 		return
 	}
 
@@ -495,13 +495,13 @@ func (t *CPUTensor) Ne(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Gt(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Gt tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Gt tensors' dimension validation failed: %w", err)
 		return
 	}
 
@@ -514,13 +514,13 @@ func (t *CPUTensor) Gt(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Ge(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Ge tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Ge tensors' dimension validation failed: %w", err)
 		return
 	}
 
@@ -533,13 +533,13 @@ func (t *CPUTensor) Ge(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Lt(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Lt tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Lt tensors' dimension validation failed: %w", err)
 		return
 	}
 
@@ -552,13 +552,13 @@ func (t *CPUTensor) Lt(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Le(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Le tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Le tensors' dimension validation failed: %w", err)
 		return
 	}
 
@@ -571,13 +571,13 @@ func (t *CPUTensor) Le(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) ElMax(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("ElMax tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("ElMax tensors' dimension validation failed: %w", err)
 		return
 	}
 
@@ -590,13 +590,13 @@ func (t *CPUTensor) ElMax(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) ElMin(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("ElMin tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("ElMin tensors' dimension validation failed: %w", err)
 		return
 	}
 

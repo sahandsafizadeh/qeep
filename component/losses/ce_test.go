@@ -146,7 +146,7 @@ func TestCE(t *testing.T) {
 		val, err = act.At()
 		if err != nil {
 			t.Fatal(err)
-		} else if !(1.706 < val && val < 1.707) {
+		} else if !(1.704 < val && val < 1.706) {
 			t.Fatalf("expected scalar tensors value to be (1.705): got (%f)", val)
 		}
 

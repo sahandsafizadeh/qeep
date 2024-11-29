@@ -685,19 +685,19 @@ func (t *CPUTensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Dot tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateDotProductDims(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Dot tensors' dimension validation failed: %w", err)
 		return
 	}
 
 	ct1, ct2, err := broadcastForBinaryOp(t, cu)
 	if err != nil {
-		err = fmt.Errorf("tensors' broadcasting failed: %w", err)
+		err = fmt.Errorf("Dot tensors' broadcasting failed: %w", err)
 		return
 	}
 
@@ -710,19 +710,19 @@ func (t *CPUTensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 func (t *CPUTensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("MatMul tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateMatMulDims(t.dims, cu.dims)
 	if err != nil {
-		err = fmt.Errorf("tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("MatMul tensors' dimension validation failed: %w", err)
 		return
 	}
 
 	ct1, ct2, err := broadcastForMatMul(t, cu)
 	if err != nil {
-		err = fmt.Errorf("tensors' broadcasting failed: %w", err)
+		err = fmt.Errorf("MatMul tensors' broadcasting failed: %w", err)
 		return
 	}
 

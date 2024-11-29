@@ -3141,28 +3141,28 @@ func TestValidationDot(t *testing.T) {
 		_, err = t1.Dot(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "Dot tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Dot(t1)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than 1 dimension")
-		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (0)" {
+		} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (0)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Dot(t2)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than 1 dimension")
-		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (1)" {
+		} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t2.Dot(t1)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than 1 dimension")
-		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (1) and (0)" {
+		} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (1) and (0)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3181,7 +3181,7 @@ func TestValidationDot(t *testing.T) {
 		_, err = t1.Dot(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at last dimension")
-		} else if err.Error() != "tensors' dimension validation failed: expected sizes to match at last dimensions: (3) != (2)" {
+		} else if err.Error() != "Dot tensors' dimension validation failed: expected sizes to match at last dimensions: (3) != (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3200,7 +3200,7 @@ func TestValidationDot(t *testing.T) {
 		_, err = t1.Dot(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
+		} else if err.Error() != "Dot tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3229,28 +3229,28 @@ func TestValidationMatMul(t *testing.T) {
 		_, err = t1.MatMul(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != "MatMul tensors' device validation failed: expected input tensor not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.MatMul(t1)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than (2) dimensions")
-		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (1)" {
+		} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.MatMul(t2)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than (2) dimensions")
-		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (2)" {
+		} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t2.MatMul(t1)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having less than (2) dimensions")
-		} else if err.Error() != "tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (2) and (1)" {
+		} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (2) and (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3269,7 +3269,7 @@ func TestValidationMatMul(t *testing.T) {
 		_, err = t1.MatMul(t2)
 		if err == nil {
 			t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
-		} else if err.Error() != "tensors' dimension validation failed: expected dimension (1) of first tensor to be equal to dimension (0) of second tensor for matrix multiplication: (3) != (2)" {
+		} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (1) of first tensor to be equal to dimension (0) of second tensor for matrix multiplication: (3) != (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3288,7 +3288,7 @@ func TestValidationMatMul(t *testing.T) {
 		_, err = t1.MatMul(t2)
 		if err == nil {
 			t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
-		} else if err.Error() != "tensors' dimension validation failed: expected dimension (3) of first tensor to be equal to dimension (1) of second tensor for matrix multiplication: (2) != (3)" {
+		} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (3) of first tensor to be equal to dimension (1) of second tensor for matrix multiplication: (2) != (3)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3307,7 +3307,7 @@ func TestValidationMatMul(t *testing.T) {
 		_, err = t1.MatMul(t2)
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
-		} else if err.Error() != "tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
+		} else if err.Error() != "MatMul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
 			t.Fatal("unexpected error message returned")
 		}
 

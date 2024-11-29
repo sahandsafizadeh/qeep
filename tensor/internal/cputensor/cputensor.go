@@ -13,7 +13,7 @@ import (
 func Full(dims []int, value float64, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDims(dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("Full input dimension validation failed: %w", err)
 		return
 	}
 
@@ -24,17 +24,29 @@ func Full(dims []int, value float64, withGrad bool) (o tensor.Tensor, err error)
 }
 
 func Zeros(dims []int, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateInputDims(dims)
+	if err != nil {
+		err = fmt.Errorf("Zeros input dimension validation failed: %w", err)
+		return
+	}
+
 	return Full(dims, 0., withGrad)
 }
 
 func Ones(dims []int, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateInputDims(dims)
+	if err != nil {
+		err = fmt.Errorf("Ones input dimension validation failed: %w", err)
+		return
+	}
+
 	return Full(dims, 1., withGrad)
 }
 
 func Eye(n int, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDims([]int{n, n})
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("Eye input dimension validation failed: %w", err)
 		return
 	}
 
@@ -47,13 +59,13 @@ func Eye(n int, withGrad bool) (o tensor.Tensor, err error) {
 func RandU(dims []int, l, u float64, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateRandUParams(l, u)
 	if err != nil {
-		err = fmt.Errorf("random parameter validation failed: %w", err)
+		err = fmt.Errorf("RandU random parameter validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateInputDims(dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("RandU input dimension validation failed: %w", err)
 		return
 	}
 
@@ -66,13 +78,13 @@ func RandU(dims []int, l, u float64, withGrad bool) (o tensor.Tensor, err error)
 func RandN(dims []int, u, s float64, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateRandNParams(u, s)
 	if err != nil {
-		err = fmt.Errorf("random parameter validation failed: %w", err)
+		err = fmt.Errorf("RandN random parameter validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateInputDims(dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("RandN input dimension validation failed: %w", err)
 		return
 	}
 
@@ -85,7 +97,7 @@ func RandN(dims []int, u, s float64, withGrad bool) (o tensor.Tensor, err error)
 func TensorOf(data any, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDataDimUnity(data)
 	if err != nil {
-		err = fmt.Errorf("input data validation failed: %w", err)
+		err = fmt.Errorf("TensorOf input data validation failed: %w", err)
 		return
 	}
 
@@ -98,7 +110,7 @@ func TensorOf(data any, withGrad bool) (o tensor.Tensor, err error) {
 func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 	cus, err := assertCPUTensors(ts)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Concat tensors' device validation failed: %w", err)
 		return
 	}
 
@@ -109,7 +121,7 @@ func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 
 	err = validator.ValidateConcatTensorsDimsAlongDim(cusDims, dim)
 	if err != nil {
-		err = fmt.Errorf("inputs' dimension validation failed: %w", err)
+		err = fmt.Errorf("Concat inputs' dimension validation failed: %w", err)
 		return
 	}
 
@@ -134,7 +146,7 @@ func (t *CPUTensor) Shape() (shape []int) {
 func (t *CPUTensor) At(index ...int) (value float64, err error) {
 	err = validator.ValidateAtIndexAgainstDims(index, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input index validation failed: %w", err)
+		err = fmt.Errorf("At input index validation failed: %w", err)
 		return
 	}
 
@@ -144,7 +156,7 @@ func (t *CPUTensor) At(index ...int) (value float64, err error) {
 func (t *CPUTensor) Slice(index []tensor.Range) (o tensor.Tensor, err error) {
 	err = validator.ValidateSliceIndexAgainstDims(index, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input index validation failed: %w", err)
+		err = fmt.Errorf("Slice input index validation failed: %w", err)
 		return
 	}
 
@@ -157,13 +169,13 @@ func (t *CPUTensor) Slice(index []tensor.Range) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Patch(index []tensor.Range, u tensor.Tensor) (o tensor.Tensor, err error) {
 	cu, err := assertCPUTensor(u)
 	if err != nil {
-		err = fmt.Errorf("tensors' device validation failed: %w", err)
+		err = fmt.Errorf("Patch tensors' device validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidatePatchIndexAgainstDims(index, cu.dims, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input index or tensors' dimension validation failed: %w", err)
+		err = fmt.Errorf("Patch input index or tensors' dimension validation failed: %w", err)
 		return
 	}
 
@@ -176,7 +188,7 @@ func (t *CPUTensor) Patch(index []tensor.Range, u tensor.Tensor) (o tensor.Tenso
 func (t *CPUTensor) Transpose() (o tensor.Tensor, err error) {
 	err = validator.ValidateTransposeDims(t.dims)
 	if err != nil {
-		err = fmt.Errorf("tensor's dimension validation failed: %w", err)
+		err = fmt.Errorf("Transpose tensor's dimension validation failed: %w", err)
 		return
 	}
 
@@ -189,13 +201,13 @@ func (t *CPUTensor) Transpose() (o tensor.Tensor, err error) {
 func (t *CPUTensor) Reshape(shape []int) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDims(shape)
 	if err != nil {
-		err = fmt.Errorf("input shape validation failed: %w", err)
+		err = fmt.Errorf("Reshape input shape validation failed: %w", err)
 		return
 	}
 
 	err = validator.ValidateReshapeSourceDimsAgainstTargetDims(t.dims, shape)
 	if err != nil {
-		err = fmt.Errorf("input shape validation failed: %w", err)
+		err = fmt.Errorf("Reshape input shape validation failed: %w", err)
 		return
 	}
 
@@ -208,7 +220,7 @@ func (t *CPUTensor) Reshape(shape []int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) UnSqueeze(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateUnSqueezeDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("UnSqueeze input dimension validation failed: %w", err)
 		return
 	}
 
@@ -221,7 +233,7 @@ func (t *CPUTensor) UnSqueeze(dim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Squeeze(dim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateSqueezeDimAgainstDims(dim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("Squeeze input dimension validation failed: %w", err)
 		return
 	}
 
@@ -234,7 +246,7 @@ func (t *CPUTensor) Squeeze(dim int) (o tensor.Tensor, err error) {
 func (t *CPUTensor) Flatten(fromDim int) (o tensor.Tensor, err error) {
 	err = validator.ValidateFlattenDimAgainstDims(fromDim, t.dims)
 	if err != nil {
-		err = fmt.Errorf("input dimension validation failed: %w", err)
+		err = fmt.Errorf("Flatten input dimension validation failed: %w", err)
 		return
 	}
 

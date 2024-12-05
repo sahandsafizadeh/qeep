@@ -2,6 +2,8 @@ package logger
 
 import "testing"
 
+/* ------------------------------ White Box Tested ------------------------------ */
+
 func TestEpochLogger(t *testing.T) {
 
 	const (

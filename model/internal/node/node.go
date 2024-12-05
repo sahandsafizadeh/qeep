@@ -14,8 +14,8 @@ type Node struct {
 	children []*Node
 }
 
-func NewNode(layer contract.Layer) (n *Node, err error) {
-	return &Node{layer: layer}, nil
+func NewNode(layer contract.Layer) (n *Node) {
+	return &Node{layer: layer}
 }
 
 func (n *Node) Layer() contract.Layer {

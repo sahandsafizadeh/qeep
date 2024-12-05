@@ -19,10 +19,7 @@ func NewStream(initFunc LayerInitFunc, xs []*Stream) (y *Stream) {
 		return
 	}
 
-	cursor, err := node.NewNode(forwarder)
-	if err != nil {
-		return
-	}
+	cursor := node.NewNode(forwarder)
 
 	for _, x := range xs {
 		err = x.cursor.AddChild(cursor)

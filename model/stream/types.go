@@ -1,8 +1,8 @@
 package stream
 
 import (
+	"github.com/sahandsafizadeh/qeep/model/contract"
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
-	"github.com/sahandsafizadeh/qeep/model/internal/types"
 )
 
 type Stream struct {
@@ -10,4 +10,4 @@ type Stream struct {
 }
 
 type Func func(xs ...*Stream) *Stream
-type ForwarderInitFunc func() (types.Layer, error)
+type LayerInitFunc func() (contract.Layer, error)

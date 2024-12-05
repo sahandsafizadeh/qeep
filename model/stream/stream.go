@@ -6,7 +6,7 @@ func (s *Stream) Cursor() *node.Node {
 	return s.cursor
 }
 
-func NewStream(initFunc ForwarderInitFunc, xs []*Stream) (y *Stream) {
+func NewStream(initFunc LayerInitFunc, xs []*Stream) (y *Stream) {
 	var err error
 	defer func() {
 		if err != nil {
@@ -39,6 +39,6 @@ func NewStream(initFunc ForwarderInitFunc, xs []*Stream) (y *Stream) {
 	return &Stream{cursor: cursor}
 }
 
-func NewStreamFunc(initFunc ForwarderInitFunc) Func {
+func NewStreamFunc(initFunc LayerInitFunc) Func {
 	return func(xs ...*Stream) *Stream { return NewStream(initFunc, xs) }
 }

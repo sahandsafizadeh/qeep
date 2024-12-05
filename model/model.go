@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
+	"github.com/sahandsafizadeh/qeep/model/contract"
 	"github.com/sahandsafizadeh/qeep/model/internal/logger"
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
-	"github.com/sahandsafizadeh/qeep/model/internal/types"
 	"github.com/sahandsafizadeh/qeep/model/stream"
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
@@ -14,8 +14,8 @@ import (
 func NewModel(
 	input *stream.Stream,
 	output *stream.Stream,
-	lossFunc types.Loss,
-	optimizer types.Optimizer,
+	lossFunc contract.Loss,
+	optimizer contract.Optimizer,
 ) (m *Model, err error) {
 	return NewModels([]*stream.Stream{input}, output, lossFunc, optimizer)
 }
@@ -23,8 +23,8 @@ func NewModel(
 func NewModels(
 	xs []*stream.Stream,
 	y *stream.Stream,
-	lossFunc types.Loss,
-	optimizer types.Optimizer,
+	lossFunc contract.Loss,
+	optimizer contract.Optimizer,
 ) (m *Model, err error) {
 
 	if len(xs) == 0 {
@@ -45,7 +45,7 @@ func NewModels(
 			return
 		}
 
-		_, ok := n.Forwarder().(*layers.Input)
+		_, ok := n.Layer().(*layers.Input)
 		if !ok {
 			err = fmt.Errorf("")
 			return
@@ -64,7 +64,7 @@ func NewModels(
 	return &Model{
 		output:    y.Cursor(),
 		inputs:    ins,
-		lossFunc:  lossFunc,
+		loss:      lossFunc,
 		optimizer: optimizer,
 	}, nil
 }
@@ -78,7 +78,7 @@ func (m *Model) Predict(xs []tensor.Tensor) (yp tensor.Tensor, err error) {
 	return m.feed(xs)
 }
 
-func (m *Model) Eval(batchGen types.BatchGenerator, metrics map[string]types.Metric) (result map[string]float64, err error) {
+func (m *Model) Eval(batchGen contract.BatchGenerator, metrics map[string]contract.Metric) (result map[string]float64, err error) {
 	var xs []tensor.Tensor
 	var yt tensor.Tensor
 	var yp tensor.Tensor
@@ -117,7 +117,7 @@ func (m *Model) Eval(batchGen types.BatchGenerator, metrics map[string]types.Met
 	return result, nil
 }
 
-func (m *Model) Fit(batchGen types.BatchGenerator, conf *FitConfig) (err error) {
+func (m *Model) Fit(batchGen contract.BatchGenerator, conf *FitConfig) (err error) {
 	err = validateFitConfig(conf)
 	if err != nil {
 		return
@@ -163,7 +163,7 @@ func (m *Model) Fit(batchGen types.BatchGenerator, conf *FitConfig) (err error) 
 
 func (m *Model) seed(xs []tensor.Tensor) (err error) {
 	for i, n := range m.inputs {
-		inputf := n.Forwarder().(*layers.Input)
+		inputf := n.Layer().(*layers.Input)
 		inputf.SeedFunc = func() tensor.Tensor { return xs[i] }
 	}
 
@@ -195,7 +195,7 @@ func (m *Model) trainStep(xs []tensor.Tensor, yt tensor.Tensor) (loss tensor.Ten
 		return
 	}
 
-	loss, err = m.lossFunc.Compute(yp, yt)
+	loss, err = m.loss.Compute(yp, yt)
 	if err != nil {
 		return
 	}

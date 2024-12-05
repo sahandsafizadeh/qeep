@@ -10,7 +10,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/batchgens"
-	"github.com/sahandsafizadeh/qeep/model/internal/types"
+	"github.com/sahandsafizadeh/qeep/model/contract"
 	sahand "github.com/sahandsafizadeh/qeep/model/layers"
 )
 
@@ -63,7 +63,7 @@ func TestModel(t *testing.T) {
 
 	/* ------------- test ------------- */
 
-	result, err := mod.Eval(testBatchGen, map[string]types.Metric{"Accuracy": metrics.NewAccuracy()})
+	result, err := mod.Eval(testBatchGen, map[string]contract.Metric{"Accuracy": metrics.NewAccuracy()})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func TestModel(t *testing.T) {
 	t.Logf("Test Result: %v", result)
 }
 
-func prepareData() (trainBatchGen, testBatchGen types.BatchGenerator, err error) {
+func prepareData() (trainBatchGen, testBatchGen contract.BatchGenerator, err error) {
 	x := [][]float64{
 		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
 		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},

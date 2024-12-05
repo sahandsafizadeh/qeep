@@ -3,12 +3,12 @@ package layers
 import (
 	"github.com/sahandsafizadeh/qeep/component/layers"
 	"github.com/sahandsafizadeh/qeep/component/layers/activations"
-	"github.com/sahandsafizadeh/qeep/model/internal/types"
+	"github.com/sahandsafizadeh/qeep/model/contract"
 	"github.com/sahandsafizadeh/qeep/model/stream"
 )
 
 func Input() *stream.Stream {
-	initf := func() (types.Layer, error) {
+	initf := func() (contract.Layer, error) {
 		return layers.NewInput(), nil
 	}
 
@@ -16,7 +16,7 @@ func Input() *stream.Stream {
 }
 
 func Tanh() stream.Func {
-	initf := func() (types.Layer, error) {
+	initf := func() (contract.Layer, error) {
 		return activations.NewTanh(), nil
 	}
 
@@ -24,7 +24,7 @@ func Tanh() stream.Func {
 }
 
 func Sigmoid() stream.Func {
-	initf := func() (types.Layer, error) {
+	initf := func() (contract.Layer, error) {
 		return activations.NewSigmoid(), nil
 	}
 
@@ -32,7 +32,7 @@ func Sigmoid() stream.Func {
 }
 
 func Softmax(conf *activations.SoftmaxConfig) stream.Func {
-	initf := func() (types.Layer, error) {
+	initf := func() (contract.Layer, error) {
 		return activations.NewSoftmax(conf)
 	}
 
@@ -40,7 +40,7 @@ func Softmax(conf *activations.SoftmaxConfig) stream.Func {
 }
 
 func Relu() stream.Func {
-	initf := func() (types.Layer, error) {
+	initf := func() (contract.Layer, error) {
 		return activations.NewRelu(), nil
 	}
 
@@ -48,7 +48,7 @@ func Relu() stream.Func {
 }
 
 func LeakyRelu(conf *activations.LeakyReluConfig) stream.Func {
-	initf := func() (types.Layer, error) {
+	initf := func() (contract.Layer, error) {
 		return activations.NewLeakyRelu(conf), nil
 	}
 
@@ -56,7 +56,7 @@ func LeakyRelu(conf *activations.LeakyReluConfig) stream.Func {
 }
 
 func FC(conf *layers.FCConfig) stream.Func {
-	initf := func() (types.Layer, error) {
+	initf := func() (contract.Layer, error) {
 		return layers.NewFC(conf)
 	}
 

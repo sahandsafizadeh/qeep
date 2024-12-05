@@ -1,4 +1,4 @@
-package types
+package contract
 
 import (
 	"github.com/sahandsafizadeh/qeep/component/layers"

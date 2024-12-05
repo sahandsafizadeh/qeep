@@ -1,15 +1,15 @@
 package model
 
 import (
+	"github.com/sahandsafizadeh/qeep/model/contract"
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
-	"github.com/sahandsafizadeh/qeep/model/internal/types"
 )
 
 type Model struct {
 	inputs    []*node.Node
 	output    *node.Node
-	lossFunc  types.Loss
-	optimizer types.Optimizer
+	loss      contract.Loss
+	optimizer contract.Optimizer
 }
 
 type FitConfig struct {

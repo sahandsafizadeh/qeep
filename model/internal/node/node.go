@@ -3,23 +3,23 @@ package node
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/model/internal/types"
+	"github.com/sahandsafizadeh/qeep/model/contract"
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 type Node struct {
-	forwarder types.Layer
-	result    tensor.Tensor
-	parents   []*Node
-	children  []*Node
+	layer    contract.Layer
+	result   tensor.Tensor
+	parents  []*Node
+	children []*Node
 }
 
-func NewNode(forwarder types.Layer) (n *Node, err error) {
-	return &Node{forwarder: forwarder}, nil
+func NewNode(layer contract.Layer) (n *Node, err error) {
+	return &Node{layer: layer}, nil
 }
 
-func (n *Node) Forwarder() types.Layer {
-	return n.forwarder
+func (n *Node) Layer() contract.Layer {
+	return n.layer
 }
 
 func (n *Node) Result() tensor.Tensor {
@@ -62,7 +62,7 @@ func (n *Node) Forward() (err error) {
 		xs[i] = p.result
 	}
 
-	y, err := n.forwarder.Forward(xs...)
+	y, err := n.layer.Forward(xs...)
 	if err != nil {
 		return
 	}
@@ -72,13 +72,13 @@ func (n *Node) Forward() (err error) {
 	return nil
 }
 
-func (n *Node) Optimize(optimizer types.Optimizer) (err error) {
-	wf, ok := n.forwarder.(types.WeightedLayer)
+func (n *Node) Optimize(optimizer contract.Optimizer) (err error) {
+	wl, ok := n.layer.(contract.WeightedLayer)
 	if !ok {
 		return nil
 	}
 
-	for _, w := range wf.Weights() {
+	for _, w := range wl.Weights() {
 		if !w.Trainable {
 			continue
 		}
@@ -93,12 +93,12 @@ func (n *Node) Optimize(optimizer types.Optimizer) (err error) {
 }
 
 func (n *Node) DisableGrad() (err error) {
-	wf, ok := n.forwarder.(types.WeightedLayer)
+	wl, ok := n.layer.(contract.WeightedLayer)
 	if !ok {
 		return nil
 	}
 
-	for _, w := range wf.Weights() {
+	for _, w := range wl.Weights() {
 		(*w.Value).ResetGradContext(false)
 	}
 
@@ -106,12 +106,12 @@ func (n *Node) DisableGrad() (err error) {
 }
 
 func (n *Node) EnableGrad() (err error) {
-	wf, ok := n.forwarder.(types.WeightedLayer)
+	wl, ok := n.layer.(contract.WeightedLayer)
 	if !ok {
 		return nil
 	}
 
-	for _, w := range wf.Weights() {
+	for _, w := range wl.Weights() {
 		(*w.Value).ResetGradContext(w.Trainable)
 	}
 

@@ -29,7 +29,7 @@ func (m *Model) enableGrad() (err error) {
 	})
 }
 
-func traverseBFS(roots []*node.Node, applyFunc nodeApplyFunc) (err error) {
+func traverseBFS(roots []*node.Node, applyFunc func(*node.Node) error) (err error) {
 	q := queue.NewQueue[*node.Node]()
 	q.Enqueue(roots)
 

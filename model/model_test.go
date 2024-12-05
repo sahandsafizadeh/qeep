@@ -9,10 +9,9 @@ import (
 	"github.com/sahandsafizadeh/qeep/component/metrics"
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
 	"github.com/sahandsafizadeh/qeep/model"
-	"github.com/sahandsafizadeh/qeep/model/batchgen"
+	"github.com/sahandsafizadeh/qeep/model/batchgens"
 	"github.com/sahandsafizadeh/qeep/model/internal/types"
 	sahand "github.com/sahandsafizadeh/qeep/model/layers"
-	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 func TestModel(t *testing.T) {
@@ -73,42 +72,46 @@ func TestModel(t *testing.T) {
 }
 
 func prepareData() (trainBatchGen, testBatchGen types.BatchGenerator, err error) {
-	x, err := tensor.RandU([]int{10000, 5}, -1., 1., nil)
+	x := [][]float64{
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
+	}
+	y := []float64{
+		0,
+		0,
+		0,
+		0,
+		0,
+		1,
+		1,
+		1,
+		1,
+		1,
+	}
+
+	xtr, ytr := x[:8], y[:8]
+	xte, yte := x[8:], y[8:]
+
+	trainBatchGen, err = batchgens.NewSimple(xtr, ytr, &batchgens.SimpleConfig{
+		BatchSize: 4,
+		Shuffle:   true,
+	})
 	if err != nil {
 		return
 	}
 
-	y, err := tensor.RandN([]int{10000}, 0., 0.5, nil)
-	if err != nil {
-		return
-	}
-
-	xtr, err := x.Slice([]tensor.Range{{From: 0, To: 8000}})
-	if err != nil {
-		return
-	}
-
-	ytr, err := y.Slice([]tensor.Range{{From: 0, To: 8000}})
-	if err != nil {
-		return
-	}
-
-	xte, err := x.Slice([]tensor.Range{{From: 8000, To: 10000}})
-	if err != nil {
-		return
-	}
-
-	yte, err := y.Slice([]tensor.Range{{From: 8000, To: 10000}})
-	if err != nil {
-		return
-	}
-
-	trainBatchGen, err = batchgen.NewSimple(xtr, ytr, 256)
-	if err != nil {
-		return
-	}
-
-	testBatchGen, err = batchgen.NewSimple(xte, yte, 64)
+	testBatchGen, err = batchgens.NewSimple(xte, yte, &batchgens.SimpleConfig{
+		BatchSize: 4,
+		Shuffle:   true,
+	})
 	if err != nil {
 		return
 	}

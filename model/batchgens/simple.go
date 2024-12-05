@@ -1,0 +1,161 @@
+package batchgens
+
+import (
+	"fmt"
+	"math/rand"
+
+	"github.com/sahandsafizadeh/qeep/tensor"
+)
+
+type Simple struct {
+	x         [][]float64
+	y         []float64
+	device    tensor.Device
+	shuffle   bool
+	batchSize int
+	length    int
+	index     int
+}
+
+type SimpleConfig struct {
+	BatchSize int
+	Shuffle   bool
+	Device    tensor.Device
+}
+
+func NewSimple(x [][]float64, y []float64, conf *SimpleConfig) (bg *Simple, err error) {
+	conf, err = toValidSimpleConfig(conf)
+	if err != nil {
+		err = fmt.Errorf("Simple config data validation failed: %w", err)
+		return
+	}
+
+	x, y, err = toValidSimpleData(x, y)
+	if err != nil {
+		err = fmt.Errorf("Simple input data validation failed: %w", err)
+		return
+	}
+
+	bg = &Simple{
+		x:         x,
+		y:         y,
+		device:    conf.Device,
+		shuffle:   conf.Shuffle,
+		batchSize: conf.BatchSize,
+		length:    len(y),
+	}
+
+	bg.Reset()
+
+	return bg, nil
+}
+
+func (bg *Simple) Reset() {
+	if bg.shuffle {
+		rand.Shuffle(len(bg.y), func(i, j int) {
+			bg.x[i], bg.x[j] = bg.x[j], bg.x[i]
+			bg.y[i], bg.y[j] = bg.y[j], bg.y[i]
+		})
+	}
+
+	bg.index = 0
+}
+
+func (bg *Simple) Count() (count int) {
+	if bg.length%bg.batchSize == 0 {
+		return bg.length / bg.batchSize
+	} else {
+		return bg.length/bg.batchSize + 1
+	}
+}
+
+func (bg *Simple) HasNext() (ok bool) {
+	return bg.index < bg.length
+}
+
+func (bg *Simple) NextBatch() (xs []tensor.Tensor, y tensor.Tensor, err error) {
+	if !bg.HasNext() {
+		err = fmt.Errorf("Simple state validation failed: expected next batch to exist")
+		return
+	}
+
+	index := bg.index
+	length := bg.length
+	batchSize := bg.batchSize
+
+	from := index
+	to := from + batchSize
+	if to > length {
+		to = length
+	}
+
+	conf := &tensor.Config{Device: bg.device}
+
+	x, err := tensor.TensorOf(bg.x[from:to], conf)
+	if err != nil {
+		return
+	}
+
+	y, err = tensor.TensorOf(bg.y[from:to], conf)
+	if err != nil {
+		return
+	}
+
+	bg.index += bg.batchSize
+
+	return []tensor.Tensor{x}, y, nil
+}
+
+/* ----- helpers ----- */
+
+func toValidSimpleConfig(iconf *SimpleConfig) (conf *SimpleConfig, err error) {
+	if iconf == nil {
+		err = fmt.Errorf("expected config not to be nil")
+		return
+	}
+
+	conf = new(SimpleConfig)
+	*conf = *iconf
+
+	if conf.BatchSize <= 0 {
+		err = fmt.Errorf("expected 'BatchSize' to be positive: got (%d)", conf.BatchSize)
+		return
+	}
+
+	if conf.Device == 0 {
+		conf.Device = tensor.CPU
+	}
+
+	return conf, nil
+}
+
+func toValidSimpleData(ix [][]float64, iy []float64) (x [][]float64, y []float64, err error) {
+	lenx := len(ix)
+	leny := len(iy)
+
+	if lenx < 1 || leny < 1 {
+		err = fmt.Errorf("expected input slices to have at least one record")
+		return
+	}
+
+	if lenx != leny {
+		err = fmt.Errorf("expected input slices 'x' and 'y' to have the same number of records: (%d) != (%d)", lenx, leny)
+		return
+	}
+
+	x = make([][]float64, len(ix))
+	for i, xi := range ix {
+		if len(xi) < 1 {
+			err = fmt.Errorf("expected input 'x' to have at least one record along every entry")
+			return
+		}
+
+		x[i] = make([]float64, len(xi))
+		copy(x[i], xi)
+	}
+
+	y = make([]float64, len(iy))
+	copy(y, iy)
+
+	return x, y, nil
+}

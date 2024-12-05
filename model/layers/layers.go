@@ -3,7 +3,7 @@ package layers
 import (
 	"github.com/sahandsafizadeh/qeep/component/layers"
 	"github.com/sahandsafizadeh/qeep/component/layers/activations"
-	"github.com/sahandsafizadeh/qeep/model/contract"
+	"github.com/sahandsafizadeh/qeep/model/internal/contract"
 	"github.com/sahandsafizadeh/qeep/model/stream"
 )
 

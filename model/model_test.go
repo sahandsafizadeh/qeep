@@ -10,7 +10,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/batchgens"
-	"github.com/sahandsafizadeh/qeep/model/contract"
+	"github.com/sahandsafizadeh/qeep/model/internal/contract"
 	sahand "github.com/sahandsafizadeh/qeep/model/layers"
 )
 

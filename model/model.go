@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
-	"github.com/sahandsafizadeh/qeep/model/contract"
+	"github.com/sahandsafizadeh/qeep/model/internal/contract"
 	"github.com/sahandsafizadeh/qeep/model/internal/logger"
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
 	"github.com/sahandsafizadeh/qeep/model/stream"

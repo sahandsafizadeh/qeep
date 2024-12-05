@@ -3,7 +3,7 @@ package node
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/model/contract"
+	"github.com/sahandsafizadeh/qeep/model/internal/contract"
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 

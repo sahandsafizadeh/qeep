@@ -7,7 +7,8 @@ import (
 
 type Stream struct {
 	cursor *node.Node
+	errCtx []error
 }
 
 type StreamFunc func(xs ...*Stream) *Stream
-type LayerInitFunc func() (contract.Layer, error)
+type layerInitFunc func() (contract.Layer, error)

@@ -1,8 +1,6 @@
 package node
 
 import (
-	"fmt"
-
 	"github.com/sahandsafizadeh/qeep/model/internal/contract"
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
@@ -34,26 +32,12 @@ func (n *Node) Children() []*Node {
 	return makeCopy(n.children)
 }
 
-func (n *Node) AddParent(p *Node) (err error) {
-	err = validateInputNode(p)
-	if err != nil {
-		return
-	}
-
+func (n *Node) AddParent(p *Node) {
 	n.parents = append(n.parents, p)
-
-	return nil
 }
 
-func (n *Node) AddChild(c *Node) (err error) {
-	err = validateInputNode(c)
-	if err != nil {
-		return
-	}
-
+func (n *Node) AddChild(c *Node) {
 	n.children = append(n.children, c)
-
-	return nil
 }
 
 func (n *Node) Forward() (err error) {
@@ -119,15 +103,6 @@ func (n *Node) EnableGrad() (err error) {
 }
 
 /* ----- helpers ----- */
-
-func validateInputNode(n *Node) (err error) {
-	if n == nil {
-		err = fmt.Errorf("expected input node not to be nil")
-		return
-	}
-
-	return nil
-}
 
 func makeCopy[T any](src []T) (dst []T) {
 	dst = make([]T, len(src))

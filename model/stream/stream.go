@@ -1,41 +1,58 @@
 package stream
 
-import "github.com/sahandsafizadeh/qeep/model/internal/node"
+import (
+	"errors"
+	"strings"
+
+	"github.com/sahandsafizadeh/qeep/model/internal/node"
+)
 
 func (s *Stream) Cursor() *node.Node {
 	return s.cursor
 }
 
-func NewStream(initFunc LayerInitFunc, xs []*Stream) (y *Stream) {
-	var err error
-	defer func() {
-		if err != nil {
-			panic(err)
-		}
-	}()
-
-	forwarder, err := initFunc()
-	if err != nil {
-		return
+func (s *Stream) Error() error {
+	if len(s.errCtx) == 0 {
+		return nil
 	}
 
-	cursor := node.NewNode(forwarder)
+	var errs = s.errCtx
+	var chained strings.Builder
 
-	for _, x := range xs {
-		err = x.cursor.AddChild(cursor)
-		if err != nil {
-			return
-		}
-
-		err = cursor.AddParent(x.cursor)
-		if err != nil {
-			return
-		}
+	chained.WriteString(errs[0].Error())
+	for i := 1; i < len(s.errCtx); i++ {
+		chained.WriteString(": ")
+		chained.WriteString(errs[i].Error())
 	}
 
-	return &Stream{cursor: cursor}
+	return errors.New(chained.String())
 }
 
-func NewStreamFunc(initFunc LayerInitFunc) StreamFunc {
+func NewStream(initFunc layerInitFunc, xs []*Stream) (y *Stream) {
+
+	// CHANGE WITH CAUTION: this function does not recover nil value of 'layer'
+
+	errCtx := make([]error, 0)
+
+	layer, err := initFunc()
+	if err != nil {
+		errCtx = append(errCtx, err)
+	}
+
+	cursor := node.NewNode(layer)
+
+	for _, x := range xs {
+		x.cursor.AddChild(cursor)
+		cursor.AddParent(x.cursor)
+		errCtx = append(errCtx, x.errCtx...)
+	}
+
+	return &Stream{
+		cursor: cursor,
+		errCtx: errCtx,
+	}
+}
+
+func NewStreamFunc(initFunc layerInitFunc) StreamFunc {
 	return func(xs ...*Stream) *Stream { return NewStream(initFunc, xs) }
 }

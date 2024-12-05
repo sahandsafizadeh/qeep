@@ -10,7 +10,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/batchgens"
-	sahand "github.com/sahandsafizadeh/qeep/model/layers"
+	"github.com/sahandsafizadeh/qeep/model/stream"
 )
 
 func TestModel(t *testing.T) {
@@ -24,22 +24,22 @@ func TestModel(t *testing.T) {
 
 	/* ---------- architecture ---------- */
 
-	input := sahand.Input()
+	input := stream.Input()
 
-	x := sahand.FC(&layers.FCConfig{Outputs: 64})(input)
-	x = sahand.Tanh()(x)
+	x := stream.FC(&layers.FCConfig{Outputs: 64})(input)
+	x = stream.Tanh()(x)
 
-	x = sahand.FC(&layers.FCConfig{Outputs: 32})(x)
-	x = sahand.Sigmoid()(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 32})(x)
+	x = stream.Sigmoid()(x)
 
-	x = sahand.FC(&layers.FCConfig{Outputs: 16})(x)
-	x = sahand.Relu()(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 16})(x)
+	x = stream.Relu()(x)
 
-	x = sahand.FC(&layers.FCConfig{Outputs: 8})(x)
-	x = sahand.LeakyRelu(nil)(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 8})(x)
+	x = stream.LeakyRelu(nil)(x)
 
-	x = sahand.FC(&layers.FCConfig{Outputs: 4})(x)
-	output := sahand.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 4})(x)
+	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
 
 	/* ------------- model ------------- */
 

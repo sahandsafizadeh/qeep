@@ -39,6 +39,6 @@ func NewStream(initFunc LayerInitFunc, xs []*Stream) (y *Stream) {
 	return &Stream{cursor: cursor}
 }
 
-func NewStreamFunc(initFunc LayerInitFunc) Func {
+func NewStreamFunc(initFunc LayerInitFunc) StreamFunc {
 	return func(xs ...*Stream) *Stream { return NewStream(initFunc, xs) }
 }

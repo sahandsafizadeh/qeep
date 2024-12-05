@@ -1,64 +1,63 @@
-package layers
+package stream
 
 import (
 	"github.com/sahandsafizadeh/qeep/component/layers"
 	"github.com/sahandsafizadeh/qeep/component/layers/activations"
 	"github.com/sahandsafizadeh/qeep/model/internal/contract"
-	"github.com/sahandsafizadeh/qeep/model/stream"
 )
 
-func Input() *stream.Stream {
+func Input() *Stream {
 	initf := func() (contract.Layer, error) {
 		return layers.NewInput(), nil
 	}
 
-	return stream.NewStream(initf, nil)
+	return NewStream(initf, nil)
 }
 
-func Tanh() stream.Func {
+func Tanh() StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewTanh(), nil
 	}
 
-	return stream.NewStreamFunc(initf)
+	return NewStreamFunc(initf)
 }
 
-func Sigmoid() stream.Func {
+func Sigmoid() StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewSigmoid(), nil
 	}
 
-	return stream.NewStreamFunc(initf)
+	return NewStreamFunc(initf)
 }
 
-func Softmax(conf *activations.SoftmaxConfig) stream.Func {
+func Softmax(conf *activations.SoftmaxConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewSoftmax(conf)
 	}
 
-	return stream.NewStreamFunc(initf)
+	return NewStreamFunc(initf)
 }
 
-func Relu() stream.Func {
+func Relu() StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewRelu(), nil
 	}
 
-	return stream.NewStreamFunc(initf)
+	return NewStreamFunc(initf)
 }
 
-func LeakyRelu(conf *activations.LeakyReluConfig) stream.Func {
+func LeakyRelu(conf *activations.LeakyReluConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewLeakyRelu(conf), nil
 	}
 
-	return stream.NewStreamFunc(initf)
+	return NewStreamFunc(initf)
 }
 
-func FC(conf *layers.FCConfig) stream.Func {
+func FC(conf *layers.FCConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return layers.NewFC(conf)
 	}
 
-	return stream.NewStreamFunc(initf)
+	return NewStreamFunc(initf)
 }

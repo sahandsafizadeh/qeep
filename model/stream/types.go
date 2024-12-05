@@ -9,5 +9,5 @@ type Stream struct {
 	cursor *node.Node
 }
 
-type Func func(xs ...*Stream) *Stream
+type StreamFunc func(xs ...*Stream) *Stream
 type LayerInitFunc func() (contract.Layer, error)

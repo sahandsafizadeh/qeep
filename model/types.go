@@ -17,3 +17,10 @@ type FitConfig struct {
 }
 
 type nodeApplyFunc func(*node.Node) error
+
+type Layer = contract.Layer
+type WeightedLayer = contract.WeightedLayer
+type Loss = contract.Loss
+type Metric = contract.Metric
+type Optimizer = contract.Optimizer
+type BatchGenerator = contract.BatchGenerator

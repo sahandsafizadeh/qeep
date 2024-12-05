@@ -8,7 +8,7 @@ import (
 type Model struct {
 	inputs    []*node.Node
 	output    *node.Node
-	lossFunc  types.LossFunction
+	lossFunc  types.Loss
 	optimizer types.Optimizer
 }
 

@@ -10,4 +10,4 @@ type Stream struct {
 }
 
 type Func func(xs ...*Stream) *Stream
-type ForwarderInitFunc func() (types.Forwarder, error)
+type ForwarderInitFunc func() (types.Layer, error)

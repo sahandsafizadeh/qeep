@@ -14,7 +14,7 @@ import (
 func NewModel(
 	input *stream.Stream,
 	output *stream.Stream,
-	lossFunc types.LossFunction,
+	lossFunc types.Loss,
 	optimizer types.Optimizer,
 ) (m *Model, err error) {
 	return NewModels([]*stream.Stream{input}, output, lossFunc, optimizer)
@@ -23,7 +23,7 @@ func NewModel(
 func NewModels(
 	xs []*stream.Stream,
 	y *stream.Stream,
-	lossFunc types.LossFunction,
+	lossFunc types.Loss,
 	optimizer types.Optimizer,
 ) (m *Model, err error) {
 

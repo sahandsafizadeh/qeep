@@ -8,17 +8,17 @@ import (
 )
 
 type Node struct {
-	forwarder types.Forwarder
+	forwarder types.Layer
 	result    tensor.Tensor
 	parents   []*Node
 	children  []*Node
 }
 
-func NewNode(forwarder types.Forwarder) (n *Node, err error) {
+func NewNode(forwarder types.Layer) (n *Node, err error) {
 	return &Node{forwarder: forwarder}, nil
 }
 
-func (n *Node) Forwarder() types.Forwarder {
+func (n *Node) Forwarder() types.Layer {
 	return n.forwarder
 }
 
@@ -73,7 +73,7 @@ func (n *Node) Forward() (err error) {
 }
 
 func (n *Node) Optimize(optimizer types.Optimizer) (err error) {
-	wf, ok := n.forwarder.(types.WeightedForwarder)
+	wf, ok := n.forwarder.(types.WeightedLayer)
 	if !ok {
 		return nil
 	}
@@ -93,7 +93,7 @@ func (n *Node) Optimize(optimizer types.Optimizer) (err error) {
 }
 
 func (n *Node) DisableGrad() (err error) {
-	wf, ok := n.forwarder.(types.WeightedForwarder)
+	wf, ok := n.forwarder.(types.WeightedLayer)
 	if !ok {
 		return nil
 	}
@@ -106,7 +106,7 @@ func (n *Node) DisableGrad() (err error) {
 }
 
 func (n *Node) EnableGrad() (err error) {
-	wf, ok := n.forwarder.(types.WeightedForwarder)
+	wf, ok := n.forwarder.(types.WeightedLayer)
 	if !ok {
 		return nil
 	}

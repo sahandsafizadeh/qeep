@@ -5,26 +5,26 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
-type Forwarder interface {
-	Forward(...tensor.Tensor) (tensor.Tensor, error)
+type Layer interface {
+	Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error)
 }
 
-type WeightedForwarder interface {
-	Forwarder
+type WeightedLayer interface {
+	Layer
 	Weights() []layers.Weight
 }
 
-type LossFunction interface {
-	Compute(yp tensor.Tensor, yt tensor.Tensor) (tensor.Tensor, error)
-}
-
-type Optimizer interface {
-	Update(*tensor.Tensor) error
+type Loss interface {
+	Compute(yp tensor.Tensor, yt tensor.Tensor) (l tensor.Tensor, err error)
 }
 
 type Metric interface {
-	Accumulate(yp tensor.Tensor, yt tensor.Tensor) error
+	Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error)
 	Result() (float64, error)
+}
+
+type Optimizer interface {
+	Update(weight *tensor.Tensor) (err error)
 }
 
 type BatchGenerator interface {

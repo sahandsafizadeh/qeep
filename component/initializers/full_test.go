@@ -1,6 +1,7 @@
 package initializers_test
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/sahandsafizadeh/qeep/component/initializers"
@@ -20,7 +21,7 @@ func TestFull(t *testing.T) {
 		}
 
 		shape := x.Shape()
-		if !shapesEqual(shape, []int{32, 32}) {
+		if !slices.Equal(shape, []int{32, 32}) {
 			t.Fatalf("expected tensor to have shape [32, 32], got %v", shape)
 		}
 
@@ -36,20 +37,4 @@ func TestFull(t *testing.T) {
 		/* ------------------------------ */
 
 	})
-}
-
-/* ----- helpers ----- */
-
-func shapesEqual(s1, s2 []int) (ok bool) {
-	if len(s1) != len(s2) {
-		return false
-	}
-
-	for i := 0; i < len(s1); i++ {
-		if s1[i] != s2[i] {
-			return false
-		}
-	}
-
-	return true
 }

@@ -1,6 +1,7 @@
 package initializers_test
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/sahandsafizadeh/qeep/component/initializers"
@@ -26,7 +27,7 @@ func TestXavierNormal(t *testing.T) {
 		}
 
 		shape := x.Shape()
-		if !shapesEqual(shape, []int{32, 32}) {
+		if !slices.Equal(shape, []int{32, 32}) {
 			t.Fatalf("expected tensor to have shape [32, 32], got %v", shape)
 		}
 

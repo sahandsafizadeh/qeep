@@ -68,6 +68,11 @@ func (c *BCE) Compute(yp tensor.Tensor, yt tensor.Tensor) (l tensor.Tensor, err 
 		return
 	}
 
+	l, err = l.Squeeze(1)
+	if err != nil {
+		return
+	}
+
 	l = l.Scale(-1.)
 
 	return l.MeanAlong(0)
@@ -84,13 +89,18 @@ func (c *BCE) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	shapep := yp.Shape()
 	shapet := yt.Shape()
 
-	if len(shapep) != 1 || len(shapet) != 1 {
-		err = fmt.Errorf("expected input tensors to have exactly one dimension (batch)")
+	if len(shapep) != 2 || len(shapet) != 2 {
+		err = fmt.Errorf("expected input tensors to have exactly two dimensions (batch, class)")
 		return
 	}
 
 	if shapep[0] != shapet[0] {
 		err = fmt.Errorf("expected input tensor sizes to match along batch dimension: (%d) != (%d)", shapep[0], shapet[0])
+		return
+	}
+
+	if shapep[1] != 1 || shapet[1] != 1 {
+		err = fmt.Errorf("expected input tensor sizes to be equal to (1) along class dimension")
 		return
 	}
 

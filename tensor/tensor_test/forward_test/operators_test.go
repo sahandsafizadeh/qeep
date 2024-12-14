@@ -1,6 +1,7 @@
 package forward_test
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -2921,63 +2922,63 @@ func TestValidationBinaryOperators(t *testing.T) {
 		_, err = t1.Eq(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Eq tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Eq tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Ne(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Ne tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Ne tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Gt(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Gt tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Gt tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Ge(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Ge tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Ge tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Lt(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Lt tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Lt tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Le(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Le tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Le tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.ElMax(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "ElMax tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("ElMax tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.ElMin(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "ElMin tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("ElMin tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Equals(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Equals tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Equals tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3061,28 +3062,28 @@ func TestValidationBinaryOperators(t *testing.T) {
 		_, err = t1.Add(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Add tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Add tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Sub(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Sub tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Sub tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Mul(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Mul tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Mul tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = t1.Div(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Div tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Div tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3141,7 +3142,7 @@ func TestValidationDot(t *testing.T) {
 		_, err = t1.Dot(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Dot tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Dot tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -3229,7 +3230,7 @@ func TestValidationMatMul(t *testing.T) {
 		_, err = t1.MatMul(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "MatMul tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("MatMul tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 

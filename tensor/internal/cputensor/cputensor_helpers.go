@@ -7,11 +7,6 @@ import (
 )
 
 func assertCPUTensor(t tensor.Tensor) (ct *CPUTensor, err error) {
-	if t == nil {
-		err = fmt.Errorf("expected input tensor not to be nil")
-		return
-	}
-
 	ct, ok := t.(*CPUTensor)
 	if !ok {
 		err = fmt.Errorf("expected input tensor to be on CPU")

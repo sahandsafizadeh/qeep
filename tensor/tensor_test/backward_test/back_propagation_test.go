@@ -204,7 +204,7 @@ func TestValidationBackProp(t *testing.T) {
 		err := tensor.BackPropagate(nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "expected input tensor not to be nil" {
+		} else if err.Error() != "BackPropagate tensor implementation validation failed: unsupported tensor implementation" {
 			t.Fatal("unexpected error message returned")
 		}
 

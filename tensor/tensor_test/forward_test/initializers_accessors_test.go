@@ -1,6 +1,8 @@
 package forward_test
 
 import (
+	"fmt"
+	"slices"
 	"testing"
 
 	"github.com/sahandsafizadeh/qeep/tensor"
@@ -740,7 +742,7 @@ func TestRandoms(t *testing.T) {
 		dims[1] = 1
 
 		shape := ten.Shape()
-		if !shapesEqual(shape, []int{3, 4}) {
+		if !slices.Equal(shape, []int{3, 4}) {
 			t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
 		}
 
@@ -757,7 +759,7 @@ func TestRandoms(t *testing.T) {
 		dims[1] = 1
 
 		shape = ten.Shape()
-		if !shapesEqual(shape, []int{3, 4}) {
+		if !slices.Equal(shape, []int{3, 4}) {
 			t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
 		}
 
@@ -1034,7 +1036,7 @@ func TestNElemsShape(t *testing.T) {
 		}
 
 		shape := ten.Shape()
-		if !shapesEqual(shape, []int{}) {
+		if !slices.Equal(shape, []int{}) {
 			t.Fatalf("expected tensor to have shape [], got %v", shape)
 		}
 
@@ -1051,7 +1053,7 @@ func TestNElemsShape(t *testing.T) {
 		}
 
 		shape = ten.Shape()
-		if !shapesEqual(shape, []int{1}) {
+		if !slices.Equal(shape, []int{1}) {
 			t.Fatalf("expected tensor to have shape [1], got %v", shape)
 		}
 
@@ -1068,7 +1070,7 @@ func TestNElemsShape(t *testing.T) {
 		}
 
 		shape = ten.Shape()
-		if !shapesEqual(shape, []int{2}) {
+		if !slices.Equal(shape, []int{2}) {
 			t.Fatalf("expected tensor to have shape [2], got %v", shape)
 		}
 
@@ -1085,7 +1087,7 @@ func TestNElemsShape(t *testing.T) {
 		}
 
 		shape = ten.Shape()
-		if !shapesEqual(shape, []int{3, 4}) {
+		if !slices.Equal(shape, []int{3, 4}) {
 			t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
 		}
 
@@ -1102,7 +1104,7 @@ func TestNElemsShape(t *testing.T) {
 		}
 
 		shape = ten.Shape()
-		if !shapesEqual(shape, []int{5, 4, 3, 2, 1}) {
+		if !slices.Equal(shape, []int{5, 4, 3, 2, 1}) {
 			t.Fatalf("expected tensor to have shape [5, 4, 3, 2, 1], got %v", shape)
 		}
 
@@ -1118,7 +1120,7 @@ func TestNElemsShape(t *testing.T) {
 		shape[1] = 1
 
 		shape = ten.Shape()
-		if !shapesEqual(shape, []int{2, 3}) {
+		if !slices.Equal(shape, []int{2, 3}) {
 			t.Fatalf("expected tensor to have shape [2, 3], got %v", shape)
 		}
 
@@ -1185,21 +1187,21 @@ func TestValidationFullZerosOnes(t *testing.T) {
 		_, err = tensor.Full(nil, 2., conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "invalid input device" {
+		} else if err.Error() != "Full tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Zeros(nil, conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "invalid input device" {
+		} else if err.Error() != "Zeros tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Ones(nil, conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "invalid input device" {
+		} else if err.Error() != "Ones tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1238,7 +1240,7 @@ func TestValidationEye(t *testing.T) {
 		_, err = tensor.Eye(1, conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "invalid input device" {
+		} else if err.Error() != "Eye tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1284,7 +1286,7 @@ func TestValidationRandU(t *testing.T) {
 		_, err = tensor.RandU(nil, 0., 1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "invalid input device" {
+		} else if err.Error() != "RandU tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1330,7 +1332,7 @@ func TestValidationRandN(t *testing.T) {
 		_, err = tensor.RandN(nil, 0., 1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "invalid input device" {
+		} else if err.Error() != "RandN tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1472,7 +1474,7 @@ func TestValidationTensorOf(t *testing.T) {
 		_, err = tensor.TensorOf([]float64{1}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "invalid input device" {
+		} else if err.Error() != "TensorOf tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1491,21 +1493,21 @@ func TestValidationConcat(t *testing.T) {
 		_, err := tensor.Concat(nil, 0)
 		if err == nil {
 			t.Fatalf("expected error because of the number of input tensors being less than (2)")
-		} else if err.Error() != "expected at least (2) tensors: got (0)" {
+		} else if err.Error() != "Concat tensor implementation validation failed: expected at least (2) tensors: got (0)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Concat([]tensor.Tensor{nil}, 0)
 		if err == nil {
 			t.Fatalf("expected error because of the number of input tensors being less than (2)")
-		} else if err.Error() != "expected at least (2) tensors: got (1)" {
+		} else if err.Error() != "Concat tensor implementation validation failed: expected at least (2) tensors: got (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Concat([]tensor.Tensor{nil, nil}, 0)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensors")
-		} else if err.Error() != "expected input tensor not to be nil" {
+		} else if err.Error() != "Concat tensor implementation validation failed: unsupported tensor implementation" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1863,7 +1865,7 @@ func TestValidationPatch(t *testing.T) {
 		_, err = t1.Patch([]tensor.Range{}, nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Patch tensors' device validation failed: expected input tensor not to be nil" {
+		} else if err.Error() != fmt.Sprintf("Patch tensors' device validation failed: expected input tensor to be on %s", dev) {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1946,20 +1948,4 @@ func TestValidationPatch(t *testing.T) {
 		/* ------------------------------ */
 
 	})
-}
-
-/* ----- helpers ----- */
-
-func shapesEqual(s1, s2 []int) (ok bool) {
-	if len(s1) != len(s2) {
-		return false
-	}
-
-	for i := 0; i < len(s1); i++ {
-		if s1[i] != s2[i] {
-			return false
-		}
-	}
-
-	return true
 }

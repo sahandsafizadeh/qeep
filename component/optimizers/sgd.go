@@ -44,18 +44,9 @@ func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 /* ----- helpers ----- */
 
 func (c *SGD) toValidInputs(wptr *tensor.Tensor) (w tensor.Tensor, g tensor.Tensor, err error) {
-	if wptr == nil {
-		err = fmt.Errorf("expected tensor's pointer not to be nil")
-		return
-	}
-
 	w = *wptr
-	if w == nil {
-		err = fmt.Errorf("expected tensor not to be nil")
-		return
-	}
-
 	g = w.Gradient()
+
 	if g == nil {
 		err = fmt.Errorf("expected tensor's gradient not to be nil")
 		return

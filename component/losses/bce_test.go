@@ -197,31 +197,17 @@ func TestValidationBCE(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		_, err = loss.Compute(nil, y1)
-		if err == nil {
-			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "BCE input data validation failed: expected input tensors not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = loss.Compute(y1, nil)
-		if err == nil {
-			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "BCE input data validation failed: expected input tensors not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
-
 		_, err = loss.Compute(y1, y2)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having more/less than two dimensions")
-		} else if err.Error() != "BCE input data validation failed: expected input tensors to have exactly two dimensions (batch, class)" {
+		} else if err.Error() != "BCE input data validation failed: expected input tensors to have exactly two dimensions (batch, class=1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = loss.Compute(y2, y5)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having more/less than two dimensions")
-		} else if err.Error() != "BCE input data validation failed: expected input tensors to have exactly two dimensions (batch, class)" {
+		} else if err.Error() != "BCE input data validation failed: expected input tensors to have exactly two dimensions (batch, class=1)" {
 			t.Fatal("unexpected error message returned")
 		}
 

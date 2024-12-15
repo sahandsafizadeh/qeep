@@ -245,59 +245,7 @@ func TestValidationFC(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Weight": nil,
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of nil 'Weight' initializer")
-		} else if err.Error() != "FC config data validation failed: expected 'Weight' initializer not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Bias": nil,
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of nil 'Bias' initializer")
-		} else if err.Error() != "FC config data validation failed: expected 'Bias' initializer not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
-
 		/* ------------------------------ */
-
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Weight": new(nilInitializer),
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of weights initialized with nil")
-		} else if err.Error() != "FC initialized weight validation failed: expected initialized weights not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Bias": new(nilInitializer),
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of weights initialized with nil")
-		} else if err.Error() != "FC initialized weight validation failed: expected initialized weights not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
 
 		_, err = layers.NewFC(&layers.FCConfig{
 			Inputs:  1,
@@ -416,13 +364,6 @@ func TestValidationFC(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = layer.Forward(nil)
-		if err == nil {
-			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "FC input data validation failed: expected input tensor not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
-
 		_, err = layer.Forward(x1)
 		if err == nil {
 			t.Fatalf("expected error because of tensor having more/less than two dimensions")
@@ -444,14 +385,9 @@ func TestValidationFC(t *testing.T) {
 
 /* ----- helpers ----- */
 
-type nilInitializer struct{}
 type zeroDInitializer struct{}
 type twoDInitializer struct{}
 type wrong1DInitializer struct{}
-
-func (c *nilInitializer) Init(shape []int) (x tensor.Tensor, err error) {
-	return nil, nil
-}
 
 func (c *zeroDInitializer) Init(shape []int) (x tensor.Tensor, err error) {
 	return tensor.Zeros(nil, nil)

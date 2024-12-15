@@ -71,8 +71,6 @@ func TestValidationSGD(t *testing.T) {
 
 		/* ------------------------------ */
 
-		var wn tensor.Tensor
-
 		wu, err := tensor.Zeros(nil, confU)
 		if err != nil {
 			t.Fatal(err)
@@ -81,20 +79,6 @@ func TestValidationSGD(t *testing.T) {
 		wt, err := tensor.Zeros(nil, confT)
 		if err != nil {
 			t.Fatal(err)
-		}
-
-		err = optimizer.Update(nil)
-		if err == nil {
-			t.Fatalf("expected error because of nil input pointer")
-		} else if err.Error() != "SGD input data validation failed: expected tensor's pointer not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		err = optimizer.Update(&wn)
-		if err == nil {
-			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "SGD input data validation failed: expected tensor not to be nil" {
-			t.Fatal("unexpected error message returned")
 		}
 
 		err = optimizer.Update(&wu)

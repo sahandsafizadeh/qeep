@@ -130,13 +130,6 @@ func TestValidationSigmoid(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = activation.Forward(nil)
-		if err == nil {
-			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != "Sigmoid input data validation failed: expected input tensor not to be nil" {
-			t.Fatal("unexpected error message returned")
-		}
-
 		/* ------------------------------ */
 
 	})

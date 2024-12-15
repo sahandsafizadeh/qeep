@@ -39,10 +39,5 @@ func (c *Relu) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 
 	x = xs[0]
 
-	if x == nil {
-		err = fmt.Errorf("expected input tensor not to be nil")
-		return
-	}
-
 	return x, nil
 }

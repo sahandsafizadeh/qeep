@@ -74,11 +74,6 @@ func clip(x tensor.Tensor, l, u float64) (y tensor.Tensor, err error) {
 /* ----- helpers ----- */
 
 func (c *CE) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error) {
-	if yp == nil || yt == nil {
-		err = fmt.Errorf("expected input tensors not to be nil")
-		return
-	}
-
 	shapep := yp.Shape()
 	shapet := yt.Shape()
 

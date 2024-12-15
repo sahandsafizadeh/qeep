@@ -44,11 +44,6 @@ func (c *Accuracy) Result() (result float64, err error) {
 /* ----- helpers ----- */
 
 func (c *Accuracy) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error) {
-	if yp == nil || yt == nil {
-		err = fmt.Errorf("expected input tensors not to be nil")
-		return
-	}
-
 	shapep := yp.Shape()
 	shapet := yt.Shape()
 

@@ -38,16 +38,11 @@ func (c *MSE) Compute(yp tensor.Tensor, yt tensor.Tensor) (l tensor.Tensor, err 
 /* ----- helpers ----- */
 
 func (c *MSE) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error) {
-	if yp == nil || yt == nil {
-		err = fmt.Errorf("expected input tensors not to be nil")
-		return
-	}
-
 	shapep := yp.Shape()
 	shapet := yt.Shape()
 
 	if len(shapep) != 2 || len(shapet) != 2 {
-		err = fmt.Errorf("expected input tensors to have exactly two dimensions (batch, class)")
+		err = fmt.Errorf("expected input tensors to have exactly two dimensions (batch, class=1)")
 		return
 	}
 

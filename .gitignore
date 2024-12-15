@@ -1,2 +1,5 @@
 # coverage output files
 *.out
+
+# dataset files
+*.csv

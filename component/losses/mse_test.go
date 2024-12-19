@@ -182,7 +182,7 @@ func TestValidationMSE(t *testing.T) {
 
 		_, err = loss.Compute(y2, y4)
 		if err == nil {
-			t.Fatalf("expected error because of tensors having class sizes unequal to (1)")
+			t.Fatalf("expected error because of tensors having unequal data sizes")
 		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (1) != (2)" {
 			t.Fatal("unexpected error message returned")
 		}

@@ -1017,6 +1017,278 @@ func TestMean(t *testing.T) {
 	})
 }
 
+func TestArgmax(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		conf := &tensor.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		ten, err := tensor.Ones([]int{1}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err := ten.Argmax(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err := tensor.TensorOf(0., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		ten, err = tensor.Ones([]int{3}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = ten.Argmax(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf(0., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		ten, err = tensor.TensorOf([][][]float64{
+			{
+				{1., 2., -5.},
+				{0., -1., 3.},
+				{7., -7., 7.},
+			},
+			{
+				{8., -1., 0.},
+				{5., 4., -3.},
+				{1., -3., 5.},
+			},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = ten.Argmax(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf([][]float64{
+			{1., 0., 1.},
+			{1., 1., 0.},
+			{0., 1., 0.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = ten.Argmax(1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf([][]float64{
+			{2., 0., 2.},
+			{0., 1., 2.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = ten.Argmax(2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf([][]float64{
+			{1., 2., 0.},
+			{0., 0., 2.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
+func TestArgmin(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		conf := &tensor.Config{Device: dev}
+
+		/* ------------------------------ */
+
+		ten, err := tensor.Ones([]int{1}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err := ten.Argmin(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err := tensor.TensorOf(0., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		ten, err = tensor.Ones([]int{3}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = ten.Argmin(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf(0., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		ten, err = tensor.TensorOf([][][]float64{
+			{
+				{1., 2., -5.},
+				{0., -1., 3.},
+				{7., -7., 7.},
+			},
+			{
+				{8., -1., 0.},
+				{5., 4., -3.},
+				{1., -3., 5.},
+			},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = ten.Argmin(0)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf([][]float64{
+			{0., 1., 0.},
+			{0., 0., 1.},
+			{1., 0., 1.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = ten.Argmin(1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf([][]float64{
+			{1., 2., 0.},
+			{2., 2., 1.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = ten.Argmin(2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf([][]float64{
+			{2., 1., 1.},
+			{1., 2., 1.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
 func TestValidationReducers(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
@@ -1062,6 +1334,20 @@ func TestValidationReducers(t *testing.T) {
 		ten, err = tensor.Zeros([]int{3, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
+		}
+
+		_, err = ten.Argmax(2)
+		if err == nil {
+			t.Fatalf("expected error because of reduced dimension (2) being out of range")
+		} else if err.Error() != "Argmax input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = ten.Argmin(2)
+		if err == nil {
+			t.Fatalf("expected error because of reduced dimension (2) being out of range")
+		} else if err.Error() != "Argmin input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = ten.SumAlong(2)

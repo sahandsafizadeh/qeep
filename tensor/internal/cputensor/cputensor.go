@@ -280,11 +280,11 @@ func (t *CPUTensor) Sum() (value float64) {
 }
 
 func (t *CPUTensor) Max() (value float64) {
-	return t.max()
+	return t.max(unwrapValue)
 }
 
 func (t *CPUTensor) Min() (value float64) {
-	return t.min()
+	return t.min(unwrapValue)
 }
 
 func (t *CPUTensor) Avg() (value float64) {
@@ -301,6 +301,26 @@ func (t *CPUTensor) Std() (value float64) {
 
 func (t *CPUTensor) Mean() (value float64) {
 	return t.mean()
+}
+
+func (t *CPUTensor) Argmax(dim int) (o tensor.Tensor, err error) {
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("Argmax input dimension validation failed: %w", err)
+		return
+	}
+
+	return t.argmax(dim), nil
+}
+
+func (t *CPUTensor) Argmin(dim int) (o tensor.Tensor, err error) {
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("Argmin input dimension validation failed: %w", err)
+		return
+	}
+
+	return t.argmin(dim), nil
 }
 
 func (t *CPUTensor) SumAlong(dim int) (o tensor.Tensor, err error) {

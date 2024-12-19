@@ -24,6 +24,8 @@ type Tensor interface {
 	Var() float64
 	Std() float64
 	Mean() float64
+	Argmax(dim int) (Tensor, error)
+	Argmin(dim int) (Tensor, error)
 	SumAlong(dim int) (Tensor, error)
 	MaxAlong(dim int) (Tensor, error)
 	MinAlong(dim int) (Tensor, error)

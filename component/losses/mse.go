@@ -25,12 +25,12 @@ func (c *MSE) Compute(yp tensor.Tensor, yt tensor.Tensor) (l tensor.Tensor, err 
 		return
 	}
 
-	l, err = l.Squeeze(1)
+	l = l.Pow(2)
+
+	l, err = l.MeanAlong(1)
 	if err != nil {
 		return
 	}
-
-	l = l.Pow(2)
 
 	return l.MeanAlong(0)
 }
@@ -42,7 +42,7 @@ func (c *MSE) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	shapet := yt.Shape()
 
 	if len(shapep) != 2 || len(shapet) != 2 {
-		err = fmt.Errorf("expected input tensors to have exactly two dimensions (batch, class=1)")
+		err = fmt.Errorf("expected input tensors to have exactly two dimensions (batch, data)")
 		return
 	}
 
@@ -51,8 +51,8 @@ func (c *MSE) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 		return
 	}
 
-	if shapep[1] != 1 || shapet[1] != 1 {
-		err = fmt.Errorf("expected input tensor sizes to be equal to (1) along class dimension")
+	if shapep[1] != shapet[1] {
+		err = fmt.Errorf("expected input tensor sizes to match along data dimension: (%d) != (%d)", shapep[1], shapet[1])
 		return
 	}
 

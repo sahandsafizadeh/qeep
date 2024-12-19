@@ -68,12 +68,12 @@ func (c *BCE) Compute(yp tensor.Tensor, yt tensor.Tensor) (l tensor.Tensor, err 
 		return
 	}
 
+	l = l.Scale(-1.)
+
 	l, err = l.Squeeze(1)
 	if err != nil {
 		return
 	}
-
-	l = l.Scale(-1.)
 
 	return l.MeanAlong(0)
 }

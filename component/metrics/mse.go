@@ -1,38 +1,49 @@
-package losses
+package metrics
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 type MSE struct {
+	count   int
+	diffSum float64
 }
 
 func NewMSE() (c *MSE) {
 	return new(MSE)
 }
 
-func (c *MSE) Compute(yp tensor.Tensor, yt tensor.Tensor) (l tensor.Tensor, err error) {
+func (c *MSE) Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	err = c.validateInputs(yp, yt)
 	if err != nil {
 		err = fmt.Errorf("MSE input data validation failed: %w", err)
 		return
 	}
 
-	l, err = yt.Sub(yp)
+	diff, err := yt.Sub(yp)
 	if err != nil {
 		return
 	}
 
-	l = l.Pow(2)
+	diff = diff.Pow(2)
 
-	l, err = l.MeanAlong(1)
-	if err != nil {
-		return
+	shape := diff.Shape()
+
+	c.count += shape[0] * shape[1]
+	c.diffSum += diff.Sum()
+
+	return nil
+}
+
+func (c *MSE) Result() (result float64, err error) {
+	if c.count == 0 {
+		return math.NaN(), nil
 	}
 
-	return l.MeanAlong(0)
+	return c.diffSum / float64(c.count), nil
 }
 
 /* ----- helpers ----- */

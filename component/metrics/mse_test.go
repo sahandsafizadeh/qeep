@@ -1,9 +1,10 @@
-package losses_test
+package metrics_test
 
 import (
+	"math"
 	"testing"
 
-	"github.com/sahandsafizadeh/qeep/component/losses"
+	"github.com/sahandsafizadeh/qeep/component/metrics"
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
@@ -12,38 +13,47 @@ func TestMSE(t *testing.T) {
 
 		conf := &tensor.Config{Device: dev}
 
-		loss := losses.NewMSE()
+		metric := metrics.NewMSE()
 
 		/* ------------------------------ */
 
-		yp, err := tensor.TensorOf([][]float64{
-			{0.5},
-		}, conf)
+		result, err := metric.Result()
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err := tensor.TensorOf([][]float64{
+		if !(math.IsNaN(result)) {
+			t.Fatalf("expected result to be (NaN): got (%f)", result)
+		}
+
+		/* ------------------------------ */
+
+		yp, err := tensor.TensorOf([][]float64{
 			{0.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err := loss.Compute(yp, yt)
+		yt, err := tensor.TensorOf([][]float64{
+			{1.},
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf(0.25, conf)
+		err = metric.Accumulate(yp, yt)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
+		result, err = metric.Result()
+		if err != nil {
 			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		}
+
+		if !(1.-1e-10 < result && result < 1.+1e-10) {
+			t.Fatalf("expected result to be (1): got (%f)", result)
 		}
 
 		/* ------------------------------ */
@@ -66,58 +76,50 @@ func TestMSE(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		act, err = loss.Compute(yp, yt)
+		err = metric.Accumulate(yp, yt)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf(15., conf)
+		result, err = metric.Result()
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		if !(11.5-1e-10 < result && result < 11.5+1e-10) {
+			t.Fatalf("expected result to be (11.5): got (%f)", result)
 		}
 
 		/* ------------------------------ */
 
 		yp, err = tensor.TensorOf([][]float64{
-			{0., 1., 2., 3.},
-			{4., 5., 6., 7.},
-			{4., 5., 6., 7.},
-			{3., 2., 1., 0.},
+			{0., 0., 3.},
+			{1., 0., 3.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
 		yt, err = tensor.TensorOf([][]float64{
-			{3., 2., 1., 0.},
-			{4., 5., 6., 7.},
-			{7., 6., 5., 4.},
-			{3., 2., 1., 0.},
+			{0., -2., 3.},
+			{1., 0., -3.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		act, err = loss.Compute(yp, yt)
+		err = metric.Accumulate(yp, yt)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf(2.5, conf)
+		result, err = metric.Result()
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
+		if !(8.6-1e-10 < result && result < 8.6+1e-10) {
+			t.Fatalf("expected result to be (8.6): got (%f)", result)
 		}
 
 		/* ------------------------------ */
@@ -130,7 +132,7 @@ func TestValidationMSE(t *testing.T) {
 
 		conf := &tensor.Config{Device: dev}
 
-		loss := losses.NewMSE()
+		metric := metrics.NewMSE()
 
 		/* ------------------------------ */
 
@@ -159,28 +161,28 @@ func TestValidationMSE(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		_, err = loss.Compute(y1, y2)
+		err = metric.Accumulate(y1, y2)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having more/less than two dimensions")
 		} else if err.Error() != "MSE input data validation failed: expected input tensors to have exactly two dimensions (batch, data)" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = loss.Compute(y2, y5)
+		err = metric.Accumulate(y2, y5)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having more/less than two dimensions")
 		} else if err.Error() != "MSE input data validation failed: expected input tensors to have exactly two dimensions (batch, data)" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = loss.Compute(y2, y3)
+		err = metric.Accumulate(y2, y3)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having unequal batch sizes")
 		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along batch dimension: (1) != (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = loss.Compute(y2, y4)
+		err = metric.Accumulate(y2, y4)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having unequal data sizes")
 		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (1) != (2)" {

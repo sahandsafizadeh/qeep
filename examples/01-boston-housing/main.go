@@ -11,6 +11,7 @@ import (
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
 	"github.com/sahandsafizadeh/qeep/component/losses"
+	"github.com/sahandsafizadeh/qeep/component/metrics"
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/batchgens"
@@ -25,7 +26,7 @@ const (
 
 const (
 	batchSize = 32
-	epochs    = 50
+	epochs    = 100
 )
 
 func main() {
@@ -34,26 +35,32 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(result)
+	for m, r := range result {
+		fmt.Printf("%s: %.2f\n", m, r)
+	}
 }
 
 func run() (result map[string]float64, err error) {
 	trainBatchGen, testBatchGen, err := prepareData()
 	if err != nil {
-		panic(err)
+		return
 	}
 
-	bhModel, err := prepareModel()
+	bhmodel, err := prepareModel()
 	if err != nil {
 		return
 	}
 
-	err = bhModel.Fit(trainBatchGen, &model.FitConfig{Epochs: epochs})
+	err = bhmodel.Fit(trainBatchGen, &model.FitConfig{
+		Epochs: epochs,
+	})
 	if err != nil {
 		return
 	}
 
-	result, err = bhModel.Eval(testBatchGen, nil)
+	result, err = bhmodel.Eval(testBatchGen, map[string]model.Metric{
+		"Mean Squared Error (MSE)": metrics.NewMSE(),
+	})
 	if err != nil {
 		return
 	}

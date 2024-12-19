@@ -16,12 +16,16 @@ func TestMSE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err := tensor.TensorOf([][]float64{{0.5}}, conf)
+		yp, err := tensor.TensorOf([][]float64{
+			{0.5},
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		yt, err := tensor.TensorOf([][]float64{
+			{0.},
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -44,12 +48,20 @@ func TestMSE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{{2.}, {2.}, {0.}}, conf)
+		yp, err = tensor.TensorOf([][]float64{
+			{2.},
+			{2.},
+			{0.},
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{{2.}, {-1.}, {6.}}, conf)
+		yt, err = tensor.TensorOf([][]float64{
+			{2.},
+			{-1.},
+			{6.},
+		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -60,6 +72,44 @@ func TestMSE(t *testing.T) {
 		}
 
 		exp, err = tensor.TensorOf(15., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		yp, err = tensor.TensorOf([][]float64{
+			{0., 1., 2., 3.},
+			{4., 5., 6., 7.},
+			{4., 5., 6., 7.},
+			{3., 2., 1., 0.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		yt, err = tensor.TensorOf([][]float64{
+			{3., 2., 1., 0.},
+			{4., 5., 6., 7.},
+			{7., 6., 5., 4.},
+			{3., 2., 1., 0.},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = loss.Compute(yp, yt)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf(2.5, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -112,14 +162,14 @@ func TestValidationMSE(t *testing.T) {
 		_, err = loss.Compute(y1, y2)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having more/less than two dimensions")
-		} else if err.Error() != "MSE input data validation failed: expected input tensors to have exactly two dimensions (batch, class=1)" {
+		} else if err.Error() != "MSE input data validation failed: expected input tensors to have exactly two dimensions (batch, data)" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = loss.Compute(y2, y5)
 		if err == nil {
 			t.Fatalf("expected error because of tensors having more/less than two dimensions")
-		} else if err.Error() != "MSE input data validation failed: expected input tensors to have exactly two dimensions (batch, class=1)" {
+		} else if err.Error() != "MSE input data validation failed: expected input tensors to have exactly two dimensions (batch, data)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -132,15 +182,8 @@ func TestValidationMSE(t *testing.T) {
 
 		_, err = loss.Compute(y2, y4)
 		if err == nil {
-			t.Fatalf("expected error because of tensors having class sizes unequal to (1)")
-		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to be equal to (1) along class dimension" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = loss.Compute(y4, y2)
-		if err == nil {
-			t.Fatalf("expected error because of tensors having class sizes unequal to (1)")
-		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to be equal to (1) along class dimension" {
+			t.Fatalf("expected error because of tensors having unequal data sizes")
+		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (1) != (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 

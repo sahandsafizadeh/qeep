@@ -8,7 +8,14 @@ type CPUTensor struct {
 	gctx *gradtrack.GradContext
 }
 
+type reducerPair struct {
+	index int
+	value float64
+}
+
 type initializerFunc func() any
 type scalarUnaryFunc func(float64) float64
 type scalarBinaryFunc func(float64, float64) float64
-type tensorReducerFunc func(*CPUTensor) float64
+type reducerFunc func(reducerPair, reducerPair) reducerPair
+type reducerUnwrapFunc func(reducerPair) float64
+type reducerTensorFunc func(*CPUTensor) float64

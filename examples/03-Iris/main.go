@@ -26,7 +26,7 @@ const (
 
 const (
 	batchSize = 32
-	epochs    = 50
+	epochs    = 10
 )
 
 func main() {

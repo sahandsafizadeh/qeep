@@ -46,6 +46,11 @@ func (c *Softmax) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 		return
 	}
 
+	s, err = s.UnSqueeze(c.dim)
+	if err != nil {
+		return
+	}
+
 	return x.Div(s)
 }
 

@@ -12,12 +12,12 @@ func TestSoftmax(t *testing.T) {
 
 		conf := &tensor.Config{Device: dev}
 
+		/* ------------------------------ */
+
 		activation, err := activations.NewSoftmax(&activations.SoftmaxConfig{Dim: 0})
 		if err != nil {
 			t.Fatal(err)
 		}
-
-		/* ------------------------------ */
 
 		x, err := tensor.Full([]int{4}, 0., conf)
 		if err != nil {
@@ -40,30 +40,7 @@ func TestSoftmax(t *testing.T) {
 			t.Fatalf("expected tensors to be equal")
 		}
 
-		/* ------------------------------ */
-
-		x, err = tensor.Full([]int{2, 3}, -10., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = activation.Forward(x)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Full([]int{2, 3}, 0.5, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
+		/* --------------- */
 
 		x, err = tensor.Full([]int{8, 6, 4}, 15., conf)
 		if err != nil {
@@ -76,6 +53,57 @@ func TestSoftmax(t *testing.T) {
 		}
 
 		exp, err = tensor.Full([]int{8, 6, 4}, 0.125, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		activation, err = activations.NewSoftmax(&activations.SoftmaxConfig{Dim: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		x, err = tensor.Full([]int{6, 4}, 7., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = activation.Forward(x)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.Full([]int{6, 4}, 0.25, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		x, err = tensor.Full([]int{4, 8, 6}, 1., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = activation.Forward(x)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.Full([]int{4, 8, 6}, 0.125, conf)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -17,10 +17,7 @@ func TestAccuracy(t *testing.T) {
 
 		/* ------------------------------ */
 
-		result, err := metric.Result()
-		if err != nil {
-			t.Fatal(err)
-		}
+		result := metric.Result()
 
 		if !math.IsNaN(result) {
 			t.Fatalf("expected result to be (NaN): got (%f)", result)
@@ -47,10 +44,7 @@ func TestAccuracy(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		result, err = metric.Result()
-		if err != nil {
-			t.Fatal(err)
-		}
+		result = metric.Result()
 
 		if !(1-1e-10 < result && result < 1+1e-10) {
 			t.Fatalf("expected result to be (1): got (%f)", result)
@@ -81,10 +75,7 @@ func TestAccuracy(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		result, err = metric.Result()
-		if err != nil {
-			t.Fatal(err)
-		}
+		result = metric.Result()
 
 		if !(0.5-1e-10 < result && result < 0.5+1e-10) {
 			t.Fatalf("expected result to be (0.5): got (%f)", result)
@@ -117,10 +108,7 @@ func TestAccuracy(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		result, err = metric.Result()
-		if err != nil {
-			t.Fatal(err)
-		}
+		result = metric.Result()
 
 		if !(0.375-1e-10 < result && result < 0.375+1e-10) {
 			t.Fatalf("expected result to be (0.375): got (%f)", result)

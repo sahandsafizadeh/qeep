@@ -59,12 +59,12 @@ func (c *Accuracy) Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	return nil
 }
 
-func (c *Accuracy) Result() (result float64, err error) {
+func (c *Accuracy) Result() (result float64) {
 	if c.count == 0 {
-		return math.NaN(), nil
+		return math.NaN()
 	}
 
-	return float64(c.correct) / float64(c.count), nil
+	return float64(c.correct) / float64(c.count)
 }
 
 /* ----- helpers ----- */

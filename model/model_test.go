@@ -30,6 +30,11 @@ func TestModel(t *testing.T) {
 			t.Fatal(err)
 		}
 
+		_, err = tensor.TensorOf(y, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		batchGen, err := batchgens.NewSimple(x, y, &batchgens.SimpleConfig{
 			BatchSize: 2,
 			Device:    dev,
@@ -75,9 +80,9 @@ func TestModel(t *testing.T) {
 		/* ------------------------------ */
 
 		var (
-			xs           = []tensor.Tensor{xt}
-			metricKey    = "MSE"
-			modelMetrics = map[string]model.Metric{
+			xs          = []tensor.Tensor{xt}
+			metricKey   = "MSE"
+			evalMetrics = map[string]model.Metric{
 				metricKey: metric,
 			}
 		)
@@ -102,7 +107,7 @@ func TestModel(t *testing.T) {
 
 		/* --------------- */
 
-		result, err := m.Eval(batchGen, modelMetrics)
+		result, err := m.Eval(batchGen, evalMetrics)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -140,7 +145,7 @@ func TestModel(t *testing.T) {
 
 		/* --------------- */
 
-		result, err = m.Eval(batchGen, modelMetrics)
+		result, err = m.Eval(batchGen, evalMetrics)
 		if err != nil {
 			t.Fatal(err)
 		}

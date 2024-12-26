@@ -76,16 +76,9 @@ func (m *Model) Eval(batchGen contract.BatchGenerator, metrics map[string]contra
 		}
 	}
 
-	var value float64
-
 	result = make(map[string]float64)
 	for key, metric := range metrics {
-		value, err = metric.Result()
-		if err != nil {
-			return
-		}
-
-		result[key] = value
+		result[key] = metric.Result()
 	}
 
 	return result, nil

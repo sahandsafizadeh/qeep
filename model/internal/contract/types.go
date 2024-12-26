@@ -20,7 +20,7 @@ type Loss interface {
 
 type Metric interface {
 	Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error)
-	Result() (float64, error)
+	Result() float64
 }
 
 type Optimizer interface {

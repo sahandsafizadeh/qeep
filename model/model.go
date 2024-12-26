@@ -92,7 +92,7 @@ func (m *Model) Eval(batchGen contract.BatchGenerator, metrics map[string]contra
 }
 
 func (m *Model) Fit(batchGen contract.BatchGenerator, conf *FitConfig) (err error) {
-	err = validateFitConfig(conf)
+	err = m.validateFitConfig(conf)
 	if err != nil {
 		err = fmt.Errorf("Fit config data validation failed: %w", err)
 		return
@@ -136,15 +136,26 @@ func (m *Model) Fit(batchGen contract.BatchGenerator, conf *FitConfig) (err erro
 	return nil
 }
 
-func (m *Model) seed(xs []tensor.Tensor) {
+func (m *Model) seed(xs []tensor.Tensor) (err error) {
+	err = m.validateSeedInputs(xs)
+	if err != nil {
+		err = fmt.Errorf("Predict input data validation failed: %w", err)
+		return
+	}
+
 	for i, n := range m.inputs {
 		inputl := n.Layer().(*layers.Input)
 		inputl.SeedFunc = func() tensor.Tensor { return xs[i] }
 	}
+
+	return nil
 }
 
 func (m *Model) feed(xs []tensor.Tensor) (yp tensor.Tensor, err error) {
-	m.seed(xs)
+	err = m.seed(xs)
+	if err != nil {
+		return
+	}
 
 	err = m.forward()
 	if err != nil {
@@ -185,16 +196,16 @@ func (m *Model) trainStep(xs []tensor.Tensor, yt tensor.Tensor) (loss tensor.Ten
 
 /* ----- helpers ----- */
 
-func validateModelConfig(conf *ModelConfig) (err error) {
-	if conf == nil {
-		err = fmt.Errorf("expected config not to be nil")
+func (m *Model) validateSeedInputs(xs []tensor.Tensor) (err error) {
+	if len(xs) != len(m.inputs) {
+		err = fmt.Errorf("expected exactly (%d) input tensors: got (%d)", len(m.inputs), len(xs))
 		return
 	}
 
 	return nil
 }
 
-func validateFitConfig(conf *FitConfig) (err error) {
+func (m *Model) validateFitConfig(conf *FitConfig) (err error) {
 	if conf == nil {
 		err = fmt.Errorf("expected config not to be nil")
 		return
@@ -208,9 +219,18 @@ func validateFitConfig(conf *FitConfig) (err error) {
 	return nil
 }
 
+func validateModelConfig(conf *ModelConfig) (err error) {
+	if conf == nil {
+		err = fmt.Errorf("expected config not to be nil")
+		return
+	}
+
+	return nil
+}
+
 func validateModelStreams(inputs []*stream.Stream, output *stream.Stream) (err error) {
 	if len(inputs) == 0 {
-		err = fmt.Errorf("expected to have at least one input")
+		err = fmt.Errorf("expected to have at least one input stream")
 		return
 	}
 
@@ -221,7 +241,7 @@ func validateModelStreams(inputs []*stream.Stream, output *stream.Stream) (err e
 		}
 
 		n, ok := input.Cursor().(*node.Node)
-		if !ok {
+		if !ok || n == nil {
 			err = fmt.Errorf("expected input stream at position (%d) to be proparely initialized", i)
 			return
 		}
@@ -238,8 +258,8 @@ func validateModelStreams(inputs []*stream.Stream, output *stream.Stream) (err e
 		return
 	}
 
-	_, ok := output.Cursor().(*node.Node)
-	if !ok {
+	n, ok := output.Cursor().(*node.Node)
+	if !ok || n == nil {
 		err = fmt.Errorf("expected output stream to be proparely initialized")
 		return
 	}

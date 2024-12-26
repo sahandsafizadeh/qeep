@@ -16,6 +16,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/batchgens"
 	"github.com/sahandsafizadeh/qeep/model/stream"
+	"gonum.org/v1/gonum/stat"
 )
 
 const (
@@ -26,7 +27,7 @@ const (
 
 const (
 	batchSize = 32
-	epochs    = 100
+	epochs    = 50
 )
 
 func main() {
@@ -113,6 +114,8 @@ func prepareData() (trainBatchGen, testBatchGen model.BatchGenerator, err error)
 
 	xtr, xte, ytr, yte := splitData(x, y)
 
+	preprocessData(xtr, xte)
+
 	trainBatchGen, err = batchgens.NewSimple(xtr, ytr, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   true,
@@ -181,6 +184,31 @@ func splitData(x [][]float64, y [][]float64) (xTrain, xTest [][]float64, yTrain,
 	return xTrain, xTest, yTrain, yTest
 }
 
+func preprocessData(xTrain, xTest [][]float64) {
+	getColumn := func(j int, x [][]float64) (col []float64) {
+		col = make([]float64, len(x))
+		for i := 0; i < len(x); i++ {
+			col[i] = x[i][j]
+		}
+
+		return col
+	}
+
+	setColumn := func(j int, x [][]float64, col []float64) {
+		for i := 0; i < len(x); i++ {
+			x[i][j] = col[i]
+		}
+	}
+
+	for j := 0; j < len(xTrain[0]); j++ {
+		xtrc := getColumn(j, xTrain)
+		xtec := getColumn(j, xTest)
+		standardize(xtrc, xtec)
+		setColumn(j, xTrain, xtrc)
+		setColumn(j, xTest, xtec)
+	}
+}
+
 /* ----- helpers ----- */
 
 func mustParseFloat64(s string) (f float64) {
@@ -190,4 +218,18 @@ func mustParseFloat64(s string) (f float64) {
 	}
 
 	return f
+}
+
+func standardize(xtrc, xtec []float64) {
+	u, s := stat.MeanStdDev(xtrc, nil)
+	transform := func(v float64) float64 { return (v - u) / s }
+
+	transformColumn := func(col []float64) {
+		for i := 0; i < len(col); i++ {
+			col[i] = transform(col[i])
+		}
+	}
+
+	transformColumn(xtrc)
+	transformColumn(xtec)
 }

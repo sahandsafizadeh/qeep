@@ -3,9 +3,11 @@ package model_test
 import (
 	"testing"
 
+	"github.com/sahandsafizadeh/qeep/component/initializers"
 	"github.com/sahandsafizadeh/qeep/component/layers"
 	"github.com/sahandsafizadeh/qeep/component/layers/activations"
 	"github.com/sahandsafizadeh/qeep/component/losses"
+	"github.com/sahandsafizadeh/qeep/component/metrics"
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/batchgens"
@@ -14,120 +16,155 @@ import (
 )
 
 func TestModel(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-	/* ------------------------------ */
+		conf := &tensor.Config{Device: dev}
 
-	result, err := run()
-	if err != nil {
-		t.Fatal(err)
-	}
+		/* ------------------------------ */
 
-	t.Logf("Test Result: %v", result)
+		x := [][]float64{{-2.}, {-1.}, {1.}, {2.}}
+		y := [][]float64{{0.}, {0.}, {1.}, {2.}}
 
-	/* ------------------------------ */
+		xt, err := tensor.TensorOf(x, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
 
+		batchGen, err := batchgens.NewSimple(x, y, &batchgens.SimpleConfig{
+			BatchSize: 2,
+			Device:    dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* ------------------------------ */
+
+		var (
+			wInitializer = initializers.NewFull(&initializers.FullConfig{Value: -2.})
+			bInitializer = initializers.NewFull(&initializers.FullConfig{Value: -1.})
+		)
+
+		input := stream.Input()
+		hidden := stream.FC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+			Initializers: map[string]layers.Initializer{
+				"Weight": wInitializer,
+				"Bias":   bInitializer,
+			},
+		})(input)
+		output := stream.Relu()(hidden)
+
+		/* --------------- */
+
+		var (
+			loss      = losses.NewMSE()
+			metric    = metrics.NewMSE()
+			optimizer = optimizers.NewSGD(&optimizers.SGDConfig{LearningRate: 0.5})
+		)
+
+		m, err := model.NewModel(input, output, &model.ModelConfig{
+			Loss:      loss,
+			Optimizer: optimizer,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* ------------------------------ */
+
+		var (
+			xs           = []tensor.Tensor{xt}
+			metricKey    = "MSE"
+			modelMetrics = map[string]model.Metric{
+				metricKey: metric,
+			}
+		)
+
+		/* --------------- */
+
+		act, err := m.Predict(xs)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err := tensor.TensorOf([][]float64{{3.}, {1.}, {0.}, {0.}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		result, err := m.Eval(batchGen, modelMetrics)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		metricValue := result[metricKey]
+
+		if !(3.74-1e-10 < metricValue && metricValue < 3.76+1e-10) {
+			t.Fatalf("expected metric value to be (3.75): got (%f)", metricValue)
+		}
+
+		/* ------------------------------ */
+
+		err = m.Fit(batchGen, &model.FitConfig{Epochs: 2})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act, err = m.Predict(xs)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.TensorOf([][]float64{{0.}, {0.}, {0.}, {0.}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		result, err = m.Eval(batchGen, modelMetrics)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		metricValue = result[metricKey]
+
+		if !(2.4-1e-10 < metricValue && metricValue < 2.6+1e-10) {
+			t.Fatalf("expected metric value to be (2.5): got (%f)", metricValue)
+		}
+
+		/* ------------------------------ */
+
+	})
 }
 
-func run() (result map[string]float64, err error) {
-	trainBatchGen, testBatchGen, err := prepareData()
-	if err != nil {
-		return
-	}
-
-	simpleModel, err := prepareModel()
-	if err != nil {
-		return
-	}
-
-	err = simpleModel.Fit(trainBatchGen, &model.FitConfig{Epochs: 10})
-	if err != nil {
-		return
-	}
-
-	result, err = simpleModel.Eval(testBatchGen, nil)
-	if err != nil {
-		return
-	}
-
-	return result, nil
-}
-
-func prepareModel() (m *model.Model, err error) {
-	input := stream.Input()
-
-	x := stream.FC(&layers.FCConfig{
-		Inputs:  10,
-		Outputs: 4,
-	})(input)
-	x = stream.Tanh()(x)
-
-	x = stream.FC(&layers.FCConfig{
-		Inputs:  4,
-		Outputs: 1,
-	})(x)
-	output := stream.Sigmoid()(x)
-
-	/* -------------------- */
-
-	m, err = model.NewModel(input, output, &model.ModelConfig{
-		Loss:      losses.NewBCE(),
-		Optimizer: optimizers.NewSGD(nil),
+func TestErrorHandlingModel(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(_ tensor.Device) {
+		// error in feed (m.forward) in both eval and fit
+		// error in loss.compute
+		// error in m.optimize
+		// error in metric accumulate
+		// error in batchgen.nextbatch in both eval and fit
+		// error in epoch logger for negative count in batchgen
 	})
-	if err != nil {
-		return
-	}
-
-	return m, nil
-}
-
-func prepareData() (trainBatchGen, testBatchGen model.BatchGenerator, err error) {
-	x := [][]float64{
-		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
-		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
-		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
-		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
-		{0., 1., 2., 3., 4., 5., 6., 7., 8., 9.},
-		{9., 8., 7., 6., 5., 4., 3., 2., 1., 0.},
-		{9., 8., 7., 6., 5., 4., 3., 2., 1., 0.},
-		{9., 8., 7., 6., 5., 4., 3., 2., 1., 0.},
-		{9., 8., 7., 6., 5., 4., 3., 2., 1., 0.},
-		{9., 8., 7., 6., 5., 4., 3., 2., 1., 0.},
-	}
-	y := [][]float64{
-		{0},
-		{0},
-		{0},
-		{0},
-		{0},
-		{1},
-		{1},
-		{1},
-		{1},
-		{1},
-	}
-
-	xtr := x[:8]
-	ytr := y[:8]
-	xte := x[8:]
-	yte := y[8:]
-
-	trainBatchGen, err = batchgens.NewSimple(xtr, ytr, &batchgens.SimpleConfig{
-		BatchSize: 4,
-		Shuffle:   true,
-	})
-	if err != nil {
-		return
-	}
-
-	testBatchGen, err = batchgens.NewSimple(xte, yte, &batchgens.SimpleConfig{
-		BatchSize: 4,
-		Shuffle:   true,
-	})
-	if err != nil {
-		return
-	}
-
-	return trainBatchGen, testBatchGen, nil
 }
 
 func TestValidationModel(t *testing.T) {

@@ -38,12 +38,12 @@ func (c *MSE) Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	return nil
 }
 
-func (c *MSE) Result() (result float64, err error) {
+func (c *MSE) Result() (result float64) {
 	if c.count == 0 {
-		return math.NaN(), nil
+		return math.NaN()
 	}
 
-	return c.diffSum / float64(c.count), nil
+	return c.diffSum / float64(c.count)
 }
 
 /* ----- helpers ----- */

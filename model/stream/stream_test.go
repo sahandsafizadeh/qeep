@@ -127,6 +127,28 @@ func TestStream(t *testing.T) {
 
 	/* ------------------------------ */
 
+	if ninput.NLayer() != 0 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if nfc1.NLayer() != 1 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if ntanh.NLayer() != 2 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if nfc2.NLayer() != 3 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if nsoftmax.NLayer() != 4 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	/* ------------------------------ */
+
 }
 
 func TestStreamWithError(t *testing.T) {

@@ -72,7 +72,7 @@ func NewStream(initFunc layerInitFunc, xs []*Stream) (y *Stream) {
 	cursor.SetNLayer(nlayer)
 
 	if err != nil {
-		err = fmt.Errorf("(Layer %d): %w", nlayer, err)
+		err = fmt.Errorf("(Layer %d): %w", cursor.NLayer(), err)
 		errCtx = append(errCtx, err)
 	}
 

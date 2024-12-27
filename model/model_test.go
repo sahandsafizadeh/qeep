@@ -161,16 +161,65 @@ func TestModel(t *testing.T) {
 	})
 }
 
-func TestErrorHandlingModel(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(_ tensor.Device) {
-		// error in feed (m.forward) in both eval and fit
-		// error in loss.compute
-		// error in m.optimize
-		// error in metric accumulate
-		// error in batchgen.nextbatch in both eval and fit
-		// error in epoch logger for negative count in batchgen
+func TestForwardErrorHandling(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		/* ------------------------------ */
+
+		x := [][]float64{{0.}}
+		y := [][]float64{{0.}}
+
+		batchGen, err := batchgens.NewSimple(x, y, &batchgens.SimpleConfig{
+			BatchSize: 1,
+			Device:    dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		input := stream.Input()
+		hidden := stream.FC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+		})(input, input)
+		output := stream.Tanh()(hidden)
+
+		m, err := model.NewModel(input, output, &model.ModelConfig{
+			Loss:      losses.NewMSE(),
+			Optimizer: optimizers.NewSGD(nil),
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		err = m.Fit(batchGen, &model.FitConfig{Epochs: 1})
+		if err == nil {
+			t.Fatalf("expected error because of feed-forward validation")
+		} else if err.Error() != "(Layer 1): FC input data validation failed: expected exactly one input tensor: got (2)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = m.Eval(batchGen, nil)
+		if err == nil {
+			t.Fatalf("expected error because of feed-forward validation")
+		} else if err.Error() != "(Layer 1): FC input data validation failed: expected exactly one input tensor: got (2)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
 	})
 }
+
+// error in loss.compute
+// error in m.optimize
+// error in metric accumulate
+// error in batchgen.nextbatch in both eval and fit
+// error in epoch logger for negative count in batchgen
 
 func TestValidationModel(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(_ tensor.Device) {

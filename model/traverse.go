@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
 	"github.com/sahandsafizadeh/qeep/model/internal/queue"
 )
@@ -45,6 +47,7 @@ func traverseBFS(roots []*node.Node, applyFunc func(*node.Node) error) (err erro
 
 		err = applyFunc(cn)
 		if err != nil {
+			err = fmt.Errorf("(Layer %d): %w", cn.NLayer(), err)
 			return
 		}
 

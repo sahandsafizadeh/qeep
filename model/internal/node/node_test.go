@@ -40,6 +40,13 @@ func TestNodeInitialization(t *testing.T) {
 	nc1.AddParent(nm1)
 	nc2.AddParent(nm1)
 
+	np1.SetNLayer(0)
+	np2.SetNLayer(0)
+	np3.SetNLayer(0)
+	nm1.SetNLayer(1)
+	nc1.SetNLayer(2)
+	nc2.SetNLayer(2)
+
 	/* ------------------------------ */
 
 	if np1.Layer() != lp1 {
@@ -146,6 +153,32 @@ func TestNodeInitialization(t *testing.T) {
 
 	/* ------------------------------ */
 
+	if np1.NLayer() != 0 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if np2.NLayer() != 0 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if np3.NLayer() != 0 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if nm1.NLayer() != 1 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if nc1.NLayer() != 2 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	if nc2.NLayer() != 2 {
+		t.Fatalf("unexpected node NLayer")
+	}
+
+	/* ------------------------------ */
+
 }
 
 func TestNodeOperation(t *testing.T) {
@@ -192,6 +225,10 @@ func TestNodeOperation(t *testing.T) {
 		nw.AddParent(ni)
 		nw.AddChild(na)
 		na.AddParent(nw)
+
+		ni.SetNLayer(0)
+		nw.SetNLayer(1)
+		na.SetNLayer(2)
 
 		/* ------------------------------ */
 

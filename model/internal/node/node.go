@@ -10,6 +10,7 @@ type Node struct {
 	result   tensor.Tensor
 	parents  []*Node
 	children []*Node
+	nlayer   int
 }
 
 func NewNode(layer contract.Layer) (n *Node) {
@@ -32,12 +33,20 @@ func (n *Node) Children() []*Node {
 	return n.children
 }
 
+func (n *Node) NLayer() int {
+	return n.nlayer
+}
+
 func (n *Node) AddParent(p *Node) {
 	n.parents = append(n.parents, p)
 }
 
 func (n *Node) AddChild(c *Node) {
 	n.children = append(n.children, c)
+}
+
+func (n *Node) SetNLayer(nlayer int) {
+	n.nlayer = nlayer
 }
 
 func (n *Node) Forward() (err error) {

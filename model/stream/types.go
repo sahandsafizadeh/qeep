@@ -6,7 +6,6 @@ import (
 )
 
 type Stream struct {
-	nlayer int
 	cursor *node.Node
 	errCtx []error
 }

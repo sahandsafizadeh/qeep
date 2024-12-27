@@ -50,23 +50,26 @@ func NewStream(initFunc layerInitFunc, xs []*Stream) (y *Stream) {
 		- 'err' value is handled after for loop.
 	*/
 
-	nlayer := -1
-	errCtx := make([]error, 0)
-
 	layer, err := initFunc()
 	cursor := node.NewNode(layer)
 
+	nlayer := -1
+	errCtx := make([]error, 0)
+
 	for _, x := range xs {
-		if x.nlayer >= nlayer {
-			nlayer = x.nlayer
+		parent := x.cursor
+
+		if pnl := parent.NLayer(); pnl >= nlayer {
+			nlayer = pnl
 		}
 
-		x.cursor.AddChild(cursor)
-		cursor.AddParent(x.cursor)
+		parent.AddChild(cursor)
+		cursor.AddParent(parent)
 		errCtx = append(errCtx, x.errCtx...)
 	}
 
 	nlayer++
+	cursor.SetNLayer(nlayer)
 
 	if err != nil {
 		err = fmt.Errorf("(Layer %d): %w", nlayer, err)
@@ -74,7 +77,6 @@ func NewStream(initFunc layerInitFunc, xs []*Stream) (y *Stream) {
 	}
 
 	return &Stream{
-		nlayer: nlayer,
 		cursor: cursor,
 		errCtx: errCtx,
 	}

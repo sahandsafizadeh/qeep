@@ -1,9 +1,10 @@
 #!/bin/bash
 
-profile_out=profile
+cover_pkgs=$(go list ./... | grep -v "$EXCLUDED_COVERAGE_PATH" | tr '\n' ',')
 coverage_out=coverage
+profile_out=profile
 
-go test -coverpkg=./... -coverprofile=$profile_out ./... || exit 1
+go test -coverpkg=$cover_pkgs -coverprofile=$profile_out ./... || exit 1
 go tool cover -func $profile_out >$coverage_out
 
 actual_coverage=$(cat $coverage_out | tail -n 1 | sed 's/.*[[:blank:]]//' | sed 's/%//')

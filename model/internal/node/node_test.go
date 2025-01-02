@@ -413,6 +413,63 @@ func TestNodeOperation(t *testing.T) {
 	})
 }
 
+func TestForwardAndOptimizeErrorHandling(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(_ tensor.Device) {
+
+		/* ------------------------------ */
+
+		input1 := layers.NewInput()
+		input2 := layers.NewInput()
+
+		input1.SeedFunc = func() tensor.Tensor { return nil }
+		input2.SeedFunc = func() tensor.Tensor { return nil }
+
+		weighted, err := layers.NewFC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		optimizer := optimizers.NewSGD(nil)
+
+		/* ------------------------------ */
+
+		ni1 := node.NewNode(input1)
+		ni2 := node.NewNode(input2)
+		nw := node.NewNode(weighted)
+
+		ni1.AddChild(nw)
+		ni2.AddChild(nw)
+		nw.AddParent(ni1)
+		nw.AddParent(ni2)
+
+		ni1.SetNLayer(0)
+		ni2.SetNLayer(0)
+		nw.SetNLayer(1)
+
+		/* ------------------------------ */
+
+		err = nw.Forward()
+		if err == nil {
+			t.Fatalf("expected error because of FC forward validation")
+		} else if err.Error() != "FC input data validation failed: expected exactly one input tensor: got (2)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		err = nw.Optimize(optimizer)
+		if err == nil {
+			t.Fatalf("expected error because of optimizer validation")
+		} else if err.Error() != "SGD input data validation failed: expected tensor's gradient not to be nil" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
 /* ----- helpers ----- */
 
 type simple2DWeightedLayer struct {

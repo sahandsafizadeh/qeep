@@ -770,8 +770,8 @@ func TestValidationSimple(t *testing.T) {
 				BatchSize: 2,
 			})
 		if err == nil {
-			t.Fatalf("expected error because of input slices not having at least one record")
-		} else if err.Error() != "Simple input data validation failed: expected input slices to have at least one record" {
+			t.Fatalf("expected error because of input slices not having at least one record along dimension (0)")
+		} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have at least one record along dimension (0)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -780,8 +780,8 @@ func TestValidationSimple(t *testing.T) {
 				BatchSize: 2,
 			})
 		if err == nil {
-			t.Fatalf("expected error because of input slices not having at least one record")
-		} else if err.Error() != "Simple input data validation failed: expected input slices to have at least one record" {
+			t.Fatalf("expected error because of input slices not having at least one record along dimension (0)")
+		} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have at least one record along dimension (0)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -790,8 +790,8 @@ func TestValidationSimple(t *testing.T) {
 				BatchSize: 2,
 			})
 		if err == nil {
-			t.Fatalf("expected error because of input slices not having the same number of records")
-		} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have the same number of records: (2) != (1)" {
+			t.Fatalf("expected error because of input slices not having the same number of records along dimension (0)")
+		} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have the same number of records along dimension (0): (2) != (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -800,8 +800,38 @@ func TestValidationSimple(t *testing.T) {
 				BatchSize: 2,
 			})
 		if err == nil {
-			t.Fatalf("expected error because of input slices not having at least one record")
-		} else if err.Error() != "Simple input data validation failed: expected input 'x' to have at least one record along every entry" {
+			t.Fatalf("expected error because of input slices not having at least one record along dimension (1)")
+		} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have at least one record along dimension (1): got none at position (1)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = batchgens.NewSimple([][]float64{{1.}, {1.}}, [][]float64{{}, {0}},
+			&batchgens.SimpleConfig{
+				BatchSize: 2,
+			})
+		if err == nil {
+			t.Fatalf("expected error because of input slices not having at least one record along dimension (1)")
+		} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have at least one record along dimension (1): got none at position (0)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = batchgens.NewSimple([][]float64{{1.}, {1.}, {1., 1.}}, [][]float64{{0}, {0}, {0}},
+			&batchgens.SimpleConfig{
+				BatchSize: 2,
+			})
+		if err == nil {
+			t.Fatalf("expected error because of input slice 'x' not having equal length along every record in dimension (1)")
+		} else if err.Error() != "Simple input data validation failed: expected input slice 'x' to have equal length along every record in dimension (1): (2) != (1) at position (2)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = batchgens.NewSimple([][]float64{{1.}, {1.}, {1.}}, [][]float64{{0}, {0}, {0, 0}},
+			&batchgens.SimpleConfig{
+				BatchSize: 2,
+			})
+		if err == nil {
+			t.Fatalf("expected error because of input slice 'y' not having equal length along every record in dimension (1)")
+		} else if err.Error() != "Simple input data validation failed: expected input slice 'y' to have equal length along every record in dimension (1): (2) != (1) at position (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 

@@ -21,7 +21,7 @@ const (
 
 const (
 	batchSize = 32
-	epochs    = 10
+	epochs    = 1000
 )
 
 func main() {
@@ -72,18 +72,12 @@ func prepareModel() (m *model.Model, err error) {
 
 	x := stream.FC(&layers.FCConfig{
 		Inputs:  4,
-		Outputs: 64,
+		Outputs: 4,
 	})(input)
-	x = stream.Relu()(x)
+	x = stream.Tanh()(x)
 
 	x = stream.FC(&layers.FCConfig{
-		Inputs:  64,
-		Outputs: 32,
-	})(x)
-	x = stream.Relu()(x)
-
-	x = stream.FC(&layers.FCConfig{
-		Inputs:  32,
+		Inputs:  4,
 		Outputs: 3,
 	})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{
@@ -93,8 +87,10 @@ func prepareModel() (m *model.Model, err error) {
 	/* -------------------- */
 
 	m, err = model.NewModel(input, output, &model.ModelConfig{
-		Loss:      losses.NewCE(),
-		Optimizer: optimizers.NewSGD(nil),
+		Loss: losses.NewCE(),
+		Optimizer: optimizers.NewSGD(&optimizers.SGDConfig{
+			LearningRate: 1e-5,
+		}),
 	})
 	if err != nil {
 		return

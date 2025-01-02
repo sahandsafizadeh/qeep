@@ -4,7 +4,7 @@ Welcome to **qeep**! This project implements a **_deep learning framework_** in 
 
 ## Features
 
-- _Multi-Dimensional_ **Tensors** with a variety of linear algebra and statistical operations. (`GPU acceleration` is planned for future development)
+- _Multi-Dimensional_ **Tensors** with a variety of linear algebra and statistical operations. (`GPU` acceleration is planned for future development)
 - Automatic differentiation (_AutoGrad_) for tensors.
 - Variety of neural network _Components_ such as `FC` (fully-connected).
 - A _Declarative_ approach to define neural networks using `stream` package.
@@ -15,6 +15,7 @@ Ensure that you have [Go](https://go.dev/dl/) installed. Then, you can install t
 
 ```bash
 go get github.com/sahandsafizadeh/qeep
+go mod tidy
 ```
 
 ## Usage

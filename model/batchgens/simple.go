@@ -134,14 +134,17 @@ func toValidSimpleData(ix [][]float64, iy [][]float64) (x [][]float64, y [][]flo
 	leny := len(iy)
 
 	if lenx < 1 || leny < 1 {
-		err = fmt.Errorf("expected input slices to have at least one record")
+		err = fmt.Errorf("expected input slices 'x' and 'y' to have at least one record along dimension (0)")
 		return
 	}
 
 	if lenx != leny {
-		err = fmt.Errorf("expected input slices 'x' and 'y' to have the same number of records: (%d) != (%d)", lenx, leny)
+		err = fmt.Errorf("expected input slices 'x' and 'y' to have the same number of records along dimension (0): (%d) != (%d)", lenx, leny)
 		return
 	}
+
+	basex := len(ix[0])
+	basey := len(iy[0])
 
 	x = make([][]float64, lenx)
 	y = make([][]float64, leny)
@@ -150,13 +153,21 @@ func toValidSimpleData(ix [][]float64, iy [][]float64) (x [][]float64, y [][]flo
 		ixi := ix[i]
 		iyi := iy[i]
 
-		if len(ixi) < 1 {
-			err = fmt.Errorf("expected input 'x' to have at least one record along every entry")
+		lenxi := len(ixi)
+		lenyi := len(iyi)
+
+		if lenxi < 1 || lenyi < 1 {
+			err = fmt.Errorf("expected input slices 'x' and 'y' to have at least one record along dimension (1): got none at position (%d)", i)
 			return
 		}
 
-		if len(iyi) < 1 {
-			err = fmt.Errorf("expected input 'y' to have at least one record along every entry")
+		if lenxi != basex {
+			err = fmt.Errorf("expected input slice 'x' to have equal length along every record in dimension (1): (%d) != (%d) at position (%d)", lenxi, basex, i)
+			return
+		}
+
+		if lenyi != basey {
+			err = fmt.Errorf("expected input slice 'y' to have equal length along every record in dimension (1): (%d) != (%d) at position (%d)", lenyi, basey, i)
 			return
 		}
 

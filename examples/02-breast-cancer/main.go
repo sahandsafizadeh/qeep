@@ -19,8 +19,8 @@ const (
 )
 
 const (
-	batchSize = 32
-	epochs    = 10
+	batchSize = 128
+	epochs    = 25
 )
 
 func main() {
@@ -32,6 +32,8 @@ func main() {
 	for m, r := range result {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
+
+	// Best Accuracy: 0.92
 }
 
 func run() (result map[string]float64, err error) {
@@ -69,15 +71,9 @@ func prepareModel() (m *model.Model, err error) {
 
 	x := stream.FC(&layers.FCConfig{
 		Inputs:  30,
-		Outputs: 32,
-	})(input)
-	x = stream.Relu()(x)
-
-	x = stream.FC(&layers.FCConfig{
-		Inputs:  32,
 		Outputs: 16,
-	})(x)
-	x = stream.Relu()(x)
+	})(input)
+	x = stream.Tanh()(x)
 
 	x = stream.FC(&layers.FCConfig{
 		Inputs:  16,
@@ -88,8 +84,10 @@ func prepareModel() (m *model.Model, err error) {
 	/* -------------------- */
 
 	m, err = model.NewModel(input, output, &model.ModelConfig{
-		Loss:      losses.NewBCE(),
-		Optimizer: optimizers.NewSGD(nil),
+		Loss: losses.NewBCE(),
+		Optimizer: optimizers.NewSGD(&optimizers.SGDConfig{
+			LearningRate: 1e-6,
+		}),
 	})
 	if err != nil {
 		return

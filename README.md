@@ -1,13 +1,13 @@
 # qeep
 
-Welcome to **qeep**! This project implements a **_Deep Learning framework_** in pure **_Go_**. It allows you to define neural networks in a declarative way while being able to control operations at _Tensor Level_.
+Welcome to **qeep**! This project implements a **_deep learning framework_** in pure **_Go_**. It allows you to define neural networks in a declarative way while being able to control operations at _tensor level_.
 
 ## Features
 
-- _Multi-Dimensional_ **Tensors** with a variety of linear algebra and statistical operations. (`GPU` acceleration is a future work)
+- _Multi-Dimensional_ **Tensors** with a variety of linear algebra and statistical operations. (`GPU acceleration` is planned for future development)
 - Automatic differentiation (_AutoGrad_) for tensors.
 - Variety of neural network _Components_ such as `FC` (fully-connected).
-- A _Declarative_ method to define neural networks using `stream` package.
+- A _Declarative_ approach to define neural networks using `stream` package.
 
 ## Installation
 
@@ -72,4 +72,4 @@ go run .
 
 ## License
 
-qeep project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+The **qeep** project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.

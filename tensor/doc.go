@@ -2,6 +2,7 @@ package tensor
 
 /*
 Tensor is a data structure with variable number of dimensions that supports statistics and linear-algebra operations.
+
 By design:
 - Tensor is an interface so that it can be implemented on various devices internally.
 - Tensor's implementation must be immutable

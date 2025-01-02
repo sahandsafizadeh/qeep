@@ -44,6 +44,18 @@ func (c *Accuracy) Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 		if err != nil {
 			return
 		}
+	} else {
+		mid := yp.Pow(0).Scale(0.5)
+
+		yp, err = yp.Ge(mid)
+		if err != nil {
+			return
+		}
+
+		yt, err = yt.Ge(mid)
+		if err != nil {
+			return
+		}
 	}
 
 	eq, err := yp.Eq(yt)

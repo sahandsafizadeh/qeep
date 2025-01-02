@@ -13,9 +13,9 @@ func TestAccuracy(t *testing.T) {
 
 		conf := &tensor.Config{Device: dev}
 
-		metric := metrics.NewAccuracy(&metrics.AccuracyConfig{OneHotMode: true})
-
 		/* ------------------------------ */
+
+		metric := metrics.NewAccuracy(&metrics.AccuracyConfig{OneHotMode: false})
 
 		result := metric.Result()
 
@@ -23,16 +23,72 @@ func TestAccuracy(t *testing.T) {
 			t.Fatalf("expected result to be (NaN): got (%f)", result)
 		}
 
+		/* --------------- */
+
+		yp, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		yt, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = metric.Accumulate(yp, yt)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		result = metric.Result()
+
+		if !(1-1e-10 < result && result < 1+1e-10) {
+			t.Fatalf("expected result to be (1): got (%f)", result)
+		}
+
+		/* --------------- */
+
+		yp, err = tensor.TensorOf([][]float64{{0.1}, {0.8}, {0.5}, {0.4999}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		yt, err = tensor.TensorOf([][]float64{{0.}, {0.}, {0.}, {0.}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = metric.Accumulate(yp, yt)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		result = metric.Result()
+
+		if !(0.6-1e-10 < result && result < 0.6+1e-10) {
+			t.Fatalf("expected result to be (0.6): got (%f)", result)
+		}
+
 		/* ------------------------------ */
 
-		yp, err := tensor.TensorOf([][]float64{
+		metric = metrics.NewAccuracy(&metrics.AccuracyConfig{OneHotMode: true})
+
+		result = metric.Result()
+
+		if !math.IsNaN(result) {
+			t.Fatalf("expected result to be (NaN): got (%f)", result)
+		}
+
+		/* --------------- */
+
+		yp, err = tensor.TensorOf([][]float64{
 			{1.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err := tensor.TensorOf([][]float64{
+		yt, err = tensor.TensorOf([][]float64{
 			{1.},
 		}, conf)
 		if err != nil {
@@ -50,7 +106,7 @@ func TestAccuracy(t *testing.T) {
 			t.Fatalf("expected result to be (1): got (%f)", result)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		yp, err = tensor.TensorOf([][]float64{
 			{0.1, 0.9},
@@ -81,7 +137,7 @@ func TestAccuracy(t *testing.T) {
 			t.Fatalf("expected result to be (0.5): got (%f)", result)
 		}
 
-		/* ------------------------------ */
+		/* --------------- */
 
 		yp, err = tensor.TensorOf([][]float64{
 			{0.2, 0.2, 0.2, 0.4},

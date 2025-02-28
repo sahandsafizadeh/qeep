@@ -1,6 +1,6 @@
 # qeep
 
-Welcome to **qeep**! This project implements a **_deep learning framework_** in pure **_Go_**. It allows you to define neural networks in a declarative way while being able to control operations at _tensor level_.
+Welcome to **qeep** (pronounced /kēp/)! This project implements a **_deep learning framework_** in pure **_Go_**. It allows you to define neural networks in a declarative way while being able to control operations at _tensor level_.
 
 ## Features
 

@@ -53,7 +53,7 @@ func loadData() (x [][]float64, y [][]float64, err error) {
 	return x, y, nil
 }
 
-func splitData(x [][]float64, y [][]float64) dataSplit {
+func splitData(x [][]float64, y [][]float64) *dataSplit {
 	lend := len(x)
 	lenvl := int(float64(lend) * validDataRatio)
 	lente := int(float64(lend) * testDataRatio)
@@ -66,7 +66,7 @@ func splitData(x [][]float64, y [][]float64) dataSplit {
 	point1 := lenvl
 	point2 := point1 + lente
 
-	return dataSplit{
+	return &dataSplit{
 		xValid: x[:point1],
 		yValid: y[:point1],
 		xTest:  x[point1:point2],

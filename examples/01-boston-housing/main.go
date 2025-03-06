@@ -15,7 +15,7 @@ import (
 const (
 	// https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data
 	dataFileAddress = "data.csv"
-	validDataRatio  = 0.01
+	validDataRatio  = 0.05
 	testDataRatio   = 0.2
 )
 
@@ -109,7 +109,7 @@ func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenera
 
 	data := splitData(x, y)
 
-	preprocessData(&data)
+	preprocessData(data)
 
 	trainBatchGen, err = batchgens.NewSimple(data.xTrain, data.yTrain, &batchgens.SimpleConfig{
 		BatchSize: batchSize,

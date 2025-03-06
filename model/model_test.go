@@ -30,11 +30,6 @@ func TestModel(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		_, err = tensor.TensorOf(y, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
 		batchGen, err := batchgens.NewSimple(x, y, &batchgens.SimpleConfig{
 			BatchSize: 2,
 			Device:    dev,
@@ -120,7 +115,7 @@ func TestModel(t *testing.T) {
 
 		/* ------------------------------ */
 
-		err = m.Fit(batchGen, &model.FitConfig{Epochs: 2})
+		err = m.Fit(batchGen, batchGen, &model.FitConfig{Epochs: 2})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -196,7 +191,7 @@ func TestForwardErrorHandling(t *testing.T) {
 
 		/* --------------- */
 
-		err = m.Fit(batchGen, &model.FitConfig{Epochs: 1})
+		err = m.Fit(batchGen, nil, &model.FitConfig{Epochs: 1})
 		if err == nil {
 			t.Fatalf("expected error because of feed-forward validation")
 		} else if err.Error() != "(Layer 1): FC input data validation failed: expected exactly one input tensor: got (2)" {
@@ -221,9 +216,34 @@ func TestLossAndMetricErrorHandling(t *testing.T) {
 		/* ------------------------------ */
 
 		x := [][]float64{{0.}}
-		y := [][]float64{{0.}}
+		y1 := [][]float64{{0.}}
+		y2 := [][]float64{{0., 0.}}
 
-		batchGen, err := batchgens.NewSimple(x, y, &batchgens.SimpleConfig{
+		trainBatchGen1, err := batchgens.NewSimple(x, y1, &batchgens.SimpleConfig{
+			BatchSize: 1,
+			Device:    dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		trainBatchGen2, err := batchgens.NewSimple(x, y2, &batchgens.SimpleConfig{
+			BatchSize: 1,
+			Device:    dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		validBatchGen, err := batchgens.NewSimple(x, y1, &batchgens.SimpleConfig{
+			BatchSize: 1,
+			Device:    dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		testBatchGen, err := batchgens.NewSimple(x, y1, &batchgens.SimpleConfig{
 			BatchSize: 1,
 			Device:    dev,
 		})
@@ -237,6 +257,7 @@ func TestLossAndMetricErrorHandling(t *testing.T) {
 			loss      = losses.NewMSE()
 			metric    = metrics.NewMSE()
 			optimizer = optimizers.NewSGD(nil)
+			metrics   = map[string]model.Metric{"MSE": metric}
 		)
 
 		input := stream.Input()
@@ -256,14 +277,33 @@ func TestLossAndMetricErrorHandling(t *testing.T) {
 
 		/* --------------- */
 
-		err = m.Fit(batchGen, &model.FitConfig{Epochs: 1})
+		err = m.Fit(trainBatchGen1, nil, &model.FitConfig{Epochs: 1})
 		if err == nil {
 			t.Fatalf("expected error because of loss validation")
 		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = m.Eval(batchGen, map[string]model.Metric{"MSE": metric})
+		/* --------------- */
+
+		_, err = m.Eval(testBatchGen, metrics)
+		if err == nil {
+			t.Fatalf("expected error because of metric validation")
+		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* --------------- */
+
+		err = m.Fit(trainBatchGen2, nil, &model.FitConfig{Epochs: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = m.Fit(trainBatchGen2, validBatchGen, &model.FitConfig{
+			Epochs:  1,
+			Metrics: metrics,
+		})
 		if err == nil {
 			t.Fatalf("expected error because of metric validation")
 		} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
@@ -411,14 +451,14 @@ func TestValidationModel(t *testing.T) {
 
 		/* --------------- */
 
-		err = m.Fit(nil, nil)
+		err = m.Fit(nil, nil, nil)
 		if err == nil {
 			t.Fatalf("expected error because of nil input config")
 		} else if err.Error() != "Fit config data validation failed: expected config not to be nil" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		err = m.Fit(nil, &model.FitConfig{
+		err = m.Fit(nil, nil, &model.FitConfig{
 			Epochs: 0,
 		})
 		if err == nil {

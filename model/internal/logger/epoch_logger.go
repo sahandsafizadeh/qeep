@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
@@ -34,7 +35,25 @@ func (el *EpochLogger) StartNextEpoch() {
 	el.curBatch = 0
 	el.epochStart = time.Now()
 
-	fmt.Printf(
+	fmt.Print(el.getStartNextEpochLog())
+}
+
+func (el *EpochLogger) ProgressBatch() {
+	el.curBatch++
+
+	fmt.Print("\r")
+	fmt.Print(el.getProgressBatchLog())
+}
+
+func (el *EpochLogger) FinishEpoch(l tensor.Tensor, vres map[string]float64) {
+	el.epochEnd = time.Now()
+
+	fmt.Print("\r")
+	fmt.Println(el.getFinishEpochLog(l, vres))
+}
+
+func (el *EpochLogger) getStartNextEpochLog() string {
+	return fmt.Sprintf(
 		"%s%s%s",
 		epoch(el.curEpoch, el.epochs),
 		space(),
@@ -42,28 +61,39 @@ func (el *EpochLogger) StartNextEpoch() {
 	)
 }
 
-func (el *EpochLogger) ProgressBatch() {
-	el.curBatch++
-
-	fmt.Printf(
-		"\r%s%s%s",
+func (el *EpochLogger) getProgressBatchLog() string {
+	return fmt.Sprintf(
+		"%s%s%s",
 		epoch(el.curEpoch, el.epochs),
 		space(),
 		progress(el.curBatch, el.batches),
 	)
 }
 
-func (el *EpochLogger) FinishEpoch(l tensor.Tensor) {
-	el.epochEnd = time.Now()
+func (el *EpochLogger) getFinishEpochLog(l tensor.Tensor, vres map[string]float64) string {
+	format := bytes.NewBuffer(make([]byte, 0, 15))
+	args := make([]any, 0, 10)
 
-	fmt.Printf(
-		"\r%s%s%s%s%s\n",
+	format.WriteString("%s%s%s%s%s")
+	args = append(
+		args,
 		epoch(el.curEpoch, el.epochs),
 		space(),
 		duration(el.epochStart, el.epochEnd),
 		space(),
 		loss(l),
 	)
+
+	if len(vres) != 0 {
+		format.WriteString("%s%s")
+		args = append(
+			args,
+			space(),
+			validation(vres),
+		)
+	}
+
+	return fmt.Sprintf(format.String(), args...)
 }
 
 func epoch(currentEpoch int, totalEpochs int) string {
@@ -83,8 +113,12 @@ func duration(startTime time.Time, endTime time.Time) string {
 }
 
 func loss(l tensor.Tensor) string {
-	loss, _ := l.At() // TEMPORARY: until tensors implement Stringer interface
+	loss, _ := l.At() // TODO: TEMPORARY! until tensors implement Stringer interface.
 	return fmt.Sprintf("Loss: %f", loss)
+}
+
+func validation(result map[string]float64) string {
+	return fmt.Sprintf("Validation: %v", result)
 }
 
 func space() string {

@@ -15,6 +15,7 @@ import (
 const (
 	// https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
 	dataFileAddress = "data.csv"
+	validDataRatio  = 0.05
 	testDataRatio   = 0.2
 )
 
@@ -37,7 +38,7 @@ func main() {
 }
 
 func run() (result map[string]float64, err error) {
-	trainBatchGen, testBatchGen, err := prepareData()
+	trainBatchGen, validBatchGen, testBatchGen, err := prepareData()
 	if err != nil {
 		return
 	}
@@ -47,8 +48,11 @@ func run() (result map[string]float64, err error) {
 		return
 	}
 
-	err = bcmodel.Fit(trainBatchGen, &model.FitConfig{
+	err = bcmodel.Fit(trainBatchGen, validBatchGen, &model.FitConfig{
 		Epochs: epochs,
+		Metrics: map[string]model.Metric{
+			"Accuracy": metrics.NewAccuracy(nil),
+		},
 	})
 	if err != nil {
 		return
@@ -98,17 +102,17 @@ func prepareModel() (m *model.Model, err error) {
 
 /* ----- data preparation ----- */
 
-func prepareData() (trainBatchGen, testBatchGen model.BatchGenerator, err error) {
+func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenerator, err error) {
 	x, y, err := loadData()
 	if err != nil {
 		return
 	}
 
-	xtr, xte, ytr, yte := splitData(x, y)
+	data := splitData(x, y)
 
-	preprocessData(xtr, xte)
+	preprocessData(data)
 
-	trainBatchGen, err = batchgens.NewSimple(xtr, ytr, &batchgens.SimpleConfig{
+	trainBatchGen, err = batchgens.NewSimple(data.xTrain, data.yTrain, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   true,
 	})
@@ -116,13 +120,21 @@ func prepareData() (trainBatchGen, testBatchGen model.BatchGenerator, err error)
 		return
 	}
 
-	testBatchGen, err = batchgens.NewSimple(xte, yte, &batchgens.SimpleConfig{
+	validBatchGen, err = batchgens.NewSimple(data.xValid, data.yValid, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
-		Shuffle:   true,
+		Shuffle:   false,
 	})
 	if err != nil {
 		return
 	}
 
-	return trainBatchGen, testBatchGen, nil
+	testBatchGen, err = batchgens.NewSimple(data.xTest, data.yTest, &batchgens.SimpleConfig{
+		BatchSize: batchSize,
+		Shuffle:   false,
+	})
+	if err != nil {
+		return
+	}
+
+	return trainBatchGen, validBatchGen, testBatchGen, nil
 }

@@ -10,6 +10,17 @@ import (
 	"gonum.org/v1/gonum/stat"
 )
 
+type dataSplit struct {
+	xTrain [][]float64
+	yTrain [][]float64
+	xValid [][]float64
+	yValid [][]float64
+	xTest  [][]float64
+	yTest  [][]float64
+}
+
+type transformFunc func(float64) float64
+
 func loadData() (x [][]float64, y [][]float64, err error) {
 	file, err := os.Open(dataFileAddress)
 	if err != nil {
@@ -48,25 +59,30 @@ func loadData() (x [][]float64, y [][]float64, err error) {
 	return x, y, nil
 }
 
-func splitData(x [][]float64, y [][]float64) (xTrain, xTest [][]float64, yTrain, yTest [][]float64) {
+func splitData(x [][]float64, y [][]float64) *dataSplit {
 	lend := len(x)
-	ratio := 1. - testDataRatio
-	point := int(float64(lend) * ratio)
+	lenvl := int(float64(lend) * validDataRatio)
+	lente := int(float64(lend) * testDataRatio)
 
 	rand.Shuffle(lend, func(i, j int) {
 		x[i], x[j] = x[j], x[i]
 		y[i], y[j] = y[j], y[i]
 	})
 
-	xTrain = x[:point]
-	yTrain = y[:point]
-	xTest = x[point:]
-	yTest = y[point:]
+	point1 := lenvl
+	point2 := point1 + lente
 
-	return xTrain, xTest, yTrain, yTest
+	return &dataSplit{
+		xValid: x[:point1],
+		yValid: y[:point1],
+		xTest:  x[point1:point2],
+		yTest:  y[point1:point2],
+		xTrain: x[point2:],
+		yTrain: y[point2:],
+	}
 }
 
-func preprocessData(xTrain, xTest [][]float64) {
+func preprocessData(data *dataSplit) {
 	getColumn := func(j int, x [][]float64) (col []float64) {
 		col = make([]float64, len(x))
 		for i := 0; i < len(x); i++ {
@@ -76,18 +92,19 @@ func preprocessData(xTrain, xTest [][]float64) {
 		return col
 	}
 
-	setColumn := func(j int, x [][]float64, col []float64) {
+	transformColumn := func(j int, x [][]float64, tf transformFunc) {
 		for i := 0; i < len(x); i++ {
-			x[i][j] = col[i]
+			x[i][j] = tf(x[i][j])
 		}
 	}
 
-	for j := 0; j < len(xTrain[0]); j++ {
-		xtrc := getColumn(j, xTrain)
-		xtec := getColumn(j, xTest)
-		standardize(xtrc, xtec)
-		setColumn(j, xTrain, xtrc)
-		setColumn(j, xTest, xtec)
+	for j := 0; j < len(data.xTrain[0]); j++ {
+		col := getColumn(j, data.xTrain)
+		stf := makeStandardizer(col)
+
+		transformColumn(j, data.xTrain, stf)
+		transformColumn(j, data.xValid, stf)
+		transformColumn(j, data.xTest, stf)
 	}
 }
 
@@ -102,16 +119,10 @@ func mustParseFloat64(s string) (f float64) {
 	return f
 }
 
-func standardize(xtrc, xtec []float64) {
-	u, s := stat.MeanStdDev(xtrc, nil)
-	transform := func(v float64) float64 { return (v - u) / s }
+func makeStandardizer(col []float64) transformFunc {
+	u, s := stat.MeanStdDev(col, nil)
 
-	transformColumn := func(col []float64) {
-		for i := 0; i < len(col); i++ {
-			col[i] = transform(col[i])
-		}
+	return func(v float64) float64 {
+		return (v - u) / s
 	}
-
-	transformColumn(xtrc)
-	transformColumn(xtec)
 }

@@ -18,7 +18,8 @@ type ModelConfig struct {
 }
 
 type FitConfig struct {
-	Epochs int
+	Epochs  int
+	Metrics map[string]contract.Metric
 }
 
 type Layer = contract.Layer

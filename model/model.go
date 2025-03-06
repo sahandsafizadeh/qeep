@@ -84,14 +84,18 @@ func (m *Model) Eval(batchGen contract.BatchGenerator, metrics map[string]contra
 	return result, nil
 }
 
-func (m *Model) Fit(batchGen contract.BatchGenerator, conf *FitConfig) (err error) {
+func (m *Model) Fit(
+	trainBatchGen contract.BatchGenerator,
+	validBatchGen contract.BatchGenerator,
+	conf *FitConfig,
+) (err error) {
 	err = m.validateFitConfig(conf)
 	if err != nil {
 		err = fmt.Errorf("Fit config data validation failed: %w", err)
 		return
 	}
 
-	epochLogger, err := logger.NewEpochLogger(conf.Epochs, batchGen.Count())
+	epochLogger, err := logger.NewEpochLogger(conf.Epochs, trainBatchGen.Count())
 	if err != nil {
 		return
 	}
@@ -103,9 +107,10 @@ func (m *Model) Fit(batchGen contract.BatchGenerator, conf *FitConfig) (err erro
 		var yt tensor.Tensor
 		var loss tensor.Tensor
 		var epochLoss tensor.Tensor
+		var validResult map[string]float64
 
-		for batchGen.Reset(); batchGen.HasNext(); {
-			xs, yt, err = batchGen.NextBatch()
+		for trainBatchGen.Reset(); trainBatchGen.HasNext(); {
+			xs, yt, err = trainBatchGen.NextBatch()
 			if err != nil {
 				return
 			}
@@ -123,7 +128,14 @@ func (m *Model) Fit(batchGen contract.BatchGenerator, conf *FitConfig) (err erro
 			epochLogger.ProgressBatch()
 		}
 
-		epochLogger.FinishEpoch(epochLoss)
+		if validBatchGen != nil {
+			validResult, err = m.Eval(validBatchGen, conf.Metrics)
+			if err != nil {
+				return
+			}
+		}
+
+		epochLogger.FinishEpoch(epochLoss, validResult)
 	}
 
 	return nil

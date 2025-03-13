@@ -52,17 +52,17 @@ func TestEpochLogger(t *testing.T) {
 		epochs := 1
 		batches := 1
 		loss, _ := tensor.TensorOf(1.5, conf)
-		vres := map[string]float64{"MSE": 2.345, "Accuracy": 0.82, "dummy": 0.}
+		vres := map[string]float64{"MSE": 2.34555, "Accuracy": 0.82, "dummy": 0.}
 
 		expStartLogs := []string{
-			"Epoch: 1/1;   Progress: 0%",
+			`Epoch: 1/1;   Progress: 0%`,
 		}
 		expFinishLogs := []string{
-			"Epoch: 1/1;   Duration: 0s;   Loss: 1.500000;   Validation: map[Accuracy:0.82 MSE:2.345 dummy:0]",
+			`Epoch: 1/1;   Duration: 0s;   Loss: 1.5000;   Validations: ["Accuracy": 0.82, "MSE": 2.35, "dummy": 0.00]`,
 		}
 		expProgressLogs := [][]string{
 			{
-				"Epoch: 1/1;   Progress: 100%",
+				`Epoch: 1/1;   Progress: 100%`,
 			},
 		}
 
@@ -84,15 +84,15 @@ func TestEpochLogger(t *testing.T) {
 		vres = map[string]float64{"MSE": 9.3, "Accuracy": 0.123}
 
 		expStartLogs = []string{
-			"Epoch: 1/1;   Progress: 0%",
+			`Epoch: 1/1;   Progress: 0%`,
 		}
 		expFinishLogs = []string{
-			"Epoch: 1/1;   Duration: 0s;   Loss: 0.550000;   Validation: map[Accuracy:0.123 MSE:9.3]",
+			`Epoch: 1/1;   Duration: 0s;   Loss: 0.5500;   Validations: ["Accuracy": 0.12, "MSE": 9.30]`,
 		}
 		expProgressLogs = [][]string{
 			{
-				"Epoch: 1/1;   Progress: 50%",
-				"Epoch: 1/1;   Progress: 100%",
+				`Epoch: 1/1;   Progress: 50%`,
+				`Epoch: 1/1;   Progress: 100%`,
 			},
 		}
 
@@ -114,24 +114,24 @@ func TestEpochLogger(t *testing.T) {
 		vres = map[string]float64{"MSE": 0.56789}
 
 		expStartLogs = []string{
-			"Epoch: 1/3;   Progress: 0%",
-			"Epoch: 2/3;   Progress: 0%",
-			"Epoch: 3/3;   Progress: 0%",
+			`Epoch: 1/3;   Progress: 0%`,
+			`Epoch: 2/3;   Progress: 0%`,
+			`Epoch: 3/3;   Progress: 0%`,
 		}
 		expFinishLogs = []string{
-			"Epoch: 1/3;   Duration: 0s;   Loss: 44.005000;   Validation: map[MSE:0.56789]",
-			"Epoch: 2/3;   Duration: 0s;   Loss: 44.005000;   Validation: map[MSE:0.56789]",
-			"Epoch: 3/3;   Duration: 0s;   Loss: 44.005000;   Validation: map[MSE:0.56789]",
+			`Epoch: 1/3;   Duration: 0s;   Loss: 44.0050;   Validations: ["MSE": 0.57]`,
+			`Epoch: 2/3;   Duration: 0s;   Loss: 44.0050;   Validations: ["MSE": 0.57]`,
+			`Epoch: 3/3;   Duration: 0s;   Loss: 44.0050;   Validations: ["MSE": 0.57]`,
 		}
 		expProgressLogs = [][]string{
 			{
-				"Epoch: 1/3;   Progress: 100%",
+				`Epoch: 1/3;   Progress: 100%`,
 			},
 			{
-				"Epoch: 2/3;   Progress: 100%",
+				`Epoch: 2/3;   Progress: 100%`,
 			},
 			{
-				"Epoch: 3/3;   Progress: 100%",
+				`Epoch: 3/3;   Progress: 100%`,
 			},
 		}
 
@@ -153,25 +153,25 @@ func TestEpochLogger(t *testing.T) {
 		vres = nil
 
 		expStartLogs = []string{
-			"Epoch: 1/2;   Progress: 0%",
-			"Epoch: 2/2;   Progress: 0%",
+			`Epoch: 1/2;   Progress: 0%`,
+			`Epoch: 2/2;   Progress: 0%`,
 		}
 		expFinishLogs = []string{
-			"Epoch: 1/2;   Duration: 0s;   Loss: 456.100000",
-			"Epoch: 2/2;   Duration: 0s;   Loss: 456.100000",
+			`Epoch: 1/2;   Duration: 0s;   Loss: 456.1000`,
+			`Epoch: 2/2;   Duration: 0s;   Loss: 456.1000`,
 		}
 		expProgressLogs = [][]string{
 			{
-				"Epoch: 1/2;   Progress: 25%",
-				"Epoch: 1/2;   Progress: 50%",
-				"Epoch: 1/2;   Progress: 75%",
-				"Epoch: 1/2;   Progress: 100%",
+				`Epoch: 1/2;   Progress: 25%`,
+				`Epoch: 1/2;   Progress: 50%`,
+				`Epoch: 1/2;   Progress: 75%`,
+				`Epoch: 1/2;   Progress: 100%`,
 			},
 			{
-				"Epoch: 2/2;   Progress: 25%",
-				"Epoch: 2/2;   Progress: 50%",
-				"Epoch: 2/2;   Progress: 75%",
-				"Epoch: 2/2;   Progress: 100%",
+				`Epoch: 2/2;   Progress: 25%`,
+				`Epoch: 2/2;   Progress: 50%`,
+				`Epoch: 2/2;   Progress: 75%`,
+				`Epoch: 2/2;   Progress: 100%`,
 			},
 		}
 

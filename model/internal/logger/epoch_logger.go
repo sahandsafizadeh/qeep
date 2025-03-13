@@ -3,6 +3,7 @@ package logger
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/sahandsafizadeh/qeep/tensor"
@@ -114,11 +115,31 @@ func duration(startTime time.Time, endTime time.Time) string {
 
 func loss(l tensor.Tensor) string {
 	loss, _ := l.At() // TODO: TEMPORARY! until tensors implement Stringer interface.
-	return fmt.Sprintf("Loss: %f", loss)
+	return fmt.Sprintf("Loss: %.4f", loss)
 }
 
 func validation(result map[string]float64) string {
-	return fmt.Sprintf("Validation: %v", result)
+	keys := make([]string, 0, len(result))
+	for key := range result {
+		keys = append(keys, key)
+	}
+
+	sort.Strings(keys)
+
+	buf := bytes.NewBuffer(nil)
+	buf.WriteString("Validations: ")
+	buf.WriteString("[")
+	for i, key := range keys {
+		entry := fmt.Sprintf("%q: %.2f", key, result[key])
+
+		buf.WriteString(entry)
+		if i != len(keys)-1 {
+			buf.WriteString(", ")
+		}
+	}
+	buf.WriteString("]")
+
+	return buf.String()
 }
 
 func space() string {

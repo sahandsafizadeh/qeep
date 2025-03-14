@@ -87,11 +87,18 @@ func prepareModel() (m *model.Model, err error) {
 
 	/* -------------------- */
 
+	loss := losses.NewBCE()
+
+	optimizer, err := optimizers.NewSGD(&optimizers.SGDConfig{
+		LearningRate: 1e-6,
+	})
+	if err != nil {
+		return
+	}
+
 	m, err = model.NewModel(input, output, &model.ModelConfig{
-		Loss: losses.NewBCE(),
-		Optimizer: optimizers.NewSGD(&optimizers.SGDConfig{
-			LearningRate: 1e-6,
-		}),
+		Loss:      loss,
+		Optimizer: optimizer,
 	})
 	if err != nil {
 		return

@@ -14,7 +14,7 @@ type SoftmaxConfig struct {
 	Dim int
 }
 
-const softmaxDefaultDim = 0
+const SoftmaxDefaultDim = 0
 
 func NewSoftmax(conf *SoftmaxConfig) (c *Softmax, err error) {
 	conf, err = toValidSoftmaxConfig(conf)
@@ -77,7 +77,7 @@ func (c *Softmax) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error)
 func toValidSoftmaxConfig(iconf *SoftmaxConfig) (conf *SoftmaxConfig, err error) {
 	if iconf == nil {
 		iconf = &SoftmaxConfig{
-			Dim: softmaxDefaultDim,
+			Dim: SoftmaxDefaultDim,
 		}
 	}
 

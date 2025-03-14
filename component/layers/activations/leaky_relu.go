@@ -14,7 +14,7 @@ type LeakyReluConfig struct {
 	M float64
 }
 
-const leakyReluDefaultM = 0.01
+const LeakyReluDefaultM = 0.01
 
 func NewLeakyRelu(conf *LeakyReluConfig) (c *LeakyRelu) {
 	conf = toValidLeakyReluConfig(conf)
@@ -68,7 +68,7 @@ func (c *LeakyRelu) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err erro
 func toValidLeakyReluConfig(iconf *LeakyReluConfig) (conf *LeakyReluConfig) {
 	if iconf == nil {
 		iconf = &LeakyReluConfig{
-			M: leakyReluDefaultM,
+			M: LeakyReluDefaultM,
 		}
 	}
 

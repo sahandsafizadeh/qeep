@@ -214,6 +214,79 @@ func TestAdam(t *testing.T) {
 	})
 }
 
+func TestAdamDefaultConfiguration(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		conf := &tensor.Config{
+			Device:    dev,
+			GradTrack: true,
+		}
+
+		optimizer, err := optimizers.NewAdam(nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		x, err := tensor.Full(nil, 1., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* ------------------------------ */
+
+		x.ResetGradContext(true)
+
+		y := x.Scale(4.).Scale(5.).Scale(5.)
+
+		err = tensor.BackPropagate(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act := x
+
+		val, err := act.At()
+		if err != nil {
+			t.Fatal(err)
+		} else if !(0.999-1e-10 < val && val < 0.999+1e-10) {
+			t.Fatalf("expected scalar tensors value to be (0.999): got (%f)", val)
+		}
+
+		/* ------------------------------ */
+
+		x.ResetGradContext(true)
+
+		y = x.Scale(4.).Scale(5.).Scale(5.)
+
+		err = tensor.BackPropagate(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act = x
+
+		val, err = act.At()
+		if err != nil {
+			t.Fatal(err)
+		} else if !(0.998-1e-10 < val && val < 0.998+1e-10) {
+			t.Fatalf("expected scalar tensors value to be (0.998): got (%f)", val)
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
 func TestValidationAdam(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 

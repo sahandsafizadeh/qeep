@@ -197,6 +197,117 @@ func TestSGDWithMomentum(t *testing.T) {
 	})
 }
 
+func TestSGDWithMomentumAndWeightDecay(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		conf := &tensor.Config{
+			Device:    dev,
+			GradTrack: true,
+		}
+
+		optimizer := optimizers.NewSGD(&optimizers.SGDConfig{
+			LearningRate: 0.1,
+			WeightDecay:  0.2,
+			Momentum:     0.5,
+		})
+
+		x, err := tensor.Full([]int{32, 32}, 100., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* ------------------------------ */
+
+		x.ResetGradContext(true)
+
+		y := x.Scale(2.).Scale(4.).Scale(5.)
+
+		err = tensor.BackPropagate(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act := x
+
+		exp, err := tensor.Full([]int{32, 32}, 94., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		x.ResetGradContext(true)
+
+		y = x.Scale(2.).Scale(3.).Scale(5.)
+
+		err = tensor.BackPropagate(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act = x
+
+		exp, err = tensor.Full([]int{32, 32}, 86.12, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		x.ResetGradContext(true)
+
+		y = x.Scale(2.).Scale(2.).Scale(5.)
+
+		err = tensor.BackPropagate(y)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act = x
+
+		exp, err = tensor.Full([]int{32, 32}, 78.4576, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
 func TestValidationSGD(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 

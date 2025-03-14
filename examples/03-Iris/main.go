@@ -96,8 +96,12 @@ func prepareModel() (m *model.Model, err error) {
 
 	loss := losses.NewCE()
 
-	optimizer, err := optimizers.NewSGD(&optimizers.SGDConfig{
-		LearningRate: 1e-5,
+	optimizer, err := optimizers.NewAdam(&optimizers.AdamConfig{
+		LearningRate: 1e-4,
+		WeightDecay:  optimizers.AdamDefaultWeightDecay,
+		Beta1:        optimizers.AdamDefaultBeta1,
+		Beta2:        optimizers.AdamDefaultBeta2,
+		Eps:          optimizers.AdamDefaultEps,
 	})
 	if err != nil {
 		return

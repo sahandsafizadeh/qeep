@@ -48,13 +48,22 @@ func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 		return
 	}
 
-	delta := g.Scale(c.learningRate)
+	delta := g
+
+	if c.hasWeightDecay() {
+		wdt := w.Scale(c.weightDecay)
+
+		delta, err = delta.Add(wdt)
+		if err != nil {
+			return
+		}
+	}
 
 	if c.hasMomentum() {
 		if v, ok := c.velocities[wptr]; ok {
 			mmt := v.Scale(c.momentum)
 
-			delta, err = mmt.Add(delta)
+			delta, err = delta.Add(mmt)
 			if err != nil {
 				return
 			}
@@ -63,12 +72,18 @@ func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 		c.velocities[wptr] = delta
 	}
 
+	delta = delta.Scale(c.learningRate)
+
 	*wptr, err = w.Sub(delta)
 	if err != nil {
 		return
 	}
 
 	return nil
+}
+
+func (c *SGD) hasWeightDecay() (has bool) {
+	return c.weightDecay != 0.
 }
 
 func (c *SGD) hasMomentum() (has bool) {

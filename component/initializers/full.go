@@ -10,7 +10,7 @@ type FullConfig struct {
 	Value float64
 }
 
-const fullDefaultValue = 0.
+const FullDefaultValue = 0.
 
 func NewFull(conf *FullConfig) (c *Full) {
 	conf = toValidFullConfig(conf)
@@ -29,7 +29,7 @@ func (c *Full) Init(shape []int) (x tensor.Tensor, err error) {
 func toValidFullConfig(iconf *FullConfig) (conf *FullConfig) {
 	if iconf == nil {
 		iconf = &FullConfig{
-			Value: fullDefaultValue,
+			Value: FullDefaultValue,
 		}
 	}
 

@@ -16,8 +16,8 @@ type NormalConfig struct {
 	StdDev float64
 }
 
-const normalDefaultMean = 0.
-const normalDefaultStdDev = 0.05
+const NormalDefaultMean = 0.
+const NormalDefaultStdDev = 0.05
 
 func NewNormal(conf *NormalConfig) (c *Normal, err error) {
 	conf, err = toValidNormalConfig(conf)
@@ -41,8 +41,8 @@ func (c *Normal) Init(shape []int) (x tensor.Tensor, err error) {
 func toValidNormalConfig(iconf *NormalConfig) (conf *NormalConfig, err error) {
 	if iconf == nil {
 		iconf = &NormalConfig{
-			Mean:   normalDefaultMean,
-			StdDev: normalDefaultStdDev,
+			Mean:   NormalDefaultMean,
+			StdDev: NormalDefaultStdDev,
 		}
 	}
 

@@ -16,8 +16,8 @@ type UniformConfig struct {
 	Upper float64
 }
 
-const uniformDefaultLower = -0.05
-const uniformDefaultUpper = 0.05
+const UniformDefaultLower = -0.05
+const UniformDefaultUpper = 0.05
 
 func NewUniform(conf *UniformConfig) (c *Uniform, err error) {
 	conf, err = toValidUniformConfig(conf)
@@ -41,8 +41,8 @@ func (c *Uniform) Init(shape []int) (x tensor.Tensor, err error) {
 func toValidUniformConfig(iconf *UniformConfig) (conf *UniformConfig, err error) {
 	if iconf == nil {
 		iconf = &UniformConfig{
-			Lower: uniformDefaultLower,
-			Upper: uniformDefaultUpper,
+			Lower: UniformDefaultLower,
+			Upper: UniformDefaultUpper,
 		}
 	}
 

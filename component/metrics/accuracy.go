@@ -17,7 +17,7 @@ type AccuracyConfig struct {
 	OneHotMode bool
 }
 
-const accuracyDefaultOneHotMode = false
+const AccuracyDefaultOneHotMode = false
 
 func NewAccuracy(conf *AccuracyConfig) (c *Accuracy) {
 	conf = toValidAccuracyConfig(conf)
@@ -111,7 +111,7 @@ func (c *Accuracy) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error
 func toValidAccuracyConfig(iconf *AccuracyConfig) (conf *AccuracyConfig) {
 	if iconf == nil {
 		iconf = &AccuracyConfig{
-			OneHotMode: accuracyDefaultOneHotMode,
+			OneHotMode: AccuracyDefaultOneHotMode,
 		}
 	}
 

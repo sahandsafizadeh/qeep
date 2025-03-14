@@ -8,17 +8,20 @@ import (
 
 type SGD struct {
 	learningRate float64
+	weightDecay  float64
 	momentum     float64
 	velocities   map[*tensor.Tensor]tensor.Tensor
 }
 
 type SGDConfig struct {
 	LearningRate float64
+	WeightDecay  float64
 	Momentum     float64
 }
 
 const (
 	sgdDefaultLearningRate = 0.01
+	sgdDefaultWeightDecay  = 0.
 	sgdDefaultMomentum     = 0.
 )
 
@@ -27,6 +30,7 @@ func NewSGD(conf *SGDConfig) (c *SGD) {
 
 	c = &SGD{
 		learningRate: conf.LearningRate,
+		weightDecay:  conf.WeightDecay,
 		momentum:     conf.Momentum,
 	}
 
@@ -89,6 +93,7 @@ func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig) {
 	if iconf == nil {
 		iconf = &SGDConfig{
 			LearningRate: sgdDefaultLearningRate,
+			WeightDecay:  sgdDefaultWeightDecay,
 			Momentum:     sgdDefaultMomentum,
 		}
 	}

@@ -25,8 +25,12 @@ const (
 	sgdDefaultMomentum     = 0.
 )
 
-func NewSGD(conf *SGDConfig) (c *SGD) {
-	conf = toValidSGDConfig(conf)
+func NewSGD(conf *SGDConfig) (c *SGD, err error) {
+	conf, err = toValidSGDConfig(conf)
+	if err != nil {
+		err = fmt.Errorf("SGD config data validation failed: %w", err)
+		return
+	}
 
 	c = &SGD{
 		learningRate: conf.LearningRate,
@@ -38,7 +42,7 @@ func NewSGD(conf *SGDConfig) (c *SGD) {
 		c.velocities = make(map[*tensor.Tensor]tensor.Tensor)
 	}
 
-	return c
+	return c, nil
 }
 
 func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
@@ -83,16 +87,16 @@ func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 }
 
 func (c *SGD) hasWeightDecay() (has bool) {
-	return c.weightDecay != 0.
+	return c.weightDecay > 0
 }
 
 func (c *SGD) hasMomentum() (has bool) {
-	return c.momentum != 0.
+	return c.momentum > 0
 }
 
 /* ----- helpers ----- */
 
-func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig) {
+func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig, err error) {
 	if iconf == nil {
 		iconf = &SGDConfig{
 			LearningRate: sgdDefaultLearningRate,
@@ -104,5 +108,20 @@ func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig) {
 	conf = new(SGDConfig)
 	*conf = *iconf
 
-	return conf
+	if conf.LearningRate <= 0 {
+		err = fmt.Errorf("expected 'LearningRate' to be positive: got (%f)", conf.LearningRate)
+		return
+	}
+
+	if conf.WeightDecay < 0 {
+		err = fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
+		return
+	}
+
+	if conf.Momentum < 0 {
+		err = fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
+		return
+	}
+
+	return conf, nil
 }

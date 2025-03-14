@@ -34,7 +34,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: 0.92
+	// Best Accuracy: 0.94
 }
 
 func run() (result map[string]float64, err error) {
@@ -87,11 +87,16 @@ func prepareModel() (m *model.Model, err error) {
 
 	/* -------------------- */
 
+	loss := losses.NewBCE()
+
+	optimizer, err := optimizers.NewAdam(nil)
+	if err != nil {
+		return
+	}
+
 	m, err = model.NewModel(input, output, &model.ModelConfig{
-		Loss: losses.NewBCE(),
-		Optimizer: optimizers.NewSGD(&optimizers.SGDConfig{
-			LearningRate: 1e-6,
-		}),
+		Loss:      loss,
+		Optimizer: optimizer,
 	})
 	if err != nil {
 		return

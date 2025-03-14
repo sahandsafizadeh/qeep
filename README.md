@@ -47,13 +47,28 @@ func prepareModel() (m *model.Model, err error) {
 		Inputs:  4,
 		Outputs: 3,
 	})(x)
-	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
+	output := stream.Softmax(&activations.SoftmaxConfig{
+		Dim: 1,
+	})(x)
 
-	/* ---------- */
+	/* -------------------- */
+
+	loss := losses.NewCE()
+
+	optimizer, err := optimizers.NewAdam(&optimizers.AdamConfig{
+		LearningRate: 1e-4,
+		WeightDecay:  optimizers.AdamDefaultWeightDecay,
+		Beta1:        optimizers.AdamDefaultBeta1,
+		Beta2:        optimizers.AdamDefaultBeta2,
+		Eps:          optimizers.AdamDefaultEps,
+	})
+	if err != nil {
+		return
+	}
 
 	m, err = model.NewModel(input, output, &model.ModelConfig{
-		Loss:      losses.NewCE(),
-		Optimizer: optimizers.NewSGD(&optimizers.SGDConfig{LearningRate: 1e-5}),
+		Loss:      loss,
+		Optimizer: optimizer,
 	})
 	if err != nil {
 		return

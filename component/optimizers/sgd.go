@@ -20,13 +20,17 @@ type SGDConfig struct {
 }
 
 const (
-	sgdDefaultLearningRate = 0.01
-	sgdDefaultWeightDecay  = 0.
-	sgdDefaultMomentum     = 0.
+	SGDDefaultLearningRate = 0.01
+	SGDDefaultWeightDecay  = 0.
+	SGDDefaultMomentum     = 0.
 )
 
-func NewSGD(conf *SGDConfig) (c *SGD) {
-	conf = toValidSGDConfig(conf)
+func NewSGD(conf *SGDConfig) (c *SGD, err error) {
+	conf, err = toValidSGDConfig(conf)
+	if err != nil {
+		err = fmt.Errorf("SGD config data validation failed: %w", err)
+		return
+	}
 
 	c = &SGD{
 		learningRate: conf.LearningRate,
@@ -38,11 +42,11 @@ func NewSGD(conf *SGDConfig) (c *SGD) {
 		c.velocities = make(map[*tensor.Tensor]tensor.Tensor)
 	}
 
-	return c
+	return c, nil
 }
 
 func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
-	w, g, err := c.toValidInputs(wptr)
+	w, g, err := getValidOptimizerInputs(wptr)
 	if err != nil {
 		err = fmt.Errorf("SGD input data validation failed: %w", err)
 		return
@@ -83,38 +87,41 @@ func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 }
 
 func (c *SGD) hasWeightDecay() (has bool) {
-	return c.weightDecay != 0.
+	return c.weightDecay > 0
 }
 
 func (c *SGD) hasMomentum() (has bool) {
-	return c.momentum != 0.
+	return c.momentum > 0
 }
 
 /* ----- helpers ----- */
 
-func (c *SGD) toValidInputs(wptr *tensor.Tensor) (w tensor.Tensor, g tensor.Tensor, err error) {
-	w = *wptr
-	g = w.Gradient()
-
-	if g == nil {
-		err = fmt.Errorf("expected tensor's gradient not to be nil")
-		return
-	}
-
-	return w, g, nil
-}
-
-func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig) {
+func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig, err error) {
 	if iconf == nil {
 		iconf = &SGDConfig{
-			LearningRate: sgdDefaultLearningRate,
-			WeightDecay:  sgdDefaultWeightDecay,
-			Momentum:     sgdDefaultMomentum,
+			LearningRate: SGDDefaultLearningRate,
+			WeightDecay:  SGDDefaultWeightDecay,
+			Momentum:     SGDDefaultMomentum,
 		}
 	}
 
 	conf = new(SGDConfig)
 	*conf = *iconf
 
-	return conf
+	if conf.LearningRate <= 0 {
+		err = fmt.Errorf("expected 'LearningRate' to be positive: got (%f)", conf.LearningRate)
+		return
+	}
+
+	if conf.WeightDecay < 0 {
+		err = fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
+		return
+	}
+
+	if conf.Momentum < 0 {
+		err = fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
+		return
+	}
+
+	return conf, nil
 }

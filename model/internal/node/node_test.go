@@ -213,7 +213,10 @@ func TestNodeOperation(t *testing.T) {
 
 		activation := activations.NewRelu()
 
-		optimizer := optimizers.NewSGD(&optimizers.SGDConfig{LearningRate: 1.})
+		optimizer, err := optimizers.NewSGD(&optimizers.SGDConfig{LearningRate: 1.})
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		/* ------------------------------ */
 
@@ -432,7 +435,10 @@ func TestForwardAndOptimizeErrorHandling(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		optimizer := optimizers.NewSGD(nil)
+		optimizer, err := optimizers.NewSGD(nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		/* ------------------------------ */
 

@@ -58,11 +58,13 @@ func TestModel(t *testing.T) {
 
 		/* --------------- */
 
-		var (
-			loss      = losses.NewMSE()
-			metric    = metrics.NewMSE()
-			optimizer = optimizers.NewSGD(&optimizers.SGDConfig{LearningRate: 0.5})
-		)
+		loss := losses.NewMSE()
+		metric := metrics.NewMSE()
+
+		optimizer, err := optimizers.NewSGD(&optimizers.SGDConfig{LearningRate: 0.5})
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		m, err := model.NewModel(input, output, &model.ModelConfig{
 			Loss:      loss,
@@ -181,9 +183,16 @@ func TestForwardErrorHandling(t *testing.T) {
 		})(input, input)
 		output := stream.Tanh()(hidden)
 
+		loss := losses.NewMSE()
+
+		optimizer, err := optimizers.NewSGD(nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		m, err := model.NewModel(input, output, &model.ModelConfig{
-			Loss:      losses.NewMSE(),
-			Optimizer: optimizers.NewSGD(nil),
+			Loss:      loss,
+			Optimizer: optimizer,
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -253,12 +262,14 @@ func TestLossAndMetricErrorHandling(t *testing.T) {
 
 		/* --------------- */
 
-		var (
-			loss      = losses.NewMSE()
-			metric    = metrics.NewMSE()
-			optimizer = optimizers.NewSGD(nil)
-			metrics   = map[string]model.Metric{"MSE": metric}
-		)
+		loss := losses.NewMSE()
+		metric := metrics.NewMSE()
+		metrics := map[string]model.Metric{"MSE": metric}
+
+		optimizer, err := optimizers.NewSGD(nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		input := stream.Input()
 		hidden := stream.FC(&layers.FCConfig{

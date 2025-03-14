@@ -15,9 +15,12 @@ func TestSGD(t *testing.T) {
 			GradTrack: true,
 		}
 
-		optimizer := optimizers.NewSGD(&optimizers.SGDConfig{
+		optimizer, err := optimizers.NewSGD(&optimizers.SGDConfig{
 			LearningRate: 0.1,
 		})
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		x, err := tensor.Full([]int{32, 32}, 5., conf)
 		if err != nil {
@@ -95,10 +98,13 @@ func TestSGDWithMomentum(t *testing.T) {
 			GradTrack: true,
 		}
 
-		optimizer := optimizers.NewSGD(&optimizers.SGDConfig{
+		optimizer, err := optimizers.NewSGD(&optimizers.SGDConfig{
 			LearningRate: 0.1,
 			Momentum:     0.5,
 		})
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		x, err := tensor.Full([]int{32, 32}, 15., conf)
 		if err != nil {
@@ -205,11 +211,14 @@ func TestSGDWithMomentumAndWeightDecay(t *testing.T) {
 			GradTrack: true,
 		}
 
-		optimizer := optimizers.NewSGD(&optimizers.SGDConfig{
+		optimizer, err := optimizers.NewSGD(&optimizers.SGDConfig{
 			LearningRate: 0.1,
 			WeightDecay:  0.2,
 			Momentum:     0.5,
 		})
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		x, err := tensor.Full([]int{32, 32}, 100., conf)
 		if err != nil {
@@ -321,9 +330,51 @@ func TestValidationSGD(t *testing.T) {
 			GradTrack: true,
 		}
 
-		optimizer := optimizers.NewSGD(nil)
+		/* ------------------------------ */
+
+		_, err := optimizers.NewSGD(&optimizers.SGDConfig{})
+		if err == nil {
+			t.Fatalf("expected error because of non-positive 'LearningRate'")
+		} else if err.Error() != "SGD config data validation failed: expected 'LearningRate' to be positive: got (0.000000)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = optimizers.NewSGD(&optimizers.SGDConfig{
+			LearningRate: -1,
+		})
+		if err == nil {
+			t.Fatalf("expected error because of non-positive 'LearningRate'")
+		} else if err.Error() != "SGD config data validation failed: expected 'LearningRate' to be positive: got (-1.000000)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = optimizers.NewSGD(&optimizers.SGDConfig{
+			LearningRate: 1,
+			WeightDecay:  -1,
+		})
+		if err == nil {
+			t.Fatalf("expected error because of negative 'WeightDecay'")
+		} else if err.Error() != "SGD config data validation failed: expected 'WeightDecay' not to be negative: got (-1.000000)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = optimizers.NewSGD(&optimizers.SGDConfig{
+			LearningRate: 10,
+			WeightDecay:  1,
+			Momentum:     -0.5,
+		})
+		if err == nil {
+			t.Fatalf("expected error because of negative 'Momentum'")
+		} else if err.Error() != "SGD config data validation failed: expected 'Momentum' not to be negative: got (-0.500000)" {
+			t.Fatal("unexpected error message returned")
+		}
 
 		/* ------------------------------ */
+
+		optimizer, err := optimizers.NewSGD(nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		wu, err := tensor.Zeros(nil, confU)
 		if err != nil {

@@ -27,11 +27,11 @@ type AdamConfig struct {
 }
 
 const (
-	adamDefaultLearningRate = 0.001
-	adamDefaultWeightDecay  = 0.
-	adamDefaultBeta1        = 0.9
-	adamDefaultBeta2        = 0.999
-	adamDefaultEps          = 1e-8
+	AdamDefaultLearningRate = 0.001
+	AdamDefaultWeightDecay  = 0.
+	AdamDefaultBeta1        = 0.9
+	AdamDefaultBeta2        = 0.999
+	AdamDefaultEps          = 1e-8
 )
 
 func NewAdam(conf *AdamConfig) (c *Adam, err error) {
@@ -134,11 +134,11 @@ func (c *Adam) hasWeightDecay() (has bool) {
 func toValidAdamConfig(iconf *AdamConfig) (conf *AdamConfig, err error) {
 	if iconf == nil {
 		iconf = &AdamConfig{
-			LearningRate: adamDefaultLearningRate,
-			WeightDecay:  adamDefaultWeightDecay,
-			Beta1:        adamDefaultBeta1,
-			Beta2:        adamDefaultBeta2,
-			Eps:          adamDefaultEps,
+			LearningRate: AdamDefaultLearningRate,
+			WeightDecay:  AdamDefaultWeightDecay,
+			Beta1:        AdamDefaultBeta1,
+			Beta2:        AdamDefaultBeta2,
+			Eps:          AdamDefaultEps,
 		}
 	}
 

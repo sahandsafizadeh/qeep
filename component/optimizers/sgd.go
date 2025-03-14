@@ -20,9 +20,9 @@ type SGDConfig struct {
 }
 
 const (
-	sgdDefaultLearningRate = 0.01
-	sgdDefaultWeightDecay  = 0.
-	sgdDefaultMomentum     = 0.
+	SGDDefaultLearningRate = 0.01
+	SGDDefaultWeightDecay  = 0.
+	SGDDefaultMomentum     = 0.
 )
 
 func NewSGD(conf *SGDConfig) (c *SGD, err error) {
@@ -99,9 +99,9 @@ func (c *SGD) hasMomentum() (has bool) {
 func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig, err error) {
 	if iconf == nil {
 		iconf = &SGDConfig{
-			LearningRate: sgdDefaultLearningRate,
-			WeightDecay:  sgdDefaultWeightDecay,
-			Momentum:     sgdDefaultMomentum,
+			LearningRate: SGDDefaultLearningRate,
+			WeightDecay:  SGDDefaultWeightDecay,
+			Momentum:     SGDDefaultMomentum,
 		}
 	}
 

@@ -42,7 +42,7 @@ func NewSGD(conf *SGDConfig) (c *SGD) {
 }
 
 func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
-	w, g, err := c.toValidInputs(wptr)
+	w, g, err := getValidOptimizerInputs(wptr)
 	if err != nil {
 		err = fmt.Errorf("SGD input data validation failed: %w", err)
 		return
@@ -91,18 +91,6 @@ func (c *SGD) hasMomentum() (has bool) {
 }
 
 /* ----- helpers ----- */
-
-func (c *SGD) toValidInputs(wptr *tensor.Tensor) (w tensor.Tensor, g tensor.Tensor, err error) {
-	w = *wptr
-	g = w.Gradient()
-
-	if g == nil {
-		err = fmt.Errorf("expected tensor's gradient not to be nil")
-		return
-	}
-
-	return w, g, nil
-}
 
 func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig) {
 	if iconf == nil {

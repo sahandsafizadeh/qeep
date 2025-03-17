@@ -296,17 +296,17 @@ func TestAdamWithWeightDecay(t *testing.T) {
 		}
 
 		optimizer, err := optimizers.NewAdam(&optimizers.AdamConfig{
-			WeightDecay:  1.,
-			LearningRate: optimizers.AdamDefaultLearningRate,
-			Beta1:        optimizers.AdamDefaultBeta1,
-			Beta2:        optimizers.AdamDefaultBeta2,
-			Eps:          optimizers.AdamDefaultEps,
+			LearningRate: 2.,
+			WeightDecay:  2.,
+			Beta1:        0.5,
+			Beta2:        0.75,
+			Eps:          100.,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x, err := tensor.Full(nil, 10., conf)
+		x, err := tensor.Full(nil, 2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -332,8 +332,8 @@ func TestAdamWithWeightDecay(t *testing.T) {
 		val, err := act.At()
 		if err != nil {
 			t.Fatal(err)
-		} else if !(9.999-1e-10 < val && val < 9.999+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (9.999): got (%f)", val)
+		} else if !(0.9803-1e-4 < val && val < 0.9803+1e-4) {
+			t.Fatalf("expected scalar tensors value to be (0.9803): got (%f)", val)
 		}
 
 		/* ------------------------------ */

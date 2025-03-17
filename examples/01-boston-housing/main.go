@@ -21,7 +21,7 @@ const (
 
 const (
 	batchSize = 128
-	epochs    = 2000
+	epochs    = 500
 )
 
 func main() {
@@ -88,7 +88,7 @@ func prepareModel() (m *model.Model, err error) {
 
 	loss := losses.NewMSE()
 
-	optimizer, err := optimizers.NewAdam(nil)
+	optimizer, err := optimizers.NewAdamW(nil)
 	if err != nil {
 		return
 	}

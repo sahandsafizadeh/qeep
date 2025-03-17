@@ -7,6 +7,214 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+func TestAdamW(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		conf := &tensor.Config{
+			Device:    dev,
+			GradTrack: true,
+		}
+
+		optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{
+			LearningRate: 2.,
+			WeightDecay:  1.,
+			Beta1:        0.5,
+			Beta2:        0.75,
+			Eps:          100.,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		x1, err := tensor.Full([]int{32, 32}, 2., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		x2, err := tensor.Full([]int{16, 16}, 3., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* ------------------------------ */
+
+		x1.ResetGradContext(true)
+		x2.ResetGradContext(true)
+
+		y1 := x1.Scale(4.).Scale(5.).Scale(5.)
+		y2 := x2.Scale(4.).Scale(5.).Scale(5.)
+
+		err = tensor.BackPropagate(y1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = tensor.BackPropagate(y2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act := x1
+
+		exp, err := tensor.Full([]int{32, 32}, -3., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act = x2
+
+		exp, err = tensor.Full([]int{16, 16}, -4., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		x1.ResetGradContext(true)
+		x2.ResetGradContext(true)
+
+		y1 = x1.Scale(4.).Scale(5.).Scale(5.)
+		y2 = x2.Scale(4.).Scale(5.).Scale(5.)
+
+		err = tensor.BackPropagate(y1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = tensor.BackPropagate(y2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act = x1
+
+		exp, err = tensor.Full([]int{32, 32}, 2., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act = x2
+
+		exp, err = tensor.Full([]int{16, 16}, 3., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+		x1.ResetGradContext(true)
+		x2.ResetGradContext(true)
+
+		y1 = x1.Scale(4.).Scale(5.).Scale(5.)
+		y2 = x2.Scale(4.).Scale(5.).Scale(5.)
+
+		err = tensor.BackPropagate(y1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = tensor.BackPropagate(y2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x1)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = optimizer.Update(&x2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		act = x1
+
+		exp, err = tensor.Full([]int{32, 32}, -3., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act = x2
+
+		exp, err = tensor.Full([]int{16, 16}, -4., conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* ------------------------------ */
+
+	})
+}
+
 func TestAdamWDefaultConfiguration(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 

@@ -2,11 +2,14 @@
 
 __global__ void kernel()
 {
-    printf("Hello from Device; Block: %d, Thread %d!\n", blockIdx.x, threadIdx.x);
+    printf("Hello from Device; Thread %d!\n", threadIdx.x);
 }
 
-extern "C" void cuda_hello()
+extern "C"
 {
-    kernel<<<5, 5>>>();
-    cudaDeviceSynchronize();
+    void cuda_hello()
+    {
+        kernel<<<1, 5>>>();
+        cudaDeviceSynchronize();
+    }
 }

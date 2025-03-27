@@ -7,4 +7,6 @@
 typedef double (*scalarUnaryFunc)(double);
 typedef double (*scalarBinaryFunc)(double, double);
 
+void FreeCUDAMem(double *data);
+
 #endif // TYPES_H

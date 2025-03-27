@@ -9,7 +9,7 @@ import "C"
 func (t *CUDATensor) scale(u float64) (o *CUDATensor) {
 	x := (*C.double)(t.data)
 	a := (C.double)(u)
-	n := (C.size_t)(t.NElems())
+	n := (C.size_t)(t.numElems())
 
 	data := C.Scale(x, a, n)
 
@@ -19,7 +19,7 @@ func (t *CUDATensor) scale(u float64) (o *CUDATensor) {
 func (t *CUDATensor) pow(u float64) (o *CUDATensor) {
 	x := (*C.double)(t.data)
 	a := (C.double)(u)
-	n := (C.size_t)(t.NElems())
+	n := (C.size_t)(t.numElems())
 
 	data := C.Pow(x, a, n)
 
@@ -28,7 +28,7 @@ func (t *CUDATensor) pow(u float64) (o *CUDATensor) {
 
 func (t *CUDATensor) exp() (o *CUDATensor) {
 	x := (*C.double)(t.data)
-	n := (C.size_t)(t.NElems())
+	n := (C.size_t)(t.numElems())
 
 	data := C.Exp(x, n)
 

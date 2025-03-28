@@ -12,7 +12,7 @@ import (
 )
 
 func newCUDATensor(dims []int, data *C.double) (t *CUDATensor) {
-	tdims := make([]int, len(t.dims))
+	tdims := make([]int, len(dims))
 	tdata := unsafe.Pointer(data)
 	copy(tdims, dims)
 

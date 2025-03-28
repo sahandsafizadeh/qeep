@@ -1,5 +1,5 @@
 #include <math.h>
-#include "cudatensor.h"
+#include "common.h"
 
 /* ----- scalar functions ----- */
 
@@ -117,26 +117,16 @@ double div_(double a, double b)
 
 /* ----- device functions ----- */
 
-__device__ int getThreadPosition()
-{
-    return threadIdx.x + blockIdx.x * blockDim.x;
-}
-
-__device__ int getGridStepSize()
-{
-    return gridDim.x * blockDim.x;
-}
-
 __global__ void applyUnaryFuncElemWise(
     double *x,
     double *y,
     size_t n,
     scalarUnaryFunc suf)
 {
-    const int tp = getThreadPosition();
-    const int gss = getGridStepSize();
+    const int tpos = getThreadPosition();
+    const int gstep = getGridStepSize();
 
-    for (size_t i = tp; i < n; i += gss)
+    for (size_t i = tpos; i < n; i += gstep)
     {
         y[i] = (*suf)(x[i]);
     }
@@ -149,10 +139,10 @@ __global__ void applyBinaryFuncElemWise(
     size_t n,
     scalarBinaryFunc sbf)
 {
-    const int tp = getThreadPosition();
-    const int gss = getGridStepSize();
+    const int tpos = getThreadPosition();
+    const int gstep = getGridStepSize();
 
-    for (size_t i = tp; i < n; i += gss)
+    for (size_t i = tpos; i < n; i += gstep)
     {
         c[i] = (*sbf)(a[i], b[i]);
     }
@@ -160,15 +150,15 @@ __global__ void applyBinaryFuncElemWise(
 
 __global__ void applyHalfBinaryFuncElemWise(
     double *x,
-    double a,
     double *y,
+    double a,
     size_t n,
     scalarBinaryFunc sbf)
 {
-    const int tp = getThreadPosition();
-    const int gss = getGridStepSize();
+    const int tpos = getThreadPosition();
+    const int gstep = getGridStepSize();
 
-    for (size_t i = tp; i < n; i += gss)
+    for (size_t i = tpos; i < n; i += gstep)
     {
         y[i] = (*sbf)(x[i], a);
     }
@@ -180,7 +170,10 @@ double *Scale(double *x, double a, size_t n)
 {
     double *y;
     cudaMalloc(&y, n * sizeof(double));
-    applyHalfBinaryFuncElemWise<<<BLOCKS, THREADS>>>(x, a, y, n, scale_);
+
+    applyHalfBinaryFuncElemWise<<<BLOCKS, THREADS>>>(x, y, a, n, scale_);
+    cudaDeviceSynchronize();
+
     return y;
 }
 
@@ -188,7 +181,10 @@ double *Pow(double *x, double a, size_t n)
 {
     double *y;
     cudaMalloc(&y, n * sizeof(double));
-    applyHalfBinaryFuncElemWise<<<BLOCKS, THREADS>>>(x, a, y, n, pow_);
+
+    applyHalfBinaryFuncElemWise<<<BLOCKS, THREADS>>>(x, y, a, n, pow_);
+    cudaDeviceSynchronize();
+
     return y;
 }
 
@@ -196,7 +192,10 @@ double *Exp(double *x, size_t n)
 {
     double *y;
     cudaMalloc(&y, n * sizeof(double));
+
     applyUnaryFuncElemWise<<<BLOCKS, THREADS>>>(x, y, n, exp_);
+    cudaDeviceSynchronize();
+
     return y;
 }
 
@@ -204,7 +203,10 @@ double *Add(double *a, double *b, size_t n)
 {
     double *c;
     cudaMalloc(&c, n * sizeof(double));
+
     applyBinaryFuncElemWise<<<BLOCKS, THREADS>>>(a, b, c, n, add_);
+    cudaDeviceSynchronize();
+
     return c;
 }
 
@@ -212,6 +214,9 @@ double *Mul(double *a, double *b, size_t n)
 {
     double *c;
     cudaMalloc(&c, n * sizeof(double));
+
     applyBinaryFuncElemWise<<<BLOCKS, THREADS>>>(a, b, c, n, mul_);
+    cudaDeviceSynchronize();
+
     return c;
 }

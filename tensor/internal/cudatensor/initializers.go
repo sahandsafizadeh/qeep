@@ -7,6 +7,7 @@ package cudatensor
 import "C"
 
 import (
+	"fmt"
 	"runtime"
 	"unsafe"
 )
@@ -27,6 +28,7 @@ func newCUDATensor(dims []int, data *C.double) (t *CUDATensor) {
 }
 
 func freeCUDATensorData(data *C.double) {
+	fmt.Println("clean up")
 	C.FreeCUDAMemory(data)
 }
 

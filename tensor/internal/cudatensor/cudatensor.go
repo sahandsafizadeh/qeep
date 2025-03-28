@@ -15,7 +15,7 @@ func Full(dims []int, value float64, withGrad bool) (o tensor.Tensor, err error)
 		return
 	}
 
-	r := constTensor(value, dims)
+	r := constTensor(dims, value)
 	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil

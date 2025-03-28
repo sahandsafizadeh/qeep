@@ -15,6 +15,12 @@ __global__ void fillDataWithValue(double *data, size_t n, double value)
 
 /* ----- API functions ----- */
 
+extern "C"
+{
+    double *Full(size_t n, double value);
+    void FreeCUDAMemory(double *dev_data);
+}
+
 double *Full(size_t n, double value)
 {
     double *dev_data;

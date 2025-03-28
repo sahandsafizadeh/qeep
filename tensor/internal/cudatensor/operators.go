@@ -1,7 +1,7 @@
 package cudatensor
 
 /*
-   #cgo LDFLAGS: -L. -loperators
+   #cgo LDFLAGS: -L. -lcudatensor
    #include "cuda_c/cudatensor.h"
 */
 import "C"

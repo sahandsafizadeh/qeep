@@ -4,12 +4,11 @@
 #include <stddef.h>
 
 double *Full(size_t n, double value);
-void FreeCUDAMemory(double *dev_data);
+double *Eye(size_t n, int d);
+double *RandU(size_t n, double l, double u);
+double *RandN(size_t n, double u, double s);
+double *Of(size_t n, const double input_data[]);
 
-double *Scale(double *x, double a, size_t n);
-double *Pow(double *x, double a, size_t n);
-double *Exp(double *x, size_t n);
-double *Add(double *a, double *b, size_t n);
-double *Mul(double *a, double *b, size_t n);
+void FreeCudaMem(double *data);
 
 #endif // CUDATENSOR_H

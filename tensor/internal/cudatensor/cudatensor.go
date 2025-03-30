@@ -444,21 +444,24 @@ func (t *CUDATensor) MeanAlong(dim int) (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) Scale(u float64) (o tensor.Tensor) {
-	r := t.scale(u)
-	r.gctx = gradtrack.Scale(r, t, u)
-	return r
+	return
+	// r := t.scale(u)
+	// r.gctx = gradtrack.Scale(r, t, u)
+	// return r
 }
 
 func (t *CUDATensor) Pow(u float64) (o tensor.Tensor) {
-	r := t.pow(u)
-	r.gctx = gradtrack.Pow(r, t, u)
-	return r
+	return
+	// r := t.pow(u)
+	// r.gctx = gradtrack.Pow(r, t, u)
+	// return r
 }
 
 func (t *CUDATensor) Exp() (o tensor.Tensor) {
-	r := t.exp()
-	r.gctx = gradtrack.Exp(r, t)
-	return r
+	return
+	// r := t.exp()
+	// r.gctx = gradtrack.Exp(r, t)
+	// return r
 }
 
 func (t *CUDATensor) Log() (o tensor.Tensor) {

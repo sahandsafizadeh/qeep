@@ -4,6 +4,8 @@ import "C"
 
 import "gonum.org/v1/gonum/stat/distuv"
 
+/* ----- random generators ----- */
+
 //export goUniformRand
 func goUniformRand(l C.double, u C.double) (r C.double) {
 	lower := float64(l)
@@ -19,5 +21,7 @@ func goNormalRand(u C.double, s C.double) (r C.double) {
 	randgen := distuv.Normal{Mu: mean, Sigma: sigm}
 	return (C.double)(randgen.Rand())
 }
+
+/* ----------------------------- */
 
 func main() {}

@@ -1,3 +1,5 @@
+#include "common.h"
+
 extern "C"
 {
     void FreeCudaMem(double *data);

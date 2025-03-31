@@ -91,12 +91,12 @@ func (bg *Simple) NextBatch() (xs []tensor.Tensor, y tensor.Tensor, err error) {
 
 	conf := &tensor.Config{Device: bg.device}
 
-	x, err := tensor.TensorOf(bg.x[from:to], conf)
+	x, err := tensor.Of(bg.x[from:to], conf)
 	if err != nil {
 		return
 	}
 
-	y, err = tensor.TensorOf(bg.y[from:to], conf)
+	y, err = tensor.Of(bg.y[from:to], conf)
 	if err != nil {
 		return
 	}

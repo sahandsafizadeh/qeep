@@ -53,14 +53,14 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err := tensor.TensorOf([][]float64{
+		expx, err := tensor.Of([][]float64{
 			{0., 1.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		expy, err := tensor.TensorOf([][]float64{
+		expy, err := tensor.Of([][]float64{
 			{1, 0},
 		}, conf)
 		if err != nil {
@@ -86,14 +86,14 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{1., 2.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{0, 1},
 		}, conf)
 		if err != nil {
@@ -119,14 +119,14 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{2., 3.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 		}, conf)
 		if err != nil {
@@ -152,14 +152,14 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{3., 4.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{0, 1},
 		}, conf)
 		if err != nil {
@@ -185,14 +185,14 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{4., 5.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 		}, conf)
 		if err != nil {
@@ -247,7 +247,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{0., 1.},
 			{1., 2.},
 		}, conf)
@@ -255,7 +255,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 			{0, 1},
 		}, conf)
@@ -282,7 +282,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{2., 3.},
 			{3., 4.},
 		}, conf)
@@ -290,7 +290,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 			{0, 1},
 		}, conf)
@@ -317,14 +317,14 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{4., 5.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 		}, conf)
 		if err != nil {
@@ -379,7 +379,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{0., 1.},
 			{1., 2.},
 			{2., 3.},
@@ -388,7 +388,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 			{0, 1},
 			{1, 0},
@@ -416,7 +416,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{3., 4.},
 			{4., 5.},
 		}, conf)
@@ -424,7 +424,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{0, 1},
 			{1, 0},
 		}, conf)
@@ -480,7 +480,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{0., 1.},
 			{1., 2.},
 			{2., 3.},
@@ -490,7 +490,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 			{0, 1},
 			{1, 0},
@@ -519,14 +519,14 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{4., 5.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 		}, conf)
 		if err != nil {
@@ -581,7 +581,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{0., 1.},
 			{1., 2.},
 			{2., 3.},
@@ -592,7 +592,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 			{0, 1},
 			{1, 0},
@@ -651,7 +651,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expx, err = tensor.TensorOf([][]float64{
+		expx, err = tensor.Of([][]float64{
 			{0., 1.},
 			{1., 2.},
 			{2., 3.},
@@ -662,7 +662,7 @@ func TestSimple(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		expy, err = tensor.TensorOf([][]float64{
+		expy, err = tensor.Of([][]float64{
 			{1, 0},
 			{0, 1},
 			{1, 0},

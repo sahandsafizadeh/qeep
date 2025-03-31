@@ -13,7 +13,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err := tensor.TensorOf([][]float64{{1.}}, conf)
+		ten, err := tensor.Of([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -23,7 +23,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf([][]float64{{1.}}, conf)
+		exp, err := tensor.Of([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -36,7 +36,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][]float64{{1., 0., 2.}}, conf)
+		ten, err = tensor.Of([][]float64{{1., 0., 2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -46,7 +46,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{1.}, {0.}, {2.}}, conf)
+		exp, err = tensor.Of([][]float64{{1.}, {0.}, {2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -59,7 +59,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][]float64{{-2.}, {0.}, {-1.}}, conf)
+		ten, err = tensor.Of([][]float64{{-2.}, {0.}, {-1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -69,7 +69,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{-2., 0., -1.}}, conf)
+		exp, err = tensor.Of([][]float64{{-2., 0., -1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -82,7 +82,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][]float64{
+		ten, err = tensor.Of([][]float64{
 			{0., 1., 2., 3.},
 			{0., 1., 2., 3.},
 			{0., 1., 2., 3.},
@@ -96,7 +96,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{0., 0., 0.},
 			{1., 1., 1.},
 			{2., 2., 2.},
@@ -114,7 +114,7 @@ func TestTranspose(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][][]float64{
+		ten, err = tensor.Of([][][]float64{
 			{
 				{1., 2.},
 				{3., 4.},
@@ -133,7 +133,7 @@ func TestTranspose(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{1., 3.},
 				{2., 4.},
@@ -788,7 +788,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err := tensor.TensorOf(5., conf)
+		ten, err := tensor.Of(5., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -798,7 +798,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf(5., conf)
+		exp, err := tensor.Of(5., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -811,7 +811,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf(5., conf)
+		ten, err = tensor.Of(5., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -821,7 +821,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{5.}, {5.}}, conf)
+		exp, err = tensor.Of([][]float64{{5.}, {5.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -834,7 +834,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([]float64{5.}, conf)
+		ten, err = tensor.Of([]float64{5.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -844,7 +844,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{5., 5.},
 			{5., 5.},
 			{5., 5.},
@@ -861,7 +861,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([]float64{1., 2.}, conf)
+		ten, err = tensor.Of([]float64{1., 2.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -871,7 +871,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{1., 2.},
 				{1., 2.},
@@ -900,7 +900,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][][]float64{{{0.}}, {{1.}}}, conf)
+		ten, err = tensor.Of([][][]float64{{{0.}}, {{1.}}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -910,7 +910,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{0., 0., 0., 0.},
 				{0., 0., 0., 0.},
@@ -934,7 +934,7 @@ func TestBroadcast(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][][]float64{
+		ten, err = tensor.Of([][][]float64{
 			{{0., 1., 2., 3.}},
 			{{4., 5., 6., 7.}},
 		}, conf)
@@ -947,7 +947,7 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][][]float64{
+		exp, err = tensor.Of([][][][]float64{
 			{
 				{
 					{0., 1., 2., 3.},

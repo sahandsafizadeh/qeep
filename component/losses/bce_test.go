@@ -16,12 +16,12 @@ func TestBCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		yp, err := tensor.Of([][]float64{{0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		yt, err := tensor.Of([][]float64{{0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -40,12 +40,12 @@ func TestBCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{{1.}}, conf)
+		yp, err = tensor.Of([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{{1.}}, conf)
+		yt, err = tensor.Of([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -64,36 +64,12 @@ func TestBCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{{0.}}, conf)
+		yp, err = tensor.Of([][]float64{{0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{{2.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = loss.Compute(yp, yt)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(27.630 < val && val < 27.632) {
-			t.Fatalf("expected scalar tensors value to be (27.632): got (%f)", val)
-		}
-
-		/* ------------------------------ */
-
-		yp, err = tensor.TensorOf([][]float64{{1.5}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		yt, err = tensor.TensorOf([][]float64{{-1.}}, conf)
+		yt, err = tensor.Of([][]float64{{2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -112,12 +88,36 @@ func TestBCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{{0.1}, {0.2}, {0.8}, {0.9}}, conf)
+		yp, err = tensor.Of([][]float64{{1.5}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{{0.}, {0.}, {1.}, {1.}}, conf)
+		yt, err = tensor.Of([][]float64{{-1.}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		act, err = loss.Compute(yp, yt)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		val, err = act.At()
+		if err != nil {
+			t.Fatal(err)
+		} else if !(27.630 < val && val < 27.632) {
+			t.Fatalf("expected scalar tensors value to be (27.632): got (%f)", val)
+		}
+
+		/* ------------------------------ */
+
+		yp, err = tensor.Of([][]float64{{0.1}, {0.2}, {0.8}, {0.9}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		yt, err = tensor.Of([][]float64{{0.}, {0.}, {1.}, {1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -136,12 +136,12 @@ func TestBCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{{0.9}, {0.8}, {0.2}, {0.1}}, conf)
+		yp, err = tensor.Of([][]float64{{0.9}, {0.8}, {0.2}, {0.1}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{{0.}, {0.}, {1.}, {1.}}, conf)
+		yt, err = tensor.Of([][]float64{{0.}, {0.}, {1.}, {1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -29,7 +29,7 @@ func TestInput(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([]float64{0., 1., 2., 3., 4., 5.}, conf)
+		x, err := tensor.Of([]float64{0., 1., 2., 3., 4., 5.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -41,7 +41,7 @@ func TestInput(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf([]float64{0., 1., 2., 3., 4., 5.}, conf)
+		exp, err := tensor.Of([]float64{0., 1., 2., 3., 4., 5.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -25,14 +25,14 @@ func TestMSE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err := tensor.TensorOf([][]float64{
+		yp, err := tensor.Of([][]float64{
 			{0.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err := tensor.TensorOf([][]float64{
+		yt, err := tensor.Of([][]float64{
 			{1.},
 		}, conf)
 		if err != nil {
@@ -52,7 +52,7 @@ func TestMSE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{
+		yp, err = tensor.Of([][]float64{
 			{2.},
 			{2.},
 			{0.},
@@ -61,7 +61,7 @@ func TestMSE(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{
+		yt, err = tensor.Of([][]float64{
 			{2.},
 			{-1.},
 			{6.},
@@ -83,7 +83,7 @@ func TestMSE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{
+		yp, err = tensor.Of([][]float64{
 			{0., 0., 3.},
 			{1., 0., 3.},
 		}, conf)
@@ -91,7 +91,7 @@ func TestMSE(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{
+		yt, err = tensor.Of([][]float64{
 			{0., -2., 3.},
 			{1., 0., -3.},
 		}, conf)

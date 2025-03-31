@@ -25,12 +25,12 @@ func TestAccuracy(t *testing.T) {
 
 		/* --------------- */
 
-		yp, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		yp, err := tensor.Of([][]float64{{0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		yt, err := tensor.Of([][]float64{{0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -48,12 +48,12 @@ func TestAccuracy(t *testing.T) {
 
 		/* --------------- */
 
-		yp, err = tensor.TensorOf([][]float64{{0.1}, {0.8}, {0.5}, {0.4999}}, conf)
+		yp, err = tensor.Of([][]float64{{0.1}, {0.8}, {0.5}, {0.4999}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{{0.}, {0.}, {0.}, {0.}}, conf)
+		yt, err = tensor.Of([][]float64{{0.}, {0.}, {0.}, {0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -81,14 +81,14 @@ func TestAccuracy(t *testing.T) {
 
 		/* --------------- */
 
-		yp, err = tensor.TensorOf([][]float64{
+		yp, err = tensor.Of([][]float64{
 			{1.},
 		}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{
+		yt, err = tensor.Of([][]float64{
 			{1.},
 		}, conf)
 		if err != nil {
@@ -108,7 +108,7 @@ func TestAccuracy(t *testing.T) {
 
 		/* --------------- */
 
-		yp, err = tensor.TensorOf([][]float64{
+		yp, err = tensor.Of([][]float64{
 			{0.1, 0.9},
 			{0.8, 0.2},
 			{0.7, 0.3},
@@ -117,7 +117,7 @@ func TestAccuracy(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{
+		yt, err = tensor.Of([][]float64{
 			{0., 1.},
 			{0., 1.},
 			{0., 1.},
@@ -139,7 +139,7 @@ func TestAccuracy(t *testing.T) {
 
 		/* --------------- */
 
-		yp, err = tensor.TensorOf([][]float64{
+		yp, err = tensor.Of([][]float64{
 			{0.2, 0.2, 0.2, 0.4},
 			{0.6, 0.1, 0.1, 0.2},
 			{0.1, 0.3, 0.1, 0.5},
@@ -149,7 +149,7 @@ func TestAccuracy(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{
+		yt, err = tensor.Of([][]float64{
 			{0., 0., 0., 1.},
 			{0., 0., 1., 0.},
 			{0., 1., 0., 0.},

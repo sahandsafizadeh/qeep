@@ -51,7 +51,7 @@ func TestEpochLogger(t *testing.T) {
 
 		epochs := 1
 		batches := 1
-		loss, _ := tensor.TensorOf(1.5, conf)
+		loss, _ := tensor.Of(1.5, conf)
 		vres := map[string]float64{"MSE": 2.34555, "Accuracy": 0.82, "dummy": 0.}
 
 		expStartLogs := []string{
@@ -80,7 +80,7 @@ func TestEpochLogger(t *testing.T) {
 
 		epochs = 1
 		batches = 2
-		loss, _ = tensor.TensorOf(0.55, conf)
+		loss, _ = tensor.Of(0.55, conf)
 		vres = map[string]float64{"MSE": 9.3, "Accuracy": 0.123}
 
 		expStartLogs = []string{
@@ -110,7 +110,7 @@ func TestEpochLogger(t *testing.T) {
 
 		epochs = 3
 		batches = 1
-		loss, _ = tensor.TensorOf(44.005, conf)
+		loss, _ = tensor.Of(44.005, conf)
 		vres = map[string]float64{"MSE": 0.56789}
 
 		expStartLogs = []string{
@@ -149,7 +149,7 @@ func TestEpochLogger(t *testing.T) {
 
 		epochs = 2
 		batches = 4
-		loss, _ = tensor.TensorOf(456.1, conf)
+		loss, _ = tensor.Of(456.1, conf)
 		vres = nil
 
 		expStartLogs = []string{

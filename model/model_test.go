@@ -25,7 +25,7 @@ func TestModel(t *testing.T) {
 		x := [][]float64{{-2.}, {-1.}, {1.}, {2.}}
 		y := [][]float64{{0.}, {0.}, {1.}, {2.}}
 
-		xt, err := tensor.TensorOf(x, conf)
+		xt, err := tensor.Of(x, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -91,7 +91,7 @@ func TestModel(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf([][]float64{{3.}, {1.}, {0.}, {0.}}, conf)
+		exp, err := tensor.Of([][]float64{{3.}, {1.}, {0.}, {0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -129,7 +129,7 @@ func TestModel(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{0.}, {0.}, {0.}, {0.}}, conf)
+		exp, err = tensor.Of([][]float64{{0.}, {0.}, {0.}, {0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}

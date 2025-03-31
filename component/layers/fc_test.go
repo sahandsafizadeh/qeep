@@ -27,7 +27,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		x, err := tensor.TensorOf([][]float64{{-1.}}, conf)
+		x, err := tensor.Of([][]float64{{-1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -37,7 +37,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf([][]float64{{-2.}}, conf)
+		exp, err := tensor.Of([][]float64{{-2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -62,7 +62,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		x, err = tensor.TensorOf([][]float64{{-2., 0., 1., 2.}}, conf)
+		x, err = tensor.Of([][]float64{{-2., 0., 1., 2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -72,7 +72,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{1.}}, conf)
+		exp, err = tensor.Of([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -97,7 +97,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		x, err = tensor.TensorOf([][]float64{{-3., -2., 1., 1., 5.}}, conf)
+		x, err = tensor.Of([][]float64{{-3., -2., 1., 1., 5.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -107,7 +107,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{9., 9.}}, conf)
+		exp, err = tensor.Of([][]float64{{9., 9.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -132,7 +132,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		x, err = tensor.TensorOf([][]float64{
+		x, err = tensor.Of([][]float64{
 			{0., 1., 2., 3., 4., 5., 6., 7.},
 			{1., 2., 3., 4., 5., 6., 7., 8.},
 			{2., 3., 4., 5., 6., 7., 8., 9.},
@@ -147,7 +147,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{57., 57., 57.},
 			{73., 73., 73.},
 			{89., 89., 89.},

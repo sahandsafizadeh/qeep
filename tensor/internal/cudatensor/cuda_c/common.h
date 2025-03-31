@@ -8,10 +8,7 @@ typedef struct LaunchParams
 {
     int blockSize;
     int threadSize;
-};
-
-typedef double(scalarUnaryFunc)(double);
-typedef double(scalarBinaryFunc)(double, double);
+} LaunchParams;
 
 LaunchParams launchParams(size_t n);
 void handleCudaError(cudaError_t err);

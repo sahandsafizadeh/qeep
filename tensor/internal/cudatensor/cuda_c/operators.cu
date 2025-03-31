@@ -1,6 +1,9 @@
 // #include <math.h>
 // #include "common.h"
 
+// typedef double(scalarUnaryFunc)(double);
+// typedef double(scalarBinaryFunc)(double, double);
+
 // /* ----- scalar functions ----- */
 
 // const double DOUBLE_EQUALITY_THRESHOLD = 1e-240;

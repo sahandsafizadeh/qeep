@@ -6,10 +6,6 @@ package cudatensor
 */
 import "C"
 
-func (t *CUDATensor) numElems() (n int) {
-	return dimsToNumElems(t.dims)
-}
-
 func (t *CUDATensor) at(index []int) (elem float64) {
 	position := 0
 	dimTotal := 1

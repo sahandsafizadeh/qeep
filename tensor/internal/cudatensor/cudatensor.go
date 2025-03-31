@@ -133,7 +133,7 @@ func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 /*--------------- methods ---------------*/
 
 func (t *CUDATensor) NElems() (n int) {
-	return t.numElems()
+	return t.n
 }
 
 func (t *CUDATensor) Shape() (shape []int) {

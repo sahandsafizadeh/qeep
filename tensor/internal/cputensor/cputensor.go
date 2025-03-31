@@ -97,7 +97,7 @@ func RandN(dims []int, u, s float64, withGrad bool) (o tensor.Tensor, err error)
 func Of(data any, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDataDimUnity(data)
 	if err != nil {
-		err = fmt.Errorf("TensorOf input data validation failed: %w", err)
+		err = fmt.Errorf("Of input data validation failed: %w", err)
 		return
 	}
 

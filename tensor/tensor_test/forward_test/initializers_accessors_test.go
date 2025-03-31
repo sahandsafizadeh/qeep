@@ -143,7 +143,7 @@ func TestFullEyeAt(t *testing.T) {
 	})
 }
 
-func TestTensorOfSliceEquals(t *testing.T) {
+func TestOfSliceEquals(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
@@ -1341,7 +1341,7 @@ func TestValidationRandN(t *testing.T) {
 	})
 }
 
-func TestValidationTensorOf(t *testing.T) {
+func TestValidationOf(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
@@ -1351,28 +1351,28 @@ func TestValidationTensorOf(t *testing.T) {
 		_, err := tensor.Of([]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Of([][]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Of([][][]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Of([][][][]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1381,21 +1381,21 @@ func TestValidationTensorOf(t *testing.T) {
 		_, err = tensor.Of([][]float64{{}, {}}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (1)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Of([][]float64{{}, {-1.}}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (1)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		_, err = tensor.Of([][][]float64{{{}}}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (1)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1420,7 +1420,7 @@ func TestValidationTensorOf(t *testing.T) {
 		}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to have have equal length along every dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to have have equal length along every dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1444,7 +1444,7 @@ func TestValidationTensorOf(t *testing.T) {
 		}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to have have equal length along every dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to have have equal length along every dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1461,7 +1461,7 @@ func TestValidationTensorOf(t *testing.T) {
 		}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to have have equal length along every dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to have have equal length along every dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1474,7 +1474,7 @@ func TestValidationTensorOf(t *testing.T) {
 		_, err = tensor.Of([]float64{1}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "TensorOf tensor config data validation failed: invalid input device" {
+		} else if err.Error() != "Of tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 

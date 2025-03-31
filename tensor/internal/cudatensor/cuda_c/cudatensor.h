@@ -18,5 +18,6 @@ double *Add(const double *a, const double *b, size_t n);
 double *Mul(const double *a, const double *b, size_t n);
 
 void FreeCudaMem(double *data);
+void GetCudaMemInfo(size_t *total_mem, size_t *free_mem);
 
 #endif // CUDATENSOR_H

@@ -41,72 +41,68 @@ func Ones(dims []int, withGrad bool) (o tensor.Tensor, err error) {
 	return Full(dims, 1., withGrad)
 }
 
-func Eye(n int, withGrad bool) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateInputDims([]int{n, n})
-	// if err != nil {
-	// 	err = fmt.Errorf("Eye input dimension validation failed: %w", err)
-	// 	return
-	// }
+func Eye(d int, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateInputDims([]int{d, d})
+	if err != nil {
+		err = fmt.Errorf("Eye input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := eyeMatrix(n)
-	// r.gctx = gradtrack.NewGradContext(withGrad)
+	r := eyeMatrix(d)
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
-	// return r, nil
+	return r, nil
 }
 
 func RandU(dims []int, l, u float64, withGrad bool) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateRandUParams(l, u)
-	// if err != nil {
-	// 	err = fmt.Errorf("RandU random parameter validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateRandUParams(l, u)
+	if err != nil {
+		err = fmt.Errorf("RandU random parameter validation failed: %w", err)
+		return
+	}
 
-	// err = validator.ValidateInputDims(dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("RandU input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateInputDims(dims)
+	if err != nil {
+		err = fmt.Errorf("RandU input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := uniformRandomTensor(l, u, dims)
-	// r.gctx = gradtrack.NewGradContext(withGrad)
+	r := uniformRandomTensor(dims, l, u)
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
-	// return r, nil
+	return r, nil
 }
 
 func RandN(dims []int, u, s float64, withGrad bool) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateRandNParams(u, s)
-	// if err != nil {
-	// 	err = fmt.Errorf("RandN random parameter validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateRandNParams(u, s)
+	if err != nil {
+		err = fmt.Errorf("RandN random parameter validation failed: %w", err)
+		return
+	}
 
-	// err = validator.ValidateInputDims(dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("RandN input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateInputDims(dims)
+	if err != nil {
+		err = fmt.Errorf("RandN input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := normalRandomTensor(u, s, dims)
-	// r.gctx = gradtrack.NewGradContext(withGrad)
+	r := normalRandomTensor(dims, u, s)
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
-	// return r, nil
+	return r, nil
 }
 
-func TensorOf(data any, withGrad bool) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateInputDataDimUnity(data)
-	// if err != nil {
-	// 	err = fmt.Errorf("TensorOf input data validation failed: %w", err)
-	// 	return
-	// }
+func Of(data any, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateInputDataDimUnity(data)
+	if err != nil {
+		err = fmt.Errorf("Of input data validation failed: %w", err)
+		return
+	}
 
-	// r := initTensorFromData(data)
-	// r.gctx = gradtrack.NewGradContext(withGrad)
+	r := tensorFromData(data)
+	r.gctx = gradtrack.NewGradContext(withGrad)
 
-	// return r, nil
+	return r, nil
 }
 
 func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {

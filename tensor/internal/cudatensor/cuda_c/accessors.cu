@@ -4,10 +4,10 @@
 
 extern "C"
 {
-    double At(const double data[], size_t index);
+    double At(const double *data, size_t index);
 }
 
-double At(const double data[], size_t index)
+double At(const double *data, size_t index)
 {
     double elem;
     handleCudaError(

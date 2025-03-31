@@ -82,7 +82,7 @@ extern "C"
     double *Eye(size_t n, size_t d);
     double *RandU(size_t n, double l, double u);
     double *RandN(size_t n, double u, double s);
-    double *Of(size_t n, const double input_data[]);
+    double *Of(size_t n, const double *input_data);
 }
 
 double *Full(size_t n, double value)
@@ -161,7 +161,7 @@ double *RandN(size_t n, double u, double s)
     return data;
 }
 
-double *Of(size_t n, const double input_data[])
+double *Of(size_t n, const double *input_data)
 {
     double *data;
     handleCudaError(

@@ -43,14 +43,14 @@ func Ones(dims []int, withGrad bool) (o tensor.Tensor, err error) {
 	return Full(dims, 1., withGrad)
 }
 
-func Eye(n int, withGrad bool) (o tensor.Tensor, err error) {
-	err = validator.ValidateInputDims([]int{n, n})
+func Eye(d int, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateInputDims([]int{d, d})
 	if err != nil {
 		err = fmt.Errorf("Eye input dimension validation failed: %w", err)
 		return
 	}
 
-	r := eyeMatrix(n)
+	r := eyeMatrix(d)
 	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
@@ -94,7 +94,7 @@ func RandN(dims []int, u, s float64, withGrad bool) (o tensor.Tensor, err error)
 	return r, nil
 }
 
-func TensorOf(data any, withGrad bool) (o tensor.Tensor, err error) {
+func Of(data any, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDataDimUnity(data)
 	if err != nil {
 		err = fmt.Errorf("TensorOf input data validation failed: %w", err)

@@ -133,26 +133,23 @@ func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 /*--------------- methods ---------------*/
 
 func (t *CUDATensor) NElems() (n int) {
-	return
-	// return t.numElems()
+	return t.numElems()
 }
 
 func (t *CUDATensor) Shape() (shape []int) {
-	return
-	// shape = make([]int, len(t.dims))
-	// copy(shape, t.dims)
-	// return shape
+	shape = make([]int, len(t.dims))
+	copy(shape, t.dims)
+	return shape
 }
 
 func (t *CUDATensor) At(index ...int) (value float64, err error) {
-	return
-	// err = validator.ValidateAtIndexAgainstDims(index, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("At input index validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateAtIndexAgainstDims(index, t.dims)
+	if err != nil {
+		err = fmt.Errorf("At input index validation failed: %w", err)
+		return
+	}
 
-	// return t.dataAt(index).(float64), nil
+	return t.at(index), nil
 }
 
 func (t *CUDATensor) Slice(index []tensor.Range) (o tensor.Tensor, err error) {

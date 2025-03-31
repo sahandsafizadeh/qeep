@@ -1,5 +1,14 @@
+#include <time.h>
+#include <curand_kernel.h>
+
 #include "common.h"
-#include "goutil.h"
+
+/* ----- helper functions ----- */
+
+inline unsigned long long timeSeed()
+{
+    return (unsigned long long)time(NULL);
+}
 
 /* ----- device functions ----- */
 
@@ -35,25 +44,33 @@ __global__ void fillEye(size_t n, size_t d, double *data)
     }
 }
 
-__global__ void fillRandU(size_t n, double l, double u, double *data)
+__global__ void fillRandU(size_t n, double l, double u, unsigned long long seed, double *data)
 {
     const int tpos = threadPosition();
     const int stride = totalThreads();
 
+    curandStatePhilox4_32_10_t state;
+    curand_init(seed, tpos, 0, &state);
+
     for (size_t i = tpos; i < n; i += stride)
     {
-        data[i] = goUniformRand(l, u);
+        double randu_0_1 = curand_uniform_double(&state);
+        data[i] = l + (u - l) * randu_0_1;
     }
 }
 
-__global__ void fillRandN(size_t n, double u, double s, double *data)
+__global__ void fillRandN(size_t n, double u, double s, unsigned long long seed, double *data)
 {
     const int tpos = threadPosition();
     const int stride = totalThreads();
 
+    curandStatePhilox4_32_10_t state;
+    curand_init(seed, tpos, 0, &state);
+
     for (size_t i = tpos; i < n; i += stride)
     {
-        data[i] = goNormalRand(u, s);
+        double randn_0_1 = curand_normal_double(&state);
+        data[i] = u + s * randn_0_1;
     }
 }
 
@@ -110,9 +127,11 @@ double *RandU(size_t n, double l, double u)
     handleCudaError(
         cudaMalloc(&data, n * sizeof(double)));
 
+    unsigned long long seed = timeSeed();
+
     LaunchParams lps = launchParams(n);
 
-    fillRandU<<<lps.blockSize, lps.threadSize>>>(n, l, u, data);
+    fillRandU<<<lps.blockSize, lps.threadSize>>>(n, l, u, seed, data);
 
     handleCudaError(
         cudaGetLastError());
@@ -128,9 +147,11 @@ double *RandN(size_t n, double u, double s)
     handleCudaError(
         cudaMalloc(&data, n * sizeof(double)));
 
+    unsigned long long seed = timeSeed();
+
     LaunchParams lps = launchParams(n);
 
-    fillRandN<<<lps.blockSize, lps.threadSize>>>(n, u, s, data);
+    fillRandN<<<lps.blockSize, lps.threadSize>>>(n, u, s, seed, data);
 
     handleCudaError(
         cudaGetLastError());

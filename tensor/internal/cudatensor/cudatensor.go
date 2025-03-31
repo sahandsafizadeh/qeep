@@ -3,8 +3,8 @@ package cudatensor
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/validator"
 )
 

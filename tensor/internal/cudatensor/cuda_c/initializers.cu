@@ -24,7 +24,7 @@ __global__ void fillConst(size_t n, double value, double *data)
     }
 }
 
-__global__ void fillEye(size_t n, int d, double *data)
+__global__ void fillEye(size_t n, size_t d, double *data)
 {
     const int tpos = threadPosition();
     const int stride = totalThreads();
@@ -62,7 +62,7 @@ __global__ void fillRandN(size_t n, double u, double s, double *data)
 extern "C"
 {
     double *Full(size_t n, double value);
-    double *Eye(size_t n, int d);
+    double *Eye(size_t n, size_t d);
     double *RandU(size_t n, double l, double u);
     double *RandN(size_t n, double u, double s);
     double *Of(size_t n, const double input_data[]);
@@ -86,7 +86,7 @@ double *Full(size_t n, double value)
     return data;
 }
 
-double *Eye(size_t n, int d)
+double *Eye(size_t n, size_t d)
 {
     double *data;
     handleCudaError(

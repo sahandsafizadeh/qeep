@@ -7,6 +7,7 @@ import (
 )
 
 type CUDATensor struct {
+	n    int
 	dims []int
 	data unsafe.Pointer
 	gctx *gradtrack.GradContext

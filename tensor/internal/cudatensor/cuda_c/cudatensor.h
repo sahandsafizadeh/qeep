@@ -11,6 +11,12 @@ double *Of(size_t n, const double *input_data);
 
 double At(const double *data, size_t index);
 
+double *Scale(const double *x, size_t n, double a);
+double *Pow(const double *x, size_t n, double a);
+double *Exp(const double *x, size_t n);
+double *Add(const double *a, const double *b, size_t n);
+double *Mul(const double *a, const double *b, size_t n);
+
 void FreeCudaMem(double *data);
 
 #endif // CUDATENSOR_H

@@ -1,234 +1,280 @@
-// #include <math.h>
-// #include "common.h"
+#include <math.h>
 
-// typedef double(scalarUnaryFunc)(double);
-// typedef double(scalarBinaryFunc)(double, double);
+#include "common.h"
 
-// /* ----- scalar functions ----- */
+/* ----- scalar functions ----- */
 
-// const double DOUBLE_EQUALITY_THRESHOLD = 1e-240;
+const double DOUBLE_EQUALITY_THRESHOLD = 1e-240;
 
-// double scale_(double x, double a)
-// {
-//     return a * x;
-// }
+double scale_(double x, double a)
+{
+    return a * x;
+}
 
-// double pow_(double x, double a)
-// {
-//     return pow(x, a);
-// }
+double pow_(double x, double a)
+{
+    return pow(x, a);
+}
 
-// double exp_(double x)
-// {
-//     return exp(x);
-// }
+double exp_(double x)
+{
+    return exp(x);
+}
 
-// double log_(double x)
-// {
-//     return log(x);
-// }
+double log_(double x)
+{
+    return log(x);
+}
 
-// double sin_(double x)
-// {
-//     return sin(x);
-// }
+double sin_(double x)
+{
+    return sin(x);
+}
 
-// double cos_(double x)
-// {
-//     return cos(x);
-// }
+double cos_(double x)
+{
+    return cos(x);
+}
 
-// double tan_(double x)
-// {
-//     return tan(x);
-// }
+double tan_(double x)
+{
+    return tan(x);
+}
 
-// double sinh_(double x)
-// {
-//     return sinh(x);
-// }
+double sinh_(double x)
+{
+    return sinh(x);
+}
 
-// double cosh_(double x)
-// {
-//     return cosh(x);
-// }
+double cosh_(double x)
+{
+    return cosh(x);
+}
 
-// double tanh_(double x)
-// {
-//     return tanh(x);
-// }
+double tanh_(double x)
+{
+    return tanh(x);
+}
 
-// double eq_(double a, double b)
-// {
-//     return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 1. : 0.;
-// }
+double eq_(double a, double b)
+{
+    return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 1. : 0.;
+}
 
-// double ne_(double a, double b)
-// {
-//     return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 0. : 1.;
-// }
+double ne_(double a, double b)
+{
+    return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 0. : 1.;
+}
 
-// double gt_(double a, double b)
-// {
-//     return a > b ? 1. : 0.;
-// }
+double gt_(double a, double b)
+{
+    return a > b ? 1. : 0.;
+}
 
-// double ge_(double a, double b)
-// {
-//     return a >= b ? 1. : 0.;
-// }
+double ge_(double a, double b)
+{
+    return a >= b ? 1. : 0.;
+}
 
-// double lt_(double a, double b)
-// {
-//     return a < b ? 1. : 0.;
-// }
+double lt_(double a, double b)
+{
+    return a < b ? 1. : 0.;
+}
 
-// double le_(double a, double b)
-// {
-//     return a <= b ? 1. : 0.;
-// }
+double le_(double a, double b)
+{
+    return a <= b ? 1. : 0.;
+}
 
-// double elmax_(double a, double b)
-// {
-//     return max(a, b);
-// }
+double elmax_(double a, double b)
+{
+    return max(a, b);
+}
 
-// double elmin_(double a, double b)
-// {
-//     return min(a, b);
-// }
+double elmin_(double a, double b)
+{
+    return min(a, b);
+}
 
-// double add_(double a, double b)
-// {
-//     return a + b;
-// }
+double add_(double a, double b)
+{
+    return a + b;
+}
 
-// double sub_(double a, double b)
-// {
-//     return a - b;
-// }
+double sub_(double a, double b)
+{
+    return a - b;
+}
 
-// double mul_(double a, double b)
-// {
-//     return a * b;
-// }
+double mul_(double a, double b)
+{
+    return a * b;
+}
 
-// double div_(double a, double b)
-// {
-//     return a / b;
-// }
+double div_(double a, double b)
+{
+    return a / b;
+}
 
-// /* ----- device functions ----- */
+/* ----- device functions ----- */
 
-// __global__ void applyUnaryFuncElemWise(
-//     double *x,
-//     double *y,
-//     size_t n,
-//     scalarUnaryFunc suf)
-// {
-//     const int tpos = threadPosition();
-//     const int gstep = totalThreads();
+typedef double(scalarUnaryFunc)(double);
+typedef double(scalarBinaryFunc)(double, double);
 
-//     for (size_t i = tpos; i < n; i += gstep)
-//     {
-//         y[i] = (*suf)(x[i]);
-//     }
-// }
+__device__ inline int threadPosition()
+{
+    return threadIdx.x + blockIdx.x * blockDim.x;
+}
 
-// __global__ void applyBinaryFuncElemWise(
-//     double *a,
-//     double *b,
-//     double *c,
-//     size_t n,
-//     scalarBinaryFunc sbf)
-// {
-//     const int tpos = threadPosition();
-//     const int gstep = totalThreads();
+__device__ inline int totalThreads()
+{
+    return gridDim.x * blockDim.x;
+}
 
-//     for (size_t i = tpos; i < n; i += gstep)
-//     {
-//         c[i] = (*sbf)(a[i], b[i]);
-//     }
-// }
+__global__ void applyUnaryFuncElemWise(
+    scalarUnaryFunc suf,
+    const double *x,
+    size_t n,
+    double *y)
+{
+    const int tpos = threadPosition();
+    const int stride = totalThreads();
 
-// __global__ void applyHalfBinaryFuncElemWise(
-//     double *x,
-//     double *y,
-//     double a,
-//     size_t n,
-//     scalarBinaryFunc sbf)
-// {
-//     const int tpos = threadPosition();
-//     const int gstep = totalThreads();
+    for (size_t i = tpos; i < n; i += stride)
+    {
+        y[i] = suf(x[i]);
+    }
+}
 
-//     for (size_t i = tpos; i < n; i += gstep)
-//     {
-//         y[i] = (*sbf)(x[i], a);
-//     }
-// }
+__global__ void applyBinaryFuncElemWise(
+    scalarBinaryFunc sbf,
+    const double *a,
+    const double *b,
+    size_t n,
+    double *c)
+{
+    const int tpos = threadPosition();
+    const int stride = totalThreads();
 
-// /* ----- API functions ----- */
+    for (size_t i = tpos; i < n; i += stride)
+    {
+        c[i] = sbf(a[i], b[i]);
+    }
+}
 
-// extern "C"
-// {
-//     double *Scale(double *x, double a, size_t n);
-//     double *Pow(double *x, double a, size_t n);
-//     double *Exp(double *x, size_t n);
-//     double *Add(double *a, double *b, size_t n);
-//     double *Mul(double *a, double *b, size_t n);
-// }
+__global__ void applyHalfBinaryFuncElemWise(
+    scalarBinaryFunc sbf,
+    const double *x,
+    size_t n,
+    double a,
+    double *y)
+{
+    const int tpos = threadPosition();
+    const int stride = totalThreads();
 
-// double *Scale(double *x, double a, size_t n)
-// {
-//     double *y;
-//     cudaMalloc(&y, n * sizeof(double));
+    for (size_t i = tpos; i < n; i += stride)
+    {
+        y[i] = sbf(x[i], a);
+    }
+}
 
-//     applyHalfBinaryFuncElemWise<<<BLOCKS, THREADS_PER_BLOCK>>>(x, y, a, n, scale_);
-//     cudaDeviceSynchronize();
+/* ----- API functions ----- */
 
-//     return y;
-// }
+extern "C"
+{
+    double *Scale(const double *x, size_t n, double a);
+    double *Pow(const double *x, size_t n, double a);
+    double *Exp(const double *x, size_t n);
+    double *Add(const double *a, const double *b, size_t n);
+    double *Mul(const double *a, const double *b, size_t n);
+}
 
-// double *Pow(double *x, double a, size_t n)
-// {
-//     double *y;
-//     cudaMalloc(&y, n * sizeof(double));
+double *Scale(const double *x, size_t n, double a)
+{
+    double *y;
+    handleCudaError(
+        cudaMalloc(&y, n * sizeof(double)));
 
-//     applyHalfBinaryFuncElemWise<<<BLOCKS, THREADS_PER_BLOCK>>>(x, y, a, n, pow_);
-//     cudaDeviceSynchronize();
+    LaunchParams lps = launchParams(n);
 
-//     return y;
-// }
+    applyHalfBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(scale_, x, n, a, y);
 
-// double *Exp(double *x, size_t n)
-// {
-//     double *y;
-//     cudaMalloc(&y, n * sizeof(double));
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
 
-//     applyUnaryFuncElemWise<<<BLOCKS, THREADS_PER_BLOCK>>>(x, y, n, exp_);
-//     cudaDeviceSynchronize();
+    return y;
+}
 
-//     return y;
-// }
+double *Pow(const double *x, size_t n, double a)
+{
+    double *y;
+    handleCudaError(
+        cudaMalloc(&y, n * sizeof(double)));
 
-// double *Add(double *a, double *b, size_t n)
-// {
-//     double *c;
-//     cudaMalloc(&c, n * sizeof(double));
+    LaunchParams lps = launchParams(n);
 
-//     applyBinaryFuncElemWise<<<BLOCKS, THREADS_PER_BLOCK>>>(a, b, c, n, add_);
-//     cudaDeviceSynchronize();
+    applyHalfBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(pow_, x, n, a, y);
 
-//     return c;
-// }
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
 
-// double *Mul(double *a, double *b, size_t n)
-// {
-//     double *c;
-//     cudaMalloc(&c, n * sizeof(double));
+    return y;
+}
 
-//     applyBinaryFuncElemWise<<<BLOCKS, THREADS_PER_BLOCK>>>(a, b, c, n, mul_);
-//     cudaDeviceSynchronize();
+double *Exp(const double *x, size_t n)
+{
+    double *y;
+    handleCudaError(
+        cudaMalloc(&y, n * sizeof(double)));
 
-//     return c;
-// }
+    LaunchParams lps = launchParams(n);
+
+    applyUnaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(exp_, x, n, y);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+
+    return y;
+}
+
+double *Add(const double *a, const double *b, size_t n)
+{
+    double *c;
+    handleCudaError(
+        cudaMalloc(&c, n * sizeof(double)));
+
+    LaunchParams lps = launchParams(n);
+
+    applyBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(add_, a, b, n, c);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+
+    return c;
+}
+
+double *Mul(const double *a, const double *b, size_t n)
+{
+    double *c;
+    handleCudaError(
+        cudaMalloc(&c, n * sizeof(double)));
+
+    LaunchParams lps = launchParams(n);
+
+    applyBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(mul_, a, b, n, c);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+
+    return c;
+}

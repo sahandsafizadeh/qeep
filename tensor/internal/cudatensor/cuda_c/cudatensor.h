@@ -9,6 +9,8 @@ double *RandU(size_t n, double l, double u);
 double *RandN(size_t n, double u, double s);
 double *Of(size_t n, const double input_data[]);
 
+double At(const double data[], size_t index);
+
 void FreeCudaMem(double *data);
 
 #endif // CUDATENSOR_H

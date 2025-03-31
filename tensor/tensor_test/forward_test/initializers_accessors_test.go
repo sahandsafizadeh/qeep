@@ -66,10 +66,10 @@ func TestFullEyeAt(t *testing.T) {
 		}
 
 		var i, j, k, u int
-		for i = 0; i < 4; i++ {
-			for j = 0; j < 3; j++ {
-				for k = 0; k < 2; k++ {
-					for u = 0; u < 1; u++ {
+		for i = range 4 {
+			for j = range 3 {
+				for k = range 2 {
+					for u = range 1 {
 						if val, err := ten.At(i, j, k, u); err != nil {
 							t.Fatal(err)
 						} else if int(val) != 5 {

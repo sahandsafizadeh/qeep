@@ -14,7 +14,7 @@ LaunchParams launchParams(size_t n)
     int threads = MAX_THREADS_PER_BLOCK_X;
     int blocks = (n + threads - 1) / threads;
     blocks = min(blocks, MAX_BLOCKS_PER_GRID_X);
-    return (LaunchParams){threads, blocks};
+    return (LaunchParams){blocks, threads};
 }
 
 /* ----- error handling ----- */

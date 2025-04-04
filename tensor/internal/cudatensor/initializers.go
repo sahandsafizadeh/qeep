@@ -115,7 +115,7 @@ func tensorFromData(data any) (t *CUDATensor) {
 
 	n_c := (C.size_t)(nelems)
 	input_data_c := (*C.double)(dataptr)
-	data_c := C.Of(n_c, input_data_c)
+	data_c := C.Of(input_data_c, n_c)
 
 	return newCUDATensor(dims, data_c)
 }

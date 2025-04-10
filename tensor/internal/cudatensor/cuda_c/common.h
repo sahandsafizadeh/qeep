@@ -6,8 +6,8 @@
 
 typedef struct LaunchParams
 {
-    int blockSize;
-    int threadSize;
+    unsigned int blockSize;
+    unsigned int threadSize;
 } LaunchParams;
 
 LaunchParams launchParams(size_t n);

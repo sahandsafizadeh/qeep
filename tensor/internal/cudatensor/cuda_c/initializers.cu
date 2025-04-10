@@ -12,20 +12,20 @@ inline unsigned long long timeSeed()
 
 /* ----- device functions ----- */
 
-__device__ inline int threadPosition()
+__device__ inline unsigned int threadPosition()
 {
     return threadIdx.x + blockIdx.x * blockDim.x;
 }
 
-__device__ inline int totalThreads()
+__device__ inline unsigned int totalThreads()
 {
     return gridDim.x * blockDim.x;
 }
 
 __global__ void fillConst(size_t n, double value, double *data)
 {
-    const int tpos = threadPosition();
-    const int stride = totalThreads();
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
 
     for (size_t i = tpos; i < n; i += stride)
     {
@@ -35,8 +35,8 @@ __global__ void fillConst(size_t n, double value, double *data)
 
 __global__ void fillEye(size_t n, size_t d, double *data)
 {
-    const int tpos = threadPosition();
-    const int stride = totalThreads();
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
 
     for (size_t i = tpos; i < n; i += stride)
     {
@@ -46,8 +46,8 @@ __global__ void fillEye(size_t n, size_t d, double *data)
 
 __global__ void fillRandU(size_t n, double l, double u, unsigned long long seed, double *data)
 {
-    const int tpos = threadPosition();
-    const int stride = totalThreads();
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
 
     curandStatePhilox4_32_10_t state;
     curand_init(seed, tpos, 0, &state);
@@ -61,8 +61,8 @@ __global__ void fillRandU(size_t n, double l, double u, unsigned long long seed,
 
 __global__ void fillRandN(size_t n, double u, double s, unsigned long long seed, double *data)
 {
-    const int tpos = threadPosition();
-    const int stride = totalThreads();
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
 
     curandStatePhilox4_32_10_t state;
     curand_init(seed, tpos, 0, &state);

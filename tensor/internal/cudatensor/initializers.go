@@ -13,6 +13,7 @@ func constTensor(dims []int, value float64) (t *CUDATensor) {
 
 	n_c := (C.size_t)(nelems)
 	value_c := (C.double)(value)
+
 	data_c := C.Full(n_c, value_c)
 
 	return newCUDATensor(dims, data_c)
@@ -24,6 +25,7 @@ func eyeMatrix(d int) (t *CUDATensor) {
 
 	n_c := (C.size_t)(nelems)
 	d_c := (C.size_t)(d)
+
 	data_c := C.Eye(n_c, d_c)
 
 	return newCUDATensor(dims, data_c)
@@ -35,6 +37,7 @@ func uniformRandomTensor(dims []int, l, u float64) (t *CUDATensor) {
 	n_c := (C.size_t)(nelems)
 	l_c := (C.double)(l)
 	u_c := (C.double)(u)
+
 	data_c := C.RandU(n_c, l_c, u_c)
 
 	return newCUDATensor(dims, data_c)
@@ -46,6 +49,7 @@ func normalRandomTensor(dims []int, u, s float64) (t *CUDATensor) {
 	n_c := (C.size_t)(nelems)
 	u_c := (C.double)(u)
 	s_c := (C.double)(s)
+
 	data_c := C.RandN(n_c, u_c, s_c)
 
 	return newCUDATensor(dims, data_c)
@@ -115,6 +119,7 @@ func tensorFromData(data any) (t *CUDATensor) {
 
 	n_c := (C.size_t)(nelems)
 	input_data_c := (*C.double)(dataptr)
+
 	data_c := C.Of(input_data_c, n_c)
 
 	return newCUDATensor(dims, data_c)

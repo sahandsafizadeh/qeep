@@ -9,7 +9,7 @@ double *RandU(size_t n, double l, double u);
 double *RandN(size_t n, double u, double s);
 double *Of(const double *input_data, size_t n);
 
-double At(const double *data, size_t index);
+double At(const double *data, const int *dims, const int *index, size_t n);
 
 double *Scale(const double *x, size_t n, double a);
 double *Pow(const double *x, size_t n, double a);

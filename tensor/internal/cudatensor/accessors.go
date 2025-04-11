@@ -6,17 +6,19 @@ package cudatensor
 */
 import "C"
 
+import "unsafe"
+
 func (t *CUDATensor) at(index []int) (elem float64) {
-	position := 0
-	dimTotal := 1
-	for i := len(index) - 1; i >= 0; i-- {
-		position += dimTotal * index[i]
-		dimTotal *= t.dims[i]
-	}
+	dimsptr := intSliceToCptr(t.dims)
+	indexptr := intSliceToCptr(index)
+	n := len(index)
 
 	data_c := (*C.double)(t.data)
-	index_c := (C.size_t)(position)
-	elem_c := C.At(data_c, index_c)
+	dims_c := (*C.int)(dimsptr)
+	index_c := (*C.int)(indexptr)
+	n_c := (C.size_t)(n)
+
+	elem_c := C.At(data_c, dims_c, index_c, n_c)
 
 	return float64(elem_c)
 }
@@ -30,4 +32,17 @@ func dimsToNumElems(dims []int) (elems int) {
 	}
 
 	return elems
+}
+
+func intSliceToCptr(src []int) (ptr unsafe.Pointer) {
+	if len(src) == 0 {
+		return nil
+	}
+
+	dst := make([]C.int, len(src))
+	for i, e := range src {
+		dst[i] = (C.int)(e)
+	}
+
+	return (unsafe.Pointer)(&dst[0])
 }

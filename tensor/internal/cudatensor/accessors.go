@@ -23,6 +23,8 @@ func (t *CUDATensor) at(index []int) (elem float64) {
 	return float64(elem_c)
 }
 
+// todo: wire up slice and patch
+
 /* ----- helpers ----- */
 
 func dimsToNumElems(dims []int) (elems int) {

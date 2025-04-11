@@ -98,7 +98,7 @@ __device__ inline unsigned int totalThreads()
     return gridDim.x * blockDim.x;
 }
 
-__device__ int transformPosition(
+__device__ int mapToSlicePosition(
     int lnpos_src,
     const int *rcp_src,
     const int *rcp_dst,
@@ -129,6 +129,32 @@ __device__ int transformPosition(
     return lnpos_dst;
 }
 
+__device__ int mapToPatchPosition(
+    int lnpos_src,
+    const int *rcp_src,
+    const int *rcp_dst,
+    const Range *range,
+    size_t n)
+{
+    int lnpos_dst;
+    int *index_src = (int *)(malloc(n * sizeof(int)));
+    int *index_dst = (int *)(malloc(n * sizeof(int)));
+
+    decode(index_src, lnpos_src, rcp_src, n);
+
+    for (size_t i = 0; i < n; i++)
+    {
+        index_dst[i] = index_src[i] + range[i].from;
+    }
+
+    encode(&lnpos_dst, index_dst, rcp_dst, n);
+
+    free(index_src);
+    free(index_dst);
+
+    return lnpos_dst;
+}
+
 __global__ void copySlice(
     double *dst,
     const double *src,
@@ -144,12 +170,33 @@ __global__ void copySlice(
     for (size_t i = tpos; i < n_src; i += stride)
     {
         int lnpos_src = i;
-        int lnpos_dst = transformPosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
+        int lnpos_dst = mapToSlicePosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
 
         if (lnpos_dst >= 0)
         {
             dst[lnpos_dst] = src[lnpos_src];
         }
+    }
+}
+
+__global__ void copyPatch(
+    double *dst,
+    const double *src,
+    size_t n_src,
+    const int *rcp_src,
+    const int *rcp_dst,
+    const Range *range,
+    size_t n_index)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < n_src; i += stride)
+    {
+        int lnpos_src = i;
+        int lnpos_dst = mapToPatchPosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
+
+        dst[lnpos_dst] = src[lnpos_src];
     }
 }
 

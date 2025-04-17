@@ -231,9 +231,9 @@ double At(const double *data, const int *dims, const int *index, size_t n)
 
 double *Slice(const double *src, const int *dims, const Range *index, size_t n)
 {
-    int n_index = n;
-    int n_src = elemcnt(dims, n_index);
-    int n_dst = elemcnt(index, n_index);
+    size_t n_index = n;
+    size_t n_src = elemcnt(dims, n_index);
+    size_t n_dst = elemcnt(index, n_index);
 
     int *rcp_src = (int *)(malloc(n_index * sizeof(int)));
     int *rcp_dst = (int *)(malloc(n_index * sizeof(int)));
@@ -262,9 +262,9 @@ double *Slice(const double *src, const int *dims, const Range *index, size_t n)
 
 double *Patch(const double *bas, const int *dims, const double *src, const Range *index, size_t n)
 {
-    int n_index = n;
-    int n_src = elemcnt(index, n_index);
-    int n_dst = elemcnt(dims, n_index);
+    size_t n_index = n;
+    size_t n_src = elemcnt(index, n_index);
+    size_t n_dst = elemcnt(dims, n_index);
 
     int *rcp_src = (int *)(malloc(n_index * sizeof(int)));
     int *rcp_dst = (int *)(malloc(n_index * sizeof(int)));

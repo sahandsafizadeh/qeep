@@ -6,9 +6,6 @@
 
 /* ----- kernel launch ----- */
 
-const unsigned int MAX_THREADS_PER_BLOCK_X = 512;
-const unsigned int MAX_BLOCKS_PER_GRID_X = 65535;
-
 LaunchParams launchParams(size_t n)
 {
     unsigned int threads = MAX_THREADS_PER_BLOCK_X;

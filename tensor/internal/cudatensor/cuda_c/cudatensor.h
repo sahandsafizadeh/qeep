@@ -17,6 +17,11 @@ double At(const double *data, const int *dims, const int *index, size_t n);
 double *Slice(const double *src, const int *dims, const Range *index, size_t n);
 double *Patch(const double *bas, const int *dims, const double *src, const Range *index, size_t n);
 
+/*--------------- reducers ----------------*/
+double Sum(const double *src, size_t n);
+double Max(const double *src, size_t n);
+double Min(const double *src, size_t n);
+
 /*--------------- operators ---------------*/
 double *Scale(const double *x, size_t n, double a);
 double *Pow(const double *x, size_t n, double a);

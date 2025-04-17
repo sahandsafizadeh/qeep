@@ -231,8 +231,8 @@ double At(const double *data, const int *dims, const int *index, size_t n)
 double *Slice(const double *src, const int *dims, const Range *index, size_t n)
 {
     int n_index = n;
-    int n_src = elemsCount(dims, n_index);
-    int n_dst = elemsCount(index, n_index);
+    int n_src = elemcnt(dims, n_index);
+    int n_dst = elemcnt(index, n_index);
 
     int *rcp_src = (int *)(malloc(n_index * sizeof(int)));
     int *rcp_dst = (int *)(malloc(n_index * sizeof(int)));
@@ -246,6 +246,43 @@ double *Slice(const double *src, const int *dims, const Range *index, size_t n)
     LaunchParams lps = launchParams(n_src);
 
     copySlice<<<lps.blockSize, lps.threadSize>>>(dst, src, n_src,
+                                                 rcp_src, rcp_dst, index, n_index);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+
+    free(rcp_src);
+    free(rcp_dst);
+
+    return dst;
+}
+
+double *Patch(const double *bas, const int *dims, const double *src, const Range *index, size_t n)
+{
+    int n_index = n;
+    int n_src = elemcnt(index, n_index);
+    int n_dst = elemcnt(dims, n_index);
+
+    int *rcp_src = (int *)(malloc(n_index * sizeof(int)));
+    int *rcp_dst = (int *)(malloc(n_index * sizeof(int)));
+    rcumprod(rcp_src, index, n_index);
+    rcumprod(rcp_dst, dims, n_index);
+
+    double *dst;
+    handleCudaError(
+        cudaMalloc(&dst, n_dst * sizeof(double)));
+    handleCudaError(
+        cudaMemcpy(
+            dst,
+            bas,
+            n_dst * sizeof(double),
+            cudaMemcpyDeviceToDevice));
+
+    LaunchParams lps = launchParams(n_src);
+
+    copyPatch<<<lps.blockSize, lps.threadSize>>>(dst, src, n_src,
                                                  rcp_src, rcp_dst, index, n_index);
 
     handleCudaError(

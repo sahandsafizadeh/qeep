@@ -153,37 +153,35 @@ func (t *CUDATensor) At(index ...int) (value float64, err error) {
 }
 
 func (t *CUDATensor) Slice(index []tensor.Range) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateSliceIndexAgainstDims(index, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Slice input index validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateSliceIndexAgainstDims(index, t.dims)
+	if err != nil {
+		err = fmt.Errorf("Slice input index validation failed: %w", err)
+		return
+	}
 
-	// r := t.slice(index)
-	// r.gctx = gradtrack.Slice(r, t, index)
+	r := t.slice(index)
+	r.gctx = gradtrack.Slice(r, t, index)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Patch(index []tensor.Range, u tensor.Tensor) (o tensor.Tensor, err error) {
-	return
-	// cu, err := assertCPUTensor(u)
-	// if err != nil {
-	// 	err = fmt.Errorf("Patch tensors' device validation failed: %w", err)
-	// 	return
-	// }
+	_u, err := assertCUDATensor(u)
+	if err != nil {
+		err = fmt.Errorf("Patch tensors' device validation failed: %w", err)
+		return
+	}
 
-	// err = validator.ValidatePatchIndexAgainstDims(index, cu.dims, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Patch input index or tensors' dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidatePatchIndexAgainstDims(index, _u.dims, t.dims)
+	if err != nil {
+		err = fmt.Errorf("Patch input index or tensors' dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.patch(index, cu)
-	// r.gctx = gradtrack.Patch(r, t, u, index)
+	r := t.patch(index, _u)
+	r.gctx = gradtrack.Patch(r, t, u, index)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Transpose() (o tensor.Tensor, err error) {

@@ -2,124 +2,106 @@
 
 #include "common.h"
 
-/* ----- scalar functions ----- */
+/* ----- device functions ----- */
+
+enum OperationType
+{
+    OP_SCALE,
+    OP_POW,
+    OP_EXP,
+    OP_LOG,
+    OP_SIN,
+    OP_COS,
+    OP_TAN,
+    OP_SINH,
+    OP_COSH,
+    OP_TANH,
+    OP_EQ,
+    OP_NE,
+    OP_GT,
+    OP_GE,
+    OP_LT,
+    OP_LE,
+    OP_ELMAX,
+    OP_ELMIN,
+    OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+};
 
 const double DOUBLE_EQUALITY_THRESHOLD = 1e-240;
 
-double scale_(double x, double a)
+__device__ double halfBinaryOp(double x, double a, OperationType opt)
 {
-    return a * x;
+    switch (opt)
+    {
+    case OP_SCALE:
+        return a * x;
+    case OP_POW:
+        return pow(x, a);
+    }
+
+    return NAN;
 }
 
-double pow_(double x, double a)
+__device__ double unaryOp(double x, OperationType opt)
 {
-    return pow(x, a);
+    switch (opt)
+    {
+    case OP_EXP:
+        return exp(x);
+    case OP_LOG:
+        return log(x);
+    case OP_SIN:
+        return sin(x);
+    case OP_COS:
+        return cos(x);
+    case OP_TAN:
+        return tan(x);
+    case OP_SINH:
+        return sinh(x);
+    case OP_COSH:
+        return cosh(x);
+    case OP_TANH:
+        return tanh(x);
+    }
+
+    return NAN;
 }
 
-double exp_(double x)
+__device__ double binaryOp(double a, double b, OperationType opt)
 {
-    return exp(x);
+    switch (opt)
+    {
+    case OP_EQ:
+        return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 1. : 0.;
+    case OP_NE:
+        return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 0. : 1.;
+    case OP_GT:
+        return a > b ? 1. : 0.;
+    case OP_GE:
+        return a >= b ? 1. : 0.;
+    case OP_LT:
+        return a < b ? 1. : 0.;
+    case OP_LE:
+        return a <= b ? 1. : 0.;
+    case OP_ELMAX:
+        return max(a, b);
+    case OP_ELMIN:
+        return min(a, b);
+    case OP_ADD:
+        return a + b;
+    case OP_SUB:
+        return a - b;
+    case OP_MUL:
+        return a * b;
+    case OP_DIV:
+        return a / b;
+    }
+
+    return NAN;
 }
-
-double log_(double x)
-{
-    return log(x);
-}
-
-double sin_(double x)
-{
-    return sin(x);
-}
-
-double cos_(double x)
-{
-    return cos(x);
-}
-
-double tan_(double x)
-{
-    return tan(x);
-}
-
-double sinh_(double x)
-{
-    return sinh(x);
-}
-
-double cosh_(double x)
-{
-    return cosh(x);
-}
-
-double tanh_(double x)
-{
-    return tanh(x);
-}
-
-double eq_(double a, double b)
-{
-    return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 1. : 0.;
-}
-
-double ne_(double a, double b)
-{
-    return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 0. : 1.;
-}
-
-double gt_(double a, double b)
-{
-    return a > b ? 1. : 0.;
-}
-
-double ge_(double a, double b)
-{
-    return a >= b ? 1. : 0.;
-}
-
-double lt_(double a, double b)
-{
-    return a < b ? 1. : 0.;
-}
-
-double le_(double a, double b)
-{
-    return a <= b ? 1. : 0.;
-}
-
-double elmax_(double a, double b)
-{
-    return max(a, b);
-}
-
-double elmin_(double a, double b)
-{
-    return min(a, b);
-}
-
-double add_(double a, double b)
-{
-    return a + b;
-}
-
-double sub_(double a, double b)
-{
-    return a - b;
-}
-
-double mul_(double a, double b)
-{
-    return a * b;
-}
-
-double div_(double a, double b)
-{
-    return a / b;
-}
-
-/* ----- device functions ----- */
-
-typedef double(scalarUnaryFunc)(double);
-typedef double(scalarBinaryFunc)(double, double);
 
 __device__ inline unsigned int threadPosition()
 {
@@ -131,18 +113,34 @@ __device__ inline unsigned int totalThreads()
     return gridDim.x * blockDim.x;
 }
 
-__global__ void applyUnaryFuncElemWise(
+__global__ void applyHalfBinaryFuncElemWise(
     double *dst,
-    const double *src,
+    const double *src1,
     size_t n,
-    scalarUnaryFunc suf)
+    double srcc,
+    OperationType opt)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
     for (size_t i = tpos; i < n; i += stride)
     {
-        dst[i] = suf(src[i]);
+        dst[i] = halfBinaryOp(src1[i], srcc, opt);
+    }
+}
+
+__global__ void applyUnaryFuncElemWise(
+    double *dst,
+    const double *src,
+    size_t n,
+    OperationType opt)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < n; i += stride)
+    {
+        dst[i] = unaryOp(src[i], opt);
     }
 }
 
@@ -151,36 +149,20 @@ __global__ void applyBinaryFuncElemWise(
     const double *src1,
     const double *src2,
     size_t n,
-    scalarBinaryFunc sbf)
+    OperationType opt)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
     for (size_t i = tpos; i < n; i += stride)
     {
-        dst[i] = sbf(src1[i], src2[i]);
-    }
-}
-
-__global__ void applyHalfBinaryFuncElemWise(
-    double *dst,
-    const double *src1,
-    size_t n,
-    double srcc,
-    scalarBinaryFunc sbf)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    for (size_t i = tpos; i < n; i += stride)
-    {
-        dst[i] = sbf(src1[i], srcc);
+        dst[i] = binaryOp(src1[i], src2[i], opt);
     }
 }
 
 /* ----- API helper functions ----- */
 
-double *runHalfBinaryOp(const double *x, size_t n, double a, scalarBinaryFunc sbf)
+double *runHalfBinaryOp(const double *x, size_t n, double a, OperationType opt)
 {
     double *y;
     handleCudaError(
@@ -188,7 +170,7 @@ double *runHalfBinaryOp(const double *x, size_t n, double a, scalarBinaryFunc sb
 
     LaunchParams lps = launchParams(n);
 
-    applyHalfBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, n, a, sbf);
+    applyHalfBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, n, a, opt);
 
     handleCudaError(
         cudaGetLastError());
@@ -198,7 +180,7 @@ double *runHalfBinaryOp(const double *x, size_t n, double a, scalarBinaryFunc sb
     return y;
 }
 
-double *runUnaryOp(const double *x, size_t n, scalarUnaryFunc suf)
+double *runUnaryOp(const double *x, size_t n, OperationType opt)
 {
     double *y;
     handleCudaError(
@@ -206,7 +188,7 @@ double *runUnaryOp(const double *x, size_t n, scalarUnaryFunc suf)
 
     LaunchParams lps = launchParams(n);
 
-    applyUnaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, n, suf);
+    applyUnaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, n, opt);
 
     handleCudaError(
         cudaGetLastError());
@@ -216,7 +198,7 @@ double *runUnaryOp(const double *x, size_t n, scalarUnaryFunc suf)
     return y;
 }
 
-double *runBinaryOp(const double *a, const double *b, size_t n, scalarBinaryFunc sbf)
+double *runBinaryOp(const double *a, const double *b, size_t n, OperationType opt)
 {
     double *c;
     handleCudaError(
@@ -224,7 +206,7 @@ double *runBinaryOp(const double *a, const double *b, size_t n, scalarBinaryFunc
 
     LaunchParams lps = launchParams(n);
 
-    applyBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(c, a, b, n, sbf);
+    applyBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(c, a, b, n, opt);
 
     handleCudaError(
         cudaGetLastError());
@@ -264,110 +246,110 @@ extern "C"
 
 double *Scale(const double *x, size_t n, double a)
 {
-    return runHalfBinaryOp(x, n, a, scale_);
+    return runHalfBinaryOp(x, n, a, OP_SCALE);
 }
 
 double *Pow(const double *x, size_t n, double a)
 {
-    return runHalfBinaryOp(x, n, a, pow_);
+    return runHalfBinaryOp(x, n, a, OP_POW);
 }
 
 double *Exp(const double *x, size_t n)
 {
-    return runUnaryOp(x, n, exp_);
+    return runUnaryOp(x, n, OP_EXP);
 }
 
 double *Log(const double *x, size_t n)
 {
-    return runUnaryOp(x, n, log_);
+    return runUnaryOp(x, n, OP_LOG);
 }
 
 double *Sin(const double *x, size_t n)
 {
-    return runUnaryOp(x, n, sin_);
+    return runUnaryOp(x, n, OP_SIN);
 }
 
 double *Cos(const double *x, size_t n)
 {
-    return runUnaryOp(x, n, cos_);
+    return runUnaryOp(x, n, OP_COS);
 }
 
 double *Tan(const double *x, size_t n)
 {
-    return runUnaryOp(x, n, tan_);
+    return runUnaryOp(x, n, OP_TAN);
 }
 
 double *Sinh(const double *x, size_t n)
 {
-    return runUnaryOp(x, n, sinh_);
+    return runUnaryOp(x, n, OP_SINH);
 }
 
 double *Cosh(const double *x, size_t n)
 {
-    return runUnaryOp(x, n, cosh_);
+    return runUnaryOp(x, n, OP_COSH);
 }
 
 double *Tanh(const double *x, size_t n)
 {
-    return runUnaryOp(x, n, tanh_);
+    return runUnaryOp(x, n, OP_TANH);
 }
 
 double *Eq(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, eq_);
+    return runBinaryOp(a, b, n, OP_EQ);
 }
 
 double *Ne(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, ne_);
+    return runBinaryOp(a, b, n, OP_NE);
 }
 
 double *Gt(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, gt_);
+    return runBinaryOp(a, b, n, OP_GT);
 }
 
 double *Ge(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, ge_);
+    return runBinaryOp(a, b, n, OP_GE);
 }
 
 double *Lt(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, lt_);
+    return runBinaryOp(a, b, n, OP_LT);
 }
 
 double *Le(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, le_);
+    return runBinaryOp(a, b, n, OP_LE);
 }
 
 double *ElMax(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, elmax_);
+    return runBinaryOp(a, b, n, OP_ELMAX);
 }
 
 double *ElMin(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, elmin_);
+    return runBinaryOp(a, b, n, OP_ELMIN);
 }
 
 double *Add(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, add_);
+    return runBinaryOp(a, b, n, OP_ADD);
 }
 
 double *Sub(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, sub_);
+    return runBinaryOp(a, b, n, OP_SUB);
 }
 
 double *Mul(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, mul_);
+    return runBinaryOp(a, b, n, OP_MUL);
 }
 
 double *Div(const double *a, const double *b, size_t n)
 {
-    return runBinaryOp(a, b, n, div_);
+    return runBinaryOp(a, b, n, OP_DIV);
 }

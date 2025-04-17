@@ -107,7 +107,7 @@ func Of(data any, withGrad bool) (o tensor.Tensor, err error) {
 
 func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 	return
-	// cus, err := assertCPUTensors(ts)
+	// cus, err := assertCUDATensors(ts)
 	// if err != nil {
 	// 	err = fmt.Errorf("Concat tensors' device validation failed: %w", err)
 	// 	return
@@ -667,7 +667,7 @@ func (t *CUDATensor) ElMin(u tensor.Tensor) (o tensor.Tensor, err error) {
 
 func (t *CUDATensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {
 	return
-	// cu, err := assertCPUTensor(u)
+	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("Add tensors' device validation failed: %w", err)
 	// 	return
@@ -687,7 +687,7 @@ func (t *CUDATensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {
 
 func (t *CUDATensor) Sub(u tensor.Tensor) (o tensor.Tensor, err error) {
 	return
-	// cu, err := assertCPUTensor(u)
+	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("Sub tensors' device validation failed: %w", err)
 	// 	return
@@ -707,7 +707,7 @@ func (t *CUDATensor) Sub(u tensor.Tensor) (o tensor.Tensor, err error) {
 
 func (t *CUDATensor) Mul(u tensor.Tensor) (o tensor.Tensor, err error) {
 	return
-	// cu, err := assertCPUTensor(u)
+	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("Mul tensors' device validation failed: %w", err)
 	// 	return
@@ -727,7 +727,7 @@ func (t *CUDATensor) Mul(u tensor.Tensor) (o tensor.Tensor, err error) {
 
 func (t *CUDATensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
 	return
-	// cu, err := assertCPUTensor(u)
+	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("Div tensors' device validation failed: %w", err)
 	// 	return
@@ -747,7 +747,7 @@ func (t *CUDATensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
 
 func (t *CUDATensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 	return
-	// cu, err := assertCPUTensor(u)
+	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("Dot tensors' device validation failed: %w", err)
 	// 	return
@@ -773,7 +773,7 @@ func (t *CUDATensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 
 func (t *CUDATensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
 	return
-	// cu, err := assertCPUTensor(u)
+	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("MatMul tensors' device validation failed: %w", err)
 	// 	return
@@ -799,7 +799,7 @@ func (t *CUDATensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
 
 func (t *CUDATensor) Equals(u tensor.Tensor) (are bool, err error) {
 	return
-	// cu, err := assertCPUTensor(u)
+	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("Equals tensors' device validation failed: %w", err)
 	// 	return

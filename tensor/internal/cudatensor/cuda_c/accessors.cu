@@ -1,6 +1,30 @@
 #include "types.h"
 #include "common.h"
 
+/* ----- helper functions ----- */
+
+int elemcnt(const int *dims, size_t n)
+{
+    int count = 1;
+    for (size_t i = 0; i < n; i++)
+    {
+        count *= dims[i];
+    }
+
+    return count;
+}
+
+int elemcnt(const Range *range, size_t n)
+{
+    int count = 1;
+    for (size_t i = 0; i < n; i++)
+    {
+        count *= range[i].to - range[i].from;
+    }
+
+    return count;
+}
+
 /* ----- indexing functions ----- */
 
 void rcumprod(int *rcp, const int *dims, size_t n)
@@ -62,30 +86,6 @@ __host__ __device__ bool fallsin(const int *index, const Range *range, size_t n)
     return true;
 }
 
-/* ----- helper functions ----- */
-
-int elemsCount(const int *dims, size_t n)
-{
-    int count = 1;
-    for (size_t i = 0; i < n; i++)
-    {
-        count *= dims[i];
-    }
-
-    return count;
-}
-
-int elemsCount(const Range *range, size_t n)
-{
-    int count = 1;
-    for (size_t i = 0; i < n; i++)
-    {
-        count *= range[i].to - range[i].from;
-    }
-
-    return count;
-}
-
 /* ----- device functions ----- */
 
 __device__ inline unsigned int threadPosition()
@@ -98,7 +98,7 @@ __device__ inline unsigned int totalThreads()
     return gridDim.x * blockDim.x;
 }
 
-__device__ int mapToSlicePosition(
+__device__ int toSlicePosition(
     int lnpos_src,
     const int *rcp_src,
     const int *rcp_dst,
@@ -129,7 +129,7 @@ __device__ int mapToSlicePosition(
     return lnpos_dst;
 }
 
-__device__ int mapToPatchPosition(
+__device__ int toPatchPosition(
     int lnpos_src,
     const int *rcp_src,
     const int *rcp_dst,
@@ -170,7 +170,7 @@ __global__ void copySlice(
     for (size_t i = tpos; i < n_src; i += stride)
     {
         int lnpos_src = i;
-        int lnpos_dst = mapToSlicePosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
+        int lnpos_dst = toSlicePosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
 
         if (lnpos_dst >= 0)
         {
@@ -194,7 +194,7 @@ __global__ void copyPatch(
     for (size_t i = tpos; i < n_src; i += stride)
     {
         int lnpos_src = i;
-        int lnpos_dst = mapToPatchPosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
+        int lnpos_dst = toPatchPosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
 
         dst[lnpos_dst] = src[lnpos_src];
     }

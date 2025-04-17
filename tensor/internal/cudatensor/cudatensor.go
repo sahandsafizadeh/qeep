@@ -780,20 +780,19 @@ func (t *CUDATensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) Equals(u tensor.Tensor) (are bool, err error) {
-	return
-	// cu, err := assertCUDATensor(u)
-	// if err != nil {
-	// 	err = fmt.Errorf("Equals tensors' device validation failed: %w", err)
-	// 	return
-	// }
+	_u, err := assertCUDATensor(u)
+	if err != nil {
+		err = fmt.Errorf("Equals tensors' device validation failed: %w", err)
+		return
+	}
 
-	// err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Equals tensors' dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
+	if err != nil {
+		err = fmt.Errorf("Equals tensors' dimension validation failed: %w", err)
+		return
+	}
 
-	// return t.equals(cu), nil
+	return t.equals(_u), nil
 }
 
 func (t *CUDATensor) GradContext() (gctx any) {

@@ -1,26 +1,30 @@
 #include <math.h>
+
 #include "common.h"
-
-/* ----- reducer functions ----- */
-
-double sum_(double a, double b)
-{
-    return a + b;
-}
-
-double max_(double a, double b)
-{
-    return a >= b ? a : b;
-}
-
-double min_(double a, double b)
-{
-    return a <= b ? a : b;
-}
 
 /* ----- device functions ----- */
 
-typedef double(reducerFunc)(double, double);
+enum ReduceType
+{
+    RED_SUM,
+    RED_MAX,
+    RED_MIN,
+};
+
+__host__ __device__ double reduce(double a, double b, ReduceType rdt)
+{
+    switch (rdt)
+    {
+    case RED_SUM:
+        return a + b;
+    case RED_MAX:
+        return a >= b ? a : b;
+    case RED_MIN:
+        return a <= b ? a : b;
+    }
+
+    return NAN;
+}
 
 __device__ inline unsigned int threadPosition()
 {
@@ -51,7 +55,7 @@ __global__ void reduceByAssociativeFunc(
     double *dst,
     const double *src,
     size_t n,
-    reducerFunc af,
+    ReduceType rdt,
     double identity)
 {
     const unsigned int tpos = threadPosition();
@@ -60,7 +64,7 @@ __global__ void reduceByAssociativeFunc(
     double temp = identity;
     for (size_t i = tpos; i < n; i += stride)
     {
-        temp = af(temp, src[i]);
+        temp = reduce(temp, src[i], rdt);
     }
 
     const unsigned int cacheidx = threadIndex();
@@ -76,7 +80,7 @@ __global__ void reduceByAssociativeFunc(
     {
         if (cacheidx < i)
         {
-            cache[cacheidx] = af(cache[cacheidx], cache[cacheidx + i]);
+            cache[cacheidx] = reduce(cache[cacheidx], cache[cacheidx + i], rdt);
         }
         __syncthreads();
     }
@@ -91,7 +95,7 @@ __global__ void reduceByAssociativeFunc(
 
 const unsigned int MAX_BLOCKS = 256;
 
-double runReduceOp(const double *src, size_t n, reducerFunc af, double identity)
+double runReduceOp(const double *src, size_t n, ReduceType rdt, double identity)
 {
     size_t n_src;
     size_t n_dst;
@@ -109,7 +113,7 @@ double runReduceOp(const double *src, size_t n, reducerFunc af, double identity)
     handleCudaError(
         cudaMalloc(&dev_dst, n_dst * sizeof(double)));
 
-    reduceByAssociativeFunc<<<lps.blockSize, lps.threadSize>>>(dev_dst, src, n_src, af, identity);
+    reduceByAssociativeFunc<<<lps.blockSize, lps.threadSize>>>(dev_dst, src, n_src, rdt, identity);
 
     handleCudaError(
         cudaGetLastError());
@@ -125,7 +129,7 @@ double runReduceOp(const double *src, size_t n, reducerFunc af, double identity)
     res = identity;
     for (size_t i = 0; i < n_dst; i++)
     {
-        res = af(res, dst[i]);
+        res = reduce(res, dst[i], rdt);
     }
 
     free(dst);
@@ -146,15 +150,15 @@ extern "C"
 
 double Sum(const double *src, size_t n)
 {
-    return runReduceOp(src, n, sum_, 0.);
+    return runReduceOp(src, n, RED_SUM, 0.);
 }
 
 double Max(const double *src, size_t n)
 {
-    return runReduceOp(src, n, max_, -INFINITY);
+    return runReduceOp(src, n, RED_MAX, -INFINITY);
 }
 
 double Min(const double *src, size_t n)
 {
-    return runReduceOp(src, n, min_, INFINITY);
+    return runReduceOp(src, n, RED_MIN, INFINITY);
 }

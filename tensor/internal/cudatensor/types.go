@@ -1,5 +1,7 @@
 package cudatensor
 
+import "C"
+
 import (
 	"unsafe"
 
@@ -12,3 +14,7 @@ type CUDATensor struct {
 	data unsafe.Pointer
 	gctx *gradtrack.GradContext
 }
+
+type cudacUnaryFunc func(*C.double, C.size_t) *C.double
+type cudacBinaryFunc func(*C.double, *C.double, C.size_t) *C.double
+type cudacHalfBinaryFunc func(*C.double, C.size_t, C.double) *C.double

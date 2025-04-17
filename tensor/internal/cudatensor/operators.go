@@ -139,10 +139,9 @@ func (t *CUDATensor) div(u *CUDATensor) (o *CUDATensor) {
 }
 
 func (t *CUDATensor) equals(u *CUDATensor) (are bool) {
-	return
-	// o := t.eq(u)
-	// n := o.n
-	// return o.sum() >= float64(n)
+	o := t.eq(u)
+	n := o.n
+	return o.sum() >= float64(n)
 }
 
 func applyUnaryOperation(x *CUDATensor, cuf cudacUnaryFunc) (y *CUDATensor) {

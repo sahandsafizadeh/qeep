@@ -281,23 +281,19 @@ func (t *CUDATensor) Broadcast(shape []int) (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) Sum() (value float64) {
-	return
-	// return t.sum()
+	return t.sum()
 }
 
 func (t *CUDATensor) Max() (value float64) {
-	return
-	// return t.max(unwrapValue)
+	return t.max()
 }
 
 func (t *CUDATensor) Min() (value float64) {
-	return
-	// return t.min(unwrapValue)
+	return t.min()
 }
 
 func (t *CUDATensor) Avg() (value float64) {
-	return
-	// return t.avg()
+	return t.avg()
 }
 
 func (t *CUDATensor) Var() (value float64) {
@@ -311,8 +307,7 @@ func (t *CUDATensor) Std() (value float64) {
 }
 
 func (t *CUDATensor) Mean() (value float64) {
-	return
-	// return t.mean()
+	return t.mean()
 }
 
 func (t *CUDATensor) Argmax(dim int) (o tensor.Tensor, err error) {

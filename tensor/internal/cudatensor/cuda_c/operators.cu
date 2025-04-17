@@ -254,8 +254,8 @@ extern "C"
     double *Ge(const double *a, const double *b, size_t n);
     double *Lt(const double *a, const double *b, size_t n);
     double *Le(const double *a, const double *b, size_t n);
-    double *ElMin(const double *a, const double *b, size_t n);
     double *ElMax(const double *a, const double *b, size_t n);
+    double *ElMin(const double *a, const double *b, size_t n);
     double *Add(const double *a, const double *b, size_t n);
     double *Sub(const double *a, const double *b, size_t n);
     double *Mul(const double *a, const double *b, size_t n);
@@ -342,14 +342,14 @@ double *Le(const double *a, const double *b, size_t n)
     return runBinaryOp(a, b, n, le_);
 }
 
-double *ElMin(const double *a, const double *b, size_t n)
-{
-    return runBinaryOp(a, b, n, elmin_);
-}
-
 double *ElMax(const double *a, const double *b, size_t n)
 {
     return runBinaryOp(a, b, n, elmax_);
+}
+
+double *ElMin(const double *a, const double *b, size_t n)
+{
+    return runBinaryOp(a, b, n, elmin_);
 }
 
 double *Add(const double *a, const double *b, size_t n)

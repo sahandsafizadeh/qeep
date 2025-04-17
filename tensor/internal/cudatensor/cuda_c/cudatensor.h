@@ -12,6 +12,7 @@ double *Of(const double *input_data, size_t n);
 
 double At(const double *data, const int *dims, const int *index, size_t n);
 double *Slice(const double *src, const int *dims, const Range *index, size_t n);
+double *Patch(const double *bas, const int *dims, const double *src, const Range *index, size_t n);
 
 double *Scale(const double *x, size_t n, double a);
 double *Pow(const double *x, size_t n, double a);

@@ -10,12 +10,12 @@ double *Full(size_t n, double value);
 double *Eye(size_t n, size_t d);
 double *RandU(size_t n, double l, double u);
 double *RandN(size_t n, double u, double s);
-double *Of(const double *input_data, size_t n);
+double *Of(size_t n, double *input_data);
 
 /*--------------- accessors ---------------*/
-double At(const double *data, const int *dims, const int *index, size_t n);
-double *Slice(const double *src, const int *dims, const Range *index, size_t n);
-double *Patch(const double *bas, const int *dims, const double *src, const Range *index, size_t n);
+double At(CudaData src, DimArr dims, DimArr index);
+double *Slice(CudaData src, DimArr dims, RangeArr index);
+double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index);
 
 /*--------------- reducers ----------------*/
 double Sum(const double *src, size_t n);

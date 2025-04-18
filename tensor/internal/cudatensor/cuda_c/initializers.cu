@@ -1,6 +1,7 @@
 #include <time.h>
 #include <curand_kernel.h>
 
+#include "types.h"
 #include "common.h"
 
 /* ----- helper functions ----- */
@@ -22,29 +23,29 @@ __device__ inline unsigned int totalThreads()
     return gridDim.x * blockDim.x;
 }
 
-__global__ void fillConst(double *data, size_t n, double value)
+__global__ void fillConst(CudaData dst, double value)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < n; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
-        data[i] = value;
+        dst.arr[i] = value;
     }
 }
 
-__global__ void fillEye(double *data, size_t n, size_t d)
+__global__ void fillEye(CudaData dst, size_t d)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < n; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
-        data[i] = i % (d + 1) == 0 ? 1. : 0.;
+        dst.arr[i] = i % (d + 1) == 0 ? 1. : 0.;
     }
 }
 
-__global__ void fillRandU(double *data, size_t n, double l, double u, unsigned long long seed)
+__global__ void fillRandU(CudaData dst, double l, double u, unsigned long long seed)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -52,14 +53,14 @@ __global__ void fillRandU(double *data, size_t n, double l, double u, unsigned l
     curandStatePhilox4_32_10_t state;
     curand_init(seed, tpos, 0, &state);
 
-    for (size_t i = tpos; i < n; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
         double randu_0_1 = curand_uniform_double(&state);
-        data[i] = l + (u - l) * randu_0_1;
+        dst.arr[i] = l + (u - l) * randu_0_1;
     }
 }
 
-__global__ void fillRandN(double *data, size_t n, double u, double s, unsigned long long seed)
+__global__ void fillRandN(CudaData dst, double u, double s, unsigned long long seed)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -67,10 +68,10 @@ __global__ void fillRandN(double *data, size_t n, double u, double s, unsigned l
     curandStatePhilox4_32_10_t state;
     curand_init(seed, tpos, 0, &state);
 
-    for (size_t i = tpos; i < n; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
         double randn_0_1 = curand_normal_double(&state);
-        data[i] = u + s * randn_0_1;
+        dst.arr[i] = u + s * randn_0_1;
     }
 }
 
@@ -82,97 +83,97 @@ extern "C"
     double *Eye(size_t n, size_t d);
     double *RandU(size_t n, double l, double u);
     double *RandN(size_t n, double u, double s);
-    double *Of(const double *input_data, size_t n);
+    double *Of(size_t n, double *input_data);
 }
 
 double *Full(size_t n, double value)
 {
-    double *data;
+    CudaData dst = (CudaData){NULL, n};
     handleCudaError(
-        cudaMalloc(&data, n * sizeof(double)));
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(n);
+    LaunchParams lps = launchParams(dst.size);
 
-    fillConst<<<lps.blockSize, lps.threadSize>>>(data, n, value);
+    fillConst<<<lps.blockSize, lps.threadSize>>>(dst, value);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    return data;
+    return dst.arr;
 }
 
 double *Eye(size_t n, size_t d)
 {
-    double *data;
+    CudaData dst = (CudaData){NULL, n};
     handleCudaError(
-        cudaMalloc(&data, n * sizeof(double)));
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(n);
+    LaunchParams lps = launchParams(dst.size);
 
-    fillEye<<<lps.blockSize, lps.threadSize>>>(data, n, d);
+    fillEye<<<lps.blockSize, lps.threadSize>>>(dst, d);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    return data;
+    return dst.arr;
 }
 
 double *RandU(size_t n, double l, double u)
 {
-    double *data;
+    CudaData dst = (CudaData){NULL, n};
     handleCudaError(
-        cudaMalloc(&data, n * sizeof(double)));
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
 
     unsigned long long seed = timeSeed();
 
-    LaunchParams lps = launchParams(n);
+    LaunchParams lps = launchParams(dst.size);
 
-    fillRandU<<<lps.blockSize, lps.threadSize>>>(data, n, l, u, seed);
+    fillRandU<<<lps.blockSize, lps.threadSize>>>(dst, l, u, seed);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    return data;
+    return dst.arr;
 }
 
 double *RandN(size_t n, double u, double s)
 {
-    double *data;
+    CudaData dst = (CudaData){NULL, n};
     handleCudaError(
-        cudaMalloc(&data, n * sizeof(double)));
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
 
     unsigned long long seed = timeSeed();
 
-    LaunchParams lps = launchParams(n);
+    LaunchParams lps = launchParams(dst.size);
 
-    fillRandN<<<lps.blockSize, lps.threadSize>>>(data, n, u, s, seed);
+    fillRandN<<<lps.blockSize, lps.threadSize>>>(dst, u, s, seed);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    return data;
+    return dst.arr;
 }
 
-double *Of(const double *input_data, size_t n)
+double *Of(size_t n, double *input_data)
 {
-    double *data;
+    double *dst;
     handleCudaError(
-        cudaMalloc(&data, n * sizeof(double)));
+        cudaMalloc(&dst, n * sizeof(double)));
 
     handleCudaError(
         cudaMemcpy(
-            data,
+            dst,
             input_data,
             n * sizeof(double),
             cudaMemcpyHostToDevice));
 
-    return data;
+    return dst;
 }

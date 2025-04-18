@@ -3,79 +3,102 @@
 
 /* ----- helper functions ----- */
 
-int elemcnt(const int *dims, size_t n)
+int elemcnt(DimArr dims)
 {
     int count = 1;
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < dims.size; i++)
     {
-        count *= dims[i];
+        count *= dims.arr[i];
     }
 
     return count;
 }
 
-int elemcnt(const Range *range, size_t n)
+int elemcnt(RangeArr ranges)
 {
     int count = 1;
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < ranges.size; i++)
     {
-        count *= range[i].to - range[i].from;
+        Range range = ranges.arr[i];
+        count *= range.to - range.from;
     }
 
     return count;
+}
+
+DimArr rcumprod(DimArr dims)
+{
+    DimArr rcp;
+
+    int prod = 1;
+    for (size_t i = 0; i < dims.size; i++)
+    {
+        size_t j = dims.size - i - 1;
+        rcp.arr[j] = prod;
+        prod *= dims.arr[j];
+    }
+
+    rcp.size = dims.size;
+
+    return rcp;
+}
+
+DimArr rcumprod(RangeArr ranges)
+{
+    DimArr rcp;
+
+    int prod = 1;
+    for (size_t i = 0; i < ranges.size; i++)
+    {
+        size_t j = ranges.size - i - 1;
+        Range range = ranges.arr[j];
+        rcp.arr[j] = prod;
+        prod *= range.to - range.from;
+    }
+
+    rcp.size = ranges.size;
+
+    return rcp;
 }
 
 /* ----- indexing functions ----- */
 
-void rcumprod(int *rcp, const int *dims, size_t n)
+__host__ __device__ int encode(DimArr index, DimArr rcp)
 {
-    int prod = 1;
-    for (size_t i = 0; i < n; i++)
+    int lnpos = 0;
+    for (size_t i = 0; i < rcp.size; i++)
     {
-        size_t j = n - i - 1;
-        rcp[j] = prod;
-        prod *= dims[j];
+        lnpos += index.arr[i] * rcp.arr[i];
     }
+
+    return lnpos;
 }
 
-void rcumprod(int *rcp, const Range *range, size_t n)
+__host__ __device__ DimArr decode(int lnpos, DimArr rcp)
 {
-    int prod = 1;
-    for (size_t i = 0; i < n; i++)
-    {
-        size_t j = n - i - 1;
-        rcp[j] = prod;
-        prod *= range[j].to - range[j].from;
-    }
-}
+    DimArr index;
 
-__host__ __device__ void encode(int *lnpos, const int *index, const int *rcp, size_t n)
-{
-    *lnpos = 0;
-    for (size_t i = 0; i < n; i++)
-    {
-        size_t j = n - i - 1;
-        *lnpos += index[j] * rcp[j];
-    }
-}
-
-__host__ __device__ void decode(int *index, int lnpos, const int *rcp, size_t n)
-{
     int rem = lnpos;
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < rcp.size; i++)
     {
-        index[i] = rem / rcp[i];
-        rem %= rcp[i];
+        int count = rcp.arr[i];
+        index.arr[i] = rem / count;
+        rem = rem % count;
     }
+
+    index.size = rcp.size;
+
+    return index;
 }
 
-__host__ __device__ bool fallsin(const int *index, const Range *range, size_t n)
+__host__ __device__ bool fallsin(DimArr index, RangeArr ranges)
 {
-    for (size_t i = 0; i < n; i++)
+    for (size_t i = 0; i < index.size; i++)
     {
-        int idx = index[i];
-        int from = range[i].from;
-        int to = range[i].to;
+        Range range = ranges.arr[i];
+        int idx = index.arr[i];
+        int from = range.from;
+        int to = range.to;
 
         if (!(from <= idx && idx < to))
         {
@@ -98,105 +121,87 @@ __device__ inline unsigned int totalThreads()
     return gridDim.x * blockDim.x;
 }
 
-__device__ int toSlicePosition(
-    int lnpos_src,
-    const int *rcp_src,
-    const int *rcp_dst,
-    const Range *range,
-    size_t n)
+__device__ int toSlicePosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, RangeArr ranges)
 {
     int lnpos_dst;
-    int *index_src = (int *)(malloc(n * sizeof(int)));
-    int *index_dst = (int *)(malloc(n * sizeof(int)));
+    DimArr index_src;
+    DimArr index_dst;
 
-    decode(index_src, lnpos_src, rcp_src, n);
+    index_src = decode(lnpos_src, rcp_src);
 
-    if (!fallsin(index_src, range, n))
+    if (!fallsin(index_src, ranges))
     {
         return -1;
     }
 
-    for (size_t i = 0; i < n; i++)
+    index_dst.size = index_src.size;
+    for (size_t i = 0; i < index_dst.size; i++)
     {
-        index_dst[i] = index_src[i] - range[i].from;
+        index_dst.arr[i] = index_src.arr[i] - ranges.arr[i].from;
     }
 
-    encode(&lnpos_dst, index_dst, rcp_dst, n);
-
-    free(index_src);
-    free(index_dst);
+    lnpos_dst = encode(index_dst, rcp_dst);
 
     return lnpos_dst;
 }
 
-__device__ int toPatchPosition(
-    int lnpos_src,
-    const int *rcp_src,
-    const int *rcp_dst,
-    const Range *range,
-    size_t n)
+__device__ int toPatchPosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, RangeArr ranges)
 {
     int lnpos_dst;
-    int *index_src = (int *)(malloc(n * sizeof(int)));
-    int *index_dst = (int *)(malloc(n * sizeof(int)));
+    DimArr index_src;
+    DimArr index_dst;
 
-    decode(index_src, lnpos_src, rcp_src, n);
+    index_src = decode(lnpos_src, rcp_src);
 
-    for (size_t i = 0; i < n; i++)
+    index_dst.size = index_src.size;
+    for (size_t i = 0; i < index_dst.size; i++)
     {
-        index_dst[i] = index_src[i] + range[i].from;
+        index_dst.arr[i] = index_src.arr[i] + ranges.arr[i].from;
     }
 
-    encode(&lnpos_dst, index_dst, rcp_dst, n);
-
-    free(index_src);
-    free(index_dst);
+    lnpos_dst = encode(index_dst, rcp_dst);
 
     return lnpos_dst;
 }
 
 __global__ void copySlice(
-    double *dst,
-    const double *src,
-    size_t n_src,
-    const int *rcp_src,
-    const int *rcp_dst,
-    const Range *range,
-    size_t n_index)
+    CudaData dst,
+    CudaData src,
+    DimArr rcp_src,
+    DimArr rcp_dst,
+    RangeArr ranges)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < n_src; i += stride)
+    for (size_t i = tpos; i < src.size; i += stride)
     {
         int lnpos_src = i;
-        int lnpos_dst = toSlicePosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
+        int lnpos_dst = toSlicePosition(lnpos_src, rcp_src, rcp_dst, ranges);
 
         if (lnpos_dst >= 0)
         {
-            dst[lnpos_dst] = src[lnpos_src];
+            dst.arr[lnpos_dst] = src.arr[lnpos_src];
         }
     }
 }
 
 __global__ void copyPatch(
-    double *dst,
-    const double *src,
-    size_t n_src,
-    const int *rcp_src,
-    const int *rcp_dst,
-    const Range *range,
-    size_t n_index)
+    CudaData dst,
+    CudaData src,
+    DimArr rcp_src,
+    DimArr rcp_dst,
+    RangeArr ranges)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < n_src; i += stride)
+    for (size_t i = tpos; i < src.size; i += stride)
     {
         int lnpos_src = i;
-        int lnpos_dst = toPatchPosition(lnpos_src, rcp_src, rcp_dst, range, n_index);
+        int lnpos_dst = toPatchPosition(lnpos_src, rcp_src, rcp_dst, ranges);
 
-        dst[lnpos_dst] = src[lnpos_src];
+        dst.arr[lnpos_dst] = src.arr[lnpos_src];
     }
 }
 
@@ -204,95 +209,73 @@ __global__ void copyPatch(
 
 extern "C"
 {
-    double At(const double *data, const int *dims, const int *index, size_t n);
-    double *Slice(const double *src, const int *dims, const Range *index, size_t n);
-    double *Patch(const double *bas, const int *dims, const double *src, const Range *index, size_t n);
+    double At(CudaData src, DimArr dims, DimArr index);
+    double *Slice(CudaData src, DimArr dims, RangeArr index);
+    double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index);
 }
 
-double At(const double *data, const int *dims, const int *index, size_t n)
+double At(CudaData src, DimArr dims, DimArr index)
 {
-    int lnpos;
-    int *rcp = (int *)(malloc(n * sizeof(int)));
-
-    rcumprod(rcp, dims, n);
-    encode(&lnpos, index, rcp, n);
-    free(rcp);
+    DimArr rcp = rcumprod(dims);
+    int lnpos = encode(index, rcp);
 
     double elem;
     handleCudaError(
         cudaMemcpy(
             &elem,
-            &data[lnpos],
+            &src.arr[lnpos],
             sizeof(double),
             cudaMemcpyDeviceToHost));
 
     return elem;
 }
 
-double *Slice(const double *src, const int *dims, const Range *index, size_t n)
+double *Slice(CudaData src, DimArr dims, RangeArr index)
 {
-    size_t n_index = n;
-    size_t n_src = elemcnt(dims, n_index);
-    size_t n_dst = elemcnt(index, n_index);
+    size_t n = elemcnt(index);
+    DimArr rcp_src = rcumprod(dims);
+    DimArr rcp_dst = rcumprod(index);
 
-    int *rcp_src = (int *)(malloc(n_index * sizeof(int)));
-    int *rcp_dst = (int *)(malloc(n_index * sizeof(int)));
-    rcumprod(rcp_src, dims, n_index);
-    rcumprod(rcp_dst, index, n_index);
-
-    double *dst;
+    CudaData dst = (CudaData){NULL, n};
     handleCudaError(
-        cudaMalloc(&dst, n_dst * sizeof(double)));
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(n_src);
+    LaunchParams lps = launchParams(src.size);
 
-    copySlice<<<lps.blockSize, lps.threadSize>>>(dst, src, n_src,
-                                                 rcp_src, rcp_dst, index, n_index);
+    copySlice<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_src, rcp_dst, index);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    free(rcp_src);
-    free(rcp_dst);
-
-    return dst;
+    return dst.arr;
 }
 
-double *Patch(const double *bas, const int *dims, const double *src, const Range *index, size_t n)
+double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index)
 {
-    size_t n_index = n;
-    size_t n_src = elemcnt(index, n_index);
-    size_t n_dst = elemcnt(dims, n_index);
+    size_t n = elemcnt(dims);
+    DimArr rcp_src = rcumprod(index);
+    DimArr rcp_dst = rcumprod(dims);
 
-    int *rcp_src = (int *)(malloc(n_index * sizeof(int)));
-    int *rcp_dst = (int *)(malloc(n_index * sizeof(int)));
-    rcumprod(rcp_src, index, n_index);
-    rcumprod(rcp_dst, dims, n_index);
-
-    double *dst;
+    CudaData dst = (CudaData){NULL, n};
     handleCudaError(
-        cudaMalloc(&dst, n_dst * sizeof(double)));
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
     handleCudaError(
         cudaMemcpy(
-            dst,
-            bas,
-            n_dst * sizeof(double),
+            dst.arr,
+            bas.arr,
+            bas.size * sizeof(double),
             cudaMemcpyDeviceToDevice));
 
-    LaunchParams lps = launchParams(n_src);
+    LaunchParams lps = launchParams(src.size);
 
-    copyPatch<<<lps.blockSize, lps.threadSize>>>(dst, src, n_src,
-                                                 rcp_src, rcp_dst, index, n_index);
+    copyPatch<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_src, rcp_dst, index);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    free(rcp_src);
-    free(rcp_dst);
-
-    return dst;
+    return dst.arr;
 }

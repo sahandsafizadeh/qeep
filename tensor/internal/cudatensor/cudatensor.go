@@ -199,65 +199,61 @@ func (t *CUDATensor) Transpose() (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) Reshape(shape []int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateInputDims(shape)
-	// if err != nil {
-	// 	err = fmt.Errorf("Reshape input shape validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateInputDims(shape)
+	if err != nil {
+		err = fmt.Errorf("Reshape input shape validation failed: %w", err)
+		return
+	}
 
-	// err = validator.ValidateReshapeSourceDimsAgainstTargetDims(t.dims, shape)
-	// if err != nil {
-	// 	err = fmt.Errorf("Reshape input shape validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReshapeSourceDimsAgainstTargetDims(t.dims, shape)
+	if err != nil {
+		err = fmt.Errorf("Reshape input shape validation failed: %w", err)
+		return
+	}
 
-	// r := t.reshape(shape)
-	// r.gctx = gradtrack.Reshape(r, t)
+	r := t.reshape(shape)
+	r.gctx = gradtrack.Reshape(r, t)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) UnSqueeze(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateUnSqueezeDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("UnSqueeze input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateUnSqueezeDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("UnSqueeze input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.unSqueeze(dim)
-	// r.gctx = gradtrack.UnSqueeze(r, t)
+	r := t.unsqueeze(dim)
+	r.gctx = gradtrack.UnSqueeze(r, t)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Squeeze(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateSqueezeDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Squeeze input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateSqueezeDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("Squeeze input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.squeeze(dim)
-	// r.gctx = gradtrack.Squeeze(r, t)
+	r := t.squeeze(dim)
+	r.gctx = gradtrack.Squeeze(r, t)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Flatten(fromDim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateFlattenDimAgainstDims(fromDim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Flatten input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateFlattenDimAgainstDims(fromDim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("Flatten input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.flatten(fromDim)
-	// r.gctx = gradtrack.Flatten(r, t)
+	r := t.flatten(fromDim)
+	r.gctx = gradtrack.Flatten(r, t)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Broadcast(shape []int) (o tensor.Tensor, err error) {

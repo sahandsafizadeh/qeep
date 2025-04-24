@@ -17,6 +17,9 @@ double At(CudaData src, DimArr dims, DimArr index);
 double *Slice(CudaData src, DimArr dims, RangeArr index);
 double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index);
 
+/*------------ shape modifiers ------------*/
+double *Reshape(CudaData src);
+
 /*--------------- reducers ----------------*/
 double Sum(const double *src, size_t n);
 double Max(const double *src, size_t n);

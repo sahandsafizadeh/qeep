@@ -1,5 +1,11 @@
 package cudatensor
 
+/*
+   #cgo LDFLAGS: -L${SRCDIR} -lcudatensor
+   #include "cuda_c/cudatensor.h"
+*/
+import "C"
+
 import (
 	"fmt"
 
@@ -14,4 +20,14 @@ func assertCUDATensor(t tensor.Tensor) (ct *CUDATensor, err error) {
 	}
 
 	return ct, nil
+}
+
+func getCudaDataOf(t *CUDATensor) (cd C.CudaData) {
+	arr := (*C.double)(t.data)
+	size := (C.size_t)(t.n)
+
+	return C.CudaData{
+		arr:  arr,
+		size: size,
+	}
 }

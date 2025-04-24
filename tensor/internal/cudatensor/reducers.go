@@ -6,6 +6,8 @@ package cudatensor
 */
 import "C"
 
+import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
+
 func (t *CUDATensor) sum() (data float64) {
 	return applyReduction(t, func(src *C.double, n C.size_t) (res C.double) {
 		return C.Sum(src, n)
@@ -35,7 +37,7 @@ func (t *CUDATensor) mean() (data float64) {
 func applyReduction(t *CUDATensor, crf cudacReducerFunc) (res float64) {
 	dims := t.dims
 	data := t.data
-	n := dimsToNumElems(dims)
+	n := util.DimsToNumElems(dims)
 
 	src_c := (*C.double)(data)
 	n_c := (C.size_t)(n)

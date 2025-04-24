@@ -1,5 +1,7 @@
 package tensor
 
+const MaxDims = 8
+
 type Tensor interface {
 	/*--------------- accessors ---------------*/
 	NElems() int

@@ -6,10 +6,14 @@ package cudatensor
 */
 import "C"
 
-import "unsafe"
+import (
+	"unsafe"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+)
 
 func constTensor(dims []int, value float64) (t *CUDATensor) {
-	n := dimsToNumElems(dims)
+	n := util.DimsToNumElems(dims)
 
 	n_c := (C.size_t)(n)
 	value_c := (C.double)(value)
@@ -21,7 +25,7 @@ func constTensor(dims []int, value float64) (t *CUDATensor) {
 
 func eyeMatrix(d int) (t *CUDATensor) {
 	dims := []int{d, d}
-	n := dimsToNumElems(dims)
+	n := util.DimsToNumElems(dims)
 
 	n_c := (C.size_t)(n)
 	d_c := (C.size_t)(d)
@@ -32,7 +36,7 @@ func eyeMatrix(d int) (t *CUDATensor) {
 }
 
 func uniformRandomTensor(dims []int, l, u float64) (t *CUDATensor) {
-	n := dimsToNumElems(dims)
+	n := util.DimsToNumElems(dims)
 
 	n_c := (C.size_t)(n)
 	l_c := (C.double)(l)
@@ -44,7 +48,7 @@ func uniformRandomTensor(dims []int, l, u float64) (t *CUDATensor) {
 }
 
 func normalRandomTensor(dims []int, u, s float64) (t *CUDATensor) {
-	n := dimsToNumElems(dims)
+	n := util.DimsToNumElems(dims)
 
 	n_c := (C.size_t)(n)
 	u_c := (C.double)(u)
@@ -114,7 +118,7 @@ func tensorFromData(data any) (t *CUDATensor) {
 		panic("invalid input data type: data must have been based on float64 slices")
 	}
 
-	n := dimsToNumElems(dims)
+	n := util.DimsToNumElems(dims)
 	dataptr := unsafe.Pointer(&inputData[0])
 
 	n_c := (C.size_t)(n)

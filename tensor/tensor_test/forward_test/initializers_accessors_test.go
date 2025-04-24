@@ -100,8 +100,8 @@ func TestFullEyeAt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		for i = 0; i < 5; i++ {
-			for j = 0; j < 5; j++ {
+		for i = range 5 {
+			for j = range 5 {
 				val, err := ten.At(i, j)
 				if err != nil {
 					t.Fatal(err)
@@ -682,6 +682,8 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
+		/* --------------- */
+
 		act, err = t1.Patch(nil, t2)
 		if err != nil {
 			t.Fatal(err)
@@ -707,6 +709,84 @@ func TestZerosOnesPatch(t *testing.T) {
 				{0., 0.},
 				{0., 0.},
 				{0., 0.},
+			},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = t1.Patch([]tensor.Range{{From: 1, To: 4}}, t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.Of([][][]float64{
+			{
+				{0., 0.},
+				{0., 0.},
+				{0., 0.},
+			},
+			{
+				{1., 0.},
+				{1., 0.},
+				{0., 0.},
+			},
+			{
+				{1., 0.},
+				{1., 0.},
+				{0., 0.},
+			},
+			{
+				{1., 0.},
+				{1., 0.},
+				{0., 0.},
+			},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = t1.Patch([]tensor.Range{{From: 1, To: 4}, {From: 1, To: 3}, {From: 1, To: 2}}, t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.Of([][][]float64{
+			{
+				{0., 0.},
+				{0., 0.},
+				{0., 0.},
+			},
+			{
+				{0., 0.},
+				{0., 1.},
+				{0., 1.},
+			},
+			{
+				{0., 0.},
+				{0., 1.},
+				{0., 1.},
+			},
+			{
+				{0., 0.},
+				{0., 1.},
+				{0., 1.},
 			},
 		}, conf)
 		if err != nil {

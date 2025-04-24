@@ -49,13 +49,8 @@ func (t *CPUTensor) copiedSliceOf(index []tensor.Range) (o *CPUTensor) {
 		*dst = dstRows
 	}
 
-	dims := make([]int, len(index))
-	for i, idx := range index {
-		dims[i] = idx.To - idx.From
-	}
-
 	o = new(CPUTensor)
-	o.dims = dims
+	o.dims = util.IndexToDims(index)
 	copyData(index, &t.data, &o.data)
 
 	return o

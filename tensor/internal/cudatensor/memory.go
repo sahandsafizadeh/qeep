@@ -9,10 +9,12 @@ import "C"
 import (
 	"runtime"
 	"unsafe"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 func newCUDATensor(dims []int, data *C.double) (t *CUDATensor) {
-	tn := dimsToNumElems(dims)
+	tn := util.DimsToNumElems(dims)
 	tdims := make([]int, len(dims))
 	tdata := unsafe.Pointer(data)
 	copy(tdims, dims)
@@ -23,7 +25,7 @@ func newCUDATensor(dims []int, data *C.double) (t *CUDATensor) {
 		data: tdata,
 	}
 
-	runtime.AddCleanup(&t, freeCUDATensorData, data)
+	runtime.AddCleanup(t, freeCUDATensorData, data)
 	if enforceCleanup() {
 		runtime.GC()
 	}

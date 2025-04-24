@@ -11,6 +11,15 @@ func DimsToNumElems(dims []int) (elems int) {
 	return elems
 }
 
+func IndexToDims(index []tensor.Range) (dims []int) {
+	dims = make([]int, len(index))
+	for i, idx := range index {
+		dims[i] = idx.To - idx.From
+	}
+
+	return dims
+}
+
 func CompleteIndex(index []tensor.Range, dims []int) (cidx []tensor.Range) {
 	cidx = make([]tensor.Range, len(dims))
 	for i := range cidx {

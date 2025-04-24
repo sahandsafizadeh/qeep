@@ -1,5 +1,9 @@
 package cudatensor
 
+/*
+   #cgo LDFLAGS: -L${SRCDIR} -lcudatensor
+   #include "cuda_c/cudatensor.h"
+*/
 import "C"
 
 import (
@@ -15,7 +19,7 @@ type CUDATensor struct {
 	gctx *gradtrack.GradContext
 }
 
-type cudacUnaryFunc func(*C.double, C.size_t) *C.double
-type cudacBinaryFunc func(*C.double, *C.double, C.size_t) *C.double
-type cudacHalfBinaryFunc func(*C.double, C.size_t, C.double) *C.double
+type cudacUnaryFunc func(C.CudaData) *C.double
+type cudacBinaryFunc func(C.CudaData, C.CudaData) *C.double
+type cudacHalfBinaryFunc func(C.CudaData, C.double) *C.double
 type cudacReducerFunc func(*C.double, C.size_t) C.double

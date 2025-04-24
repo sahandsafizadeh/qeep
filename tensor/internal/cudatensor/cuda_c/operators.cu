@@ -1,5 +1,6 @@
 #include <math.h>
 
+#include "types.h"
 #include "common.h"
 
 /* ----- device functions ----- */
@@ -32,7 +33,7 @@ enum OperationType
 
 const double DOUBLE_EQUALITY_THRESHOLD = 1e-240;
 
-__device__ double halfBinaryOp(double x, double a, OperationType opt)
+__device__ inline double halfBinaryOp(double x, double a, OperationType opt)
 {
     switch (opt)
     {
@@ -45,7 +46,7 @@ __device__ double halfBinaryOp(double x, double a, OperationType opt)
     return NAN;
 }
 
-__device__ double unaryOp(double x, OperationType opt)
+__device__ inline double unaryOp(double x, OperationType opt)
 {
     switch (opt)
     {
@@ -70,7 +71,7 @@ __device__ double unaryOp(double x, OperationType opt)
     return NAN;
 }
 
-__device__ double binaryOp(double a, double b, OperationType opt)
+__device__ inline double binaryOp(double a, double b, OperationType opt)
 {
     switch (opt)
     {
@@ -113,243 +114,229 @@ __device__ inline unsigned int totalThreads()
     return gridDim.x * blockDim.x;
 }
 
-__global__ void applyHalfBinaryFuncElemWise(
-    double *dst,
-    const double *src1,
-    size_t n,
-    double srcc,
-    OperationType opt)
+__global__ void applyHalfBinaryFuncElemWise(CudaData dst, CudaData src1, double srcc, OperationType opt)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < n; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
-        dst[i] = halfBinaryOp(src1[i], srcc, opt);
+        dst.arr[i] = halfBinaryOp(src1.arr[i], srcc, opt);
     }
 }
 
-__global__ void applyUnaryFuncElemWise(
-    double *dst,
-    const double *src,
-    size_t n,
-    OperationType opt)
+__global__ void applyUnaryFuncElemWise(CudaData dst, CudaData src, OperationType opt)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < n; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
-        dst[i] = unaryOp(src[i], opt);
+        dst.arr[i] = unaryOp(src.arr[i], opt);
     }
 }
 
-__global__ void applyBinaryFuncElemWise(
-    double *dst,
-    const double *src1,
-    const double *src2,
-    size_t n,
-    OperationType opt)
+__global__ void applyBinaryFuncElemWise(CudaData dst, CudaData src1, CudaData src2, OperationType opt)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < n; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
-        dst[i] = binaryOp(src1[i], src2[i], opt);
+        dst.arr[i] = binaryOp(src1.arr[i], src2.arr[i], opt);
     }
 }
 
 /* ----- API helper functions ----- */
 
-double *runHalfBinaryOp(const double *x, size_t n, double a, OperationType opt)
+double *runHalfBinaryOp(CudaData x, double a, OperationType opt)
 {
-    double *y;
+    CudaData y = (CudaData){NULL, x.size};
     handleCudaError(
-        cudaMalloc(&y, n * sizeof(double)));
+        cudaMalloc(&y.arr, y.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(n);
+    LaunchParams lps = launchParams(y.size);
 
-    applyHalfBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, n, a, opt);
+    applyHalfBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, a, opt);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    return y;
+    return y.arr;
 }
 
-double *runUnaryOp(const double *x, size_t n, OperationType opt)
+double *runUnaryOp(CudaData x, OperationType opt)
 {
-    double *y;
+    CudaData y = (CudaData){NULL, x.size};
     handleCudaError(
-        cudaMalloc(&y, n * sizeof(double)));
+        cudaMalloc(&y.arr, y.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(n);
+    LaunchParams lps = launchParams(y.size);
 
-    applyUnaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, n, opt);
+    applyUnaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, opt);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    return y;
+    return y.arr;
 }
 
-double *runBinaryOp(const double *a, const double *b, size_t n, OperationType opt)
+double *runBinaryOp(CudaData a, CudaData b, OperationType opt)
 {
-    double *c;
+    CudaData c = (CudaData){NULL, a.size};
     handleCudaError(
-        cudaMalloc(&c, n * sizeof(double)));
+        cudaMalloc(&c.arr, c.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(n);
+    LaunchParams lps = launchParams(c.size);
 
-    applyBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(c, a, b, n, opt);
+    applyBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(c, a, b, opt);
 
     handleCudaError(
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
 
-    return c;
+    return c.arr;
 }
 
 /* ----- API functions ----- */
 
 extern "C"
 {
-    double *Scale(const double *x, size_t n, double a);
-    double *Pow(const double *x, size_t n, double a);
-    double *Exp(const double *x, size_t n);
-    double *Log(const double *x, size_t n);
-    double *Sin(const double *x, size_t n);
-    double *Cos(const double *x, size_t n);
-    double *Tan(const double *x, size_t n);
-    double *Sinh(const double *x, size_t n);
-    double *Cosh(const double *x, size_t n);
-    double *Tanh(const double *x, size_t n);
-    double *Eq(const double *a, const double *b, size_t n);
-    double *Ne(const double *a, const double *b, size_t n);
-    double *Gt(const double *a, const double *b, size_t n);
-    double *Ge(const double *a, const double *b, size_t n);
-    double *Lt(const double *a, const double *b, size_t n);
-    double *Le(const double *a, const double *b, size_t n);
-    double *ElMax(const double *a, const double *b, size_t n);
-    double *ElMin(const double *a, const double *b, size_t n);
-    double *Add(const double *a, const double *b, size_t n);
-    double *Sub(const double *a, const double *b, size_t n);
-    double *Mul(const double *a, const double *b, size_t n);
-    double *Div(const double *a, const double *b, size_t n);
+    double *Scale(CudaData x, double a);
+    double *Pow(CudaData x, double a);
+    double *Exp(CudaData x);
+    double *Log(CudaData x);
+    double *Sin(CudaData x);
+    double *Cos(CudaData x);
+    double *Tan(CudaData x);
+    double *Sinh(CudaData x);
+    double *Cosh(CudaData x);
+    double *Tanh(CudaData x);
+    double *Eq(CudaData a, CudaData b);
+    double *Ne(CudaData a, CudaData b);
+    double *Gt(CudaData a, CudaData b);
+    double *Ge(CudaData a, CudaData b);
+    double *Lt(CudaData a, CudaData b);
+    double *Le(CudaData a, CudaData b);
+    double *ElMax(CudaData a, CudaData b);
+    double *ElMin(CudaData a, CudaData b);
+    double *Add(CudaData a, CudaData b);
+    double *Sub(CudaData a, CudaData b);
+    double *Mul(CudaData a, CudaData b);
+    double *Div(CudaData a, CudaData b);
 }
 
-double *Scale(const double *x, size_t n, double a)
+double *Scale(CudaData x, double a)
 {
-    return runHalfBinaryOp(x, n, a, OP_SCALE);
+    return runHalfBinaryOp(x, a, OP_SCALE);
 }
 
-double *Pow(const double *x, size_t n, double a)
+double *Pow(CudaData x, double a)
 {
-    return runHalfBinaryOp(x, n, a, OP_POW);
+    return runHalfBinaryOp(x, a, OP_POW);
 }
 
-double *Exp(const double *x, size_t n)
+double *Exp(CudaData x)
 {
-    return runUnaryOp(x, n, OP_EXP);
+    return runUnaryOp(x, OP_EXP);
 }
 
-double *Log(const double *x, size_t n)
+double *Log(CudaData x)
 {
-    return runUnaryOp(x, n, OP_LOG);
+    return runUnaryOp(x, OP_LOG);
 }
 
-double *Sin(const double *x, size_t n)
+double *Sin(CudaData x)
 {
-    return runUnaryOp(x, n, OP_SIN);
+    return runUnaryOp(x, OP_SIN);
 }
 
-double *Cos(const double *x, size_t n)
+double *Cos(CudaData x)
 {
-    return runUnaryOp(x, n, OP_COS);
+    return runUnaryOp(x, OP_COS);
 }
 
-double *Tan(const double *x, size_t n)
+double *Tan(CudaData x)
 {
-    return runUnaryOp(x, n, OP_TAN);
+    return runUnaryOp(x, OP_TAN);
 }
 
-double *Sinh(const double *x, size_t n)
+double *Sinh(CudaData x)
 {
-    return runUnaryOp(x, n, OP_SINH);
+    return runUnaryOp(x, OP_SINH);
 }
 
-double *Cosh(const double *x, size_t n)
+double *Cosh(CudaData x)
 {
-    return runUnaryOp(x, n, OP_COSH);
+    return runUnaryOp(x, OP_COSH);
 }
 
-double *Tanh(const double *x, size_t n)
+double *Tanh(CudaData x)
 {
-    return runUnaryOp(x, n, OP_TANH);
+    return runUnaryOp(x, OP_TANH);
 }
 
-double *Eq(const double *a, const double *b, size_t n)
+double *Eq(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_EQ);
+    return runBinaryOp(a, b, OP_EQ);
 }
 
-double *Ne(const double *a, const double *b, size_t n)
+double *Ne(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_NE);
+    return runBinaryOp(a, b, OP_NE);
 }
 
-double *Gt(const double *a, const double *b, size_t n)
+double *Gt(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_GT);
+    return runBinaryOp(a, b, OP_GT);
 }
 
-double *Ge(const double *a, const double *b, size_t n)
+double *Ge(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_GE);
+    return runBinaryOp(a, b, OP_GE);
 }
 
-double *Lt(const double *a, const double *b, size_t n)
+double *Lt(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_LT);
+    return runBinaryOp(a, b, OP_LT);
 }
 
-double *Le(const double *a, const double *b, size_t n)
+double *Le(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_LE);
+    return runBinaryOp(a, b, OP_LE);
 }
 
-double *ElMax(const double *a, const double *b, size_t n)
+double *ElMax(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_ELMAX);
+    return runBinaryOp(a, b, OP_ELMAX);
 }
 
-double *ElMin(const double *a, const double *b, size_t n)
+double *ElMin(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_ELMIN);
+    return runBinaryOp(a, b, OP_ELMIN);
 }
 
-double *Add(const double *a, const double *b, size_t n)
+double *Add(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_ADD);
+    return runBinaryOp(a, b, OP_ADD);
 }
 
-double *Sub(const double *a, const double *b, size_t n)
+double *Sub(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_SUB);
+    return runBinaryOp(a, b, OP_SUB);
 }
 
-double *Mul(const double *a, const double *b, size_t n)
+double *Mul(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_MUL);
+    return runBinaryOp(a, b, OP_MUL);
 }
 
-double *Div(const double *a, const double *b, size_t n)
+double *Div(CudaData a, CudaData b)
 {
-    return runBinaryOp(a, b, n, OP_DIV);
+    return runBinaryOp(a, b, OP_DIV);
 }

@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 func (t *CPUTensor) sum() (data float64) {
@@ -125,7 +126,7 @@ func (t *CPUTensor) reduceByAssociativeFunc(af reducerFunc, uf reducerUnwrapFunc
 }
 
 func (t *CPUTensor) reduceDimUsingTensorFunc(dim int, rtf reducerTensorFunc) (o *CPUTensor) {
-	dims := squeezeDims(dim, t.dims)
+	dims := util.SqueezeDims(dim, t.dims)
 	elemGen := t.linearElemGeneratorWithReducedDim(dim, rtf)
 
 	o = new(CPUTensor)

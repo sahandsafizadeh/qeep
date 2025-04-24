@@ -35,7 +35,7 @@ func (t *CPUTensor) broadcast(shape []int) (o *CPUTensor) {
 	return o
 }
 
-func (t *CPUTensor) unSqueeze(dim int) (o *CPUTensor) {
+func (t *CPUTensor) unsqueeze(dim int) (o *CPUTensor) {
 	return t.reshape(unsqueezeDims(dim, t.dims))
 }
 

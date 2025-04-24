@@ -224,7 +224,7 @@ func (t *CPUTensor) UnSqueeze(dim int) (o tensor.Tensor, err error) {
 		return
 	}
 
-	r := t.unSqueeze(dim)
+	r := t.unsqueeze(dim)
 	r.gctx = gradtrack.UnSqueeze(r, t)
 
 	return r, nil

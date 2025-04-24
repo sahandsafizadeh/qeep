@@ -1,6 +1,10 @@
 package validator
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+)
 
 func ValidateTransposeDims(dims []int) (err error) {
 	if len(dims) < 2 {
@@ -12,8 +16,8 @@ func ValidateTransposeDims(dims []int) (err error) {
 }
 
 func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err error) {
-	srcElems := dimsToNumElems(srcDims)
-	dstElems := dimsToNumElems(dstDims)
+	srcElems := util.DimsToNumElems(srcDims)
+	dstElems := util.DimsToNumElems(dstDims)
 
 	if dstElems != srcElems {
 		err = fmt.Errorf("expected number of elements in source and target tensors to match: (%d) != (%d)", srcElems, dstElems)
@@ -75,15 +79,4 @@ func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err e
 	}
 
 	return nil
-}
-
-/* ----- helpers ----- */
-
-func dimsToNumElems(dims []int) (elems int) {
-	elems = 1
-	for _, dim := range dims {
-		elems *= dim
-	}
-
-	return elems
 }

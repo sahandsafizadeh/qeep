@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "common.cuh"
+#include "devcommon.cuh"
 
 /* ----- device functions ----- */
 

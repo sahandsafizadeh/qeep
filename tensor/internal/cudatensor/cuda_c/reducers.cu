@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include "common.cuh"
+#include "devcommon.cuh"
 
 /* ----- device functions ----- */
 

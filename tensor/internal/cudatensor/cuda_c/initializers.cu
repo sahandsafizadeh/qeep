@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "common.cuh"
+#include "devcommon.cuh"
 
 /* ----- helper functions ----- */
 

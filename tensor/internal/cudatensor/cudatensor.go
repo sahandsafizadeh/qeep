@@ -185,17 +185,16 @@ func (t *CUDATensor) Patch(index []tensor.Range, u tensor.Tensor) (o tensor.Tens
 }
 
 func (t *CUDATensor) Transpose() (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateTransposeDims(t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Transpose tensor's dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateTransposeDims(t.dims)
+	if err != nil {
+		err = fmt.Errorf("Transpose tensor's dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.transpose()
-	// r.gctx = gradtrack.Transpose(r, t)
+	r := t.transpose()
+	r.gctx = gradtrack.Transpose(r, t)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Reshape(shape []int) (o tensor.Tensor, err error) {

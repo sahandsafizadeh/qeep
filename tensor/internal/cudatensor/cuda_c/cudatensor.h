@@ -18,6 +18,7 @@ double *Slice(CudaData src, DimArr dims, RangeArr index);
 double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index);
 
 /*------------ shape modifiers ------------*/
+double *Transpose(CudaData src, DimArr dims);
 double *Reshape(CudaData src);
 
 /*--------------- reducers ----------------*/

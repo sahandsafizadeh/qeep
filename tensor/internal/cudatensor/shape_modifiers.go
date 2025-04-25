@@ -8,6 +8,17 @@ import "C"
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
 
+func (t *CUDATensor) transpose() (o *CUDATensor) {
+	dims := util.TransposeDims(t.dims)
+
+	src_c := getCudaDataOf(t)
+	dims_c := getDimArrOf(t.dims)
+
+	data_c := C.Transpose(src_c, dims_c)
+
+	return newCUDATensor(dims, data_c)
+}
+
 func (t *CUDATensor) reshape(shape []int) (o *CUDATensor) {
 	src_c := getCudaDataOf(t)
 

@@ -12,9 +12,10 @@ func (t *CUDATensor) transpose() (o *CUDATensor) {
 	dims := util.TransposeDims(t.dims)
 
 	src_c := getCudaDataOf(t)
-	dims_c := getDimArrOf(t.dims)
+	dims_src_c := getDimArrOf(t.dims)
+	dims_dst_c := getDimArrOf(dims)
 
-	data_c := C.Transpose(src_c, dims_c)
+	data_c := C.Transpose(src_c, dims_src_c, dims_dst_c)
 
 	return newCUDATensor(dims, data_c)
 }

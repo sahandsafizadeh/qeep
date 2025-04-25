@@ -40,18 +40,12 @@ __global__ void copyTranspose(CudaData dst, CudaData src, DimArr rcp_dst, DimArr
 
 extern "C"
 {
-    double *Transpose(CudaData src, DimArr dims);
+    double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst);
     double *Reshape(CudaData src);
 }
 
-double *Transpose(CudaData src, DimArr dims)
+double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst)
 {
-    size_t n = dims.size;
-    DimArr dims_src = dims;
-    DimArr dims_dst = dims;
-    dims_dst.arr[n - 2] = dims_src.arr[n - 1];
-    dims_dst.arr[n - 1] = dims_src.arr[n - 2];
-
     DimArr rcp_dst = rcumprod(dims_dst);
     DimArr rcp_src = rcumprod(dims_src);
 

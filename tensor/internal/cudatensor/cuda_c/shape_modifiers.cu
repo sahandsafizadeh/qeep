@@ -53,7 +53,7 @@ double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst)
     handleCudaError(
         cudaMalloc(&dst.arr, dst.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(src.size);
+    LaunchParams lps = launchParams(dst.size);
 
     copyTranspose<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src);
 

@@ -256,23 +256,22 @@ func (t *CUDATensor) Flatten(fromDim int) (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) Broadcast(shape []int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateInputDims(shape)
-	// if err != nil {
-	// 	err = fmt.Errorf("Broadcast input shape validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateInputDims(shape)
+	if err != nil {
+		err = fmt.Errorf("Broadcast input shape validation failed: %w", err)
+		return
+	}
 
-	// err = validator.ValidateBroadcastSourceDimsAgainstTargetDims(t.dims, shape)
-	// if err != nil {
-	// 	err = fmt.Errorf("Broadcast input shape validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateBroadcastSourceDimsAgainstTargetDims(t.dims, shape)
+	if err != nil {
+		err = fmt.Errorf("Broadcast input shape validation failed: %w", err)
+		return
+	}
 
-	// r := t.broadcast(shape)
-	// r.gctx = gradtrack.Broadcast(r, t)
+	r := t.broadcast(shape)
+	r.gctx = gradtrack.Broadcast(r, t)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Sum() (value float64) {

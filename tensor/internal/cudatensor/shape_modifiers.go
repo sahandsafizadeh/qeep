@@ -20,6 +20,16 @@ func (t *CUDATensor) transpose() (o *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
+func (t *CUDATensor) broadcast(shape []int) (o *CUDATensor) {
+	src_c := getCudaDataOf(t)
+	dims_src_c := getDimArrOf(t.dims)
+	dims_dst_c := getDimArrOf(shape)
+
+	data_c := C.Broadcast(src_c, dims_src_c, dims_dst_c)
+
+	return newCUDATensor(shape, data_c)
+}
+
 func (t *CUDATensor) reshape(shape []int) (o *CUDATensor) {
 	src_c := getCudaDataOf(t)
 

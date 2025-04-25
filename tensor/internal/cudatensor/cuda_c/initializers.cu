@@ -2,7 +2,7 @@
 #include <curand_kernel.h>
 
 #include "types.h"
-#include "common.h"
+#include "common.cuh"
 
 /* ----- helper functions ----- */
 
@@ -12,16 +12,6 @@ inline unsigned long long timeSeed()
 }
 
 /* ----- device functions ----- */
-
-__device__ inline unsigned int threadPosition()
-{
-    return threadIdx.x + blockIdx.x * blockDim.x;
-}
-
-__device__ inline unsigned int totalThreads()
-{
-    return gridDim.x * blockDim.x;
-}
 
 __global__ void fillConst(CudaData dst, double value)
 {

@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "common.h"
+#include "common.cuh"
 
 /* ----- device functions ----- */
 
@@ -24,31 +24,6 @@ __host__ __device__ double reduce(double a, double b, ReduceType rdt)
     }
 
     return NAN;
-}
-
-__device__ inline unsigned int threadPosition()
-{
-    return threadIdx.x + blockIdx.x * blockDim.x;
-}
-
-__device__ inline unsigned int totalThreads()
-{
-    return gridDim.x * blockDim.x;
-}
-
-__device__ inline unsigned int threadIndex()
-{
-    return threadIdx.x;
-}
-
-__device__ inline unsigned int blockIndex()
-{
-    return blockIdx.x;
-}
-
-__device__ inline unsigned int blockSize()
-{
-    return blockDim.x;
 }
 
 __global__ void reduceByAssociativeFunc(

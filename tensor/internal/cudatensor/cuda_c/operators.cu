@@ -1,7 +1,7 @@
 #include <math.h>
 
 #include "types.h"
-#include "common.h"
+#include "common.cuh"
 
 /* ----- device functions ----- */
 
@@ -102,16 +102,6 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
     }
 
     return NAN;
-}
-
-__device__ inline unsigned int threadPosition()
-{
-    return threadIdx.x + blockIdx.x * blockDim.x;
-}
-
-__device__ inline unsigned int totalThreads()
-{
-    return gridDim.x * blockDim.x;
 }
 
 __global__ void applyHalfBinaryFuncElemWise(CudaData dst, CudaData src1, double srcc, OperationType opt)

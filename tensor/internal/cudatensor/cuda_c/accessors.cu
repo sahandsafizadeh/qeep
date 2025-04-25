@@ -1,37 +1,9 @@
 #include "types.h"
-#include "common.h"
+#include "common.cuh"
 
-/* ----- indexing functions ----- */
+/* ----- device functions ----- */
 
-__host__ __device__ int encode(DimArr index, DimArr rcp)
-{
-    int lnpos = 0;
-    for (size_t i = 0; i < rcp.size; i++)
-    {
-        lnpos += index.arr[i] * rcp.arr[i];
-    }
-
-    return lnpos;
-}
-
-__host__ __device__ DimArr decode(int lnpos, DimArr rcp)
-{
-    DimArr index;
-
-    int rem = lnpos;
-    for (size_t i = 0; i < rcp.size; i++)
-    {
-        int count = rcp.arr[i];
-        index.arr[i] = rem / count;
-        rem = rem % count;
-    }
-
-    index.size = rcp.size;
-
-    return index;
-}
-
-__host__ __device__ bool fallsin(DimArr index, RangeArr ranges)
+__device__ bool fallsin(DimArr index, RangeArr ranges)
 {
     for (size_t i = 0; i < index.size; i++)
     {
@@ -47,18 +19,6 @@ __host__ __device__ bool fallsin(DimArr index, RangeArr ranges)
     }
 
     return true;
-}
-
-/* ----- device functions ----- */
-
-__device__ inline unsigned int threadPosition()
-{
-    return threadIdx.x + blockIdx.x * blockDim.x;
-}
-
-__device__ inline unsigned int totalThreads()
-{
-    return gridDim.x * blockDim.x;
 }
 
 __device__ int toSlicePosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, RangeArr ranges)

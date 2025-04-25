@@ -68,8 +68,8 @@ __device__ int toPatchPosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, Ra
 __global__ void copySlice(
     CudaData dst,
     CudaData src,
-    DimArr rcp_src,
     DimArr rcp_dst,
+    DimArr rcp_src,
     RangeArr ranges)
 {
     const unsigned int tpos = threadPosition();
@@ -90,8 +90,8 @@ __global__ void copySlice(
 __global__ void copyPatch(
     CudaData dst,
     CudaData src,
-    DimArr rcp_src,
     DimArr rcp_dst,
+    DimArr rcp_src,
     RangeArr ranges)
 {
     const unsigned int tpos = threadPosition();
@@ -134,8 +134,8 @@ double At(CudaData src, DimArr dims, DimArr index)
 double *Slice(CudaData src, DimArr dims, RangeArr index)
 {
     size_t n = elemcnt(index);
-    DimArr rcp_src = rcumprod(dims);
     DimArr rcp_dst = rcumprod(index);
+    DimArr rcp_src = rcumprod(dims);
 
     CudaData dst = (CudaData){NULL, n};
     handleCudaError(
@@ -143,7 +143,7 @@ double *Slice(CudaData src, DimArr dims, RangeArr index)
 
     LaunchParams lps = launchParams(src.size);
 
-    copySlice<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_src, rcp_dst, index);
+    copySlice<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, index);
 
     handleCudaError(
         cudaGetLastError());
@@ -156,8 +156,8 @@ double *Slice(CudaData src, DimArr dims, RangeArr index)
 double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index)
 {
     size_t n = elemcnt(dims);
-    DimArr rcp_src = rcumprod(index);
     DimArr rcp_dst = rcumprod(dims);
+    DimArr rcp_src = rcumprod(index);
 
     CudaData dst = (CudaData){NULL, n};
     handleCudaError(
@@ -171,7 +171,7 @@ double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index)
 
     LaunchParams lps = launchParams(src.size);
 
-    copyPatch<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_src, rcp_dst, index);
+    copyPatch<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, index);
 
     handleCudaError(
         cudaGetLastError());

@@ -1,5 +1,15 @@
 package util
 
+func TransposeDims(dims []int) (res []int) {
+	res = make([]int, len(dims))
+	copy(res, dims)
+
+	i := len(res)
+	res[i-2], res[i-1] = res[i-1], res[i-2]
+
+	return res
+}
+
 func UnSqueezeDims(dim int, dims []int) (res []int) {
 	left := dims[:dim]
 	res = make([]int, len(left))

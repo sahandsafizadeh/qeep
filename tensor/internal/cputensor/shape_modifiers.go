@@ -4,7 +4,7 @@ import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
 
 func (t *CPUTensor) transpose() (o *CPUTensor) {
 	elemGen := t.transposeElemGenerator()
-	dims := transposeDims(t.dims)
+	dims := util.TransposeDims(t.dims)
 
 	o = new(CPUTensor)
 	o.dims = dims
@@ -142,14 +142,4 @@ func (t *CPUTensor) broadcastElemGenerator(shape []int) initializerFunc {
 
 		return elem
 	}
-}
-
-func transposeDims(dims []int) (res []int) {
-	res = make([]int, len(dims))
-	copy(res, dims)
-
-	i := len(res)
-	res[i-2], res[i-1] = res[i-1], res[i-2]
-
-	return res
 }

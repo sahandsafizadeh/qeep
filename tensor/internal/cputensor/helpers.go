@@ -28,25 +28,6 @@ func assertCPUTensors(ts []tensor.Tensor) (cts []*CPUTensor, err error) {
 	return cts, nil
 }
 
-func broadcastForBinaryOp(ct1, ct2 *CPUTensor) (bct1, bct2 *CPUTensor, err error) {
-	shape := targetBroadcastDims(ct1.dims, ct2.dims)
-
-	t1, err := ct1.Broadcast(shape)
-	if err != nil {
-		return
-	}
-
-	t2, err := ct2.Broadcast(shape)
-	if err != nil {
-		return
-	}
-
-	bct1 = t1.(*CPUTensor)
-	bct2 = t2.(*CPUTensor)
-
-	return bct1, bct2, nil
-}
-
 func broadcastForMatMul(ct1, ct2 *CPUTensor) (bct1, bct2 *CPUTensor, err error) {
 	shape := targetBroadcastDims(ct1.dims, ct2.dims)
 

@@ -4,20 +4,23 @@
 
 /* ----- device functions ----- */
 
-__device__ int toTransposedPosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst)
+__device__ int toTransposedPosition(int lnpos_dst, DimArr rcp_dst, DimArr rcp_src)
 {
-    int lnpos_dst;
-    DimArr index_src;
+    int lnpos_src;
     DimArr index_dst;
+    DimArr index_src;
 
-    index_src = decode(lnpos_src, rcp_src);
-    index_dst = index_src;
+    index_dst = decode(lnpos_dst, rcp_dst);
+    index_src = index_dst;
 
-    size_t n = index_dst.size;
-    index_dst.arr[n - 2] = index_src.arr[n - 1];
-    index_dst.arr[n - 1] = index_src.arr[n - 2];
+    size_t n = index_src.size;
+    index_src.arr[n - 2] = index_dst.arr[n - 1];
+    index_src.arr[n - 1] = index_dst.arr[n - 2];
 
-    lnpos_dst = encode(index_dst, rcp_dst);
+    lnpos_src = encode(index_src, rcp_src);
+
+    return lnpos_src;
+}
 
     return lnpos_dst;
 }
@@ -27,10 +30,10 @@ __global__ void copyTranspose(CudaData dst, CudaData src, DimArr rcp_dst, DimArr
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < src.size; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
-        int lnpos_src = i;
-        int lnpos_dst = toTransposedPosition(lnpos_src, rcp_src, rcp_dst);
+        int lnpos_dst = i;
+        int lnpos_src = toTransposedPosition(lnpos_dst, rcp_dst, rcp_src);
 
         dst.arr[lnpos_dst] = src.arr[lnpos_src];
     }

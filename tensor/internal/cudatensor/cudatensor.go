@@ -726,7 +726,10 @@ func (t *CUDATensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
+	// analogos to mul + sum along last dim
+
 	return
+
 	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("Dot tensors' device validation failed: %w", err)
@@ -752,7 +755,10 @@ func (t *CUDATensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
+	// for m.n * n.p calculate a matrix m.p.n and then sum along last dim
+
 	return
+
 	// cu, err := assertCUDATensor(u)
 	// if err != nil {
 	// 	err = fmt.Errorf("MatMul tensors' device validation failed: %w", err)

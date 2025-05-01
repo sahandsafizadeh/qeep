@@ -35,7 +35,11 @@ __device__ int toBroadcastedPosition(int lnpos_dst, DimArr rcp_dst, DimArr rcp_s
     return lnpos_src;
 }
 
-__global__ void copyTranspose(CudaData dst, CudaData src, DimArr rcp_dst, DimArr rcp_src)
+__global__ void copyTranspose(
+    CudaData dst,
+    CudaData src,
+    DimArr rcp_dst,
+    DimArr rcp_src)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();

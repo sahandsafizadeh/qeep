@@ -726,32 +726,31 @@ func (t *CUDATensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
-	// analogos to mul + sum along last dim
+	_u, err := assertCUDATensor(u)
+	if err != nil {
+		err = fmt.Errorf("Dot tensors' device validation failed: %w", err)
+		return
+	}
 
+	err = validator.ValidateDotProductDims(t.dims, _u.dims)
+	if err != nil {
+		err = fmt.Errorf("Dot tensors' dimension validation failed: %w", err)
 	return
+	}
 
-	// cu, err := assertCUDATensor(u)
-	// if err != nil {
-	// 	err = fmt.Errorf("Dot tensors' device validation failed: %w", err)
-	// 	return
-	// }
+	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
+	if err != nil {
+		err = fmt.Errorf("Dot tensors' broadcasting failed: %w", err)
+		return
+	}
 
-	// err = validator.ValidateDotProductDims(t.dims, cu.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Dot tensors' dimension validation failed: %w", err)
-	// 	return
-	// }
+	_t1 := t1.(*CUDATensor)
+	_t2 := t2.(*CUDATensor)
 
-	// ct1, ct2, err := broadcastForBinaryOp(t, cu)
-	// if err != nil {
-	// 	err = fmt.Errorf("Dot tensors' broadcasting failed: %w", err)
-	// 	return
-	// }
+	r := _t1.dot(_t2)
+	r.gctx = gradtrack.Dot(r, _t1, _t2)
 
-	// r := ct1.dot(ct2)
-	// r.gctx = gradtrack.Dot(r, ct1, ct2)
-
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {

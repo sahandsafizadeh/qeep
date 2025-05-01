@@ -138,6 +138,12 @@ func (t *CUDATensor) div(u *CUDATensor) (o *CUDATensor) {
 	})
 }
 
+func (t *CUDATensor) dot(u *CUDATensor) (o *CUDATensor) {
+	o = t.mul(u)
+	n := len(o.dims)
+	return o.sumAlong(n - 1)
+}
+
 func (t *CUDATensor) equals(u *CUDATensor) (are bool) {
 	o := t.eq(u)
 	n := o.n

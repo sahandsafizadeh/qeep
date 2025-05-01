@@ -18,9 +18,9 @@ double *Slice(CudaData src, DimArr dims, RangeArr index);
 double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index);
 
 /*------------ shape modifiers ------------*/
+double *Reshape(CudaData src);
 double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst);
 double *Broadcast(CudaData src, DimArr dims_src, DimArr dims_dst);
-double *Reshape(CudaData src);
 
 /*--------------- reducers ----------------*/
 double Sum(const double *src, size_t n);

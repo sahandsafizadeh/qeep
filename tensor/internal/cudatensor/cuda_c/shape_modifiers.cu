@@ -67,9 +67,24 @@ __global__ void copyBroadcast(CudaData dst, CudaData src, DimArr rcp_dst, DimArr
 
 extern "C"
 {
+    double *Reshape(CudaData src);
     double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst);
     double *Broadcast(CudaData src, DimArr dims_src, DimArr dims_dst);
-    double *Reshape(CudaData src);
+}
+
+double *Reshape(CudaData src)
+{
+    CudaData dst = (CudaData){NULL, src.size};
+    handleCudaError(
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+    handleCudaError(
+        cudaMemcpy(
+            dst.arr,
+            src.arr,
+            src.size * sizeof(double),
+            cudaMemcpyDeviceToDevice));
+
+    return dst.arr;
 }
 
 double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst)
@@ -111,21 +126,6 @@ double *Broadcast(CudaData src, DimArr dims_src, DimArr dims_dst)
         cudaGetLastError());
     handleCudaError(
         cudaDeviceSynchronize());
-
-    return dst.arr;
-}
-
-double *Reshape(CudaData src)
-{
-    CudaData dst = (CudaData){NULL, src.size};
-    handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
-    handleCudaError(
-        cudaMemcpy(
-            dst.arr,
-            src.arr,
-            src.size * sizeof(double),
-            cudaMemcpyDeviceToDevice));
 
     return dst.arr;
 }

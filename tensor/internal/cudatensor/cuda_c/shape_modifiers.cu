@@ -22,7 +22,17 @@ __device__ int toTransposedPosition(int lnpos_dst, DimArr rcp_dst, DimArr rcp_sr
     return lnpos_src;
 }
 
-    return lnpos_dst;
+__device__ int toBroadcastedPosition(int lnpos_dst, DimArr rcp_dst, DimArr rcp_src)
+{
+    int lnpos_src;
+    DimArr index_dst;
+    DimArr index_src;
+
+    index_dst = decode(lnpos_dst, rcp_dst);
+    index_src = index_dst;
+    lnpos_src = encode(index_src, rcp_src);
+
+    return lnpos_src;
 }
 
 __global__ void copyTranspose(CudaData dst, CudaData src, DimArr rcp_dst, DimArr rcp_src)
@@ -44,10 +54,10 @@ __global__ void copyBroadcast(CudaData dst, CudaData src, DimArr rcp_dst, DimArr
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < src.size; i += stride)
+    for (size_t i = tpos; i < dst.size; i += stride)
     {
-        int lnpos_src = i;
-        int lnpos_dst = toTransposedPosition(lnpos_src, rcp_src, rcp_dst);
+        int lnpos_dst = i;
+        int lnpos_src = toBroadcastedPosition(lnpos_dst, rcp_dst, rcp_src);
 
         dst.arr[lnpos_dst] = src.arr[lnpos_src];
     }

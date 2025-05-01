@@ -22,14 +22,24 @@ __device__ int toTransposedPosition(int lnpos_dst, DimArr rcp_dst, DimArr rcp_sr
     return lnpos_src;
 }
 
-__device__ int toBroadcastedPosition(int lnpos_dst, DimArr rcp_dst, DimArr rcp_src)
+__device__ int toBroadcastedPosition(int lnpos_dst, DimArr dims_dst, DimArr dims_src, DimArr rcp_dst, DimArr rcp_src)
 {
     int lnpos_src;
     DimArr index_dst;
     DimArr index_src;
 
     index_dst = decode(lnpos_dst, rcp_dst);
-    index_src = index_dst;
+
+    int i = dims_src.size - 1;
+    int j = dims_dst.size - 1;
+    while (i >= 0)
+    {
+        index_src.arr[i] = dims_src.arr[i] == dims_dst.arr[j] ? index_dst.arr[j] : 0;
+        i--;
+        j--;
+    }
+
+    index_src.size = dims_src.size;
     lnpos_src = encode(index_src, rcp_src);
 
     return lnpos_src;
@@ -53,7 +63,13 @@ __global__ void copyTranspose(
     }
 }
 
-__global__ void copyBroadcast(CudaData dst, CudaData src, DimArr rcp_dst, DimArr rcp_src)
+__global__ void copyBroadcast(
+    CudaData dst,
+    CudaData src,
+    DimArr dims_dst,
+    DimArr dims_src,
+    DimArr rcp_dst,
+    DimArr rcp_src)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -61,7 +77,7 @@ __global__ void copyBroadcast(CudaData dst, CudaData src, DimArr rcp_dst, DimArr
     for (size_t i = tpos; i < dst.size; i += stride)
     {
         int lnpos_dst = i;
-        int lnpos_src = toBroadcastedPosition(lnpos_dst, rcp_dst, rcp_src);
+        int lnpos_src = toBroadcastedPosition(lnpos_dst, dims_dst, dims_src, rcp_dst, rcp_src);
 
         dst.arr[lnpos_dst] = src.arr[lnpos_src];
     }
@@ -124,7 +140,7 @@ double *Broadcast(CudaData src, DimArr dims_src, DimArr dims_dst)
 
     LaunchParams lps = launchParams(dst.size);
 
-    copyBroadcast<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src);
+    copyBroadcast<<<lps.blockSize, lps.threadSize>>>(dst, src, dims_dst, dims_src, rcp_dst, rcp_src);
 
     handleCudaError(
         cudaGetLastError());

@@ -23,17 +23,17 @@ double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst);
 double *Broadcast(CudaData src, DimArr dims_src, DimArr dims_dst);
 
 /*--------------- reducers ----------------*/
+double Sum(const double *src, size_t n);
+double Max(const double *src, size_t n);
+double Min(const double *src, size_t n);
+double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 double *MaxAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 double *MinAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 double *AvgAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 double *VarAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double Sum(const double *src, size_t n);
-double Max(const double *src, size_t n);
-double Min(const double *src, size_t n);
 
 /*--------------- operators ---------------*/
 double *Scale(CudaData x, double a);

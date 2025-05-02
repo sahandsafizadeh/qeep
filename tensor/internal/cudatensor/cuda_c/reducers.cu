@@ -42,6 +42,86 @@ __device__ DimArr unsqueezeidx(DimArr index_dst, int dim)
     return index_src;
 }
 
+__global__ void reduceDimByArgmax(
+    CudaData dst,
+    CudaData src,
+    DimArr rcp_dst,
+    DimArr rcp_src,
+    DimArr dims,
+    int dim)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < dst.size; i += stride)
+    {
+        int lnpos_dst;
+        int lnpos_src;
+        DimArr index_dst;
+        DimArr index_src;
+
+        lnpos_dst = i;
+        index_dst = decode(lnpos_dst, rcp_dst);
+        index_src = unsqueezeidx(index_dst, dim);
+
+        double tempidx = -1;
+        double tempval = -INFINITY;
+        double diml = dims.arr[dim];
+        for (size_t i = 0; i < diml; i++)
+        {
+            index_src.arr[dim] = i;
+            lnpos_src = encode(index_src, rcp_src);
+            if (src.arr[lnpos_src] > tempval)
+            {
+                tempidx = i;
+                tempval = src.arr[lnpos_src];
+            }
+        }
+
+        dst.arr[lnpos_dst] = tempidx;
+    }
+}
+
+__global__ void reduceDimByArgmin(
+    CudaData dst,
+    CudaData src,
+    DimArr rcp_dst,
+    DimArr rcp_src,
+    DimArr dims,
+    int dim)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < dst.size; i += stride)
+    {
+        int lnpos_dst;
+        int lnpos_src;
+        DimArr index_dst;
+        DimArr index_src;
+
+        lnpos_dst = i;
+        index_dst = decode(lnpos_dst, rcp_dst);
+        index_src = unsqueezeidx(index_dst, dim);
+
+        double tempidx = -1;
+        double tempval = INFINITY;
+        double diml = dims.arr[dim];
+        for (size_t i = 0; i < diml; i++)
+        {
+            index_src.arr[dim] = i;
+            lnpos_src = encode(index_src, rcp_src);
+            if (src.arr[lnpos_src] < tempval)
+            {
+                tempidx = i;
+                tempval = src.arr[lnpos_src];
+            }
+        }
+
+        dst.arr[lnpos_dst] = tempidx;
+    }
+}
+
 __global__ void reduceDimBySum(
     CudaData dst,
     CudaData src,
@@ -292,86 +372,6 @@ __global__ void reduceDimByStd(
     }
 }
 
-__global__ void reduceDimByArgmax(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    for (size_t i = tpos; i < dst.size; i += stride)
-    {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double tempidx = -1;
-        double tempval = -INFINITY;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            if (src.arr[lnpos_src] > tempval)
-            {
-                tempidx = i;
-                tempval = src.arr[lnpos_src];
-            }
-        }
-
-        dst.arr[lnpos_dst] = tempidx;
-    }
-}
-
-__global__ void reduceDimByArgmin(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    for (size_t i = tpos; i < dst.size; i += stride)
-    {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double tempidx = -1;
-        double tempval = INFINITY;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            if (src.arr[lnpos_src] < tempval)
-            {
-                tempidx = i;
-                tempval = src.arr[lnpos_src];
-            }
-        }
-
-        dst.arr[lnpos_dst] = tempidx;
-    }
-}
-
 __host__ __device__ inline double reduce(double a, double b, ReduceType rdt)
 {
     switch (rdt)
@@ -532,17 +532,42 @@ double *runDimReducer(
 
 extern "C"
 {
+    double Sum(const double *src, size_t n);
+    double Max(const double *src, size_t n);
+    double Min(const double *src, size_t n);
+    double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double *MaxAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double *MinAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double *AvgAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double *VarAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double Sum(const double *src, size_t n);
-    double Max(const double *src, size_t n);
-    double Min(const double *src, size_t n);
+}
+
+double Sum(const double *src, size_t n)
+{
+    return runReduceOp(src, n, RED_SUM, 0.);
+}
+
+double Max(const double *src, size_t n)
+{
+    return runReduceOp(src, n, RED_MAX, -INFINITY);
+}
+
+double Min(const double *src, size_t n)
+{
+    return runReduceOp(src, n, RED_MIN, INFINITY);
+}
+
+double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMAX);
+}
+
+double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMIN);
 }
 
 double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
@@ -573,29 +598,4 @@ double *VarAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
 double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_STD);
-}
-
-double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
-{
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMAX);
-}
-
-double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
-{
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMIN);
-}
-
-double Sum(const double *src, size_t n)
-{
-    return runReduceOp(src, n, RED_SUM, 0.);
-}
-
-double Max(const double *src, size_t n)
-{
-    return runReduceOp(src, n, RED_MAX, -INFINITY);
-}
-
-double Min(const double *src, size_t n)
-{
-    return runReduceOp(src, n, RED_MIN, INFINITY);
 }

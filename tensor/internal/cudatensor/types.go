@@ -23,3 +23,4 @@ type cudacUnaryFunc func(C.CudaData) *C.double
 type cudacBinaryFunc func(C.CudaData, C.CudaData) *C.double
 type cudacHalfBinaryFunc func(C.CudaData, C.double) *C.double
 type cudacReducerFunc func(*C.double, C.size_t) C.double
+type cudacDimReducerFunc func(C.CudaData, C.int, C.DimArr, C.DimArr) *C.double

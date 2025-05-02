@@ -306,123 +306,114 @@ func (t *CUDATensor) Mean() (value float64) {
 }
 
 func (t *CUDATensor) Argmax(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Argmax input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("Argmax input dimension validation failed: %w", err)
+		return
+	}
 
-	// return t.argmax(dim), nil
+	return t.argmax(dim), nil
 }
 
 func (t *CUDATensor) Argmin(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("Argmin input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("Argmin input dimension validation failed: %w", err)
+		return
+	}
 
-	// return t.argmin(dim), nil
+	return t.argmin(dim), nil
 }
 
 func (t *CUDATensor) SumAlong(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("SumAlong input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("SumAlong input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.sumAlong(dim)
-	// r.gctx = gradtrack.SumAlong(r, t, dim)
+	r := t.sumAlong(dim)
+	r.gctx = gradtrack.SumAlong(r, t, dim)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) MaxAlong(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("MaxAlong input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("MaxAlong input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.maxAlong(dim)
-	// r.gctx = gradtrack.MaxAlong(r, t, dim)
+	r := t.maxAlong(dim)
+	r.gctx = gradtrack.MaxAlong(r, t, dim)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) MinAlong(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("MinAlong input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("MinAlong input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.minAlong(dim)
-	// r.gctx = gradtrack.MinAlong(r, t, dim)
+	r := t.minAlong(dim)
+	r.gctx = gradtrack.MinAlong(r, t, dim)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) AvgAlong(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("AvgAlong input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("AvgAlong input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.avgAlong(dim)
-	// r.gctx = gradtrack.AvgAlong(r, t, dim)
+	r := t.avgAlong(dim)
+	r.gctx = gradtrack.AvgAlong(r, t, dim)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) VarAlong(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("VarAlong input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("VarAlong input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.varAlong(dim)
-	// r.gctx = gradtrack.VarAlong(r, t, dim)
+	r := t.varAlong(dim)
+	r.gctx = gradtrack.VarAlong(r, t, dim)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) StdAlong(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("StdAlong input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("StdAlong input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.stdAlong(dim)
-	// r.gctx = gradtrack.StdAlong(r, t, dim)
+	r := t.stdAlong(dim)
+	r.gctx = gradtrack.StdAlong(r, t, dim)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) MeanAlong(dim int) (o tensor.Tensor, err error) {
-	return
-	// err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("MeanAlong input dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateReducedDimAgainstDims(dim, t.dims)
+	if err != nil {
+		err = fmt.Errorf("MeanAlong input dimension validation failed: %w", err)
+		return
+	}
 
-	// r := t.meanAlong(dim)
-	// r.gctx = gradtrack.MeanAlong(r, t, dim)
+	r := t.meanAlong(dim)
+	r.gctx = gradtrack.MeanAlong(r, t, dim)
 
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Scale(u float64) (o tensor.Tensor) {
@@ -735,7 +726,7 @@ func (t *CUDATensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 	err = validator.ValidateDotProductDims(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Dot tensors' dimension validation failed: %w", err)
-	return
+		return
 	}
 
 	t1, t2, err := util.BroadcastForBinaryOps(t, _u)

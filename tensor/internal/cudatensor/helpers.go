@@ -31,3 +31,34 @@ func getCudaDataOf(t *CUDATensor) (cd C.CudaData) {
 		size: size,
 	}
 }
+
+func getDimArrOf(dims []int) (da C.DimArr) {
+	var arr [tensor.MaxDims]C.int
+	for i, d := range dims {
+		arr[i] = (C.int)(d)
+	}
+
+	size := (C.size_t)(len(dims))
+
+	return C.DimArr{
+		arr:  arr,
+		size: size,
+	}
+}
+
+func getRangeArrOf(index []tensor.Range) (ra C.RangeArr) {
+	var arr [tensor.MaxDims]C.Range
+	for i, r := range index {
+		arr[i] = C.Range{
+			from: (C.int)(r.From),
+			to:   (C.int)(r.To),
+		}
+	}
+
+	size := (C.size_t)(len(index))
+
+	return C.RangeArr{
+		arr:  arr,
+		size: size,
+	}
+}

@@ -6,28 +6,42 @@ package cudatensor
 */
 import "C"
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
+import (
+	"math"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+)
 
 func (t *CUDATensor) sum() (data float64) {
-	return applyReduction(t, func(src *C.double, n C.size_t) (res C.double) {
-		return C.Sum(src, n)
+	return applyReduction(t, func(src C.CudaData) (res C.double) {
+		return C.Sum(src)
 	})
 }
 
 func (t *CUDATensor) max() (data float64) {
-	return applyReduction(t, func(src *C.double, n C.size_t) (res C.double) {
-		return C.Max(src, n)
+	return applyReduction(t, func(src C.CudaData) (res C.double) {
+		return C.Max(src)
 	})
 }
 
 func (t *CUDATensor) min() (data float64) {
-	return applyReduction(t, func(src *C.double, n C.size_t) (res C.double) {
-		return C.Min(src, n)
+	return applyReduction(t, func(src C.CudaData) (res C.double) {
+		return C.Min(src)
+	})
+}
+
+func (t *CUDATensor) _var() (data float64) {
+	return applyReduction(t, func(src C.CudaData) (res C.double) {
+		return C.Var(src)
 	})
 }
 
 func (t *CUDATensor) avg() (data float64) {
 	return t.sum() / float64(t.n)
+}
+
+func (t *CUDATensor) std() (data float64) {
+	return math.Sqrt(t._var())
 }
 
 func (t *CUDATensor) mean() (data float64) {
@@ -98,14 +112,9 @@ func (t *CUDATensor) meanAlong(dim int) (o *CUDATensor) {
 }
 
 func applyReduction(t *CUDATensor, crf cudacReducerFunc) (res float64) {
-	dims := t.dims
-	data := t.data
-	n := util.DimsToNumElems(dims)
+	src_c := getCudaDataOf(t)
 
-	src_c := (*C.double)(data)
-	n_c := (C.size_t)(n)
-
-	data_c := crf(src_c, n_c)
+	data_c := crf(src_c)
 
 	return float64(data_c)
 }

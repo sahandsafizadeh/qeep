@@ -292,13 +292,11 @@ func (t *CUDATensor) Avg() (value float64) {
 }
 
 func (t *CUDATensor) Var() (value float64) {
-	return
-	// return t._var()
+	return t._var()
 }
 
 func (t *CUDATensor) Std() (value float64) {
-	return
-	// return t.std()
+	return t.std()
 }
 
 func (t *CUDATensor) Mean() (value float64) {

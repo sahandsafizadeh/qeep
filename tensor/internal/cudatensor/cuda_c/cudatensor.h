@@ -23,9 +23,10 @@ double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst);
 double *Broadcast(CudaData src, DimArr dims_src, DimArr dims_dst);
 
 /*--------------- reducers ----------------*/
-double Sum(const double *src, size_t n);
-double Max(const double *src, size_t n);
-double Min(const double *src, size_t n);
+double Sum(CudaData src);
+double Max(CudaData src);
+double Min(CudaData src);
+double Var(CudaData src);
 double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);

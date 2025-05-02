@@ -475,6 +475,59 @@ double runReduceOp(const double *src, size_t n, ReduceType rdt, double identity)
     return res;
 }
 
+double *runDimReducer(
+    CudaData src,
+    int dim,
+    DimArr dims_src,
+    DimArr dims_dst,
+    ReduceType rdt)
+{
+    size_t n = elemcnt(dims_dst);
+    DimArr rcp_dst = rcumprod(dims_dst);
+    DimArr rcp_src = rcumprod(dims_src);
+
+    CudaData dst = (CudaData){NULL, n};
+    handleCudaError(
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+
+    LaunchParams lps = launchParams(dst.size);
+
+    switch (rdt)
+    {
+    case RED_SUM:
+        reduceDimBySum<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
+        break;
+    case RED_MAX:
+        reduceDimByMax<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
+        break;
+    case RED_MIN:
+        reduceDimByMin<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
+        break;
+    case RED_AVG:
+        reduceDimByAvg<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
+        break;
+    case RED_VAR:
+        reduceDimByVar<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
+        break;
+    case RED_STD:
+        reduceDimByStd<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
+        break;
+    case RED_ARGMAX:
+        reduceDimByArgmax<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
+        break;
+    case RED_ARGMIN:
+        reduceDimByArgmin<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
+        break;
+    }
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+
+    return dst.arr;
+}
+
 /* ----- API functions ----- */
 
 extern "C"

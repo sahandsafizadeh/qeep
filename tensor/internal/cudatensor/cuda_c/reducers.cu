@@ -6,6 +6,18 @@
 
 /* ----- device functions ----- */
 
+enum ReduceType
+{
+    RED_SUM,
+    RED_MAX,
+    RED_MIN,
+    RED_AVG,
+    RED_VAR,
+    RED_STD,
+    RED_ARGMAX,
+    RED_ARGMIN,
+};
+
 __device__ DimArr unsqueezeidx(DimArr index_dst, int dim)
 {
     DimArr index_src;
@@ -28,86 +40,6 @@ __device__ DimArr unsqueezeidx(DimArr index_dst, int dim)
     }
 
     return index_src;
-}
-
-__global__ void reduceDimByArgmax(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    for (size_t i = tpos; i < dst.size; i += stride)
-    {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double tempidx = -1;
-        double tempval = -INFINITY;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            if (src.arr[lnpos_src] > tempval)
-            {
-                tempidx = i;
-                tempval = src.arr[lnpos_src];
-            }
-        }
-
-        dst.arr[lnpos_dst] = tempidx;
-    }
-}
-
-__global__ void reduceDimByArgmin(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    for (size_t i = tpos; i < dst.size; i += stride)
-    {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double tempidx = -1;
-        double tempval = INFINITY;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            if (src.arr[lnpos_src] < tempval)
-            {
-                tempidx = i;
-                tempval = src.arr[lnpos_src];
-            }
-        }
-
-        dst.arr[lnpos_dst] = tempidx;
-    }
 }
 
 __global__ void reduceDimBySum(
@@ -360,14 +292,87 @@ __global__ void reduceDimByStd(
     }
 }
 
-enum ReduceType
+__global__ void reduceDimByArgmax(
+    CudaData dst,
+    CudaData src,
+    DimArr rcp_dst,
+    DimArr rcp_src,
+    DimArr dims,
+    int dim)
 {
-    RED_SUM,
-    RED_MAX,
-    RED_MIN,
-};
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
 
-__host__ __device__ double reduce(double a, double b, ReduceType rdt)
+    for (size_t i = tpos; i < dst.size; i += stride)
+    {
+        int lnpos_dst;
+        int lnpos_src;
+        DimArr index_dst;
+        DimArr index_src;
+
+        lnpos_dst = i;
+        index_dst = decode(lnpos_dst, rcp_dst);
+        index_src = unsqueezeidx(index_dst, dim);
+
+        double tempidx = -1;
+        double tempval = -INFINITY;
+        double diml = dims.arr[dim];
+        for (size_t i = 0; i < diml; i++)
+        {
+            index_src.arr[dim] = i;
+            lnpos_src = encode(index_src, rcp_src);
+            if (src.arr[lnpos_src] > tempval)
+            {
+                tempidx = i;
+                tempval = src.arr[lnpos_src];
+            }
+        }
+
+        dst.arr[lnpos_dst] = tempidx;
+    }
+}
+
+__global__ void reduceDimByArgmin(
+    CudaData dst,
+    CudaData src,
+    DimArr rcp_dst,
+    DimArr rcp_src,
+    DimArr dims,
+    int dim)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < dst.size; i += stride)
+    {
+        int lnpos_dst;
+        int lnpos_src;
+        DimArr index_dst;
+        DimArr index_src;
+
+        lnpos_dst = i;
+        index_dst = decode(lnpos_dst, rcp_dst);
+        index_src = unsqueezeidx(index_dst, dim);
+
+        double tempidx = -1;
+        double tempval = INFINITY;
+        double diml = dims.arr[dim];
+        for (size_t i = 0; i < diml; i++)
+        {
+            index_src.arr[dim] = i;
+            lnpos_src = encode(index_src, rcp_src);
+            if (src.arr[lnpos_src] < tempval)
+            {
+                tempidx = i;
+                tempval = src.arr[lnpos_src];
+            }
+        }
+
+        dst.arr[lnpos_dst] = tempidx;
+    }
+}
+
+__host__ __device__ inline double reduce(double a, double b, ReduceType rdt)
 {
     switch (rdt)
     {

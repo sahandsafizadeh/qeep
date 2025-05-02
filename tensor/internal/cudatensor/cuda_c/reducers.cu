@@ -532,9 +532,57 @@ double *runDimReducer(
 
 extern "C"
 {
+    double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double *MaxAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double *MinAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double *AvgAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double *VarAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double Sum(const double *src, size_t n);
     double Max(const double *src, size_t n);
     double Min(const double *src, size_t n);
+}
+
+double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_SUM);
+}
+
+double *MaxAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_MAX);
+}
+
+double *MinAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_MIN);
+}
+
+double *AvgAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_AVG);
+}
+
+double *VarAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_VAR);
+}
+
+double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_STD);
+}
+
+double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMAX);
+}
+
+double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+{
+    return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMIN);
 }
 
 double Sum(const double *src, size_t n)

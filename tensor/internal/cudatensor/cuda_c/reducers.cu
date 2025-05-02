@@ -372,35 +372,15 @@ __global__ void reduceDimByStd(
     }
 }
 
-__host__ __device__ inline double reduce(double a, double b, ReduceType rdt)
-{
-    switch (rdt)
-    {
-    case RED_SUM:
-        return a + b;
-    case RED_MAX:
-        return a >= b ? a : b;
-    case RED_MIN:
-        return a <= b ? a : b;
-    }
-
-    return NAN;
-}
-
-__global__ void reduceByAssociativeFunc(
-    double *dst,
-    const double *src,
-    size_t n,
-    ReduceType rdt,
-    double identity)
+__global__ void reduceBySum(CudaData dst, CudaData src)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    double temp = identity;
-    for (size_t i = tpos; i < n; i += stride)
+    double temp = 0.;
+    for (size_t i = tpos; i < src.size; i += stride)
     {
-        temp = reduce(temp, src[i], rdt);
+        temp = temp + src.arr[i];
     }
 
     const unsigned int cacheidx = threadIndex();
@@ -416,14 +396,131 @@ __global__ void reduceByAssociativeFunc(
     {
         if (cacheidx < i)
         {
-            cache[cacheidx] = reduce(cache[cacheidx], cache[cacheidx + i], rdt);
+            cache[cacheidx] = cache[cacheidx] + cache[cacheidx + i];
         }
         __syncthreads();
     }
 
     if (cacheidx == 0)
     {
-        dst[blockidx] = cache[0];
+        dst.arr[blockidx] = cache[0];
+    }
+}
+
+__global__ void reduceByMax(CudaData dst, CudaData src)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    double temp = -INFINITY;
+    for (size_t i = tpos; i < src.size; i += stride)
+    {
+        if (src.arr[i] > temp)
+        {
+            temp = src.arr[i];
+        }
+    }
+
+    const unsigned int cacheidx = threadIndex();
+    const unsigned int cachelen = blockSize();
+    const unsigned int blockidx = blockIndex();
+
+    __shared__ double cache[MAX_THREADS_PER_BLOCK_X];
+
+    cache[cacheidx] = temp;
+    __syncthreads();
+
+    for (size_t i = cachelen / 2; i != 0; i /= 2)
+    {
+        if (cacheidx < i)
+        {
+            if (cache[cacheidx + i] > cache[cacheidx])
+            {
+                cache[cacheidx] = cache[cacheidx + i];
+            }
+        }
+        __syncthreads();
+    }
+
+    if (cacheidx == 0)
+    {
+        dst.arr[blockidx] = cache[0];
+    }
+}
+
+__global__ void reduceByMin(CudaData dst, CudaData src)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    double temp = INFINITY;
+    for (size_t i = tpos; i < src.size; i += stride)
+    {
+        if (src.arr[i] < temp)
+        {
+            temp = src.arr[i];
+        }
+    }
+
+    const unsigned int cacheidx = threadIndex();
+    const unsigned int cachelen = blockSize();
+    const unsigned int blockidx = blockIndex();
+
+    __shared__ double cache[MAX_THREADS_PER_BLOCK_X];
+
+    cache[cacheidx] = temp;
+    __syncthreads();
+
+    for (size_t i = cachelen / 2; i != 0; i /= 2)
+    {
+        if (cacheidx < i)
+        {
+            if (cache[cacheidx + i] < cache[cacheidx])
+            {
+                cache[cacheidx] = cache[cacheidx + i];
+            }
+        }
+        __syncthreads();
+    }
+
+    if (cacheidx == 0)
+    {
+        dst.arr[blockidx] = cache[0];
+    }
+}
+
+__global__ void reduceByVar(CudaData dst, CudaData src, double average)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    double temp = 0.;
+    for (size_t i = tpos; i < src.size; i += stride)
+    {
+        temp = temp + pow(src.arr[i] - average, 2);
+    }
+
+    const unsigned int cacheidx = threadIndex();
+    const unsigned int cachelen = blockSize();
+    const unsigned int blockidx = blockIndex();
+
+    __shared__ double cache[MAX_THREADS_PER_BLOCK_X];
+
+    cache[cacheidx] = temp;
+    __syncthreads();
+
+    for (size_t i = cachelen / 2; i != 0; i /= 2)
+    {
+        if (cacheidx < i)
+        {
+            cache[cacheidx] = cache[cacheidx] + cache[cacheidx + i];
+        }
+        __syncthreads();
+    }
+
+    if (cacheidx == 0)
+    {
+        dst.arr[blockidx] = cache[0];
     }
 }
 
@@ -431,25 +528,22 @@ __global__ void reduceByAssociativeFunc(
 
 const unsigned int MAX_BLOCKS = 256;
 
-double runReduceOp(const double *src, size_t n, ReduceType rdt, double identity)
+double runSumReducer(CudaData src)
 {
-    size_t n_src;
-    size_t n_dst;
-    LaunchParams lps = launchParams(n);
+    size_t n;
+    CudaData dev_dst;
+    double *host_dst;
 
-    double res;
-    double *dst;
-    double *dev_dst;
+    LaunchParams lps = launchParams(src.size);
+    n = min(lps.blockSize, MAX_BLOCKS);
+    lps.blockSize = n;
 
-    n_src = n;
-    n_dst = min(MAX_BLOCKS, lps.blockSize);
-    lps.blockSize = n_dst;
-
-    dst = (double *)(malloc(n_dst * sizeof(double)));
+    dev_dst = (CudaData){NULL, n};
+    host_dst = (double *)(malloc(n * sizeof(double)));
     handleCudaError(
-        cudaMalloc(&dev_dst, n_dst * sizeof(double)));
+        cudaMalloc(&dev_dst.arr, dev_dst.size * sizeof(double)));
 
-    reduceByAssociativeFunc<<<lps.blockSize, lps.threadSize>>>(dev_dst, src, n_src, rdt, identity);
+    reduceBySum<<<lps.blockSize, lps.threadSize>>>(dev_dst, src);
 
     handleCudaError(
         cudaGetLastError());
@@ -457,20 +551,161 @@ double runReduceOp(const double *src, size_t n, ReduceType rdt, double identity)
         cudaDeviceSynchronize());
     handleCudaError(
         cudaMemcpy(
-            dst,
-            dev_dst,
-            n_dst * sizeof(double),
+            host_dst,
+            dev_dst.arr,
+            dev_dst.size * sizeof(double),
             cudaMemcpyDeviceToHost));
 
-    res = identity;
-    for (size_t i = 0; i < n_dst; i++)
+    double res = 0.;
+    for (size_t i = 0; i < n; i++)
     {
-        res = reduce(res, dst[i], rdt);
+        res = res + host_dst[i];
     }
 
-    free(dst);
+    free(host_dst);
     handleCudaError(
-        cudaFree(dev_dst));
+        cudaFree(dev_dst.arr));
+
+    return res;
+}
+
+double runMaxReducer(CudaData src)
+{
+    size_t n;
+    CudaData dev_dst;
+    double *host_dst;
+
+    LaunchParams lps = launchParams(src.size);
+    n = min(lps.blockSize, MAX_BLOCKS);
+    lps.blockSize = n;
+
+    dev_dst = (CudaData){NULL, n};
+    host_dst = (double *)(malloc(n * sizeof(double)));
+    handleCudaError(
+        cudaMalloc(&dev_dst.arr, dev_dst.size * sizeof(double)));
+
+    reduceByMax<<<lps.blockSize, lps.threadSize>>>(dev_dst, src);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+    handleCudaError(
+        cudaMemcpy(
+            host_dst,
+            dev_dst.arr,
+            dev_dst.size * sizeof(double),
+            cudaMemcpyDeviceToHost));
+
+    double res = -INFINITY;
+    for (size_t i = 0; i < n; i++)
+    {
+        if (host_dst[i] > res)
+        {
+            res = host_dst[i];
+        }
+    }
+
+    free(host_dst);
+    handleCudaError(
+        cudaFree(dev_dst.arr));
+
+    return res;
+}
+
+double runMinReducer(CudaData src)
+{
+    size_t n;
+    CudaData dev_dst;
+    double *host_dst;
+
+    LaunchParams lps = launchParams(src.size);
+    n = min(lps.blockSize, MAX_BLOCKS);
+    lps.blockSize = n;
+
+    dev_dst = (CudaData){NULL, n};
+    host_dst = (double *)(malloc(n * sizeof(double)));
+    handleCudaError(
+        cudaMalloc(&dev_dst.arr, dev_dst.size * sizeof(double)));
+
+    reduceByMin<<<lps.blockSize, lps.threadSize>>>(dev_dst, src);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+    handleCudaError(
+        cudaMemcpy(
+            host_dst,
+            dev_dst.arr,
+            dev_dst.size * sizeof(double),
+            cudaMemcpyDeviceToHost));
+
+    double res = INFINITY;
+    for (size_t i = 0; i < n; i++)
+    {
+        if (host_dst[i] < res)
+        {
+            res = host_dst[i];
+        }
+    }
+
+    free(host_dst);
+    handleCudaError(
+        cudaFree(dev_dst.arr));
+
+    return res;
+}
+
+double runVarReducer(CudaData src)
+{
+    size_t n;
+    CudaData dev_dst;
+    double *host_dst;
+    double average;
+
+    LaunchParams lps = launchParams(src.size);
+    n = min(lps.blockSize, MAX_BLOCKS);
+    lps.blockSize = n;
+
+    dev_dst = (CudaData){NULL, n};
+    host_dst = (double *)(malloc(n * sizeof(double)));
+    handleCudaError(
+        cudaMalloc(&dev_dst.arr, dev_dst.size * sizeof(double)));
+
+    average = runSumReducer(src) / src.size;
+
+    reduceByVar<<<lps.blockSize, lps.threadSize>>>(dev_dst, src, average);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+    handleCudaError(
+        cudaMemcpy(
+            host_dst,
+            dev_dst.arr,
+            dev_dst.size * sizeof(double),
+            cudaMemcpyDeviceToHost));
+
+    double res = 0.;
+    for (size_t i = 0; i < n; i++)
+    {
+        res = res + host_dst[i];
+    }
+
+    if (src.size > 1)
+    {
+        res = res / (src.size - 1);
+    }
+    else
+    {
+        res = 0.;
+    }
+
+    free(host_dst);
+    handleCudaError(
+        cudaFree(dev_dst.arr));
 
     return res;
 }
@@ -532,9 +767,10 @@ double *runDimReducer(
 
 extern "C"
 {
-    double Sum(const double *src, size_t n);
-    double Max(const double *src, size_t n);
-    double Min(const double *src, size_t n);
+    double Sum(CudaData src);
+    double Max(CudaData src);
+    double Min(CudaData src);
+    double Var(CudaData src);
     double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
     double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
@@ -545,19 +781,24 @@ extern "C"
     double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
 }
 
-double Sum(const double *src, size_t n)
+double Sum(CudaData src)
 {
-    return runReduceOp(src, n, RED_SUM, 0.);
+    return runSumReducer(src);
 }
 
-double Max(const double *src, size_t n)
+double Max(CudaData src)
 {
-    return runReduceOp(src, n, RED_MAX, -INFINITY);
+    return runMaxReducer(src);
 }
 
-double Min(const double *src, size_t n)
+double Min(CudaData src)
 {
-    return runReduceOp(src, n, RED_MIN, INFINITY);
+    return runMinReducer(src);
+}
+
+double Var(CudaData src)
+{
+    return runVarReducer(src);
 }
 
 double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)

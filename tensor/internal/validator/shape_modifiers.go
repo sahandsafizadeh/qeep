@@ -3,6 +3,7 @@ package validator
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
@@ -28,6 +29,11 @@ func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err err
 }
 
 func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
+	if len(dims) == tensor.MaxDims {
+		err = fmt.Errorf("operation causes tensor to exceed maximum (%d) dimensions", tensor.MaxDims)
+		return
+	}
+
 	if !(0 <= dim && dim <= len(dims)) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d]: got (%d)", len(dims), dim)
 		return

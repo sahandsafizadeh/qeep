@@ -179,7 +179,7 @@ func (t *CUDATensor) Patch(index []tensor.Range, u tensor.Tensor) (o tensor.Tens
 	}
 
 	r := t.patch(index, _u)
-	r.gctx = gradtrack.Patch(r, t, u, index)
+	r.gctx = gradtrack.Patch(r, t, _u, index)
 
 	return r, nil
 }

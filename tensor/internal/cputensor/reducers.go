@@ -138,7 +138,7 @@ func (t *CPUTensor) reduceDimUsingTensorFunc(dim int, rtf reducerTensorFunc) (o 
 
 func (t *CPUTensor) linearElemGeneratorWithReducedDim(dim int, rtf reducerTensorFunc) initializerFunc {
 	state := make([]tensor.Range, len(t.dims))
-	for i := 0; i < len(state); i++ {
+	for i := range state {
 		state[i].From = 0
 		state[i].To = 1
 	}

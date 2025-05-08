@@ -22,6 +22,18 @@ func assertCUDATensor(t tensor.Tensor) (ct *CUDATensor, err error) {
 	return ct, nil
 }
 
+func assertCUDATensors(ts []tensor.Tensor) (cts []*CUDATensor, err error) {
+	cts = make([]*CUDATensor, len(ts))
+	for i, t := range ts {
+		cts[i], err = assertCUDATensor(t)
+		if err != nil {
+			return
+		}
+	}
+
+	return cts, nil
+}
+
 func getCudaDataOf(t *CUDATensor) (cd C.CudaData) {
 	arr := (*C.double)(t.data)
 	size := (C.size_t)(t.n)

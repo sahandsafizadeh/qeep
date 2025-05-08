@@ -1,6 +1,9 @@
 package cputensor
 
-import "gonum.org/v1/gonum/stat/distuv"
+import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+	"gonum.org/v1/gonum/stat/distuv"
+)
 
 func (t *CPUTensor) initWith(initFunc initializerFunc) {
 
@@ -182,7 +185,7 @@ func initConcatResultTensor(ts []*CPUTensor, dim int) (o *CPUTensor) {
 	}
 
 	o = new(CPUTensor)
-	o.dims = getConcatDims(ts, dim)
+	o.dims = util.ConcatDims(ts, dim)
 	fillCat(o.dims, &o.data, tsDataCopy, 0)
 
 	return o
@@ -203,18 +206,4 @@ func eyeElemGenerator(n int) initializerFunc {
 			return 0.
 		}
 	}
-}
-
-func getConcatDims(ts []*CPUTensor, dim int) (dims []int) {
-	common := 0
-	for _, t := range ts {
-		common += t.dims[dim]
-	}
-
-	base := ts[0].dims
-	dims = make([]int, len(base))
-	copy(dims, base)
-	dims[dim] = common
-
-	return dims
 }

@@ -743,32 +743,31 @@ func (t *CUDATensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 }
 
 func (t *CUDATensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
-	// for m.n * n.p calculate a matrix m.p.n and then sum along last dim
+	_u, err := assertCUDATensor(u)
+	if err != nil {
+		err = fmt.Errorf("MatMul tensors' device validation failed: %w", err)
+		return
+	}
 
-	return
+	err = validator.ValidateMatMulDims(t.dims, _u.dims)
+	if err != nil {
+		err = fmt.Errorf("MatMul tensors' dimension validation failed: %w", err)
+		return
+	}
 
-	// cu, err := assertCUDATensor(u)
-	// if err != nil {
-	// 	err = fmt.Errorf("MatMul tensors' device validation failed: %w", err)
-	// 	return
-	// }
+	t1, t2, err := util.BroadcastForMatMul(t, _u)
+	if err != nil {
+		err = fmt.Errorf("MatMul tensors' broadcasting failed: %w", err)
+		return
+	}
 
-	// err = validator.ValidateMatMulDims(t.dims, cu.dims)
-	// if err != nil {
-	// 	err = fmt.Errorf("MatMul tensors' dimension validation failed: %w", err)
-	// 	return
-	// }
+	_t1 := t1.(*CUDATensor)
+	_t2 := t2.(*CUDATensor)
 
-	// ct1, ct2, err := broadcastForMatMul(t, cu)
-	// if err != nil {
-	// 	err = fmt.Errorf("MatMul tensors' broadcasting failed: %w", err)
-	// 	return
-	// }
+	r := _t1.matMul(_t2)
+	r.gctx = gradtrack.MatMul(r, _t1, _t2)
 
-	// r := ct1.matMul(ct2)
-	// r.gctx = gradtrack.MatMul(r, ct1, ct2)
-
-	// return r, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Equals(u tensor.Tensor) (are bool, err error) {

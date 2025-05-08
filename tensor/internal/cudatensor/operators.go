@@ -138,8 +138,18 @@ func (t *CUDATensor) div(u *CUDATensor) (o *CUDATensor) {
 	})
 }
 
+func (t *CUDATensor) uncontractedMatMul(u *CUDATensor) (o *CUDATensor) {
+	return applyUncontractedMatMul(t, u)
+}
+
 func (t *CUDATensor) dot(u *CUDATensor) (o *CUDATensor) {
 	o = t.mul(u)
+	n := len(o.dims)
+	return o.sumAlong(n - 1)
+}
+
+func (t *CUDATensor) matMul(u *CUDATensor) (o *CUDATensor) {
+	o = t.uncontractedMatMul(u)
 	n := len(o.dims)
 	return o.sumAlong(n - 1)
 }
@@ -174,4 +184,34 @@ func applyBinaryOperation(a *CUDATensor, b *CUDATensor, cbf cudacBinaryFunc) (c 
 	data_c := cbf(a_c, b_c)
 
 	return newCUDATensor(a.dims, data_c)
+}
+
+func applyUncontractedMatMul(a *CUDATensor, b *CUDATensor) (c *CUDATensor) {
+	dims := uncontractedMatMulDims(a.dims, b.dims)
+
+	a_c := getCudaDataOf(a)
+	b_c := getCudaDataOf(b)
+	dims_a_c := getDimArrOf(a.dims)
+	dims_b_c := getDimArrOf(b.dims)
+	dims_c_c := getDimArrOf(dims)
+
+	data_c := C.UncontractedMatMul(a_c, b_c, dims_a_c, dims_b_c, dims_c_c)
+
+	return newCUDATensor(dims, data_c)
+}
+
+/* ----- helpers ----- */
+
+func uncontractedMatMulDims(dims1, dims2 []int) (dims []int) {
+	td := len(dims1)
+	cd := dims1[:td-2]
+	dims = make([]int, len(cd))
+	copy(dims, cd)
+
+	m := dims1[td-2]
+	k := dims2[td-1]
+	n := dims1[td-1]
+	dims = append(dims, m, k, n)
+
+	return dims
 }

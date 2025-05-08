@@ -744,26 +744,29 @@ func (t *CPUTensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 }
 
 func (t *CPUTensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("MatMul tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateMatMulDims(t.dims, cu.dims)
+	err = validator.ValidateMatMulDims(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("MatMul tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	ct1, ct2, err := broadcastForMatMul(t, cu)
+	t1, t2, err := util.BroadcastForMatMul(t, _u)
 	if err != nil {
 		err = fmt.Errorf("MatMul tensors' broadcasting failed: %w", err)
 		return
 	}
 
-	r := ct1.matMul(ct2)
-	r.gctx = gradtrack.MatMul(r, ct1, ct2)
+	_t1 := t1.(*CPUTensor)
+	_t2 := t2.(*CPUTensor)
+
+	r := _t1.matMul(_t2)
+	r.gctx = gradtrack.MatMul(r, _t1, _t2)
 
 	return r, nil
 }

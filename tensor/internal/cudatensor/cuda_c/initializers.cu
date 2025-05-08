@@ -14,6 +14,22 @@ inline unsigned long long timeSeed()
 
 /* ----- device functions ----- */
 
+__device__ int toConcatenatedPosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, int dim, int mrg)
+{
+    int lnpos_dst;
+    DimArr index_src;
+    DimArr index_dst;
+
+    index_src = decode(lnpos_src, rcp_src);
+
+    index_dst = index_src;
+    index_dst.arr[dim] += mrg;
+
+    lnpos_dst = encode(index_dst, rcp_dst);
+
+    return lnpos_dst;
+}
+
 __global__ void fillConst(CudaData dst, double value)
 {
     const unsigned int tpos = threadPosition();
@@ -66,6 +82,20 @@ __global__ void fillRandN(CudaData dst, double u, double s, unsigned long long s
     }
 }
 
+__global__ void fillConcat(CudaData dst, CudaData src, DimArr rcp_dst, DimArr rcp_src, int dim, int mrg)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < src.size; i += stride)
+    {
+        int lnpos_src = i;
+        int lnpos_dst = toConcatenatedPosition(lnpos_src, rcp_src, rcp_dst, dim, mrg);
+
+        dst.arr[lnpos_dst] = src.arr[lnpos_src];
+    }
+}
+
 /* ----- API functions ----- */
 
 extern "C"
@@ -75,6 +105,7 @@ extern "C"
     double *RandU(size_t n, double l, double u);
     double *RandN(size_t n, double u, double s);
     double *Of(size_t n, double *input_data);
+    double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr dims_dst);
 }
 
 double *Full(size_t n, double value)
@@ -167,4 +198,35 @@ double *Of(size_t n, double *input_data)
             cudaMemcpyHostToDevice));
 
     return dst;
+}
+
+double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr dims_dst)
+{
+    size_t n = elemcnt(dims_dst);
+    DimArr rcp_dst = rcumprod(dims_dst);
+
+    CudaData dst = (CudaData){NULL, n};
+    handleCudaError(
+        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+
+    int mrg = 0;
+    for (size_t i = 0; i < size; i++)
+    {
+        CudaData src = srcs[i];
+        DimArr dims_src = dims_srcs[i];
+        DimArr rcp_src = rcumprod(dims_src);
+
+        LaunchParams lps = launchParams(src.size);
+
+        fillConcat<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dim, mrg);
+
+        handleCudaError(
+            cudaGetLastError());
+        handleCudaError(
+            cudaDeviceSynchronize());
+
+        mrg += dims_src.arr[dim];
+    }
+
+    return dst.arr;
 }

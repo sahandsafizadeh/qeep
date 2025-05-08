@@ -128,3 +128,29 @@ func tensorFromData(data any) (t *CUDATensor) {
 
 	return newCUDATensor(dims, data_c)
 }
+
+func tensorFromConcat(ts []*CUDATensor, dim int) (o *CUDATensor) {
+	dims := util.ConcatDims(ts, dim)
+
+	size := len(ts)
+	tsSrcs := make([]C.CudaData, size)
+	tsDims := make([]C.DimArr, size)
+
+	for i, t := range ts {
+		tsSrcs[i] = getCudaDataOf(t)
+		tsDims[i] = getDimArrOf(t.dims)
+	}
+
+	srcsptr := unsafe.Pointer(&tsSrcs[0])
+	dimsptr := unsafe.Pointer(&tsDims[0])
+
+	srcs_c := (*C.CudaData)(srcsptr)
+	dims_src_c := (*C.DimArr)(dimsptr)
+	size_c := (C.size_t)(size)
+	dim_c := (C.int)(dim)
+	dims_dst_c := getDimArrOf(dims)
+
+	data_c := C.Concat(srcs_c, dims_src_c, size_c, dim_c, dims_dst_c)
+
+	return newCUDATensor(dims, data_c)
+}

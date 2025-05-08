@@ -11,6 +11,7 @@ double *Eye(size_t n, size_t d);
 double *RandU(size_t n, double l, double u);
 double *RandN(size_t n, double u, double s);
 double *Of(size_t n, double *input_data);
+double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr dims_dst);
 
 /*--------------- accessors ---------------*/
 double At(CudaData src, DimArr dims, DimArr index);

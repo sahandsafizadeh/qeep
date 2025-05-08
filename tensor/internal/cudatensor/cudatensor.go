@@ -107,28 +107,27 @@ func Of(data any, withGrad bool) (o tensor.Tensor, err error) {
 }
 
 func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
-	return
-	// cus, err := assertCUDATensors(ts)
-	// if err != nil {
-	// 	err = fmt.Errorf("Concat tensors' device validation failed: %w", err)
-	// 	return
-	// }
+	_ts, err := assertCUDATensors(ts)
+	if err != nil {
+		err = fmt.Errorf("Concat tensors' device validation failed: %w", err)
+		return
+	}
 
-	// cusDims := make([][]int, len(ts))
-	// for i, cu := range cus {
-	// 	cusDims[i] = cu.dims
-	// }
+	tsDims := make([][]int, len(_ts))
+	for i, t := range _ts {
+		tsDims[i] = t.dims
+	}
 
-	// err = validator.ValidateConcatTensorsDimsAlongDim(cusDims, dim)
-	// if err != nil {
-	// 	err = fmt.Errorf("Concat inputs' dimension validation failed: %w", err)
-	// 	return
-	// }
+	err = validator.ValidateConcatTensorsDimsAlongDim(tsDims, dim)
+	if err != nil {
+		err = fmt.Errorf("Concat inputs' dimension validation failed: %w", err)
+		return
+	}
 
-	// r := initConcatResultTensor(cus, dim)
-	// r.gctx = gradtrack.Concat(r, ts, dim)
+	r := tensorFromConcat(_ts, dim)
+	r.gctx = gradtrack.Concat(r, ts, dim)
 
-	// return r, nil
+	return r, nil
 }
 
 /*--------------- methods ---------------*/

@@ -59,6 +59,7 @@ double *Add(CudaData a, CudaData b);
 double *Sub(CudaData a, CudaData b);
 double *Mul(CudaData a, CudaData b);
 double *Div(CudaData a, CudaData b);
+double *UncontractedMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c);
 
 /*--------------- memory -----------------*/
 void GetCudaMemInfo(size_t *free_mem, size_t *total_mem);

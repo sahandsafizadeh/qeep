@@ -4,8 +4,6 @@
 #include "common.cuh"
 #include "devcommon.cuh"
 
-/* ----- device functions ----- */
-
 enum OperationType
 {
     OP_SCALE,
@@ -32,7 +30,15 @@ enum OperationType
     OP_DIV,
 };
 
+typedef struct MMPoses
+{
+    int lnpos_src1;
+    int lnpos_src2;
+} MMPoses;
+
 const double DOUBLE_EQUALITY_THRESHOLD = 1e-240;
+
+/* ----- device functions ----- */
 
 __device__ inline double halfBinaryOp(double x, double a, OperationType opt)
 {
@@ -105,6 +111,37 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
     return NAN;
 }
 
+__device__ MMPoses toUncontractedMatMulPositions(int lnpos_dst, DimArr rcp_dst, DimArr rcp_src1, DimArr rcp_src2)
+{
+    int lnpos_src1;
+    int lnpos_src2;
+    DimArr index_dst;
+    DimArr index_src1;
+    DimArr index_src2;
+
+    index_dst = decode(lnpos_dst, rcp_dst);
+
+    size_t n = index_dst.size - 1;
+    index_src1.size = n;
+    index_src2.size = n;
+
+    for (size_t i = 0; i < n - 2; i++)
+    {
+        index_src1.arr[i] = index_dst.arr[i];
+        index_src2.arr[i] = index_dst.arr[i];
+    }
+
+    index_src1.arr[n - 2] = index_dst.arr[n - 2];
+    index_src1.arr[n - 1] = index_dst.arr[n];
+    index_src2.arr[n - 2] = index_dst.arr[n];
+    index_src2.arr[n - 1] = index_dst.arr[n - 1];
+
+    lnpos_src1 = encode(index_src1, rcp_src1);
+    lnpos_src2 = encode(index_src2, rcp_src2);
+
+    return (MMPoses){lnpos_src1, lnpos_src2};
+}
+
 __global__ void applyHalfBinaryFuncElemWise(CudaData dst, CudaData src1, double srcc, OperationType opt)
 {
     const unsigned int tpos = threadPosition();
@@ -135,6 +172,33 @@ __global__ void applyBinaryFuncElemWise(CudaData dst, CudaData src1, CudaData sr
     for (size_t i = tpos; i < dst.size; i += stride)
     {
         dst.arr[i] = binaryOp(src1.arr[i], src2.arr[i], opt);
+    }
+}
+
+__global__ void applyUncontractedMatMul(
+    CudaData dst,
+    CudaData src1,
+    CudaData src2,
+    DimArr rcp_dst,
+    DimArr rcp_src1,
+    DimArr rcp_src2)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < dst.size; i += stride)
+    {
+        int lnpos_dst;
+        int lnpos_src1;
+        int lnpos_src2;
+        MMPoses mmposes;
+
+        lnpos_dst = i;
+        mmposes = toUncontractedMatMulPositions(lnpos_dst, rcp_dst, rcp_src1, rcp_src2);
+        lnpos_src1 = mmposes.lnpos_src1;
+        lnpos_src2 = mmposes.lnpos_src2;
+
+        dst.arr[lnpos_dst] = src1.arr[lnpos_src1] * src2.arr[lnpos_src2];
     }
 }
 
@@ -194,6 +258,29 @@ double *runBinaryOp(CudaData a, CudaData b, OperationType opt)
     return c.arr;
 }
 
+double *runUncontractedMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
+{
+    size_t n = elemcnt(dims_c);
+    DimArr rcp_c = rcumprod(dims_c);
+    DimArr rcp_a = rcumprod(dims_a);
+    DimArr rcp_b = rcumprod(dims_b);
+
+    CudaData c = (CudaData){NULL, n};
+    handleCudaError(
+        cudaMalloc(&c.arr, c.size * sizeof(double)));
+
+    LaunchParams lps = launchParams(c.size);
+
+    applyUncontractedMatMul<<<lps.blockSize, lps.threadSize>>>(c, a, b, rcp_c, rcp_a, rcp_b);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+
+    return c.arr;
+}
+
 /* ----- API functions ----- */
 
 extern "C"
@@ -220,6 +307,7 @@ extern "C"
     double *Sub(CudaData a, CudaData b);
     double *Mul(CudaData a, CudaData b);
     double *Div(CudaData a, CudaData b);
+    double *UncontractedMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c);
 }
 
 double *Scale(CudaData x, double a)
@@ -330,4 +418,9 @@ double *Mul(CudaData a, CudaData b)
 double *Div(CudaData a, CudaData b)
 {
     return runBinaryOp(a, b, OP_DIV);
+}
+
+double *UncontractedMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
+{
+    return runUncontractedMatMul(a, b, dims_a, dims_b, dims_c);
 }

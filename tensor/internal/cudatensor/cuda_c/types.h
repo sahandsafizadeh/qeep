@@ -3,7 +3,8 @@
 
 #include <stddef.h>
 
-#define MAX_DIMS 8
+// two units higher than the actual limit for operations like UncontractedMatMul
+#define MAX_DIMS 10
 
 typedef struct Range
 {

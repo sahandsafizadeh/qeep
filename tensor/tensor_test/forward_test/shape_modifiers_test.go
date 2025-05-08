@@ -1084,6 +1084,13 @@ func TestValidationReshape(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
+		_, err = ten.Reshape([]int{1, 1, 1, 1, 1, 1, 1, 1, 1})
+		if err == nil {
+			t.Fatalf("expected error because of too many dimensions")
+		} else if err.Error() != "Reshape input shape validation failed: expected at most (8) dimensions: got (9)" {
+			t.Fatal("unexpected error message returned")
+		}
+
 		/* ------------------------------ */
 
 		ten, err = tensor.Zeros(nil, conf)
@@ -1154,6 +1161,20 @@ func TestValidationUnSqueeze(t *testing.T) {
 		if err == nil {
 			t.Fatalf("expected error because of dimension (2) being out of range")
 		} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,1]: got (2)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		ten, err = tensor.Zeros([]int{1, 1, 1, 1, 1, 1, 1, 1}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = ten.UnSqueeze(2)
+		if err == nil {
+			t.Fatalf("expected error because of too many dimensions")
+		} else if err.Error() != "UnSqueeze input dimension validation failed: operation causes tensor to exceed maximum (8) dimensions" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1310,6 +1331,13 @@ func TestValidationBroadcast(t *testing.T) {
 		if err == nil {
 			t.Fatalf("expected error because of negative dimension")
 		} else if err.Error() != "Broadcast input shape validation failed: expected positive dimension sizes: got (-2) at position (1)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = ten.Broadcast([]int{1, 1, 1, 1, 1, 1, 1, 1, 1, 1})
+		if err == nil {
+			t.Fatalf("expected error because of too many dimensions")
+		} else if err.Error() != "Broadcast input shape validation failed: expected at most (8) dimensions: got (10)" {
 			t.Fatal("unexpected error message returned")
 		}
 

@@ -27,9 +27,9 @@ func NewHeUniform(conf *HeUniformConfig) (c *HeUniform, err error) {
 	}, nil
 }
 
-func (c *HeUniform) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *HeUniform) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	r := math.Sqrt(6. / float64(c.fanIn))
-	return tensor.RandU(shape, -r, r, tensorInitConf())
+	return tensor.RandU(shape, -r, r, tensorInitConf(device))
 }
 
 /* ----- helpers ----- */

@@ -389,14 +389,14 @@ type zeroDInitializer struct{}
 type twoDInitializer struct{}
 type wrong1DInitializer struct{}
 
-func (c *zeroDInitializer) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *zeroDInitializer) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	return tensor.Zeros(nil, nil)
 }
 
-func (c *twoDInitializer) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *twoDInitializer) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	return tensor.Zeros([]int{1, 1}, nil)
 }
 
-func (c *wrong1DInitializer) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *wrong1DInitializer) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	return tensor.Zeros([]int{shape[0] + 1}, nil)
 }

@@ -32,8 +32,8 @@ func NewNormal(conf *NormalConfig) (c *Normal, err error) {
 	}, nil
 }
 
-func (c *Normal) Init(shape []int) (x tensor.Tensor, err error) {
-	return tensor.RandN(shape, c.mean, c.stdDev, tensorInitConf())
+func (c *Normal) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
+	return tensor.RandN(shape, c.mean, c.stdDev, tensorInitConf(device))
 }
 
 /* ----- helpers ----- */

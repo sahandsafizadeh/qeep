@@ -30,9 +30,9 @@ func NewXavierUniform(conf *XavierUniformConfig) (c *XavierUniform, err error) {
 	}, nil
 }
 
-func (c *XavierUniform) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *XavierUniform) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	r := math.Sqrt(6. / float64(c.fanIn+c.fanOut))
-	return tensor.RandU(shape, -r, r, tensorInitConf())
+	return tensor.RandU(shape, -r, r, tensorInitConf(device))
 }
 
 /* ----- helpers ----- */

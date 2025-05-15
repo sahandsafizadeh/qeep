@@ -20,8 +20,8 @@ func NewFull(conf *FullConfig) (c *Full) {
 	}
 }
 
-func (c *Full) Init(shape []int) (x tensor.Tensor, err error) {
-	return tensor.Full(shape, c.value, tensorInitConf())
+func (c *Full) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
+	return tensor.Full(shape, c.value, tensorInitConf(device))
 }
 
 /* ----- helpers ----- */

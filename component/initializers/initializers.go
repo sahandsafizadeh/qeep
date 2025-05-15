@@ -2,9 +2,9 @@ package initializers
 
 import "github.com/sahandsafizadeh/qeep/tensor"
 
-func tensorInitConf() *tensor.Config {
+func tensorInitConf(device tensor.Device) *tensor.Config {
 	return &tensor.Config{
-		Device:    tensor.CPU,
+		Device:    device,
 		GradTrack: true,
 	}
 }

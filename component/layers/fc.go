@@ -35,12 +35,12 @@ func NewFC(conf *FCConfig) (c *FC, err error) {
 		bin = conf.Initializers[fcBiasKey]
 	)
 
-	w, err := win.Init([]int{conf.Outputs})
+	w, err := win.Init([]int{conf.Outputs}, tensor.CPU)
 	if err != nil {
 		return
 	}
 
-	b, err := bin.Init([]int{conf.Outputs})
+	b, err := bin.Init([]int{conf.Outputs}, tensor.CPU)
 	if err != nil {
 		return
 	}

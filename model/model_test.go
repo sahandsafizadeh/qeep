@@ -53,6 +53,7 @@ func TestModel(t *testing.T) {
 				"Weight": wInitializer,
 				"Bias":   bInitializer,
 			},
+			Device: dev,
 		})(input)
 		output := stream.Relu()(hidden)
 
@@ -180,6 +181,7 @@ func TestForwardErrorHandling(t *testing.T) {
 		hidden := stream.FC(&layers.FCConfig{
 			Inputs:  1,
 			Outputs: 1,
+			Device:  dev,
 		})(input, input)
 		output := stream.Tanh()(hidden)
 
@@ -275,6 +277,7 @@ func TestLossAndMetricErrorHandling(t *testing.T) {
 		hidden := stream.FC(&layers.FCConfig{
 			Inputs:  1,
 			Outputs: 2,
+			Device:  dev,
 		})(input)
 		output := stream.Tanh()(hidden)
 

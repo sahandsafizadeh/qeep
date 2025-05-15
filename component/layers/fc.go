@@ -16,6 +16,7 @@ type FCConfig struct {
 	Inputs       int
 	Outputs      int
 	Initializers map[string]Initializer
+	Device       tensor.Device
 }
 
 const (
@@ -35,12 +36,12 @@ func NewFC(conf *FCConfig) (c *FC, err error) {
 		bin = conf.Initializers[fcBiasKey]
 	)
 
-	w, err := win.Init([]int{conf.Outputs}, tensor.CPU)
+	w, err := win.Init([]int{conf.Outputs}, conf.Device)
 	if err != nil {
 		return
 	}
 
-	b, err := bin.Init([]int{conf.Outputs}, tensor.CPU)
+	b, err := bin.Init([]int{conf.Outputs}, conf.Device)
 	if err != nil {
 		return
 	}
@@ -173,6 +174,10 @@ func toValidFCConfig(iconf *FCConfig) (conf *FCConfig, err error) {
 		if err != nil {
 			return
 		}
+	}
+
+	if conf.Device == 0 {
+		conf.Device = tensor.CPU
 	}
 
 	return conf, nil

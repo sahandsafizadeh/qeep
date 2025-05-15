@@ -22,6 +22,7 @@ func TestFC(t *testing.T) {
 				"Weight": initializers.NewFull(&initializers.FullConfig{Value: 3.}),
 				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: 1.}),
 			},
+			Device: dev,
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -57,6 +58,7 @@ func TestFC(t *testing.T) {
 				"Weight": initializers.NewFull(&initializers.FullConfig{Value: -2.}),
 				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: 3.}),
 			},
+			Device: dev,
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -92,6 +94,7 @@ func TestFC(t *testing.T) {
 				"Weight": initializers.NewFull(&initializers.FullConfig{Value: 5.}),
 				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: -1.}),
 			},
+			Device: dev,
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -127,6 +130,7 @@ func TestFC(t *testing.T) {
 				"Weight": initializers.NewFull(&initializers.FullConfig{Value: 2.}),
 				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: 1.}),
 			},
+			Device: dev,
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -330,6 +334,7 @@ func TestValidationFC(t *testing.T) {
 		layer, err := layers.NewFC(&layers.FCConfig{
 			Inputs:  1,
 			Outputs: 1,
+			Device:  dev,
 		})
 		if err != nil {
 			t.Fatal(err)

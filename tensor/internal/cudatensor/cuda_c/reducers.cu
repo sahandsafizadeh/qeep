@@ -526,7 +526,7 @@ __global__ void reduceByVar(CudaData dst, CudaData src, double average)
 
 /* ----- API helper functions ----- */
 
-const unsigned int MAX_BLOCKS = 256;
+const unsigned int MAX_BLOCKS = 512;
 
 double runSumReducer(CudaData src)
 {

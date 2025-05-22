@@ -1,6 +1,10 @@
 package cputensor
 
-import "math"
+import (
+	"math"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+)
 
 const float64EqualityThreshold = 1e-240
 
@@ -136,7 +140,7 @@ func (t *CPUTensor) div(u *CPUTensor) (o *CPUTensor) {
 
 func (t *CPUTensor) dot(u *CPUTensor) (o *CPUTensor) {
 	t1, t2 := t, u
-	dims := dotDims(t1.dims)
+	dims := util.DotDims(t1.dims)
 	elemGen := linearLastDimDotProductElemGenerator(t1, t2)
 
 	o = new(CPUTensor)
@@ -149,7 +153,7 @@ func (t *CPUTensor) dot(u *CPUTensor) (o *CPUTensor) {
 func (t *CPUTensor) matMul(u *CPUTensor) (o *CPUTensor) {
 	t1, t2 := t, u
 	td := len(t1.dims)
-	dims := matMulDims(t1.dims, t2.dims)
+	dims := util.MatMulDims(t1.dims, t2.dims)
 	elemGen := linearLast2DimsMatMulElemGenerator(t1, t2)
 
 	o = new(CPUTensor)
@@ -321,26 +325,4 @@ func matMulDataOf2DInputs(a, b any) (c any) {
 	}
 
 	return cRows
-}
-
-func dotDims(idims []int) (dims []int) {
-	td := len(idims)
-	cd := idims[:td-1]
-	dims = make([]int, len(cd))
-	copy(dims, cd)
-
-	return dims
-}
-
-func matMulDims(dims1, dims2 []int) (dims []int) {
-	td := len(dims1)
-	cd := dims1[:td-2]
-	dims = make([]int, len(cd))
-	copy(dims, cd)
-
-	m := dims1[td-2]
-	k := dims2[td-1]
-	dims = append(dims, m, k)
-
-	return dims
 }

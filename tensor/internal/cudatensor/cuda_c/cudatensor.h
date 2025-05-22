@@ -60,6 +60,7 @@ double *Add(CudaData a, CudaData b);
 double *Sub(CudaData a, CudaData b);
 double *Mul(CudaData a, CudaData b);
 double *Div(CudaData a, CudaData b);
+double *Dot(CudaData a, CudaData b, DimArr dims_src, DimArr dims_dst);
 double *MatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c);
 
 /*--------------- memory -----------------*/

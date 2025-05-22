@@ -6,6 +6,8 @@ package cudatensor
 */
 import "C"
 
+import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
+
 func (t *CUDATensor) scale(u float64) (o *CUDATensor) {
 	return applyHalfBinaryOperation(t, u, func(x C.CudaData, a C.double) (y *C.double) {
 		return C.Scale(x, a)
@@ -139,9 +141,7 @@ func (t *CUDATensor) div(u *CUDATensor) (o *CUDATensor) {
 }
 
 func (t *CUDATensor) dot(u *CUDATensor) (o *CUDATensor) {
-	o = t.mul(u)
-	n := len(o.dims)
-	return o.sumAlong(n - 1)
+	return applyDot(t, u)
 }
 
 func (t *CUDATensor) matMul(u *CUDATensor) (o *CUDATensor) {
@@ -180,8 +180,21 @@ func applyBinaryOperation(a *CUDATensor, b *CUDATensor, cbf cudacBinaryFunc) (c 
 	return newCUDATensor(a.dims, data_c)
 }
 
+func applyDot(a *CUDATensor, b *CUDATensor) (c *CUDATensor) {
+	dims := util.DotDims(a.dims)
+
+	a_c := getCudaDataOf(a)
+	b_c := getCudaDataOf(b)
+	dims_src_c := getDimArrOf(a.dims)
+	dims_dst_c := getDimArrOf(dims)
+
+	data_c := C.Dot(a_c, b_c, dims_src_c, dims_dst_c)
+
+	return newCUDATensor(dims, data_c)
+}
+
 func applyMatMul(a *CUDATensor, b *CUDATensor) (c *CUDATensor) {
-	dims := matMulDims(a.dims, b.dims)
+	dims := util.MatMulDims(a.dims, b.dims)
 
 	a_c := getCudaDataOf(a)
 	b_c := getCudaDataOf(b)
@@ -192,19 +205,4 @@ func applyMatMul(a *CUDATensor, b *CUDATensor) (c *CUDATensor) {
 	data_c := C.MatMul(a_c, b_c, dims_a_c, dims_b_c, dims_c_c)
 
 	return newCUDATensor(dims, data_c)
-}
-
-/* ----- helpers ----- */
-
-func matMulDims(dims1, dims2 []int) (dims []int) {
-	td := len(dims1)
-	cd := dims1[:td-2]
-	dims = make([]int, len(cd))
-	copy(dims, cd)
-
-	m := dims1[td-2]
-	k := dims2[td-1]
-	dims = append(dims, m, k)
-
-	return dims
 }

@@ -54,3 +54,25 @@ func FlattenDims(dim int, dims []int) (res []int) {
 
 	return res
 }
+
+func DotDims(idims []int) (dims []int) {
+	td := len(idims)
+	cd := idims[:td-1]
+	dims = make([]int, len(cd))
+	copy(dims, cd)
+
+	return dims
+}
+
+func MatMulDims(dims1, dims2 []int) (dims []int) {
+	td := len(dims1)
+	cd := dims1[:td-2]
+	dims = make([]int, len(cd))
+	copy(dims, cd)
+
+	m := dims1[td-2]
+	k := dims2[td-1]
+	dims = append(dims, m, k)
+
+	return dims
+}

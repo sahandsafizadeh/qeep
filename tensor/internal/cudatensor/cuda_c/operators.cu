@@ -175,19 +175,60 @@ __global__ void applyBinaryFuncElemWise(CudaData dst, CudaData src1, CudaData sr
     }
 }
 
-__global__ void applyMatMul(
+__global__ void applyDot(
     CudaData dst,
     CudaData src1,
     CudaData src2,
     DimArr rcp_dst,
-    DimArr rcp_src1,
-    DimArr rcp_src2)
+    DimArr rcp_src,
+    int cdim)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
     for (size_t i = tpos; i < dst.size; i += stride)
     {
+        size_t n;
+        int lnpos_dst;
+        int lnpos_src;
+        DimArr index_dst;
+        DimArr index_src;
+
+        lnpos_dst = i;
+        index_dst = decode(lnpos_dst, rcp_dst);
+        index_src = index_dst;
+
+        n = index_dst.size + 1;
+        index_src.size = n;
+
+        double temp = 0.;
+        for (size_t j = 0; j < cdim; j++)
+        {
+            index_src.arr[n - 1] = j;
+            lnpos_src = encode(index_src, rcp_src);
+
+            temp += src1.arr[lnpos_src] * src2.arr[lnpos_src];
+        }
+
+        dst.arr[lnpos_dst] = temp;
+    }
+}
+
+__global__ void applyMatMul(
+    CudaData dst,
+    CudaData src1,
+    CudaData src2,
+    DimArr rcp_dst,
+    DimArr rcp_src1,
+    DimArr rcp_src2,
+    int cdim)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < dst.size; i += stride)
+    {
+        size_t n;
         int lnpos_dst;
         int lnpos_src1;
         int lnpos_src2;
@@ -200,8 +241,7 @@ __global__ void applyMatMul(
         index_src1 = index_dst;
         index_src2 = index_dst;
 
-        size_t n = index_dst.size;
-        size_t cdim = rcp_src1.arr[n - 2];
+        n = index_dst.size;
         index_src1.arr[n - 2] = index_dst.arr[n - 2];
         index_src2.arr[n - 1] = index_dst.arr[n - 1];
 
@@ -276,12 +316,12 @@ double *runBinaryOp(CudaData a, CudaData b, OperationType opt)
     return c.arr;
 }
 
-double *runMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
+double *runDot(CudaData a, CudaData b, DimArr dims_src, DimArr dims_dst)
 {
-    size_t n = elemcnt(dims_c);
-    DimArr rcp_c = rcumprod(dims_c);
-    DimArr rcp_a = rcumprod(dims_a);
-    DimArr rcp_b = rcumprod(dims_b);
+    size_t n = elemcnt(dims_dst);
+    DimArr rcp_dst = rcumprod(dims_dst);
+    DimArr rcp_src = rcumprod(dims_src);
+    size_t cdim = dims_src.arr[dims_src.size - 1];
 
     CudaData c = (CudaData){NULL, n};
     handleCudaError(
@@ -289,7 +329,31 @@ double *runMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr d
 
     LaunchParams lps = launchParams(c.size);
 
-    applyMatMul<<<lps.blockSize, lps.threadSize>>>(c, a, b, rcp_c, rcp_a, rcp_b);
+    applyDot<<<lps.blockSize, lps.threadSize>>>(c, a, b, rcp_dst, rcp_src, cdim);
+
+    handleCudaError(
+        cudaGetLastError());
+    handleCudaError(
+        cudaDeviceSynchronize());
+
+    return c.arr;
+}
+
+double *runMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
+{
+    size_t n = elemcnt(dims_c);
+    DimArr rcp_c = rcumprod(dims_c);
+    DimArr rcp_a = rcumprod(dims_a);
+    DimArr rcp_b = rcumprod(dims_b);
+    size_t cdim = dims_a.arr[dims_a.size - 1];
+
+    CudaData c = (CudaData){NULL, n};
+    handleCudaError(
+        cudaMalloc(&c.arr, c.size * sizeof(double)));
+
+    LaunchParams lps = launchParams(c.size);
+
+    applyMatMul<<<lps.blockSize, lps.threadSize>>>(c, a, b, rcp_c, rcp_a, rcp_b, cdim);
 
     handleCudaError(
         cudaGetLastError());
@@ -325,6 +389,7 @@ extern "C"
     double *Sub(CudaData a, CudaData b);
     double *Mul(CudaData a, CudaData b);
     double *Div(CudaData a, CudaData b);
+    double *Dot(CudaData a, CudaData b, DimArr dims_src, DimArr dims_dst);
     double *MatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c);
 }
 
@@ -436,6 +501,11 @@ double *Mul(CudaData a, CudaData b)
 double *Div(CudaData a, CudaData b)
 {
     return runBinaryOp(a, b, OP_DIV);
+}
+
+double *Dot(CudaData a, CudaData b, DimArr dims_src, DimArr dims_dst)
+{
+    return runDot(a, b, dims_src, dims_dst);
 }
 
 double *MatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)

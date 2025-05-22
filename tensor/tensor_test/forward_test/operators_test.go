@@ -2008,12 +2008,12 @@ func TestAdd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tensor.Zeros([]int{3, 1, 5, 1, 7}, conf)
+		t1, err = tensor.Zeros([]int{3, 1, 5, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tensor.Ones([]int{1, 2, 3, 4, 1, 6, 7}, conf)
+		t2, err = tensor.Ones([]int{1, 2, 3, 4, 1, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2023,7 +2023,7 @@ func TestAdd(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.Ones([]int{1, 2, 3, 4, 5, 6, 7}, conf)
+		exp, err = tensor.Ones([]int{1, 2, 3, 4, 5, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2142,12 +2142,12 @@ func TestSub(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tensor.Ones([]int{3, 1, 5, 1, 7}, conf)
+		t1, err = tensor.Ones([]int{3, 1, 5, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tensor.Zeros([]int{1, 2, 3, 4, 1, 6, 7}, conf)
+		t2, err = tensor.Zeros([]int{1, 2, 3, 4, 1, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2157,7 +2157,7 @@ func TestSub(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.Ones([]int{1, 2, 3, 4, 5, 6, 7}, conf)
+		exp, err = tensor.Ones([]int{1, 2, 3, 4, 5, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2276,12 +2276,12 @@ func TestMul(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tensor.Ones([]int{3, 1, 5, 1, 7}, conf)
+		t1, err = tensor.Ones([]int{3, 1, 5, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tensor.Zeros([]int{1, 2, 3, 4, 1, 6, 7}, conf)
+		t2, err = tensor.Zeros([]int{1, 2, 3, 4, 1, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2291,7 +2291,7 @@ func TestMul(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.Zeros([]int{1, 2, 3, 4, 5, 6, 7}, conf)
+		exp, err = tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2410,12 +2410,12 @@ func TestDiv(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tensor.Zeros([]int{3, 1, 5, 1, 7}, conf)
+		t1, err = tensor.Zeros([]int{3, 1, 5, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		t2, err = tensor.Ones([]int{1, 2, 3, 4, 1, 6, 7}, conf)
+		t2, err = tensor.Ones([]int{1, 2, 3, 4, 1, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2425,7 +2425,7 @@ func TestDiv(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.Zeros([]int{1, 2, 3, 4, 5, 6, 7}, conf)
+		exp, err = tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2565,7 +2565,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		t2, err = tensor.Ones([]int{1, 2, 3, 4, 1, 6, 1, 8}, conf)
+		t2, err = tensor.Ones([]int{3, 4, 1, 6, 1, 8}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2575,7 +2575,7 @@ func TestDot(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.Full([]int{1, 2, 3, 4, 5, 6, 7}, 8., conf)
+		exp, err = tensor.Full([]int{3, 4, 5, 6, 7}, 8., conf)
 		if err != nil {
 			t.Fatal(err)
 		}

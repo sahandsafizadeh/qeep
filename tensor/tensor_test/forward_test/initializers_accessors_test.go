@@ -1258,24 +1258,24 @@ func TestValidationFullZerosOnes(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.Full([]int{1, 1, 1, 1, 1, 1, 1, 1, 1}, 2., conf)
+		_, err = tensor.Full([]int{1, 1, 1, 1, 1, 1, 1}, 2., conf)
 		if err == nil {
 			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "Full input dimension validation failed: expected at most (8) dimensions: got (9)" {
+		} else if err.Error() != "Full input dimension validation failed: expected at most (6) dimensions: got (7)" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.Zeros([]int{1, 1, 1, 1, 1, 1, 1, 1, 1}, conf)
+		_, err = tensor.Zeros([]int{1, 1, 1, 1, 1, 1, 1}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "Zeros input dimension validation failed: expected at most (8) dimensions: got (9)" {
+		} else if err.Error() != "Zeros input dimension validation failed: expected at most (6) dimensions: got (7)" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.Ones([]int{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, conf)
+		_, err = tensor.Ones([]int{1, 1, 1, 1, 1, 1, 1, 1}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "Ones input dimension validation failed: expected at most (8) dimensions: got (10)" {
+		} else if err.Error() != "Ones input dimension validation failed: expected at most (6) dimensions: got (8)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1378,10 +1378,10 @@ func TestValidationRandU(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.RandU([]int{1, 1, 1, 1, 1, 1, 1, 1, 1}, -1., 1., conf)
+		_, err = tensor.RandU([]int{1, 1, 1, 1, 1, 1, 1}, -1., 1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "RandU input dimension validation failed: expected at most (8) dimensions: got (9)" {
+		} else if err.Error() != "RandU input dimension validation failed: expected at most (6) dimensions: got (7)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1431,10 +1431,10 @@ func TestValidationRandN(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.RandN([]int{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 0., 1., conf)
+		_, err = tensor.RandN([]int{1, 1, 1, 1, 1, 1, 1, 1, 1}, 0., 1., conf)
 		if err == nil {
 			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "RandN input dimension validation failed: expected at most (8) dimensions: got (11)" {
+		} else if err.Error() != "RandN input dimension validation failed: expected at most (6) dimensions: got (9)" {
 			t.Fatal("unexpected error message returned")
 		}
 

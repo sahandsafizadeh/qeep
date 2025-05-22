@@ -1,6 +1,6 @@
 package tensor
 
-const MaxDims = 8
+const MaxDims = 6
 
 type Tensor interface {
 	/*--------------- accessors ---------------*/

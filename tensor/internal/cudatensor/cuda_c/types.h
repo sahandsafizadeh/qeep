@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#define MAX_DIMS 8
+#define MAX_DIMS 6
 
 typedef struct Range
 {

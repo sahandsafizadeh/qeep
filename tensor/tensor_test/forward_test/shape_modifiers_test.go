@@ -978,12 +978,12 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		act, err = ten.Broadcast([]int{6, 5, 4, 4, 3, 3, 3})
+		act, err = ten.Broadcast([]int{6, 5, 4, 3, 3, 3})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.Ones([]int{6, 5, 4, 4, 3, 3, 3}, conf)
+		exp, err = tensor.Ones([]int{6, 5, 4, 3, 3, 3}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1084,10 +1084,10 @@ func TestValidationReshape(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = ten.Reshape([]int{1, 1, 1, 1, 1, 1, 1, 1, 1})
+		_, err = ten.Reshape([]int{1, 1, 1, 1, 1, 1, 1})
 		if err == nil {
 			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "Reshape input shape validation failed: expected at most (8) dimensions: got (9)" {
+		} else if err.Error() != "Reshape input shape validation failed: expected at most (6) dimensions: got (7)" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1166,7 +1166,7 @@ func TestValidationUnSqueeze(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.Zeros([]int{1, 1, 1, 1, 1, 1, 1, 1}, conf)
+		ten, err = tensor.Zeros([]int{1, 1, 1, 1, 1, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1174,7 +1174,7 @@ func TestValidationUnSqueeze(t *testing.T) {
 		_, err = ten.UnSqueeze(2)
 		if err == nil {
 			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "UnSqueeze input dimension validation failed: operation causes tensor to exceed maximum (8) dimensions" {
+		} else if err.Error() != "UnSqueeze input dimension validation failed: operation causes tensor to exceed maximum (6) dimensions" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1334,10 +1334,10 @@ func TestValidationBroadcast(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = ten.Broadcast([]int{1, 1, 1, 1, 1, 1, 1, 1, 1, 1})
+		_, err = ten.Broadcast([]int{1, 1, 1, 1, 1, 1, 1, 1})
 		if err == nil {
 			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "Broadcast input shape validation failed: expected at most (8) dimensions: got (10)" {
+		} else if err.Error() != "Broadcast input shape validation failed: expected at most (6) dimensions: got (8)" {
 			t.Fatal("unexpected error message returned")
 		}
 

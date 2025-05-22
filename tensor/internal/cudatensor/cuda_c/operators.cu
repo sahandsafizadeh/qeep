@@ -175,7 +175,7 @@ __global__ void applyBinaryFuncElemWise(CudaData dst, CudaData src1, CudaData sr
     }
 }
 
-__global__ void applyUncontractedMatMul(
+__global__ void applyMatMul(
     CudaData dst,
     CudaData src1,
     CudaData src2,
@@ -191,14 +191,32 @@ __global__ void applyUncontractedMatMul(
         int lnpos_dst;
         int lnpos_src1;
         int lnpos_src2;
-        MMPoses mmposes;
+        DimArr index_dst;
+        DimArr index_src1;
+        DimArr index_src2;
 
         lnpos_dst = i;
-        mmposes = toUncontractedMatMulPositions(lnpos_dst, rcp_dst, rcp_src1, rcp_src2);
-        lnpos_src1 = mmposes.lnpos_src1;
-        lnpos_src2 = mmposes.lnpos_src2;
+        index_dst = decode(lnpos_dst, rcp_dst);
+        index_src1 = index_dst;
+        index_src2 = index_dst;
 
-        dst.arr[lnpos_dst] = src1.arr[lnpos_src1] * src2.arr[lnpos_src2];
+        size_t n = index_dst.size;
+        size_t cdim = rcp_src1.arr[n - 2];
+        index_src1.arr[n - 2] = index_dst.arr[n - 2];
+        index_src2.arr[n - 1] = index_dst.arr[n - 1];
+
+        double temp = 0.;
+        for (size_t j = 0; j < cdim; j++)
+        {
+            index_src1.arr[n - 1] = j;
+            index_src2.arr[n - 2] = j;
+            lnpos_src1 = encode(index_src1, rcp_src1);
+            lnpos_src2 = encode(index_src2, rcp_src2);
+
+            temp += src1.arr[lnpos_src1] * src2.arr[lnpos_src2];
+        }
+
+        dst.arr[lnpos_dst] = temp;
     }
 }
 
@@ -258,7 +276,7 @@ double *runBinaryOp(CudaData a, CudaData b, OperationType opt)
     return c.arr;
 }
 
-double *runUncontractedMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
+double *runMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
 {
     size_t n = elemcnt(dims_c);
     DimArr rcp_c = rcumprod(dims_c);
@@ -271,7 +289,7 @@ double *runUncontractedMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims
 
     LaunchParams lps = launchParams(c.size);
 
-    applyUncontractedMatMul<<<lps.blockSize, lps.threadSize>>>(c, a, b, rcp_c, rcp_a, rcp_b);
+    applyMatMul<<<lps.blockSize, lps.threadSize>>>(c, a, b, rcp_c, rcp_a, rcp_b);
 
     handleCudaError(
         cudaGetLastError());
@@ -307,7 +325,7 @@ extern "C"
     double *Sub(CudaData a, CudaData b);
     double *Mul(CudaData a, CudaData b);
     double *Div(CudaData a, CudaData b);
-    double *UncontractedMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c);
+    double *MatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c);
 }
 
 double *Scale(CudaData x, double a)
@@ -420,7 +438,7 @@ double *Div(CudaData a, CudaData b)
     return runBinaryOp(a, b, OP_DIV);
 }
 
-double *UncontractedMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
+double *MatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
 {
-    return runUncontractedMatMul(a, b, dims_a, dims_b, dims_c);
+    return runMatMul(a, b, dims_a, dims_b, dims_c);
 }

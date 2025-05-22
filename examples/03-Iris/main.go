@@ -36,7 +36,7 @@ func main() {
 	}
 
 	// Best Accuracy: 0.73
-	// Total Duration (CPU: 21s, CUDA: 6m12s)
+	// Total Duration (CPU: 21s, CUDA: 5m6s)
 }
 
 func run() (result map[string]float64, err error) {

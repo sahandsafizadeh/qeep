@@ -35,7 +35,7 @@ func main() {
 	}
 
 	// Best Mean Squared Error (MSE): 45.44
-	// Total Duration (CPU: 29s, CUDA: 38s)
+	// Total Duration (CPU: 29s, CUDA: 29s)
 }
 
 func run() (result map[string]float64, err error) {

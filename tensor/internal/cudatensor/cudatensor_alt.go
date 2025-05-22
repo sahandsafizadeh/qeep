@@ -6,9 +6,9 @@ package cudatensor
 import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
 const message = `CUDA implementation for tensors is not available:
-(1) make sure you have a working device
-(2) install the CUDA toolkit
-(3) enable cgo in your go tool
+(1) make sure to have a working device
+(2) have the CUDA toolkit installed
+(3) enable cgo in go tool
 (4) use 'cuda' build tag
 `
 

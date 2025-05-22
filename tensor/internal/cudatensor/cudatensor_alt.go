@@ -5,7 +5,12 @@ package cudatensor
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
-const message = "unavailable implementation: tensors on CUDA device require 'cuda' build tag"
+const message = `CUDA implementation for tensors is not available:
+(1) make sure you have a working device
+(2) install the CUDA toolkit
+(3) enable cgo in your go tool
+(4) use 'cuda' build tag
+`
 
 func Full(dims []int, value float64, withGrad bool) (o tensor.Tensor, err error) {
 	panic(message)

@@ -30,12 +30,6 @@ enum OperationType
     OP_DIV,
 };
 
-typedef struct MMPoses
-{
-    int lnpos_src1;
-    int lnpos_src2;
-} MMPoses;
-
 const double DOUBLE_EQUALITY_THRESHOLD = 1e-240;
 
 /* ----- device functions ----- */
@@ -109,37 +103,6 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
     }
 
     return NAN;
-}
-
-__device__ MMPoses toUncontractedMatMulPositions(int lnpos_dst, DimArr rcp_dst, DimArr rcp_src1, DimArr rcp_src2)
-{
-    int lnpos_src1;
-    int lnpos_src2;
-    DimArr index_dst;
-    DimArr index_src1;
-    DimArr index_src2;
-
-    index_dst = decode(lnpos_dst, rcp_dst);
-
-    size_t n = index_dst.size - 1;
-    index_src1.size = n;
-    index_src2.size = n;
-
-    for (size_t i = 0; i < n - 2; i++)
-    {
-        index_src1.arr[i] = index_dst.arr[i];
-        index_src2.arr[i] = index_dst.arr[i];
-    }
-
-    index_src1.arr[n - 2] = index_dst.arr[n - 2];
-    index_src1.arr[n - 1] = index_dst.arr[n];
-    index_src2.arr[n - 2] = index_dst.arr[n];
-    index_src2.arr[n - 1] = index_dst.arr[n - 1];
-
-    lnpos_src1 = encode(index_src1, rcp_src1);
-    lnpos_src2 = encode(index_src2, rcp_src2);
-
-    return (MMPoses){lnpos_src1, lnpos_src2};
 }
 
 __global__ void applyHalfBinaryFuncElemWise(CudaData dst, CudaData src1, double srcc, OperationType opt)

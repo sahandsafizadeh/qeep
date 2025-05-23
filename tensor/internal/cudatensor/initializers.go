@@ -4,7 +4,7 @@
 package cudatensor
 
 /*
-   #cgo LDFLAGS: -L${SRCDIR} -lcudatensor
+   #cgo LDFLAGS: -L${QEEP_LIB_PATH} -lcudatensor
    #include "cuda_c/cudatensor.h"
 */
 import "C"

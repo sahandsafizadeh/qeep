@@ -1,5 +1,5 @@
 # shared libraries
-*.so
+lib/
 
 # dataset files
 *.csv

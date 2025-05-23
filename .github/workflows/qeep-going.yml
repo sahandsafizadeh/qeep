@@ -39,7 +39,7 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.64
+          version: v2.1
 
       - name: Test
         run: bash $SCRIPTS_ROOT/gotest.sh

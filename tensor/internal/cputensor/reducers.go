@@ -39,7 +39,8 @@ func (t *CPUTensor) avg() (data float64) {
 func (t *CPUTensor) _var() (data float64) {
 	xBar := t.mean()
 	sigma := t.reduceByAssociativeFunc(func(s, x reducerPair) reducerPair {
-		xdiff2 := math.Pow(x.value-xBar, 2)
+		xdiff := x.value - xBar
+		xdiff2 := xdiff * xdiff
 		return reducerPair{value: s.value + xdiff2}
 	}, unwrapValue, 0.)
 

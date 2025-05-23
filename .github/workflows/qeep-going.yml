@@ -37,9 +37,9 @@ jobs:
         run: bash $SCRIPTS_ROOT/gofmt.sh
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.59
+          version: v2.1
 
       - name: Test
         run: bash $SCRIPTS_ROOT/gotest.sh

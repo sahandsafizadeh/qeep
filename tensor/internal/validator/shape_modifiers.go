@@ -34,7 +34,7 @@ func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 		return
 	}
 
-	if !(0 <= dim && dim <= len(dims)) {
+	if dim < 0 || dim > len(dims) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d]: got (%d)", len(dims), dim)
 		return
 	}
@@ -43,7 +43,7 @@ func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 }
 
 func ValidateSqueezeDimAgainstDims(dim int, dims []int) (err error) {
-	if !(0 <= dim && dim < len(dims)) {
+	if dim < 0 || dim >= len(dims) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 		return
 	}
@@ -57,7 +57,7 @@ func ValidateSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 }
 
 func ValidateFlattenDimAgainstDims(dim int, dims []int) (err error) {
-	if !(0 <= dim && dim < len(dims)) {
+	if dim < 0 || dim >= len(dims) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 		return
 	}
@@ -78,7 +78,7 @@ func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err e
 		i--
 		j--
 
-		if !(srcDims[i] == dstDims[j] || srcDims[i] == 1) {
+		if srcDims[i] != dstDims[j] && srcDims[i] != 1 {
 			err = fmt.Errorf("expected target shape to be (%d) or source size to be (1) at dimension (%d): got shape (%d)", srcDims[i], j, dstDims[j])
 			return
 		}

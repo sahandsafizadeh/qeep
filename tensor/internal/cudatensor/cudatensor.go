@@ -12,6 +12,9 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/validator"
 )
 
+// used for device selection at tests
+const IsAvailable = true
+
 func Full(dims []int, value float64, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDims(dims)
 	if err != nil {

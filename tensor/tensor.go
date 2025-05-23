@@ -230,7 +230,12 @@ func validateImplementationsUnity(ts []tensor.Tensor) (err error) {
 /* ----- testing helpers ----- */
 
 func RunTestLogicOnDevices(testLogic func(Device)) {
-	devices := []Device{CPU, CUDA}
+	devices := []Device{CPU}
+
+	if cudatensor.IsAvailable {
+		devices = append(devices, CUDA)
+	}
+
 	for _, dev := range devices {
 		testLogic(dev)
 	}

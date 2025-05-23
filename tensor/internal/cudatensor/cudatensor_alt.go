@@ -5,6 +5,9 @@ package cudatensor
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
+// used for device selection at tests
+const IsAvailable = false
+
 const message = `CUDA implementation for tensors is not available:
 (1) make sure you have a working device
 (2) make sure you have the CUDA toolkit installed

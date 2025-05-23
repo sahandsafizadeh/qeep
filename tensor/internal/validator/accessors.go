@@ -13,7 +13,7 @@ func ValidateAtIndexAgainstDims(index []int, dims []int) (err error) {
 	}
 
 	for i, idx := range index {
-		if !(0 <= idx && idx < dims[i]) {
+		if idx < 0 || idx >= dims[i] {
 			err = fmt.Errorf("expected index to be in range [0,%d) at dimension (%d): got (%d)", dims[i], i, idx)
 			return
 		}

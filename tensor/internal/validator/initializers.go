@@ -113,7 +113,7 @@ func ValidateConcatTensorsDimsAlongDim(tsDims [][]int, dim int) (err error) {
 			return
 		}
 
-		if !(0 <= dim && dim < len(base)) {
+		if dim < 0 || dim >= len(base) {
 			err = fmt.Errorf("expected concat dimension to be in range [0,%d): got (%d)", len(base), dim)
 			return
 		}

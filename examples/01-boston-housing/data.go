@@ -29,7 +29,7 @@ func loadData() (x [][]float64, y [][]float64, err error) {
 	}
 
 	defer func() {
-		_ = file.Close()
+		err = file.Close()
 	}()
 
 	for fscan := bufio.NewScanner(file); fscan.Scan(); {

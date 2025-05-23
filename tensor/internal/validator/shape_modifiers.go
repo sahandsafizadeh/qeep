@@ -24,7 +24,7 @@ func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err err
 }
 
 func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
-	if !(0 <= dim && dim <= len(dims)) {
+	if dim < 0 || dim > len(dims) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d]: got (%d)", len(dims), dim)
 		return
 	}
@@ -33,7 +33,7 @@ func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 }
 
 func ValidateSqueezeDimAgainstDims(dim int, dims []int) (err error) {
-	if !(0 <= dim && dim < len(dims)) {
+	if dim < 0 || dim >= len(dims) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 		return
 	}
@@ -47,7 +47,7 @@ func ValidateSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 }
 
 func ValidateFlattenDimAgainstDims(dim int, dims []int) (err error) {
-	if !(0 <= dim && dim < len(dims)) {
+	if dim < 0 || dim >= len(dims) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 		return
 	}

@@ -22,12 +22,13 @@ func TestFC(t *testing.T) {
 				"Weight": initializers.NewFull(&initializers.FullConfig{Value: 3.}),
 				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: 1.}),
 			},
+			Device: dev,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x, err := tensor.TensorOf([][]float64{{-1.}}, conf)
+		x, err := tensor.Of([][]float64{{-1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -37,7 +38,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf([][]float64{{-2.}}, conf)
+		exp, err := tensor.Of([][]float64{{-2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -57,12 +58,13 @@ func TestFC(t *testing.T) {
 				"Weight": initializers.NewFull(&initializers.FullConfig{Value: -2.}),
 				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: 3.}),
 			},
+			Device: dev,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x, err = tensor.TensorOf([][]float64{{-2., 0., 1., 2.}}, conf)
+		x, err = tensor.Of([][]float64{{-2., 0., 1., 2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -72,7 +74,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{1.}}, conf)
+		exp, err = tensor.Of([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -92,12 +94,13 @@ func TestFC(t *testing.T) {
 				"Weight": initializers.NewFull(&initializers.FullConfig{Value: 5.}),
 				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: -1.}),
 			},
+			Device: dev,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x, err = tensor.TensorOf([][]float64{{-3., -2., 1., 1., 5.}}, conf)
+		x, err = tensor.Of([][]float64{{-3., -2., 1., 1., 5.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -107,7 +110,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{9., 9.}}, conf)
+		exp, err = tensor.Of([][]float64{{9., 9.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -127,12 +130,13 @@ func TestFC(t *testing.T) {
 				"Weight": initializers.NewFull(&initializers.FullConfig{Value: 2.}),
 				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: 1.}),
 			},
+			Device: dev,
 		})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		x, err = tensor.TensorOf([][]float64{
+		x, err = tensor.Of([][]float64{
 			{0., 1., 2., 3., 4., 5., 6., 7.},
 			{1., 2., 3., 4., 5., 6., 7., 8.},
 			{2., 3., 4., 5., 6., 7., 8., 9.},
@@ -147,7 +151,7 @@ func TestFC(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{57., 57., 57.},
 			{73., 73., 73.},
 			{89., 89., 89.},
@@ -330,6 +334,7 @@ func TestValidationFC(t *testing.T) {
 		layer, err := layers.NewFC(&layers.FCConfig{
 			Inputs:  1,
 			Outputs: 1,
+			Device:  dev,
 		})
 		if err != nil {
 			t.Fatal(err)
@@ -389,14 +394,14 @@ type zeroDInitializer struct{}
 type twoDInitializer struct{}
 type wrong1DInitializer struct{}
 
-func (c *zeroDInitializer) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *zeroDInitializer) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	return tensor.Zeros(nil, nil)
 }
 
-func (c *twoDInitializer) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *twoDInitializer) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	return tensor.Zeros([]int{1, 1}, nil)
 }
 
-func (c *wrong1DInitializer) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *wrong1DInitializer) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	return tensor.Zeros([]int{shape[0] + 1}, nil)
 }

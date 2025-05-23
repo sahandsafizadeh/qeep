@@ -16,7 +16,7 @@ func TestRelu(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([][]float64{
+		x, err := tensor.Of([][]float64{
 			{-2., -1., -0.01},
 			{0., 0., 0.},
 			{0.01, 1., 2.},
@@ -30,7 +30,7 @@ func TestRelu(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf([][]float64{
+		exp, err := tensor.Of([][]float64{
 			{0., 0., 0.},
 			{0., 0., 0.},
 			{0.01, 1., 2.},

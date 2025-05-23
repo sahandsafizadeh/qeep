@@ -12,173 +12,175 @@ import (
 )
 
 func TestNodeInitialization(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
-	lp1 := activations.NewTanh()
-	lp2 := activations.NewTanh()
-	lp3 := activations.NewTanh()
-	lm1 := activations.NewRelu()
-	lc1 := activations.NewSigmoid()
-	lc2 := activations.NewSigmoid()
+		lp1 := activations.NewTanh()
+		lp2 := activations.NewTanh()
+		lp3 := activations.NewTanh()
+		lm1 := activations.NewRelu()
+		lc1 := activations.NewSigmoid()
+		lc2 := activations.NewSigmoid()
 
-	np1 := node.NewNode(lp1)
-	np2 := node.NewNode(lp2)
-	np3 := node.NewNode(lp3)
-	nm1 := node.NewNode(lm1)
-	nc1 := node.NewNode(lc1)
-	nc2 := node.NewNode(lc2)
+		np1 := node.NewNode(lp1)
+		np2 := node.NewNode(lp2)
+		np3 := node.NewNode(lp3)
+		nm1 := node.NewNode(lm1)
+		nc1 := node.NewNode(lc1)
+		nc2 := node.NewNode(lc2)
 
-	np1.AddChild(nm1)
-	np2.AddChild(nm1)
-	np3.AddChild(nm1)
-	nm1.AddParent(np1)
-	nm1.AddParent(np2)
-	nm1.AddParent(np3)
-	nm1.AddChild(nc1)
-	nm1.AddChild(nc2)
-	nc1.AddParent(nm1)
-	nc2.AddParent(nm1)
+		np1.AddChild(nm1)
+		np2.AddChild(nm1)
+		np3.AddChild(nm1)
+		nm1.AddParent(np1)
+		nm1.AddParent(np2)
+		nm1.AddParent(np3)
+		nm1.AddChild(nc1)
+		nm1.AddChild(nc2)
+		nc1.AddParent(nm1)
+		nc2.AddParent(nm1)
 
-	np1.SetNLayer(0)
-	np2.SetNLayer(0)
-	np3.SetNLayer(0)
-	nm1.SetNLayer(1)
-	nc1.SetNLayer(2)
-	nc2.SetNLayer(2)
+		np1.SetNLayer(0)
+		np2.SetNLayer(0)
+		np3.SetNLayer(0)
+		nm1.SetNLayer(1)
+		nc1.SetNLayer(2)
+		nc2.SetNLayer(2)
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
-	if np1.Layer() != lp1 {
-		t.Fatalf("unexpected node Layer")
-	}
+		if np1.Layer() != lp1 {
+			t.Fatalf("unexpected node Layer")
+		}
 
-	if np2.Layer() != lp2 {
-		t.Fatalf("unexpected node Layer")
-	}
+		if np2.Layer() != lp2 {
+			t.Fatalf("unexpected node Layer")
+		}
 
-	if np3.Layer() != lp3 {
-		t.Fatalf("unexpected node Layer")
-	}
+		if np3.Layer() != lp3 {
+			t.Fatalf("unexpected node Layer")
+		}
 
-	if nm1.Layer() != lm1 {
-		t.Fatalf("unexpected node Layer")
-	}
+		if nm1.Layer() != lm1 {
+			t.Fatalf("unexpected node Layer")
+		}
 
-	if nc1.Layer() != lc1 {
-		t.Fatalf("unexpected node Layer")
-	}
+		if nc1.Layer() != lc1 {
+			t.Fatalf("unexpected node Layer")
+		}
 
-	if nc2.Layer() != lc2 {
-		t.Fatalf("unexpected node Layer")
-	}
+		if nc2.Layer() != lc2 {
+			t.Fatalf("unexpected node Layer")
+		}
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
-	if np1.Result() != nil {
-		t.Fatalf("unexpected node Result")
-	}
+		if np1.Result() != nil {
+			t.Fatalf("unexpected node Result")
+		}
 
-	if np2.Result() != nil {
-		t.Fatalf("unexpected node Result")
-	}
+		if np2.Result() != nil {
+			t.Fatalf("unexpected node Result")
+		}
 
-	if np3.Result() != nil {
-		t.Fatalf("unexpected node Result")
-	}
+		if np3.Result() != nil {
+			t.Fatalf("unexpected node Result")
+		}
 
-	if nm1.Result() != nil {
-		t.Fatalf("unexpected node Result")
-	}
+		if nm1.Result() != nil {
+			t.Fatalf("unexpected node Result")
+		}
 
-	if nc1.Result() != nil {
-		t.Fatalf("unexpected node Result")
-	}
+		if nc1.Result() != nil {
+			t.Fatalf("unexpected node Result")
+		}
 
-	if nc2.Result() != nil {
-		t.Fatalf("unexpected node Result")
-	}
+		if nc2.Result() != nil {
+			t.Fatalf("unexpected node Result")
+		}
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
-	if !slices.Equal(np1.Parents(), nil) {
-		t.Fatalf("unexpected node Parents")
-	}
+		if !slices.Equal(np1.Parents(), nil) {
+			t.Fatalf("unexpected node Parents")
+		}
 
-	if !slices.Equal(np2.Parents(), nil) {
-		t.Fatalf("unexpected node Parents")
-	}
+		if !slices.Equal(np2.Parents(), nil) {
+			t.Fatalf("unexpected node Parents")
+		}
 
-	if !slices.Equal(np3.Parents(), nil) {
-		t.Fatalf("unexpected node Parents")
-	}
+		if !slices.Equal(np3.Parents(), nil) {
+			t.Fatalf("unexpected node Parents")
+		}
 
-	if !slices.Equal(nm1.Parents(), []*node.Node{np1, np2, np3}) {
-		t.Fatalf("unexpected node Parents")
-	}
+		if !slices.Equal(nm1.Parents(), []*node.Node{np1, np2, np3}) {
+			t.Fatalf("unexpected node Parents")
+		}
 
-	if !slices.Equal(nc1.Parents(), []*node.Node{nm1}) {
-		t.Fatalf("unexpected node Parents")
-	}
+		if !slices.Equal(nc1.Parents(), []*node.Node{nm1}) {
+			t.Fatalf("unexpected node Parents")
+		}
 
-	if !slices.Equal(nc2.Parents(), []*node.Node{nm1}) {
-		t.Fatalf("unexpected node Parents")
-	}
+		if !slices.Equal(nc2.Parents(), []*node.Node{nm1}) {
+			t.Fatalf("unexpected node Parents")
+		}
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
-	if !slices.Equal(np1.Children(), []*node.Node{nm1}) {
-		t.Fatalf("unexpected node Children")
-	}
+		if !slices.Equal(np1.Children(), []*node.Node{nm1}) {
+			t.Fatalf("unexpected node Children")
+		}
 
-	if !slices.Equal(np2.Children(), []*node.Node{nm1}) {
-		t.Fatalf("unexpected node Children")
-	}
+		if !slices.Equal(np2.Children(), []*node.Node{nm1}) {
+			t.Fatalf("unexpected node Children")
+		}
 
-	if !slices.Equal(np3.Children(), []*node.Node{nm1}) {
-		t.Fatalf("unexpected node Children")
-	}
+		if !slices.Equal(np3.Children(), []*node.Node{nm1}) {
+			t.Fatalf("unexpected node Children")
+		}
 
-	if !slices.Equal(nm1.Children(), []*node.Node{nc1, nc2}) {
-		t.Fatalf("unexpected node Children")
-	}
+		if !slices.Equal(nm1.Children(), []*node.Node{nc1, nc2}) {
+			t.Fatalf("unexpected node Children")
+		}
 
-	if !slices.Equal(nc1.Children(), nil) {
-		t.Fatalf("unexpected node Children")
-	}
+		if !slices.Equal(nc1.Children(), nil) {
+			t.Fatalf("unexpected node Children")
+		}
 
-	if !slices.Equal(nc2.Children(), nil) {
-		t.Fatalf("unexpected node Children")
-	}
+		if !slices.Equal(nc2.Children(), nil) {
+			t.Fatalf("unexpected node Children")
+		}
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
-	if np1.NLayer() != 0 {
-		t.Fatalf("unexpected node NLayer")
-	}
+		if np1.NLayer() != 0 {
+			t.Fatalf("unexpected node NLayer")
+		}
 
-	if np2.NLayer() != 0 {
-		t.Fatalf("unexpected node NLayer")
-	}
+		if np2.NLayer() != 0 {
+			t.Fatalf("unexpected node NLayer")
+		}
 
-	if np3.NLayer() != 0 {
-		t.Fatalf("unexpected node NLayer")
-	}
+		if np3.NLayer() != 0 {
+			t.Fatalf("unexpected node NLayer")
+		}
 
-	if nm1.NLayer() != 1 {
-		t.Fatalf("unexpected node NLayer")
-	}
+		if nm1.NLayer() != 1 {
+			t.Fatalf("unexpected node NLayer")
+		}
 
-	if nc1.NLayer() != 2 {
-		t.Fatalf("unexpected node NLayer")
-	}
+		if nc1.NLayer() != 2 {
+			t.Fatalf("unexpected node NLayer")
+		}
 
-	if nc2.NLayer() != 2 {
-		t.Fatalf("unexpected node NLayer")
-	}
+		if nc2.NLayer() != 2 {
+			t.Fatalf("unexpected node NLayer")
+		}
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
+	})
 }
 
 func TestNodeOperation(t *testing.T) {

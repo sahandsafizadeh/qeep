@@ -1,6 +1,11 @@
 package validator
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+)
 
 func ValidateTransposeDims(dims []int) (err error) {
 	if len(dims) < 2 {
@@ -12,8 +17,8 @@ func ValidateTransposeDims(dims []int) (err error) {
 }
 
 func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err error) {
-	srcElems := dimsToNumElems(srcDims)
-	dstElems := dimsToNumElems(dstDims)
+	srcElems := util.DimsToNumElems(srcDims)
+	dstElems := util.DimsToNumElems(dstDims)
 
 	if dstElems != srcElems {
 		err = fmt.Errorf("expected number of elements in source and target tensors to match: (%d) != (%d)", srcElems, dstElems)
@@ -24,6 +29,11 @@ func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err err
 }
 
 func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
+	if len(dims) == tensor.MaxDims {
+		err = fmt.Errorf("operation causes tensor to exceed maximum (%d) dimensions", tensor.MaxDims)
+		return
+	}
+
 	if dim < 0 || dim > len(dims) {
 		err = fmt.Errorf("expected dimension to be in range [0,%d]: got (%d)", len(dims), dim)
 		return
@@ -75,15 +85,4 @@ func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err e
 	}
 
 	return nil
-}
-
-/* ----- helpers ----- */
-
-func dimsToNumElems(dims []int) (elems int) {
-	elems = 1
-	for _, dim := range dims {
-		elems *= dim
-	}
-
-	return elems
 }

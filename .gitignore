@@ -1,5 +1,8 @@
-# coverage output files
-*.out
+# shared libraries
+lib/
 
 # dataset files
 *.csv
+
+# coverage output files
+*.out

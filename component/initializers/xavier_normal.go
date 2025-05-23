@@ -30,9 +30,9 @@ func NewXavierNormal(conf *XavierNormalConfig) (c *XavierNormal, err error) {
 	}, nil
 }
 
-func (c *XavierNormal) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *XavierNormal) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	s := math.Sqrt(2. / float64(c.fanIn+c.fanOut))
-	return tensor.RandN(shape, 0., s, tensorInitConf())
+	return tensor.RandN(shape, 0., s, tensorInitConf(device))
 }
 
 /* ----- helpers ----- */

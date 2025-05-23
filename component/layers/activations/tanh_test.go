@@ -17,7 +17,7 @@ func TestTanh(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf(1., conf)
+		x, err := tensor.Of(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}

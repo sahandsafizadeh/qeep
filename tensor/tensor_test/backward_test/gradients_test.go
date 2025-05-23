@@ -170,7 +170,7 @@ func TestSlice(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([][]float64{
+		x, err := tensor.Of([][]float64{
 			{0., 1., 2., 3., 4.},
 			{5., 6., 7., 8., 9.},
 			{4., 3., 2., 1., 0.},
@@ -194,7 +194,7 @@ func TestSlice(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := tensor.TensorOf([][]float64{
+		exp, err := tensor.Of([][]float64{
 			{0., 0., 0., 0., 0.},
 			{0., 1., 1., 1., 0.},
 			{0., 1., 1., 1., 0.},
@@ -253,7 +253,7 @@ func TestPatch(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([][]float64{
+		x, err := tensor.Of([][]float64{
 			{0., 1., 2., 3., 4.},
 			{5., 6., 7., 8., 9.},
 			{4., 3., 2., 1., 0.},
@@ -263,7 +263,7 @@ func TestPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		p, err := tensor.TensorOf([][]float64{
+		p, err := tensor.Of([][]float64{
 			{-1., -2., -3.},
 			{-4., -5., -6.},
 			{-7., -8., -9.},
@@ -286,7 +286,7 @@ func TestPatch(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := tensor.TensorOf([][]float64{
+		exp, err := tensor.Of([][]float64{
 			{1., 1., 1., 1., 1.},
 			{1., 0., 0., 0., 1.},
 			{1., 0., 0., 0., 1.},
@@ -308,7 +308,7 @@ func TestPatch(t *testing.T) {
 
 		act = p.Gradient()
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{1., 1., 1.},
 			{1., 1., 1.},
 			{1., 1., 1.},
@@ -861,7 +861,7 @@ func TestSum(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([][][]float64{
+		x, err := tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -893,7 +893,7 @@ func TestSum(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := tensor.TensorOf([][][]float64{
+		exp, err := tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{1., 1., 1., 1.},
@@ -960,7 +960,7 @@ func TestMax(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([][][]float64{
+		x, err := tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -992,7 +992,7 @@ func TestMax(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := tensor.TensorOf([][][]float64{
+		exp, err := tensor.Of([][][]float64{
 			{
 				{0., 0., 0., 0.},
 				{0., 0., 0., 0.},
@@ -1059,7 +1059,7 @@ func TestMin(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([][][]float64{
+		x, err := tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1091,7 +1091,7 @@ func TestMin(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := tensor.TensorOf([][][]float64{
+		exp, err := tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{0., 0., 0., 0.},
@@ -1158,7 +1158,7 @@ func TestAvg(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([][][]float64{
+		x, err := tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1190,7 +1190,7 @@ func TestAvg(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := tensor.TensorOf([][][]float64{
+		exp, err := tensor.Of([][][]float64{
 			{
 				{0.25, 0.25, 0.25, 0.25},
 				{0.25, 0.25, 0.25, 0.25},
@@ -1291,7 +1291,7 @@ func TestVar(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = tensor.TensorOf([][][]float64{
+		x, err = tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1321,7 +1321,7 @@ func TestVar(t *testing.T) {
 
 		act = x.Gradient()
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{-1., -1., -1., -1.},
 				{0., 0., 0., 0.},
@@ -1420,7 +1420,7 @@ func TestStd(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err = tensor.TensorOf([][][]float64{
+		x, err = tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1450,7 +1450,7 @@ func TestStd(t *testing.T) {
 
 		act = x.Gradient()
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{-0.5, -0.5, -0.5, -0.5},
 				{0., 0., 0., 0.},
@@ -1515,7 +1515,7 @@ func TestMean(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := tensor.TensorOf([][][]float64{
+		x, err := tensor.Of([][][]float64{
 			{
 				{1., 1., 1., 1.},
 				{2., 2., 2., 2.},
@@ -1547,7 +1547,7 @@ func TestMean(t *testing.T) {
 
 		act := x.Gradient()
 
-		exp, err := tensor.TensorOf([][][]float64{
+		exp, err := tensor.Of([][][]float64{
 			{
 				{0.25, 0.25, 0.25, 0.25},
 				{0.25, 0.25, 0.25, 0.25},

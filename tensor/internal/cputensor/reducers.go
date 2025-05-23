@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 func (t *CPUTensor) sum() (data float64) {
@@ -126,7 +127,7 @@ func (t *CPUTensor) reduceByAssociativeFunc(af reducerFunc, uf reducerUnwrapFunc
 }
 
 func (t *CPUTensor) reduceDimUsingTensorFunc(dim int, rtf reducerTensorFunc) (o *CPUTensor) {
-	dims := squeezeDims(dim, t.dims)
+	dims := util.SqueezeDims(dim, t.dims)
 	elemGen := t.linearElemGeneratorWithReducedDim(dim, rtf)
 
 	o = new(CPUTensor)
@@ -138,7 +139,7 @@ func (t *CPUTensor) reduceDimUsingTensorFunc(dim int, rtf reducerTensorFunc) (o 
 
 func (t *CPUTensor) linearElemGeneratorWithReducedDim(dim int, rtf reducerTensorFunc) initializerFunc {
 	state := make([]tensor.Range, len(t.dims))
-	for i := 0; i < len(state); i++ {
+	for i := range state {
 		state[i].From = 0
 		state[i].To = 1
 	}

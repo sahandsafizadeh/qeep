@@ -9,7 +9,7 @@ import (
 )
 
 func TestXavierUniform(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(_ tensor.Device) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		initializer, err := initializers.NewXavierUniform(&initializers.XavierUniformConfig{
 			FanIn:  16,
@@ -21,7 +21,7 @@ func TestXavierUniform(t *testing.T) {
 
 		/* ------------------------------ */
 
-		x, err := initializer.Init([]int{32, 32})
+		x, err := initializer.Init([]int{32, 32}, dev)
 		if err != nil {
 			t.Fatal(err)
 		}

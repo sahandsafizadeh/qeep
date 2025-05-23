@@ -66,10 +66,10 @@ func TestFullEyeAt(t *testing.T) {
 		}
 
 		var i, j, k, u int
-		for i = 0; i < 4; i++ {
-			for j = 0; j < 3; j++ {
-				for k = 0; k < 2; k++ {
-					for u = 0; u < 1; u++ {
+		for i = range 4 {
+			for j = range 3 {
+				for k = range 2 {
+					for u = range 1 {
 						if val, err := ten.At(i, j, k, u); err != nil {
 							t.Fatal(err)
 						} else if int(val) != 5 {
@@ -100,8 +100,8 @@ func TestFullEyeAt(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		for i = 0; i < 5; i++ {
-			for j = 0; j < 5; j++ {
+		for i = range 5 {
+			for j = range 5 {
 				val, err := ten.At(i, j)
 				if err != nil {
 					t.Fatal(err)
@@ -143,14 +143,14 @@ func TestFullEyeAt(t *testing.T) {
 	})
 }
 
-func TestTensorOfSliceEquals(t *testing.T) {
+func TestOfSliceEquals(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		ten, err := tensor.TensorOf(2., conf)
+		ten, err := tensor.Of(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -160,7 +160,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf(2., conf)
+		exp, err := tensor.Of(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -173,7 +173,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([]float64{3.}, conf)
+		ten, err = tensor.Of([]float64{3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -183,7 +183,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([]float64{3.}, conf)
+		exp, err = tensor.Of([]float64{3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -196,7 +196,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([]float64{4.}, conf)
+		ten, err = tensor.Of([]float64{4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -206,7 +206,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([]float64{4.}, conf)
+		exp, err = tensor.Of([]float64{4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -219,7 +219,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([]float64{1., 4.}, conf)
+		ten, err = tensor.Of([]float64{1., 4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -229,7 +229,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([]float64{1.}, conf)
+		exp, err = tensor.Of([]float64{1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -247,7 +247,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([]float64{4.}, conf)
+		exp, err = tensor.Of([]float64{4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -265,7 +265,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([]float64{1., 4.}, conf)
+		exp, err = tensor.Of([]float64{1., 4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -278,7 +278,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][]float64{{-1.}, {-2.}}, conf)
+		ten, err = tensor.Of([][]float64{{-1.}, {-2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -288,7 +288,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{-1.}}, conf)
+		exp, err = tensor.Of([][]float64{{-1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -306,7 +306,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{-2.}}, conf)
+		exp, err = tensor.Of([][]float64{{-2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -324,7 +324,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{{-1.}, {-2.}}, conf)
+		exp, err = tensor.Of([][]float64{{-1.}, {-2.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -337,7 +337,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][][]float64{
+		ten, err = tensor.Of([][][]float64{
 			{
 				{-1., 9., -5.},
 				{2., 4., 6.},
@@ -363,7 +363,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{{2., 4., 6.}},
 			{{9., 7., 5.}},
 			{{1., 2., 6.}},
@@ -385,7 +385,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{9., -5.},
 				{4., 6.},
@@ -409,7 +409,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([][][][]float64{
+		ten, err = tensor.Of([][][][]float64{
 			{
 				{
 					{1., 2., 3., 4.},
@@ -432,7 +432,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][][]float64{
+		exp, err = tensor.Of([][][][]float64{
 			{
 				{
 					{1., 2., 3., 4.},
@@ -454,7 +454,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		d1 := []float64{5.}
 
-		ten, err = tensor.TensorOf(d1, conf)
+		ten, err = tensor.Of(d1, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -466,7 +466,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([]float64{5.}, conf)
+		exp, err = tensor.Of([]float64{5.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -481,7 +481,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 
 		d4 := [][][][]float64{{{{5.}}}}
 
-		ten, err = tensor.TensorOf(d4, conf)
+		ten, err = tensor.Of(d4, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -493,7 +493,7 @@ func TestTensorOfSliceEquals(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][][]float64{{{{5.}}}}, conf)
+		exp, err = tensor.Of([][][][]float64{{{{5.}}}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -531,7 +531,7 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err := tensor.TensorOf(1., conf)
+		exp, err := tensor.Of(1., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -559,7 +559,7 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([]float64{0., 1.}, conf)
+		exp, err = tensor.Of([]float64{0., 1.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -589,7 +589,7 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{1., 1., 0.},
 			{1., 1., 0.},
 			{0., 0., 0.},
@@ -611,7 +611,7 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{0., 1., 1.},
 			{0., 1., 1.},
 			{0., 0., 0.},
@@ -633,7 +633,7 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{0., 0., 0.},
 			{1., 1., 0.},
 			{1., 1., 0.},
@@ -655,7 +655,7 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][]float64{
+		exp, err = tensor.Of([][]float64{
 			{0., 0., 0.},
 			{0., 1., 1.},
 			{0., 1., 1.},
@@ -682,12 +682,14 @@ func TestZerosOnesPatch(t *testing.T) {
 			t.Fatal(err)
 		}
 
+		/* --------------- */
+
 		act, err = t1.Patch(nil, t2)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{1., 0.},
 				{1., 0.},
@@ -707,6 +709,84 @@ func TestZerosOnesPatch(t *testing.T) {
 				{0., 0.},
 				{0., 0.},
 				{0., 0.},
+			},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = t1.Patch([]tensor.Range{{From: 1, To: 4}}, t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.Of([][][]float64{
+			{
+				{0., 0.},
+				{0., 0.},
+				{0., 0.},
+			},
+			{
+				{1., 0.},
+				{1., 0.},
+				{0., 0.},
+			},
+			{
+				{1., 0.},
+				{1., 0.},
+				{0., 0.},
+			},
+			{
+				{1., 0.},
+				{1., 0.},
+				{0., 0.},
+			},
+		}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if eq, err := act.Equals(exp); err != nil {
+			t.Fatal(err)
+		} else if !eq {
+			t.Fatalf("expected tensors to be equal")
+		}
+
+		/* --------------- */
+
+		act, err = t1.Patch([]tensor.Range{{From: 1, To: 4}, {From: 1, To: 3}, {From: 1, To: 2}}, t2)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		exp, err = tensor.Of([][][]float64{
+			{
+				{0., 0.},
+				{0., 0.},
+				{0., 0.},
+			},
+			{
+				{0., 0.},
+				{0., 1.},
+				{0., 1.},
+			},
+			{
+				{0., 0.},
+				{0., 1.},
+				{0., 1.},
+			},
+			{
+				{0., 0.},
+				{0., 1.},
+				{0., 1.},
 			},
 		}, conf)
 		if err != nil {
@@ -879,7 +959,7 @@ func TestConcat(t *testing.T) {
 
 		/* ------------------------------ */
 
-		t1, err = tensor.TensorOf([][][]float64{
+		t1, err = tensor.Of([][][]float64{
 			{
 				{0., 1., 2.},
 				{3., 4., 5.},
@@ -904,7 +984,7 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{0., 1., 2.},
 				{3., 4., 5.},
@@ -935,7 +1015,7 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{0., 1., 2.},
 				{3., 4., 5.},
@@ -962,7 +1042,7 @@ func TestConcat(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		exp, err = tensor.TensorOf([][][]float64{
+		exp, err = tensor.Of([][][]float64{
 			{
 				{0., 1., 2., 0., 1., 2., 0., 1., 2.},
 				{3., 4., 5., 3., 4., 5., 3., 4., 5.},
@@ -1178,6 +1258,27 @@ func TestValidationFullZerosOnes(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
+		_, err = tensor.Full([]int{1, 1, 1, 1, 1, 1, 1}, 2., conf)
+		if err == nil {
+			t.Fatalf("expected error because of too many dimensions")
+		} else if err.Error() != "Full input dimension validation failed: expected at most (6) dimensions: got (7)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = tensor.Zeros([]int{1, 1, 1, 1, 1, 1, 1}, conf)
+		if err == nil {
+			t.Fatalf("expected error because of too many dimensions")
+		} else if err.Error() != "Zeros input dimension validation failed: expected at most (6) dimensions: got (7)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		_, err = tensor.Ones([]int{1, 1, 1, 1, 1, 1, 1, 1}, conf)
+		if err == nil {
+			t.Fatalf("expected error because of too many dimensions")
+		} else if err.Error() != "Ones input dimension validation failed: expected at most (6) dimensions: got (8)" {
+			t.Fatal("unexpected error message returned")
+		}
+
 		/* ------------------------------ */
 
 		conf = &tensor.Config{Device: -1}
@@ -1277,6 +1378,13 @@ func TestValidationRandU(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
+		_, err = tensor.RandU([]int{1, 1, 1, 1, 1, 1, 1}, -1., 1., conf)
+		if err == nil {
+			t.Fatalf("expected error because of too many dimensions")
+		} else if err.Error() != "RandU input dimension validation failed: expected at most (6) dimensions: got (7)" {
+			t.Fatal("unexpected error message returned")
+		}
+
 		/* ------------------------------ */
 
 		conf = &tensor.Config{Device: -1}
@@ -1323,6 +1431,13 @@ func TestValidationRandN(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
+		_, err = tensor.RandN([]int{1, 1, 1, 1, 1, 1, 1, 1, 1}, 0., 1., conf)
+		if err == nil {
+			t.Fatalf("expected error because of too many dimensions")
+		} else if err.Error() != "RandN input dimension validation failed: expected at most (6) dimensions: got (9)" {
+			t.Fatal("unexpected error message returned")
+		}
+
 		/* ------------------------------ */
 
 		conf = &tensor.Config{Device: -1}
@@ -1341,67 +1456,67 @@ func TestValidationRandN(t *testing.T) {
 	})
 }
 
-func TestValidationTensorOf(t *testing.T) {
+func TestValidationOf(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		conf := &tensor.Config{Device: dev}
 
 		/* ------------------------------ */
 
-		_, err := tensor.TensorOf([]float64{}, conf)
+		_, err := tensor.Of([]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.TensorOf([][]float64{}, conf)
+		_, err = tensor.Of([][]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.TensorOf([][][]float64{}, conf)
+		_, err = tensor.Of([][][]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.TensorOf([][][][]float64{}, conf)
+		_, err = tensor.Of([][][][]float64{}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (0)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		_, err = tensor.TensorOf([][]float64{{}, {}}, conf)
+		_, err = tensor.Of([][]float64{{}, {}}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (1)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.TensorOf([][]float64{{}, {-1.}}, conf)
+		_, err = tensor.Of([][]float64{{}, {-1.}}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (1)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.TensorOf([][][]float64{{{}}}, conf)
+		_, err = tensor.Of([][][]float64{{{}}}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of zero len along dimension (1)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to not have zero length along any dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to not have zero length along any dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */
 
-		_, err = tensor.TensorOf([][][]float64{
+		_, err = tensor.Of([][][]float64{
 			{
 				{2., 2., 2.},
 				{2., 2., 2.},
@@ -1420,11 +1535,11 @@ func TestValidationTensorOf(t *testing.T) {
 		}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to have have equal length along every dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to have have equal length along every dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.TensorOf([][][][]float64{
+		_, err = tensor.Of([][][][]float64{
 			{
 				{
 					{3., 3., 3.},
@@ -1444,11 +1559,11 @@ func TestValidationTensorOf(t *testing.T) {
 		}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to have have equal length along every dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to have have equal length along every dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = tensor.TensorOf([][][][]float64{
+		_, err = tensor.Of([][][][]float64{
 			{
 				{{3., 3., 3.}},
 				{{3., 3., 3.}},
@@ -1461,7 +1576,7 @@ func TestValidationTensorOf(t *testing.T) {
 		}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of inconsistent tensor len along dimension (2)")
-		} else if err.Error() != "TensorOf input data validation failed: expected data to have have equal length along every dimension" {
+		} else if err.Error() != "Of input data validation failed: expected data to have have equal length along every dimension" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1471,10 +1586,10 @@ func TestValidationTensorOf(t *testing.T) {
 
 		/* ------------------------------ */
 
-		_, err = tensor.TensorOf([]float64{1}, conf)
+		_, err = tensor.Of([]float64{1}, conf)
 		if err == nil {
 			t.Fatalf("expected error because of invalid input device")
-		} else if err.Error() != "TensorOf tensor config data validation failed: invalid input device" {
+		} else if err.Error() != "Of tensor config data validation failed: invalid input device" {
 			t.Fatal("unexpected error message returned")
 		}
 
@@ -1770,7 +1885,7 @@ func TestValidationSlice(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err := tensor.TensorOf(2., conf)
+		ten, err := tensor.Of(2., conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1784,7 +1899,7 @@ func TestValidationSlice(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([]float64{3.}, conf)
+		ten, err = tensor.Of([]float64{3.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1826,7 +1941,7 @@ func TestValidationSlice(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err = tensor.TensorOf([]float64{1., 4.}, conf)
+		ten, err = tensor.Of([]float64{1., 4.}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}

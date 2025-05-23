@@ -9,6 +9,7 @@ type Device int
 
 const (
 	CPU Device = iota + 1
+	CUDA
 )
 
 type Config struct {

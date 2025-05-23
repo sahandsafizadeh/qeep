@@ -16,12 +16,12 @@ func TestCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		yp, err := tensor.Of([][]float64{{0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err := tensor.TensorOf([][]float64{{0.}}, conf)
+		yt, err := tensor.Of([][]float64{{0.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -40,12 +40,12 @@ func TestCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{{1.}}, conf)
+		yp, err = tensor.Of([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{{1.}}, conf)
+		yt, err = tensor.Of([][]float64{{1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -64,12 +64,12 @@ func TestCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{{0., 1.5}}, conf)
+		yp, err = tensor.Of([][]float64{{0., 1.5}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{{2., -1.}}, conf)
+		yt, err = tensor.Of([][]float64{{2., -1.}}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -88,7 +88,7 @@ func TestCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{
+		yp, err = tensor.Of([][]float64{
 			{0.1, 0.8, 0.1},
 			{0.1, 0.2, 0.7},
 			{0.9, 0.1, 0.0},
@@ -97,7 +97,7 @@ func TestCE(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{
+		yt, err = tensor.Of([][]float64{
 			{0., 1., 0.},
 			{0., 0., 1.},
 			{1., 0., 0.},
@@ -120,7 +120,7 @@ func TestCE(t *testing.T) {
 
 		/* ------------------------------ */
 
-		yp, err = tensor.TensorOf([][]float64{
+		yp, err = tensor.Of([][]float64{
 			{0.4, 0.1, 0.5},
 			{0.4, 0.4, 0.2},
 			{0.3, 0.3, 0.4},
@@ -129,7 +129,7 @@ func TestCE(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		yt, err = tensor.TensorOf([][]float64{
+		yt, err = tensor.Of([][]float64{
 			{0., 1., 0.},
 			{0., 0., 1.},
 			{1., 0., 0.},

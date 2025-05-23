@@ -32,8 +32,8 @@ func NewUniform(conf *UniformConfig) (c *Uniform, err error) {
 	}, nil
 }
 
-func (c *Uniform) Init(shape []int) (x tensor.Tensor, err error) {
-	return tensor.RandU(shape, c.lower, c.upper, tensorInitConf())
+func (c *Uniform) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
+	return tensor.RandU(shape, c.lower, c.upper, tensorInitConf(device))
 }
 
 /* ----- helpers ----- */

@@ -5,6 +5,7 @@ import (
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/validator"
 )
 
@@ -17,7 +18,7 @@ func Full(dims []int, value float64, withGrad bool) (o tensor.Tensor, err error)
 		return
 	}
 
-	r := constTensor(value, dims)
+	r := constTensor(dims, value)
 	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
@@ -43,14 +44,14 @@ func Ones(dims []int, withGrad bool) (o tensor.Tensor, err error) {
 	return Full(dims, 1., withGrad)
 }
 
-func Eye(n int, withGrad bool) (o tensor.Tensor, err error) {
-	err = validator.ValidateInputDims([]int{n, n})
+func Eye(d int, withGrad bool) (o tensor.Tensor, err error) {
+	err = validator.ValidateInputDims([]int{d, d})
 	if err != nil {
 		err = fmt.Errorf("Eye input dimension validation failed: %w", err)
 		return
 	}
 
-	r := eyeMatrix(n)
+	r := eyeMatrix(d)
 	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
@@ -69,7 +70,7 @@ func RandU(dims []int, l, u float64, withGrad bool) (o tensor.Tensor, err error)
 		return
 	}
 
-	r := uniformRandomTensor(l, u, dims)
+	r := uniformRandomTensor(dims, l, u)
 	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
@@ -88,44 +89,44 @@ func RandN(dims []int, u, s float64, withGrad bool) (o tensor.Tensor, err error)
 		return
 	}
 
-	r := normalRandomTensor(u, s, dims)
+	r := normalRandomTensor(dims, u, s)
 	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
 }
 
-func TensorOf(data any, withGrad bool) (o tensor.Tensor, err error) {
+func Of(data any, withGrad bool) (o tensor.Tensor, err error) {
 	err = validator.ValidateInputDataDimUnity(data)
 	if err != nil {
-		err = fmt.Errorf("TensorOf input data validation failed: %w", err)
+		err = fmt.Errorf("Of input data validation failed: %w", err)
 		return
 	}
 
-	r := initTensorFromData(data)
+	r := tensorFromData(data)
 	r.gctx = gradtrack.NewGradContext(withGrad)
 
 	return r, nil
 }
 
 func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
-	cus, err := assertCPUTensors(ts)
+	_ts, err := assertCPUTensors(ts)
 	if err != nil {
 		err = fmt.Errorf("Concat tensors' device validation failed: %w", err)
 		return
 	}
 
-	cusDims := make([][]int, len(ts))
-	for i, cu := range cus {
-		cusDims[i] = cu.dims
+	tsDims := make([][]int, len(_ts))
+	for i, cu := range _ts {
+		tsDims[i] = cu.dims
 	}
 
-	err = validator.ValidateConcatTensorsDimsAlongDim(cusDims, dim)
+	err = validator.ValidateConcatTensorsDimsAlongDim(tsDims, dim)
 	if err != nil {
 		err = fmt.Errorf("Concat inputs' dimension validation failed: %w", err)
 		return
 	}
 
-	r := initConcatResultTensor(cus, dim)
+	r := tensorFromConcat(_ts, dim)
 	r.gctx = gradtrack.Concat(r, ts, dim)
 
 	return r, nil
@@ -167,20 +168,20 @@ func (t *CPUTensor) Slice(index []tensor.Range) (o tensor.Tensor, err error) {
 }
 
 func (t *CPUTensor) Patch(index []tensor.Range, u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Patch tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidatePatchIndexAgainstDims(index, cu.dims, t.dims)
+	err = validator.ValidatePatchIndexAgainstDims(index, _u.dims, t.dims)
 	if err != nil {
 		err = fmt.Errorf("Patch input index or tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.patch(index, cu)
-	r.gctx = gradtrack.Patch(r, t, u, index)
+	r := t.patch(index, _u)
+	r.gctx = gradtrack.Patch(r, t, _u, index)
 
 	return r, nil
 }
@@ -224,7 +225,7 @@ func (t *CPUTensor) UnSqueeze(dim int) (o tensor.Tensor, err error) {
 		return
 	}
 
-	r := t.unSqueeze(dim)
+	r := t.unsqueeze(dim)
 	r.gctx = gradtrack.UnSqueeze(r, t)
 
 	return r, nil
@@ -475,297 +476,315 @@ func (t *CPUTensor) Tanh() (o tensor.Tensor) {
 }
 
 func (t *CPUTensor) Eq(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Eq tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Eq tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.eq(cu)
+	r := t.eq(_u)
 	r.gctx = gradtrack.NewGradContext(false)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Ne(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Ne tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Ne tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.ne(cu)
+	r := t.ne(_u)
 	r.gctx = gradtrack.NewGradContext(false)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Gt(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Gt tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Gt tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.gt(cu)
+	r := t.gt(_u)
 	r.gctx = gradtrack.NewGradContext(false)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Ge(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Ge tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Ge tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.ge(cu)
+	r := t.ge(_u)
 	r.gctx = gradtrack.NewGradContext(false)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Lt(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Lt tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Lt tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.lt(cu)
+	r := t.lt(_u)
 	r.gctx = gradtrack.NewGradContext(false)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Le(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Le tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Le tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.le(cu)
+	r := t.le(_u)
 	r.gctx = gradtrack.NewGradContext(false)
 
 	return r, nil
 }
 
 func (t *CPUTensor) ElMax(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("ElMax tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("ElMax tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.elmax(cu)
-	r.gctx = gradtrack.ElMax(r, t, cu)
+	r := t.elmax(_u)
+	r.gctx = gradtrack.ElMax(r, t, _u)
 
 	return r, nil
 }
 
 func (t *CPUTensor) ElMin(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("ElMin tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("ElMin tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	r := t.elmin(cu)
-	r.gctx = gradtrack.ElMin(r, t, cu)
+	r := t.elmin(_u)
+	r.gctx = gradtrack.ElMin(r, t, _u)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Add tensors' device validation failed: %w", err)
 		return
 	}
 
-	ct1, ct2, err := broadcastForBinaryOp(t, cu)
+	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		err = fmt.Errorf("Add tensors' broadcasting failed: %w", err)
 		return
 	}
 
-	r := ct1.add(ct2)
-	r.gctx = gradtrack.Add(r, ct1, ct2)
+	_t1 := t1.(*CPUTensor)
+	_t2 := t2.(*CPUTensor)
+
+	r := _t1.add(_t2)
+	r.gctx = gradtrack.Add(r, _t1, _t2)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Sub(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Sub tensors' device validation failed: %w", err)
 		return
 	}
 
-	ct1, ct2, err := broadcastForBinaryOp(t, cu)
+	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		err = fmt.Errorf("Sub tensors' broadcasting failed: %w", err)
 		return
 	}
 
-	r := ct1.sub(ct2)
-	r.gctx = gradtrack.Sub(r, ct1, ct2)
+	_t1 := t1.(*CPUTensor)
+	_t2 := t2.(*CPUTensor)
+
+	r := _t1.sub(_t2)
+	r.gctx = gradtrack.Sub(r, _t1, _t2)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Mul(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Mul tensors' device validation failed: %w", err)
 		return
 	}
 
-	ct1, ct2, err := broadcastForBinaryOp(t, cu)
+	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		err = fmt.Errorf("Mul tensors' broadcasting failed: %w", err)
 		return
 	}
 
-	r := ct1.mul(ct2)
-	r.gctx = gradtrack.Mul(r, ct1, ct2)
+	_t1 := t1.(*CPUTensor)
+	_t2 := t2.(*CPUTensor)
+
+	r := _t1.mul(_t2)
+	r.gctx = gradtrack.Mul(r, _t1, _t2)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Div tensors' device validation failed: %w", err)
 		return
 	}
 
-	ct1, ct2, err := broadcastForBinaryOp(t, cu)
+	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		err = fmt.Errorf("Div tensors' broadcasting failed: %w", err)
 		return
 	}
 
-	r := ct1.div(ct2)
-	r.gctx = gradtrack.Div(r, ct1, ct2)
+	_t1 := t1.(*CPUTensor)
+	_t2 := t2.(*CPUTensor)
+
+	r := _t1.div(_t2)
+	r.gctx = gradtrack.Div(r, _t1, _t2)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Dot tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateDotProductDims(t.dims, cu.dims)
+	err = validator.ValidateDotProductDims(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Dot tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	ct1, ct2, err := broadcastForBinaryOp(t, cu)
+	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		err = fmt.Errorf("Dot tensors' broadcasting failed: %w", err)
 		return
 	}
 
-	r := ct1.dot(ct2)
-	r.gctx = gradtrack.Dot(r, ct1, ct2)
+	_t1 := t1.(*CPUTensor)
+	_t2 := t2.(*CPUTensor)
+
+	r := _t1.dot(_t2)
+	r.gctx = gradtrack.Dot(r, _t1, _t2)
 
 	return r, nil
 }
 
 func (t *CPUTensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("MatMul tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateMatMulDims(t.dims, cu.dims)
+	err = validator.ValidateMatMulDims(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("MatMul tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	ct1, ct2, err := broadcastForMatMul(t, cu)
+	t1, t2, err := util.BroadcastForMatMul(t, _u)
 	if err != nil {
 		err = fmt.Errorf("MatMul tensors' broadcasting failed: %w", err)
 		return
 	}
 
-	r := ct1.matMul(ct2)
-	r.gctx = gradtrack.MatMul(r, ct1, ct2)
+	_t1 := t1.(*CPUTensor)
+	_t2 := t2.(*CPUTensor)
+
+	r := _t1.matMul(_t2)
+	r.gctx = gradtrack.MatMul(r, _t1, _t2)
 
 	return r, nil
 }
 
 func (t *CPUTensor) Equals(u tensor.Tensor) (are bool, err error) {
-	cu, err := assertCPUTensor(u)
+	_u, err := assertCPUTensor(u)
 	if err != nil {
 		err = fmt.Errorf("Equals tensors' device validation failed: %w", err)
 		return
 	}
 
-	err = validator.ValidateBinaryFuncDimsMatch(t.dims, cu.dims)
+	err = validator.ValidateBinaryFuncDimsMatch(t.dims, _u.dims)
 	if err != nil {
 		err = fmt.Errorf("Equals tensors' dimension validation failed: %w", err)
 		return
 	}
 
-	return t.equals(cu), nil
+	return t.equals(_u), nil
 }
 
 func (t *CPUTensor) GradContext() (gctx any) {

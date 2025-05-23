@@ -51,7 +51,7 @@ func TestEpochLogger(t *testing.T) {
 
 		epochs := 1
 		batches := 1
-		loss, _ := tensor.TensorOf(1.5, conf)
+		loss, _ := tensor.Of(1.5, conf)
 		vres := map[string]float64{"MSE": 2.34555, "Accuracy": 0.82, "dummy": 0.}
 
 		expStartLogs := []string{
@@ -80,7 +80,7 @@ func TestEpochLogger(t *testing.T) {
 
 		epochs = 1
 		batches = 2
-		loss, _ = tensor.TensorOf(0.55, conf)
+		loss, _ = tensor.Of(0.55, conf)
 		vres = map[string]float64{"MSE": 9.3, "Accuracy": 0.123}
 
 		expStartLogs = []string{
@@ -110,7 +110,7 @@ func TestEpochLogger(t *testing.T) {
 
 		epochs = 3
 		batches = 1
-		loss, _ = tensor.TensorOf(44.005, conf)
+		loss, _ = tensor.Of(44.005, conf)
 		vres = map[string]float64{"MSE": 0.56789}
 
 		expStartLogs = []string{
@@ -149,7 +149,7 @@ func TestEpochLogger(t *testing.T) {
 
 		epochs = 2
 		batches = 4
-		loss, _ = tensor.TensorOf(456.1, conf)
+		loss, _ = tensor.Of(456.1, conf)
 		vres = nil
 
 		expStartLogs = []string{
@@ -191,37 +191,39 @@ func TestEpochLogger(t *testing.T) {
 }
 
 func TestValidationEpochLogger(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
-	_, err := NewEpochLogger(0, 1)
-	if err == nil {
-		t.Fatalf("expected error because of non-positive number of epochs")
-	} else if err.Error() != "EpochLogger config data validation failed: expected the number of epochs to be positive: got (0)" {
-		t.Fatal("unexpected error message returned")
-	}
+		_, err := NewEpochLogger(0, 1)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive number of epochs")
+		} else if err.Error() != "EpochLogger config data validation failed: expected the number of epochs to be positive: got (0)" {
+			t.Fatal("unexpected error message returned")
+		}
 
-	_, err = NewEpochLogger(-1, 1)
-	if err == nil {
-		t.Fatalf("expected error because of non-positive number of epochs")
-	} else if err.Error() != "EpochLogger config data validation failed: expected the number of epochs to be positive: got (-1)" {
-		t.Fatal("unexpected error message returned")
-	}
+		_, err = NewEpochLogger(-1, 1)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive number of epochs")
+		} else if err.Error() != "EpochLogger config data validation failed: expected the number of epochs to be positive: got (-1)" {
+			t.Fatal("unexpected error message returned")
+		}
 
-	_, err = NewEpochLogger(1, 0)
-	if err == nil {
-		t.Fatalf("expected error because of non-positive number of batches")
-	} else if err.Error() != "EpochLogger config data validation failed: expected the number of batches to be positive: got (0)" {
-		t.Fatal("unexpected error message returned")
-	}
+		_, err = NewEpochLogger(1, 0)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive number of batches")
+		} else if err.Error() != "EpochLogger config data validation failed: expected the number of batches to be positive: got (0)" {
+			t.Fatal("unexpected error message returned")
+		}
 
-	_, err = NewEpochLogger(1, -1)
-	if err == nil {
-		t.Fatalf("expected error because of non-positive number of batches")
-	} else if err.Error() != "EpochLogger config data validation failed: expected the number of batches to be positive: got (-1)" {
-		t.Fatal("unexpected error message returned")
-	}
+		_, err = NewEpochLogger(1, -1)
+		if err == nil {
+			t.Fatalf("expected error because of non-positive number of batches")
+		} else if err.Error() != "EpochLogger config data validation failed: expected the number of batches to be positive: got (-1)" {
+			t.Fatal("unexpected error message returned")
+		}
 
-	/* ------------------------------ */
+		/* ------------------------------ */
 
+	})
 }

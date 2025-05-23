@@ -1,6 +1,9 @@
 package cputensor
 
-import "gonum.org/v1/gonum/stat/distuv"
+import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+	"gonum.org/v1/gonum/stat/distuv"
+)
 
 func (t *CPUTensor) initWith(initFunc initializerFunc) {
 
@@ -23,7 +26,7 @@ func (t *CPUTensor) initWith(initFunc initializerFunc) {
 	fill(t.dims, &t.data)
 }
 
-func constTensor(value float64, dims []int) (t *CPUTensor) {
+func constTensor(dims []int, value float64) (t *CPUTensor) {
 	t = new(CPUTensor)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
@@ -40,7 +43,7 @@ func eyeMatrix(n int) (t *CPUTensor) {
 	return t
 }
 
-func uniformRandomTensor(l, u float64, dims []int) (t *CPUTensor) {
+func uniformRandomTensor(dims []int, l, u float64) (t *CPUTensor) {
 	t = new(CPUTensor)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
@@ -51,7 +54,7 @@ func uniformRandomTensor(l, u float64, dims []int) (t *CPUTensor) {
 	return t
 }
 
-func normalRandomTensor(u, s float64, dims []int) (t *CPUTensor) {
+func normalRandomTensor(dims []int, u, s float64) (t *CPUTensor) {
 	t = new(CPUTensor)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
@@ -62,7 +65,7 @@ func normalRandomTensor(u, s float64, dims []int) (t *CPUTensor) {
 	return t
 }
 
-func initTensorFromData(data any) (t *CPUTensor) {
+func tensorFromData(data any) (t *CPUTensor) {
 	var dims []int
 	var tensorData any
 
@@ -147,7 +150,7 @@ func initTensorFromData(data any) (t *CPUTensor) {
 	}
 }
 
-func initConcatResultTensor(ts []*CPUTensor, dim int) (o *CPUTensor) {
+func tensorFromConcat(ts []*CPUTensor, dim int) (o *CPUTensor) {
 	tsDataCopy := make([]any, len(ts))
 	for i, t := range ts {
 		tc := t.slice(nil)
@@ -182,7 +185,7 @@ func initConcatResultTensor(ts []*CPUTensor, dim int) (o *CPUTensor) {
 	}
 
 	o = new(CPUTensor)
-	o.dims = getConcatDims(ts, dim)
+	o.dims = util.ConcatDims(ts, dim)
 	fillCat(o.dims, &o.data, tsDataCopy, 0)
 
 	return o
@@ -203,18 +206,4 @@ func eyeElemGenerator(n int) initializerFunc {
 			return 0.
 		}
 	}
-}
-
-func getConcatDims(ts []*CPUTensor, dim int) (dims []int) {
-	common := 0
-	for _, t := range ts {
-		common += t.dims[dim]
-	}
-
-	base := ts[0].dims
-	dims = make([]int, len(base))
-	copy(dims, base)
-	dims[dim] = common
-
-	return dims
 }

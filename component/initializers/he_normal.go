@@ -27,9 +27,9 @@ func NewHeNormal(conf *HeNormalConfig) (c *HeNormal, err error) {
 	}, nil
 }
 
-func (c *HeNormal) Init(shape []int) (x tensor.Tensor, err error) {
+func (c *HeNormal) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	s := math.Sqrt(2. / float64(c.fanIn))
-	return tensor.RandN(shape, 0., s, tensorInitConf())
+	return tensor.RandN(shape, 0., s, tensorInitConf(device))
 }
 
 /* ----- helpers ----- */

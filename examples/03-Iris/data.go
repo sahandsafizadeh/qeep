@@ -35,13 +35,17 @@ func loadData() (x [][]float64, y [][]float64, err error) {
 		line := fscan.Text()
 		line = strings.TrimSpace(line)
 
+		if len(line) == 0 {
+			break
+		}
+
 		fields := strings.Split(line, ",")
 		lenf := len(fields)
 
 		xi := make([]float64, lenf-1)
 		yi := make([]float64, 0, 3)
 
-		for j := 0; j < lenf-1; j++ {
+		for j := range lenf - 1 {
 			xi[j] = mustParseFloat64(fields[j])
 		}
 
@@ -89,7 +93,7 @@ func splitData(x [][]float64, y [][]float64) *dataSplit {
 func preprocessData(data *dataSplit) {
 	getColumn := func(j int, x [][]float64) (col []float64) {
 		col = make([]float64, len(x))
-		for i := 0; i < len(x); i++ {
+		for i := range x {
 			col[i] = x[i][j]
 		}
 
@@ -97,12 +101,12 @@ func preprocessData(data *dataSplit) {
 	}
 
 	transformColumn := func(j int, x [][]float64, tf transformFunc) {
-		for i := 0; i < len(x); i++ {
+		for i := range x {
 			x[i][j] = tf(x[i][j])
 		}
 	}
 
-	for j := 0; j < len(data.xTrain[0]); j++ {
+	for j := range data.xTrain[0] {
 		col := getColumn(j, data.xTrain)
 		stf := makeStandardizer(col)
 

@@ -11,6 +11,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/batchgens"
 	"github.com/sahandsafizadeh/qeep/model/stream"
+	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 const (
@@ -23,6 +24,7 @@ const (
 const (
 	batchSize = 32
 	epochs    = 1000
+	dev       = tensor.CPU
 )
 
 func main() {
@@ -82,12 +84,14 @@ func prepareModel() (m *model.Model, err error) {
 	x := stream.FC(&layers.FCConfig{
 		Inputs:  4,
 		Outputs: 4,
+		Device:  dev,
 	})(input)
 	x = stream.Tanh()(x)
 
 	x = stream.FC(&layers.FCConfig{
 		Inputs:  4,
 		Outputs: 3,
+		Device:  dev,
 	})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{
 		Dim: 1,
@@ -134,6 +138,7 @@ func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenera
 	trainBatchGen, err = batchgens.NewSimple(data.xTrain, data.yTrain, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   true,
+		Device:    dev,
 	})
 	if err != nil {
 		return
@@ -142,6 +147,7 @@ func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenera
 	validBatchGen, err = batchgens.NewSimple(data.xValid, data.yValid, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   false,
+		Device:    dev,
 	})
 	if err != nil {
 		return
@@ -150,6 +156,7 @@ func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenera
 	testBatchGen, err = batchgens.NewSimple(data.xTest, data.yTest, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   false,
+		Device:    dev,
 	})
 	if err != nil {
 		return

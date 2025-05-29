@@ -2,6 +2,7 @@ package tensor
 
 /*
 Tensor is a data structure with a variable number of dimensions, supporting statistical and linear algebra operations.
+As the heart of the qeep project, many design decisions such as the use of build tags, cgo, and device abstraction are driven by this package.
 
 By design:
 - Tensor is defined as an interface, allowing for different internal implementations across various devices (e.g., CPU, CUDA).

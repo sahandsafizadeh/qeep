@@ -12,9 +12,7 @@ on:
 
 env:
   GO_VERSION: ${{ '1.24' }}
-  MIN_COVERAGE_PERCENT: ${{ 90.0 }}
-  EXCLUDED_COVERAGE_PATH: ${{ 'examples' }}
-  SCRIPTS_ROOT: ./.github/scripts
+  SCRIPTS_ROOT: ./scripts
 
 jobs:
   CI:

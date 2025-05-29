@@ -1,3 +1,13 @@
+# -------------------- DEV --------------------
+QEEP_BUILD_TAGS := cuda
+
+fmt:
+	@./scripts/gofmt.sh
+
+cover:
+	@./scripts/gotest.sh $(QEEP_BUILD_TAGS)
+
+# -------------------- CUDA --------------------
 QEEP_CUDA_LIB_FILE := libcudatensor.so
 QEEP_CUDA_SRC_PATH := ./tensor/internal/cudatensor/cuda_c
 QEEP_CUDA_LIB_PATH := ./tensor/internal/cudatensor/lib

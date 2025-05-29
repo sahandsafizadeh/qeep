@@ -13,7 +13,7 @@ The contracts that the Model relies on are:
 Each of these is represented by an interface.
 
 By design:
-The Model is built on top of existing concrete implementations in the tensor and component trees. As such, anything it does can be done in other ways.
-The "state" of interfaces (e.g., whether they are nil) is not validated. This means that passing nil interfaces is considered a developer error and may result in a panic.
-The "behavior" and business logic of the interfaces is validated to ensure correct and expected functionality.
+- The Model is built on top of existing concrete implementations in the tensor and component trees. As such, anything it does can be done in other ways.
+- The "state" of interfaces (e.g., whether they are nil) is not validated. This means that passing nil interfaces is considered a developer error and may result in a panic.
+- The "behavior" and business logic of the interfaces is validated to ensure correct and expected functionality.
 */

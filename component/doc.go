@@ -1,15 +1,16 @@
 package component
 
 /*
-Components are separate computational functionalities of a neural network.
-They are categorized into 5 major packages:
+Components are modular computational building blocks of a neural network.
+They are categorized into five main packages:
 (1) initializers: for initializing network weights.
 (2) layers: for building up a neural network and passing tensors through.
 (3) losses: for back-propagation.
-(4) metrics: for evaluating the model.
+(4) metrics: for evaluating model performance.
 (5) optimizers: for updating network weights.
 
 By design:
-- A layer must have one and only one output for any number of inputs.
-- Batch dimension must be considered in all components.
+- Each layer must have exactly one output, regardless of the number of inputs.
+- All components must consider the batch dimension.
+- A component is responsible for managing its tensors' device.
 */

@@ -1,22 +1,32 @@
 # qeep
 
-Welcome to **qeep** (pronounced /kēp/)! This project implements a **_deep learning framework_** in pure **_Go_**. It allows you to define neural networks in a declarative way while being able to control operations at _tensor level_.
+Welcome to **qeep** (pronounced /kēp/)! This project implements a **_deep learning framework_** in **_Go_**. It allows you to define neural networks in a declarative way while being able to control operations at _tensor level_.
 
 ## Features
 
-- _Multi-Dimensional_ **Tensors** with a variety of linear algebra and statistical operations. (`GPU` acceleration is planned for future development)
-- Automatic differentiation (_AutoGrad_) for tensors.
-- Variety of neural network _Components_ such as `FC` (fully-connected).
-- A _Declarative_ approach to define neural networks using `stream` package.
+- 📐 _Multi-Dimensional_ **Tensors** with a wide range of linear algebra and statistical operations.
+- 🔁 _Automatic differentiation_ (**AutoGrad**) for tensors.
+- ⚡ _GPU acceleration_ via **CUDA** for high-performance large tensor computations.
+- 🧱 A variety of neural network _components_, such as fully connected (`FC`) layer.
+- 📝A _declarative API_ for defining neural networks using `stream` package.
 
 ## Installation
 
-Ensure that you have [Go](https://go.dev/dl/) installed. Then, you can install the package using _Go modules_:
+Navigate to your project directory and clone the qeep repository:
 
 ```bash
-go get github.com/sahandsafizadeh/qeep
+git clone https://github.com/sahandsafizadeh/qeep
+```
+
+Ensure that you have [Go](https://go.dev/dl/) installed. Then, Link the local qeep package to your project using _Go modules_:
+
+```go
+go mod edit -require=github.com/sahandsafizadeh/qeep@v0.0.0
+go mod edit -replace=github.com/sahandsafizadeh/qeep=./qeep
 go mod tidy
 ```
+
+💡 This setup assumes that qeep is cloned into a local folder named `./qeep` relative to your Go project.
 
 ## Usage
 
@@ -32,7 +42,10 @@ import (
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/stream"
+	"github.com/sahandsafizadeh/qeep/tensor"
 )
+
+const dev = tensor.CPU
 
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
@@ -40,12 +53,14 @@ func prepareModel() (m *model.Model, err error) {
 	x := stream.FC(&layers.FCConfig{
 		Inputs:  4,
 		Outputs: 4,
+		Device:  dev,
 	})(input)
 	x = stream.Tanh()(x)
 
 	x = stream.FC(&layers.FCConfig{
 		Inputs:  4,
 		Outputs: 3,
+		Device:  dev,
 	})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{
 		Dim: 1,
@@ -78,12 +93,38 @@ func prepareModel() (m *model.Model, err error) {
 }
 ```
 
-More working [examples](./examples) are provided. You can download their dataset and run them like the following for _Iris Classification_:
+📂 More working [examples](./examples) are provided. You can download their dataset and run them like the following for _Iris Classification_:
 
 ```bash
-cd ./examples/03-Iris/
+cd ./qeep/examples/03-Iris/
 curl -o data.csv https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
 go run .
+```
+
+## Running on GPU
+
+### Prerequisites
+
+1. An accessible _CUDA-capable GPU_.
+2. [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads) installed.
+3. A working _C Toolchain_ like `gcc`.
+4. _CGO_ enabled and configured ([setup guide](https://github.com/go101/go101/wiki/CGO-Environment-Setup)).
+
+### Run with CUDA
+
+Build the necessary CUDA libraries once:
+
+```bash
+cd ./qeep
+make cuda
+```
+
+Now in your Go code, you can set devices to `tensor.CUDA`.
+
+🔥 Finally, run your program with the `cuda` build tag:
+
+```bash
+go run -tags=cuda .
 ```
 
 ## License

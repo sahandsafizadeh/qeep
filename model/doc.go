@@ -1,12 +1,19 @@
 package model
 
 /*
-Model wires up everything that already exists in component and tensor trees using a contract-based approach.
-The result, is a framework that enables us to define deep neural networks in a rather declarative way; then train and evaluate them.
-The contracts that model follows are: (1) Layer, (2) WeightedLayer, (3) Loss, (4) Metric, (5) Optimizer and (6) BatchGenerator; each represented by an interface.
+The Model connects everything that already exists in component and tensor trees using a contract-based approach.
+This results in a framework that allows deep neural networks to be defined in a declarative manner and then trained and evaluated effectively.
+The contracts that the Model relies on are:
+(1) Layer
+(2) WeightedLayer
+(3) Loss
+(4) Metric
+(5) Optimizer
+(6) BatchGenerator
+Each of these is represented by an interface.
 
 By design:
-- Model creates a framework on everything concrete that already exists in tensor and component trees; therefore, everything it does can be done in other ways.
-- "State" of interfaces are not validated; for instance, their nilness. Thus, for the unpredictable behavior, nil interfaces are taken to be developer's mistake that leads to panic.
-- "Behavior" and business logic of interfaces is validated.
+- The Model is built on top of existing concrete implementations in the tensor and component trees. As such, anything it does can be done in other ways.
+- The "state" of interfaces (e.g., whether they are nil) is not validated. This means that passing nil interfaces is considered a developer error and may result in a panic.
+- The "behavior" and business logic of the interfaces is validated to ensure correct and expected functionality.
 */

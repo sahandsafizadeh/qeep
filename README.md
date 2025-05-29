@@ -93,12 +93,38 @@ func prepareModel() (m *model.Model, err error) {
 }
 ```
 
-More working [examples](./examples) are provided. You can download their dataset and run them like the following for _Iris Classification_:
+📂 More working [examples](./examples) are provided. You can download their dataset and run them like the following for _Iris Classification_:
 
 ```bash
 cd ./qeep/examples/03-Iris/
 curl -o data.csv https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
 go run .
+```
+
+## Running on GPU
+
+### Prerequisites
+
+1. An accessible _CUDA-capable GPU_.
+2. [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads) installed.
+3. A working _C Toolchain_ like `gcc`.
+4. _CGO_ enabled and configured ([setup guide](https://github.com/go101/go101/wiki/CGO-Environment-Setup)).
+
+### Run with CUDA
+
+Build the necessary CUDA libraries once:
+
+```bash
+cd ./qeep
+make cuda
+```
+
+Now in your Go code, you can set devices to `tensor.CUDA`.
+
+🔥 Finally, run your program with the `cuda` build tag:
+
+```bash
+go run -tags=cuda .
 ```
 
 ## License

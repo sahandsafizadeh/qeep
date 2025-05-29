@@ -4,20 +4,29 @@ Welcome to **qeep** (pronounced /kēp/)! This project implements a **_deep learn
 
 ## Features
 
-- _Multi-Dimensional_ **Tensors** with a wide range of linear algebra and statistical operations.
-- _Automatic differentiation_ (**AutoGrad**) for tensors.
-- _GPU acceleration_ via **CUDA** for high-performance large tensor computation.
-- A variety of neural network _components_, such as fully connected (`FC`) layer.
-- A _declarative API_ for defining neural networks using `stream` package.
+- 📐 _Multi-Dimensional_ **Tensors** with a wide range of linear algebra and statistical operations.
+- 🔁 _Automatic differentiation_ (**AutoGrad**) for tensors.
+- ⚡ _GPU acceleration_ via **CUDA** for high-performance large tensor computations.
+- 🧱 A variety of neural network _components_, such as fully connected (`FC`) layer.
+- 📝A _declarative API_ for defining neural networks using `stream` package.
 
 ## Installation
 
-Ensure that you have [Go](https://go.dev/dl/) installed. Then, you can install the package using _Go modules_:
+Navigate to your project directory and clone the qeep repository:
 
 ```bash
-go get github.com/sahandsafizadeh/qeep
+git clone https://github.com/sahandsafizadeh/qeep
+```
+
+Ensure that you have [Go](https://go.dev/dl/) installed. Then, Link the local qeep package to your project using _Go modules_:
+
+```go
+go mod edit -require=github.com/sahandsafizadeh/qeep@v0.0.0
+go mod edit -replace=github.com/sahandsafizadeh/qeep=./qeep
 go mod tidy
 ```
+
+💡 This setup assumes that qeep is cloned into a local folder named `./qeep` relative to your Go project.
 
 ## Usage
 
@@ -87,7 +96,7 @@ func prepareModel() (m *model.Model, err error) {
 More working [examples](./examples) are provided. You can download their dataset and run them like the following for _Iris Classification_:
 
 ```bash
-cd ./examples/03-Iris/
+cd ./qeep/examples/03-Iris/
 curl -o data.csv https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
 go run .
 ```

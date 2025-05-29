@@ -1,11 +1,11 @@
 # -------------------- DEV --------------------
-GO_BUILD_TAGS := cuda
+QEEP_BUILD_TAGS := cuda
 
 fmt:
 	@./scripts/gofmt.sh
 
 cover:
-	@./scripts/gotest.sh $(GO_BUILD_TAGS)
+	@./scripts/gotest.sh $(QEEP_BUILD_TAGS)
 
 # -------------------- CUDA --------------------
 QEEP_CUDA_LIB_FILE := libcudatensor.so

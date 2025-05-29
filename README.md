@@ -32,7 +32,10 @@ import (
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
 	"github.com/sahandsafizadeh/qeep/model"
 	"github.com/sahandsafizadeh/qeep/model/stream"
+	"github.com/sahandsafizadeh/qeep/tensor"
 )
+
+const dev = tensor.CPU
 
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
@@ -40,12 +43,14 @@ func prepareModel() (m *model.Model, err error) {
 	x := stream.FC(&layers.FCConfig{
 		Inputs:  4,
 		Outputs: 4,
+		Device:  dev,
 	})(input)
 	x = stream.Tanh()(x)
 
 	x = stream.FC(&layers.FCConfig{
 		Inputs:  4,
 		Outputs: 3,
+		Device:  dev,
 	})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{
 		Dim: 1,

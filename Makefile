@@ -4,8 +4,17 @@ QEEP_BUILD_TAGS := cuda
 fmt:
 	@./scripts/gofmt.sh
 
+lint:
+	@./scripts/golint.sh $(QEEP_BUILD_TAGS)
+
+gosec:
+	@./scripts/gosec.sh $(QEEP_BUILD_TAGS)
+
 cover:
 	@./scripts/gotest.sh $(QEEP_BUILD_TAGS)
+
+install_linters:
+	@./scripts/install_linters.sh
 
 # -------------------- CUDA --------------------
 QEEP_CUDA_LIB_FILE := libcudatensor.so

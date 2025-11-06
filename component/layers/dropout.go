@@ -16,12 +16,16 @@ type DropoutConfig struct {
 
 const DropoutDefaultRate = 0.5
 
-func NewDropout(conf *DropoutConfig) (c *Dropout) {
-	conf = toValidDropoutConfig(conf)
+func NewDropout(conf *DropoutConfig) (c *Dropout, err error) {
+	conf, err = toValidDropoutConfig(conf)
+	if err != nil {
+		err = fmt.Errorf("Dropout config data validation failed: %w", err)
+		return
+	}
 
 	return &Dropout{
 		rate: conf.Rate,
-	}
+	}, nil
 }
 
 func (c *Dropout) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
@@ -35,40 +39,40 @@ func (c *Dropout) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 }
 
 func (c *Dropout) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
-	// todo: use in proper time
-	if x.Gradient() == nil {
+	if !x.GradientTracked() {
 		return x, nil
 	}
 
-	p, err := tensor.RandU(x.Shape(), 0, 1, &tensor.Config{
+	rate := c.rate
+	scale := 1 / (1 - rate)
+
+	dev := x.Device()
+	dims := x.Shape()
+
+	droRate, err := tensor.Full(dims, rate, &tensor.Config{
+		Device:    dev,
 		GradTrack: false,
 	})
 	if err != nil {
 		return
 	}
 
-	q, err := tensor.Full(x.Shape(), c.rate, &tensor.Config{
+	droProb, err := tensor.RandU(dims, 0, 1, &tensor.Config{
+		Device:    dev,
 		GradTrack: false,
 	})
 	if err != nil {
 		return
 	}
 
-	r, err := p.Le(q)
+	dropout, err := droProb.Le(droRate)
 	if err != nil {
 		return
 	}
 
-	y, err = x.Mul(r)
-	if err != nil {
-		return
-	}
+	dropout = dropout.Scale(scale)
 
-	scale := 1. / (1 - c.rate)
-
-	y = y.Scale(scale)
-
-	return y, nil
+	return x.Mul(dropout)
 }
 
 /* ----- helpers ----- */
@@ -94,8 +98,8 @@ func toValidDropoutConfig(iconf *DropoutConfig) (conf *DropoutConfig, err error)
 	conf = new(DropoutConfig)
 	*conf = *iconf
 
-	if conf.Rate < 0 {
-		err = fmt.Errorf("expected 'Dim' not to be negative: got (%d)", conf.Dim)
+	if conf.Rate < 0 || conf.Rate >= 1 {
+		err = fmt.Errorf("expected 'Rate' to be in range [0,1): got (%f)", conf.Rate)
 		return
 	}
 

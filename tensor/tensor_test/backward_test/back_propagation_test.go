@@ -146,6 +146,64 @@ func TestUntrackedPaths(t *testing.T) {
 			t.Fatal(err)
 		}
 
+		/* ------------------------------ */
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if !y.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
+		}
+
+		if t1.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if !t1.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
+		}
+
+		if x1.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if !x1.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
+		}
+
+		if a.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if !a.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
+		}
+
+		if t2.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if t2.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		if x3.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if x3.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		if x2.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if x2.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		if c.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if c.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		if b.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if b.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		/* ------------------------------ */
+
 		err = tensor.BackPropagate(y)
 		if err != nil {
 			t.Fatal(err)
@@ -155,40 +213,126 @@ func TestUntrackedPaths(t *testing.T) {
 
 		if y.Gradient() == nil {
 			t.Fatalf("expected gradient not to be nil")
+		} else if !y.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
 		}
 
 		if t1.Gradient() == nil {
 			t.Fatalf("expected gradient not to be nil")
+		} else if !t1.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
 		}
 
 		if x1.Gradient() == nil {
 			t.Fatalf("expected gradient not to be nil")
+		} else if !x1.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
 		}
 
 		if a.Gradient() == nil {
 			t.Fatalf("expected gradient not to be nil")
+		} else if !a.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
 		}
 
 		/* --------------- */
 
 		if t2.Gradient() != nil {
 			t.Fatalf("expected gradient to be nil")
+		} else if t2.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
 		}
 
 		if x3.Gradient() != nil {
 			t.Fatalf("expected gradient to be nil")
+		} else if x3.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
 		}
 
 		if x2.Gradient() != nil {
 			t.Fatalf("expected gradient to be nil")
+		} else if x2.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
 		}
 
 		if c.Gradient() != nil {
 			t.Fatalf("expected gradient to be nil")
+		} else if c.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
 		}
 
 		if b.Gradient() != nil {
 			t.Fatalf("expected gradient to be nil")
+		} else if b.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		/* ------------------------------ */
+
+		y.ResetGradContext(true)
+		t1.ResetGradContext(true)
+		x1.ResetGradContext(true)
+		a.ResetGradContext(true)
+		t2.ResetGradContext(false)
+		x3.ResetGradContext(false)
+		x2.ResetGradContext(false)
+		c.ResetGradContext(false)
+		b.ResetGradContext(false)
+
+		/* ------------------------------ */
+
+		if y.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if !y.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
+		}
+
+		if t1.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if !t1.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
+		}
+
+		if x1.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if !x1.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
+		}
+
+		if a.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if !a.GradientTracked() {
+			t.Fatalf("expected gradient to be tracked")
+		}
+
+		if t2.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if t2.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		if x3.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if x3.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		if x2.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if x2.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		if c.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if c.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
+		}
+
+		if b.Gradient() != nil {
+			t.Fatalf("expected gradient to be nil")
+		} else if b.GradientTracked() {
+			t.Fatalf("expected gradient not to be tracked")
 		}
 
 		/* ------------------------------ */

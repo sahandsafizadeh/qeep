@@ -2,7 +2,6 @@ package tensor
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/cudatensor"
@@ -238,16 +237,5 @@ func RunTestLogicOnDevices(testLogic func(Device)) {
 
 	for _, dev := range devices {
 		testLogic(dev)
-	}
-}
-
-func (d Device) String() string {
-	switch d {
-	case CPU:
-		return "CPU"
-	case CUDA:
-		return "CUDA"
-	default:
-		return strconv.Itoa(int(d))
 	}
 }

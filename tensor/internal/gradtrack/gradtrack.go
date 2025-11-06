@@ -12,6 +12,10 @@ func NewDirtyGradContext() (gctx *GradContext) {
 	return gctx
 }
 
+func (gctx *GradContext) Tracked() (t bool) {
+	return gctx.tracked
+}
+
 func (gctx *GradContext) Gradient() (g tensor.Tensor) {
 	return gctx.gradient
 }

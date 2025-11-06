@@ -791,14 +791,22 @@ func (t *CUDATensor) Equals(u tensor.Tensor) (are bool, err error) {
 	return t.equals(_u), nil
 }
 
-func (t *CUDATensor) GradContext() (gctx any) {
-	return t.gctx
+func (t *CUDATensor) Gradient() (g tensor.Tensor) {
+	return t.gctx.Gradient()
+}
+
+func (t *CUDATensor) GradientTracked() (tracked bool) {
+	return t.gctx.Tracked()
 }
 
 func (t *CUDATensor) ResetGradContext(tracked bool) {
 	t.gctx = gradtrack.NewGradContext(tracked)
 }
 
-func (t *CUDATensor) Gradient() (g tensor.Tensor) {
-	return t.gctx.Gradient()
+func (t *CUDATensor) GradContext() (gctx any) {
+	return t.gctx
+}
+
+func (t *CUDATensor) Device() (d tensor.Device) {
+	return tensor.CUDA
 }

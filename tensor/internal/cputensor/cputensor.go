@@ -787,14 +787,22 @@ func (t *CPUTensor) Equals(u tensor.Tensor) (are bool, err error) {
 	return t.equals(_u), nil
 }
 
-func (t *CPUTensor) GradContext() (gctx any) {
-	return t.gctx
+func (t *CPUTensor) Gradient() (g tensor.Tensor) {
+	return t.gctx.Gradient()
+}
+
+func (t *CPUTensor) GradientTracked() (tracked bool) {
+	return t.gctx.Tracked()
 }
 
 func (t *CPUTensor) ResetGradContext(tracked bool) {
 	t.gctx = gradtrack.NewGradContext(tracked)
 }
 
-func (t *CPUTensor) Gradient() (g tensor.Tensor) {
-	return t.gctx.Gradient()
+func (t *CPUTensor) GradContext() (gctx any) {
+	return t.gctx
+}
+
+func (t *CPUTensor) Device() (d tensor.Device) {
+	return tensor.CPU
 }

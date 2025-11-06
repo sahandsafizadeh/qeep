@@ -61,8 +61,12 @@ type Tensor interface {
 	MatMul(Tensor) (Tensor, error)
 	Equals(Tensor) (bool, error)
 
-	/*--------------- gradients ---------------*/
-	GradContext() any
-	ResetGradContext(bool)
+	/*---------------- gradient ---------------*/
 	Gradient() Tensor
+	GradientTracked() bool
+	ResetGradContext(bool)
+	GradContext() any
+
+	/*----------------- device ----------------*/
+	Device() Device
 }

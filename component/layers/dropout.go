@@ -65,7 +65,7 @@ func (c *Dropout) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 		return
 	}
 
-	dropout, err := droProb.Le(droRate)
+	dropout, err := droRate.Le(droProb)
 	if err != nil {
 		return
 	}

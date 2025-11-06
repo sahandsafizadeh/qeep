@@ -255,7 +255,11 @@ func (t *CUDATensor) Equals(u tensor.Tensor) (are bool, err error) {
 	panic(message)
 }
 
-func (t *CUDATensor) GradContext() (gctx any) {
+func (t *CUDATensor) Gradient() (g tensor.Tensor) {
+	panic(message)
+}
+
+func (t *CUDATensor) GradientTracked() (tracked bool) {
 	panic(message)
 }
 
@@ -263,6 +267,10 @@ func (t *CUDATensor) ResetGradContext(tracked bool) {
 	panic(message)
 }
 
-func (t *CUDATensor) Gradient() (g tensor.Tensor) {
+func (t *CUDATensor) GradContext() (gctx any) {
+	panic(message)
+}
+
+func (t *CUDATensor) Device() (d tensor.Device) {
 	panic(message)
 }

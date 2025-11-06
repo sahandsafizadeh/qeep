@@ -1,7 +1,5 @@
 package tensor
 
-const MaxDims = 6
-
 type Tensor interface {
 	/*--------------- accessors ---------------*/
 	NElems() int
@@ -63,13 +61,12 @@ type Tensor interface {
 	MatMul(Tensor) (Tensor, error)
 	Equals(Tensor) (bool, error)
 
-	/*--------------- gradients ---------------*/
-	GradContext() any
-	ResetGradContext(bool)
+	/*---------------- gradient ---------------*/
 	Gradient() Tensor
-}
+	GradientTracked() bool
+	ResetGradContext(bool)
+	GradContext() any
 
-type Range struct {
-	From int
-	To   int
+	/*----------------- device ----------------*/
+	Device() Device
 }

@@ -3,13 +3,12 @@ package tensor
 import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
 type Tensor = tensor.Tensor
+type Device = tensor.Device
 type Range = tensor.Range
 
-type Device int
-
 const (
-	CPU Device = iota + 1
-	CUDA
+	CPU  = tensor.CPU
+	CUDA = tensor.CUDA
 )
 
 type Config struct {

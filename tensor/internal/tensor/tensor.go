@@ -1,7 +1,5 @@
 package tensor
 
-const MaxDims = 6
-
 type Tensor interface {
 	/*--------------- accessors ---------------*/
 	NElems() int
@@ -67,9 +65,4 @@ type Tensor interface {
 	GradContext() any
 	ResetGradContext(bool)
 	Gradient() Tensor
-}
-
-type Range struct {
-	From int
-	To   int
 }

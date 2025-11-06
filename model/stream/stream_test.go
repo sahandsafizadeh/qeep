@@ -310,6 +310,7 @@ func TestBuiltInStreams(t *testing.T) {
 		x = stream.Softmax(nil)(x)
 		x = stream.Relu()(x)
 		x = stream.LeakyRelu(nil)(x)
+		x = stream.Dropout(nil)(x)
 		x = stream.FC(&layers.FCConfig{Inputs: 1, Outputs: 1})(x)
 
 		if err := x.Error(); err != nil {

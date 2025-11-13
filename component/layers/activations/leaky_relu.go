@@ -35,7 +35,10 @@ func (c *LeakyRelu) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 }
 
 func (c *LeakyRelu) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
-	_0 := x.Scale(0)
+	_0, err := c.toUntrackedFull(x, 0)
+	if err != nil {
+		return
+	}
 
 	s1, err := _0.ElMax(x)
 	if err != nil {
@@ -63,6 +66,16 @@ func (c *LeakyRelu) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err erro
 	x = xs[0]
 
 	return x, nil
+}
+
+func (c *LeakyRelu) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Tensor, err error) {
+	dev := x.Device()
+	dims := x.Shape()
+
+	return tensor.Full(dims, value, &tensor.Config{
+		Device:    dev,
+		GradTrack: false,
+	})
 }
 
 func toValidLeakyReluConfig(iconf *LeakyReluConfig) (conf *LeakyReluConfig) {

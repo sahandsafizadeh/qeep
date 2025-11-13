@@ -45,7 +45,12 @@ func (c *Accuracy) Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 			return
 		}
 	} else {
-		mid := yp.Pow(0).Scale(0.5)
+		var mid tensor.Tensor
+
+		mid, err = c.toUntrackedFull(yp, 0.5)
+		if err != nil {
+			return
+		}
 
 		yp, err = yp.Ge(mid)
 		if err != nil {
@@ -106,6 +111,16 @@ func (c *Accuracy) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error
 	}
 
 	return nil
+}
+
+func (c *Accuracy) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Tensor, err error) {
+	dev := x.Device()
+	dims := x.Shape()
+
+	return tensor.Full(dims, value, &tensor.Config{
+		Device:    dev,
+		GradTrack: false,
+	})
 }
 
 func toValidAccuracyConfig(iconf *AccuracyConfig) (conf *AccuracyConfig) {

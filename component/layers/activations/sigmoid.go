@@ -24,7 +24,11 @@ func (c *Sigmoid) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 }
 
 func (c *Sigmoid) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
-	_1 := x.Pow(0)
+	_1, err := c.toUntrackedFull(x, 1)
+	if err != nil {
+		return
+	}
+
 	x = x.Scale(-1)
 	x = x.Exp()
 
@@ -47,4 +51,14 @@ func (c *Sigmoid) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error)
 	x = xs[0]
 
 	return x, nil
+}
+
+func (c *Sigmoid) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Tensor, err error) {
+	dev := x.Device()
+	dims := x.Shape()
+
+	return tensor.Full(dims, value, &tensor.Config{
+		Device:    dev,
+		GradTrack: false,
+	})
 }

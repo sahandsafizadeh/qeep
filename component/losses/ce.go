@@ -54,7 +54,17 @@ func (c *CE) Compute(yp tensor.Tensor, yt tensor.Tensor) (l tensor.Tensor, err e
 }
 
 func clip(x tensor.Tensor, l, u float64) (y tensor.Tensor, err error) {
-	_1 := x.Pow(0)
+	dev := x.Device()
+	dims := x.Shape()
+
+	_1, err := tensor.Ones(dims, &tensor.Config{
+		Device:    dev,
+		GradTrack: false,
+	})
+	if err != nil {
+		return
+	}
+
 	lower := _1.Scale(l)
 	upper := _1.Scale(u)
 

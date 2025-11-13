@@ -101,9 +101,12 @@ func (c *Adam) Update(wptr *tensor.Tensor) (err error) {
 	beta2t := math.Pow(c.beta2, t)
 	mh = mh.Scale(1 / (1 - beta1t))
 	vh = vh.Scale(1 / (1 - beta2t)).Pow(0.5)
-
 	n := mh
-	eps := vh.Pow(0).Scale(c.eps)
+
+	eps, err := c.toUntrackedFull(vh, c.eps)
+	if err != nil {
+		return
+	}
 
 	d, err := vh.Add(eps)
 	if err != nil {
@@ -130,6 +133,16 @@ func (c *Adam) hasWeightDecay() (has bool) {
 }
 
 /* ----- helpers ----- */
+
+func (c *Adam) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Tensor, err error) {
+	dev := x.Device()
+	dims := x.Shape()
+
+	return tensor.Full(dims, value, &tensor.Config{
+		Device:    dev,
+		GradTrack: false,
+	})
+}
 
 func toValidAdamConfig(iconf *AdamConfig) (conf *AdamConfig, err error) {
 	if iconf == nil {

@@ -68,6 +68,16 @@ func (c *LeakyRelu) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err erro
 	return x, nil
 }
 
+func (c *LeakyRelu) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Tensor, err error) {
+	dev := x.Device()
+	dims := x.Shape()
+
+	return tensor.Full(dims, value, &tensor.Config{
+		Device:    dev,
+		GradTrack: false,
+	})
+}
+
 func toValidLeakyReluConfig(iconf *LeakyReluConfig) (conf *LeakyReluConfig) {
 	if iconf == nil {
 		iconf = &LeakyReluConfig{
@@ -79,14 +89,4 @@ func toValidLeakyReluConfig(iconf *LeakyReluConfig) (conf *LeakyReluConfig) {
 	*conf = *iconf
 
 	return conf
-}
-
-func (c *LeakyRelu) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Tensor, err error) {
-	dev := x.Device()
-	dims := x.Shape()
-
-	return tensor.Full(dims, value, &tensor.Config{
-		Device:    dev,
-		GradTrack: false,
-	})
 }

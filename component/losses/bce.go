@@ -44,7 +44,10 @@ func (c *BCE) Compute(yp tensor.Tensor, yt tensor.Tensor) (l tensor.Tensor, err 
 
 	/* ----- right sentence ----- */
 
-	_1 := yp.Pow(0)
+	_1, err := c.toUntrackedFull(yp, 1)
+	if err != nil {
+		return
+	}
 
 	t2, err := _1.Sub(yt)
 	if err != nil {
@@ -100,4 +103,14 @@ func (c *BCE) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	}
 
 	return nil
+}
+
+func (c *BCE) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Tensor, err error) {
+	dev := x.Device()
+	dims := x.Shape()
+
+	return tensor.Full(dims, value, &tensor.Config{
+		Device:    dev,
+		GradTrack: false,
+	})
 }

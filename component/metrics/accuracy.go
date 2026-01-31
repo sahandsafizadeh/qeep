@@ -7,18 +7,24 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// Accuracy tracks correct predictions over accumulated batches.
+// Call Result() after accumulation to get the fraction of correct predictions.
 type Accuracy struct {
 	count      int
 	correct    int
 	oneHotMode bool
 }
 
+// AccuracyConfig controls how predictions are compared to targets.
+// OneHotMode=true: use argmax for multi-class (one-hot encoded).
+// OneHotMode=false: use 0.5 threshold for binary classification.
 type AccuracyConfig struct {
 	OneHotMode bool
 }
 
 const AccuracyDefaultOneHotMode = false
 
+// NewAccuracy creates an Accuracy metric. conf may be nil; then OneHotMode defaults to false.
 func NewAccuracy(conf *AccuracyConfig) (c *Accuracy) {
 	conf = toValidAccuracyConfig(conf)
 

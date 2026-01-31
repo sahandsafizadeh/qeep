@@ -8,9 +8,12 @@ import (
 
 const epsilon = 1e-12
 
+// CE is cross-entropy loss for multi-class classification.
+// Expects yp as probabilities (e.g. after softmax) and yt as one-hot encoded targets.
 type CE struct {
 }
 
+// NewCE returns a new CE loss.
 func NewCE() (c *CE) {
 	return new(CE)
 }

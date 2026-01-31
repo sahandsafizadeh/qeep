@@ -6,10 +6,12 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// Input is a placeholder layer whose output is set by the model (SeedFunc) when feeding data.
 type Input struct {
 	SeedFunc func() tensor.Tensor
 }
 
+// NewInput returns a new Input layer. The model sets SeedFunc before each forward pass.
 func NewInput() (c *Input) {
 	return &Input{}
 }

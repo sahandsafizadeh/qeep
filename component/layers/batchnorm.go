@@ -3,12 +3,10 @@ package layers
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/component/initializers"
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 type BatchNorm struct {
-	dim      int
 	momentum float64
 	eps      float64
 
@@ -19,23 +17,14 @@ type BatchNorm struct {
 }
 
 type BatchNormConfig struct {
-	Dim          int
-	Momentum     float64
-	Eps          float64
-	Initializers map[string]Initializer
-	Device       tensor.Device
+	Momentum float64
+	Eps      float64
+	Device   tensor.Device
 }
 
 const (
 	BatchNormDefaultMomentum = 0.99
 	BatchNormDefaultEps      = 1e-3
-)
-
-const (
-	batchNormBetaKey       = "Beta"
-	batchNormGammaKey      = "Gamma"
-	batchNormMovingMeanKey = "MovingMean"
-	batchNormMovingVarKey  = "MovingVar"
 )
 
 func NewBatchNorm(conf *BatchNormConfig) (c *BatchNorm, err error) {
@@ -45,34 +34,206 @@ func NewBatchNorm(conf *BatchNormConfig) (c *BatchNorm, err error) {
 		return
 	}
 
-	// var (
-	// 	win = conf.Initializers[fcWeightKey]
-	// 	bin = conf.Initializers[fcBiasKey]
-	// )
+	c = &BatchNorm{
+		momentum: conf.Momentum,
+		eps:      conf.Eps,
+	}
 
-	// w, err := win.Init([]int{conf.Outputs}, conf.Device)
-	// if err != nil {
-	// 	return
-	// }
+	c.Beta, err = tensor.Full(nil, 0., &tensor.Config{
+		Device:    conf.Device,
+		GradTrack: true,
+	})
+	if err != nil {
+		return
+	}
 
-	// b, err := bin.Init([]int{conf.Outputs}, conf.Device)
-	// if err != nil {
-	// 	return
-	// }
+	c.Gamma, err = tensor.Full(nil, 1., &tensor.Config{
+		Device:    conf.Device,
+		GradTrack: true,
+	})
+	if err != nil {
+		return
+	}
 
-	// err = validateInitializedWeights(w, b, conf)
-	// if err != nil {
-	// 	err = fmt.Errorf("FC initialized weight validation failed: %w", err)
-	// 	return
-	// }
+	c.MovingMean, err = tensor.Full(nil, 0., &tensor.Config{
+		Device:    conf.Device,
+		GradTrack: false,
+	})
+	if err != nil {
+		return
+	}
 
-	// return &FC{
-	// 	Weight: w,
-	// 	Bias:   b,
-	// }, nil
+	c.MovingVar, err = tensor.Full(nil, 1., &tensor.Config{
+		Device:    conf.Device,
+		GradTrack: false,
+	})
+	if err != nil {
+		return
+	}
+
+	return c, nil
+}
+
+func (c *BatchNorm) Weights() []Weight {
+	return []Weight{
+		{
+			Value:     &c.Beta,
+			Trainable: true,
+		},
+		{
+			Value:     &c.Gamma,
+			Trainable: true,
+		},
+		{
+			Value:     &c.MovingMean,
+			Trainable: false, // not tracked
+		},
+		{
+			Value:     &c.MovingVar,
+			Trainable: false, // not tracked
+		},
+	}
+}
+
+func (c *BatchNorm) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
+	x, err := c.toValidInputs(xs)
+	if err != nil {
+		err = fmt.Errorf("BatchNorm input data validation failed: %w", err)
+		return
+	}
+
+	return c.forward(x)
+}
+
+func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
+	// always normalize the last dim
+	// take average across ALL of the instances for the last dim
+	// meaning that if (..., F) is the shape of the input tensor, (F,) will be the shape of mean and variance
+
+	var mean, _var tensor.Tensor
+
+	/* ----- mean/var preparation ----- */
+
+	if !x.GradientTracked() {
+		mean = c.MovingMean
+		_var = c.MovingVar
+	} else {
+		var fx tensor.Tensor
+
+		fx, err = flattenToNormDim(x)
+		if err != nil {
+			return
+		}
+
+		mean, err = fx.MeanAlong(0)
+		if err != nil {
+			return
+		}
+
+		_var, err = fx.VarAlong(0)
+		if err != nil {
+			return
+		}
+
+		momentum := c.momentum
+		movingMean := c.MovingMean
+		movingVar := c.MovingVar
+
+		mm1 := movingMean.Scale(momentum)
+		mv1 := movingVar.Scale(momentum)
+		mm2 := mean.Scale(1 - momentum)
+		mv2 := _var.Scale(1 - momentum)
+
+		c.MovingMean, err = mm1.Add(mm2)
+		if err != nil {
+			return
+		}
+
+		c.MovingVar, err = mv1.Add(mv2)
+		if err != nil {
+			return
+		}
+	}
+
+	/* ----- normalization ----- */
+
+	dev := _var.Device()
+	dims := _var.Shape()
+
+	epsilone, err := tensor.Full(dims, c.eps, &tensor.Config{
+		Device:    dev,
+		GradTrack: false,
+	})
+	if err != nil {
+		return
+	}
+
+	n, err := x.Sub(mean)
+	if err != nil {
+		return
+	}
+
+	d, err := _var.Add(epsilone)
+	if err != nil {
+		return
+	}
+
+	d = d.Pow(0.5)
+
+	y, err = n.Div(d)
+	if err != nil {
+		return
+	}
+
+	y, err = y.Mul(c.Gamma)
+	if err != nil {
+		return
+	}
+
+	y, err = y.Add(c.Beta)
+	if err != nil {
+		return
+	}
+
+	return y, nil
+}
+
+func flattenToNormDim(x tensor.Tensor) (y tensor.Tensor, err error) {
+	dims := x.Shape()
+	ndim := len(dims) - 1 // normalization dim
+
+	flattened := 1
+	for i := range ndim {
+		flattened *= dims[i]
+	}
+
+	y, err = x.Reshape([]int{flattened, dims[ndim]})
+	if err != nil {
+		return
+	}
+
+	return y, nil
 }
 
 /* ----- helpers ----- */
+
+func (c *BatchNorm) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
+	if len(xs) != 1 {
+		err = fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
+		return
+	}
+
+	x = xs[0]
+
+	shape := x.Shape()
+
+	if len(shape) < 2 {
+		err = fmt.Errorf("expected input tensor to have at least two dimensions (batch, ..., feature): got (%d)", len(shape))
+		return
+	}
+
+	return x, nil
+}
 
 func toValidBatchNormConfig(iconf *BatchNormConfig) (conf *BatchNormConfig, err error) {
 	if iconf == nil {
@@ -82,11 +243,6 @@ func toValidBatchNormConfig(iconf *BatchNormConfig) (conf *BatchNormConfig, err 
 
 	conf = new(BatchNormConfig)
 	*conf = *iconf
-
-	if conf.Dim < 0 {
-		err = fmt.Errorf("expected 'Dim' not to be negative: got (%d)", conf.Dim)
-		return
-	}
 
 	if conf.Momentum < 0 {
 		err = fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
@@ -98,63 +254,9 @@ func toValidBatchNormConfig(iconf *BatchNormConfig) (conf *BatchNormConfig, err 
 		return
 	}
 
-	if conf.Initializers == nil {
-		conf.Initializers = make(map[string]Initializer)
-	}
-
-	if _, ok := conf.Initializers[batchNormBetaKey]; !ok {
-		conf.Initializers[batchNormBetaKey] = initializers.NewFull(
-			&initializers.FullConfig{
-				Value: 0.,
-			})
-	}
-
-	if _, ok := conf.Initializers[batchNormGammaKey]; !ok {
-		conf.Initializers[batchNormGammaKey] = initializers.NewFull(
-			&initializers.FullConfig{
-				Value: 1.,
-			})
-	}
-
-	if _, ok := conf.Initializers[batchNormMovingMeanKey]; !ok {
-		conf.Initializers[batchNormMovingMeanKey] = initializers.NewFull(
-			&initializers.FullConfig{
-				Value: 0.,
-			})
-	}
-
-	if _, ok := conf.Initializers[batchNormMovingVarKey]; !ok {
-		conf.Initializers[batchNormMovingVarKey] = initializers.NewFull(
-			&initializers.FullConfig{
-				Value: 1.,
-			})
-	}
-
 	if conf.Device == 0 {
 		conf.Device = tensor.CPU
 	}
 
 	return conf, nil
 }
-
-// func validateInitializedWeights(w tensor.Tensor, b tensor.Tensor, conf *FCConfig) (err error) {
-// 	shapew := w.Shape()
-// 	shapeb := b.Shape()
-
-// 	if len(shapew) != 1 || len(shapeb) != 1 {
-// 		err = fmt.Errorf("expected initialized weights to have exactly one dimension")
-// 		return
-// 	}
-
-// 	if shapew[0] != conf.Outputs {
-// 		err = fmt.Errorf("expected initialized 'Weight' size to match 'Outputs': (%d) != (%d)", shapew[0], conf.Outputs)
-// 		return
-// 	}
-
-// 	if shapeb[0] != conf.Outputs {
-// 		err = fmt.Errorf("expected initialized 'Bias' size to match 'Outputs': (%d) != (%d)", shapeb[0], conf.Outputs)
-// 		return
-// 	}
-
-// 	return nil
-// }

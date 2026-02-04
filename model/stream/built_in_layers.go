@@ -62,6 +62,14 @@ func Dropout(conf *layers.DropoutConfig) StreamFunc {
 	return NewStreamFunc(initf)
 }
 
+func BatchNorm(conf *layers.BatchNormConfig) StreamFunc {
+	initf := func() (contract.Layer, error) {
+		return layers.NewBatchNorm(conf)
+	}
+
+	return NewStreamFunc(initf)
+}
+
 func FC(conf *layers.FCConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return layers.NewFC(conf)

@@ -105,10 +105,10 @@ func (c *BatchNorm) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	return c.forward(x)
 }
 
+// Always normalizes based on the last dimension.
+// If the input's shape is (..., F), then the core mean and variance will have (F) shape.
+// Broadcasted mean and variance will normalize the whole tensor.
 func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
-	// always normalize the last dim
-	// take average across ALL of the instances for the last dim
-	// meaning that if (..., F) is the shape of the input tensor, (F,) will be the shape of mean and variance
 
 	var mean, _var tensor.Tensor
 

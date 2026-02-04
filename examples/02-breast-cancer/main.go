@@ -22,7 +22,7 @@ const (
 
 const (
 	batchSize = 128
-	epochs    = 25
+	epochs    = 500
 	dev       = tensor.CPU
 )
 
@@ -36,8 +36,8 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: 0.94
-	// Total Duration (CPU: 25s, CUDA: 28s)
+	// Best Accuracy: 0.89
+	// Total Duration (CPU: 30s, CUDA: 40s)
 }
 
 func run() (result map[string]float64, err error) {
@@ -76,18 +76,11 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{
-		Inputs:  30,
-		Outputs: 16,
-		Device:  dev,
-	})(input)
-	x = stream.Tanh()(x)
+	x := stream.FC(&layers.FCConfig{Inputs: 30, Outputs: 16, Device: dev})(input)
+	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
-	x = stream.FC(&layers.FCConfig{
-		Inputs:  16,
-		Outputs: 1,
-		Device:  dev,
-	})(x)
+	x = stream.FC(&layers.FCConfig{Inputs: 16, Outputs: 1, Device: dev})(x)
 	output := stream.Sigmoid()(x)
 
 	/* -------------------- */

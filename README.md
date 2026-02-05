@@ -50,21 +50,12 @@ const dev = tensor.CPU
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{
-		Inputs:  4,
-		Outputs: 4,
-		Device:  dev,
-	})(input)
-	x = stream.Tanh()(x)
+	x := stream.FC(&layers.FCConfig{Inputs: 4, Outputs: 16, Device: dev})(input)
+	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
 
-	x = stream.FC(&layers.FCConfig{
-		Inputs:  4,
-		Outputs: 3,
-		Device:  dev,
-	})(x)
-	output := stream.Softmax(&activations.SoftmaxConfig{
-		Dim: 1,
-	})(x)
+	x = stream.FC(&layers.FCConfig{Inputs: 16, Outputs: 3, Device: dev})(x)
+	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
 
 	/* -------------------- */
 

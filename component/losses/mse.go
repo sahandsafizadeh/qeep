@@ -6,9 +6,11 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// MSE is mean squared error loss: mean((yt - yp)^2). Used for regression.
 type MSE struct {
 }
 
+// NewMSE returns a new MSE loss.
 func NewMSE() (c *MSE) {
 	return new(MSE)
 }

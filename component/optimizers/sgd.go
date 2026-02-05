@@ -6,6 +6,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// SGD implements stochastic gradient descent with optional momentum and L2 weight decay.
 type SGD struct {
 	learningRate float64
 	weightDecay  float64
@@ -13,6 +14,8 @@ type SGD struct {
 	velocities   map[*tensor.Tensor]tensor.Tensor
 }
 
+// SGDConfig specifies learning rate, L2 weight decay, and momentum coefficient.
+// Zero values are replaced with package defaults (see SGDDefault* constants).
 type SGDConfig struct {
 	LearningRate float64
 	WeightDecay  float64
@@ -25,6 +28,7 @@ const (
 	SGDDefaultMomentum     = 0.
 )
 
+// NewSGD creates an SGD optimizer. conf may be nil; then defaults are used.
 func NewSGD(conf *SGDConfig) (c *SGD, err error) {
 	conf, err = toValidSGDConfig(conf)
 	if err != nil {

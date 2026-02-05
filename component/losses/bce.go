@@ -6,9 +6,11 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// BCE is binary cross-entropy loss. Use for binary classification; yp and yt should be in (0, 1).
 type BCE struct {
 }
 
+// NewBCE returns a new BCE loss.
 func NewBCE() (c *BCE) {
 	return new(BCE)
 }

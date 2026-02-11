@@ -9,6 +9,8 @@ import (
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
 )
 
+// Cursor returns the internal node for this stream. Used by the model package to traverse the graph.
+// The return type is any because the node package is internal.
 func (s *Stream) Cursor() any {
 	/*
 		stream package is exposed while node package is not; therefore,
@@ -18,6 +20,7 @@ func (s *Stream) Cursor() any {
 	return s.cursor
 }
 
+// Error returns a combined error if any layer in this stream's subtree failed during construction.
 func (s *Stream) Error() error {
 	if len(s.errCtx) == 0 {
 		return nil
@@ -41,8 +44,9 @@ func (s *Stream) Error() error {
 	return errors.New(chained.String())
 }
 
+// NewStream creates a new stream by running initFunc to get a layer and connecting it to the given input streams.
+// Callers typically use stream constructors (Input, FC, Tanh, etc.) instead of calling NewStream directly.
 func NewStream(initFunc layerInitFunc, xs []*Stream) (y *Stream) {
-
 	/*
 		CHANGE WITH CAUTION:
 		- this function only handles error of 'initFunc'.
@@ -82,6 +86,7 @@ func NewStream(initFunc layerInitFunc, xs []*Stream) (y *Stream) {
 	}
 }
 
+// NewStreamFunc wraps a layer init function into a StreamFunc (e.g. used by FC, Tanh).
 func NewStreamFunc(initFunc layerInitFunc) StreamFunc {
 	return func(xs ...*Stream) *Stream { return NewStream(initFunc, xs) }
 }

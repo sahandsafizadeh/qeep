@@ -9,6 +9,8 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
+// Full returns a tensor with the given shape, where every element equals value.
+// conf may be nil; defaults to CPU device without gradient tracking.
 func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
@@ -26,6 +28,8 @@ func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) 
 	}
 }
 
+// Zeros returns a tensor with the given shape, filled with zeros.
+// conf may be nil; defaults to CPU device without gradient tracking.
 func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
@@ -43,6 +47,8 @@ func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	}
 }
 
+// Ones returns a tensor with the given shape, filled with ones.
+// conf may be nil; defaults to CPU device without gradient tracking.
 func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
@@ -60,6 +66,8 @@ func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	}
 }
 
+// Eye returns a d-by-d identity matrix (ones on diagonal, zeros elsewhere).
+// conf may be nil; defaults to CPU device without gradient tracking.
 func Eye(d int, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
@@ -77,6 +85,8 @@ func Eye(d int, conf *Config) (t tensor.Tensor, err error) {
 	}
 }
 
+// RandU returns a tensor with the given shape, filled with uniformly distributed random values in [l, u).
+// conf may be nil; defaults to CPU device without gradient tracking.
 func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
@@ -94,6 +104,9 @@ func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) 
 	}
 }
 
+// RandN returns a tensor with shape dims filled with normally distributed random values.
+// Parameters: u is the mean, s is the standard deviation.
+// conf may be nil; defaults to CPU device without gradient tracking.
 func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
@@ -111,6 +124,9 @@ func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) 
 	}
 }
 
+// Of creates a tensor from Go slice data (float64 or nested slices up to 4D).
+// Shape is inferred from the data structure.
+// conf may be nil; defaults to CPU device without gradient tracking.
 func Of[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
@@ -128,6 +144,8 @@ func Of[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
 	}
 }
 
+// Concat joins tensors along the specified dimension.
+// All input tensors must reside on the same device and have compatible shapes.
 func Concat(ts []tensor.Tensor, dim int) (t tensor.Tensor, err error) {
 	err = validateImplementationsUnity(ts)
 	if err != nil {
@@ -145,6 +163,9 @@ func Concat(ts []tensor.Tensor, dim int) (t tensor.Tensor, err error) {
 	}
 }
 
+// BackPropagate computes gradients for t and all tensors in its computation graph.
+// t should be a scalar tensor (e.g. a loss value).
+// After backpropagation, gradient contexts become invalid and must be reset before reuse.
 func BackPropagate(t tensor.Tensor) (err error) {
 	err = validateImplementation(t)
 	if err != nil {
@@ -228,6 +249,8 @@ func validateImplementationsUnity(ts []tensor.Tensor) (err error) {
 
 /* ----- testing helpers ----- */
 
+// RunTestLogicOnDevices runs testLogic once per available device (CPU and CUDA if built with cuda tag).
+// Used by tests to exercise both backends.
 func RunTestLogicOnDevices(testLogic func(Device)) {
 	devices := []Device{CPU}
 

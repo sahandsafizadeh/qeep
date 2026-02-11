@@ -7,6 +7,8 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// Simple is a batch generator that yields (x, y) batches from in-memory slices [][]float64.
+// It implements model.BatchGenerator for use with Model.Fit and Model.Eval.
 type Simple struct {
 	x         [][]float64
 	y         [][]float64
@@ -17,12 +19,15 @@ type Simple struct {
 	index     int
 }
 
+// SimpleConfig configures batch size, whether to shuffle each epoch, and the tensor device.
 type SimpleConfig struct {
 	BatchSize int
 	Shuffle   bool
 	Device    tensor.Device
 }
 
+// NewSimple builds a Simple batch generator from feature matrix x and target matrix y (same number of rows).
+// conf must not be nil; BatchSize must be positive. Device defaults to CPU if zero.
 func NewSimple(x [][]float64, y [][]float64, conf *SimpleConfig) (bg *Simple, err error) {
 	conf, err = toValidSimpleConfig(conf)
 	if err != nil {
@@ -50,6 +55,7 @@ func NewSimple(x [][]float64, y [][]float64, conf *SimpleConfig) (bg *Simple, er
 	return bg, nil
 }
 
+// Reset re-shuffles data if Shuffle is true and resets the batch index for the next epoch.
 func (bg *Simple) Reset() {
 	if bg.shuffle {
 		rand.Shuffle(len(bg.x), func(i, j int) {
@@ -61,6 +67,7 @@ func (bg *Simple) Reset() {
 	bg.index = 0
 }
 
+// Count returns the number of batches per epoch (ceiling of length / batch size).
 func (bg *Simple) Count() (count int) {
 	if bg.length%bg.batchSize == 0 {
 		return bg.length / bg.batchSize
@@ -69,10 +76,12 @@ func (bg *Simple) Count() (count int) {
 	}
 }
 
+// HasNext reports whether another batch is available in the current epoch.
 func (bg *Simple) HasNext() (ok bool) {
 	return bg.index < bg.length
 }
 
+// NextBatch returns the next (xs, y) batch as tensors on the generator's device. Implements model.BatchGenerator.
 func (bg *Simple) NextBatch() (xs []tensor.Tensor, y tensor.Tensor, err error) {
 	if !bg.HasNext() {
 		err = fmt.Errorf("Simple state validation failed: expected next batch to exist")

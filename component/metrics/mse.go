@@ -7,11 +7,14 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// MSE tracks squared errors over accumulated batches.
+// Call Result() after accumulation to get the mean squared error.
 type MSE struct {
 	count   int
 	diffSum float64
 }
 
+// NewMSE returns a new MSE metric.
 func NewMSE() (c *MSE) {
 	return new(MSE)
 }

@@ -13,4 +13,5 @@ By design:
 - Each layer must have exactly one output, regardless of the number of inputs.
 - All components must consider the batch dimension.
 - A component is responsible for managing its tensors' device.
+- Parameters of a component must be initialized lazily after the first Forward call.
 */

@@ -11,7 +11,7 @@ on:
       - "*"
 
 env:
-  GO_VERSION: ${{ '1.24' }}
+  GO_VERSION: ${{ '1.26.3' }}
   SCRIPTS_ROOT: ./scripts
 
 jobs:
@@ -37,12 +37,14 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.1
+          version: v2.9
 
       - name: Test
         run: bash $SCRIPTS_ROOT/gotest.sh
 
       - name: Security
-        uses: securego/gosec@master
+        uses: securego/gosec@v2.26.1
+        env:
+          GOTOOLCHAIN: go${{ env.GO_VERSION }}
         with:
           args: ./...

@@ -192,6 +192,34 @@ func TestFC(t *testing.T) {
 
 		/* ------------------------------ */
 
+		layer, err = layers.NewFC(&layers.FCConfig{
+			Inputs:  8,
+			Outputs: 3,
+			Initializers: map[string]layers.Initializer{
+				"Weight": initializers.NewFull(&initializers.FullConfig{Value: 2.}),
+				"Bias":   initializers.NewFull(&initializers.FullConfig{Value: 1.}),
+			},
+			Device: dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		weights = layer.Weights()
+		if len(weights) != 2 {
+			t.Fatalf("expected FC to have (2) trainable weights: got (%d)", len(weights))
+		}
+
+		if *weights[0].Value != nil {
+			t.Fatal("expected FC weight (0) to be nil")
+		}
+
+		if *weights[1].Value != nil {
+			t.Fatal("expected FC weight (1) to be nil")
+		}
+
+		/* ------------------------------ */
+
 	})
 }
 
@@ -251,86 +279,6 @@ func TestValidationFC(t *testing.T) {
 
 		/* ------------------------------ */
 
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Weight": new(zeroDInitializer),
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of weights initialized with more/less than one dimension")
-		} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Bias": new(zeroDInitializer),
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of weights initialized with more/less than one dimension")
-		} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Weight": new(twoDInitializer),
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of weights initialized with more/less than one dimension")
-		} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Bias": new(twoDInitializer),
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of weights initialized with more/less than one dimension")
-		} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Weight": new(wrong1DInitializer),
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of 'Weight' being initialized with mismatched size")
-		} else if err.Error() != "FC initialized weight validation failed: expected initialized 'Weight' size to match 'Outputs': (2) != (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = layers.NewFC(&layers.FCConfig{
-			Inputs:  1,
-			Outputs: 1,
-			Initializers: map[string]layers.Initializer{
-				"Bias": new(wrong1DInitializer),
-			},
-		})
-		if err == nil {
-			t.Fatalf("expected error because of 'Bias' being initialized with mismatched size")
-		} else if err.Error() != "FC initialized weight validation failed: expected initialized 'Bias' size to match 'Outputs': (2) != (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
 		layer, err := layers.NewFC(&layers.FCConfig{
 			Inputs:  1,
 			Outputs: 1,
@@ -380,6 +328,133 @@ func TestValidationFC(t *testing.T) {
 		if err == nil {
 			t.Fatalf("expected error because of tensor having more/less than two dimensions")
 		} else if err.Error() != "FC input data validation failed: expected input tensor to have exactly two dimensions (batch, data): got (3)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* ------------------------------ */
+
+		x, err := tensor.Of([][]float64{{1.}}, conf)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		/* --------------- */
+
+		layer, err = layers.NewFC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+			Initializers: map[string]layers.Initializer{
+				"Weight": new(zeroDInitializer),
+			},
+			Device: dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = layer.Forward(x)
+		if err == nil {
+			t.Fatalf("expected error because of weights initialized with more/less than one dimension")
+		} else if err.Error() != "FC forward failed: initialized 'Weight' validation failed: expected initialized weights to have exactly one dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		layer, err = layers.NewFC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+			Initializers: map[string]layers.Initializer{
+				"Bias": new(zeroDInitializer),
+			},
+			Device: dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = layer.Forward(x)
+		if err == nil {
+			t.Fatalf("expected error because of weights initialized with more/less than one dimension")
+		} else if err.Error() != "FC forward failed: initialized 'Bias' validation failed: expected initialized weights to have exactly one dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* --------------- */
+
+		layer, err = layers.NewFC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+			Initializers: map[string]layers.Initializer{
+				"Weight": new(twoDInitializer),
+			},
+			Device: dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = layer.Forward(x)
+		if err == nil {
+			t.Fatalf("expected error because of weights initialized with more/less than one dimension")
+		} else if err.Error() != "FC forward failed: initialized 'Weight' validation failed: expected initialized weights to have exactly one dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		layer, err = layers.NewFC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+			Initializers: map[string]layers.Initializer{
+				"Bias": new(twoDInitializer),
+			},
+			Device: dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = layer.Forward(x)
+		if err == nil {
+			t.Fatalf("expected error because of weights initialized with more/less than one dimension")
+		} else if err.Error() != "FC forward failed: initialized 'Bias' validation failed: expected initialized weights to have exactly one dimension" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		/* --------------- */
+
+		layer, err = layers.NewFC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+			Initializers: map[string]layers.Initializer{
+				"Weight": new(wrong1DInitializer),
+			},
+			Device: dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = layer.Forward(x)
+		if err == nil {
+			t.Fatalf("expected error because of 'Weight' being initialized with mismatched size")
+		} else if err.Error() != "FC forward failed: initialized 'Weight' validation failed: expected initialized size to match the output size: (2) != (1)" {
+			t.Fatal("unexpected error message returned")
+		}
+
+		layer, err = layers.NewFC(&layers.FCConfig{
+			Inputs:  1,
+			Outputs: 1,
+			Initializers: map[string]layers.Initializer{
+				"Bias": new(wrong1DInitializer),
+			},
+			Device: dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = layer.Forward(x)
+		if err == nil {
+			t.Fatalf("expected error because of 'Bias' being initialized with mismatched size")
+		} else if err.Error() != "FC forward failed: initialized 'Bias' validation failed: expected initialized size to match the output size: (2) != (1)" {
 			t.Fatal("unexpected error message returned")
 		}
 

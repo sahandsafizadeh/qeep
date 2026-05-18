@@ -6,7 +6,6 @@ import (
 	"github.com/sahandsafizadeh/qeep/model/internal/contract"
 )
 
-// Input returns a stream that acts as a model input. Use it as the root of your network (e.g. x := stream.Input()).
 func Input() *Stream {
 	initf := func() (contract.Layer, error) {
 		return layers.NewInput(), nil
@@ -15,7 +14,6 @@ func Input() *Stream {
 	return NewStream(initf, nil)
 }
 
-// Tanh returns a StreamFunc that applies element-wise tanh to its input.
 func Tanh() StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewTanh(), nil
@@ -24,7 +22,6 @@ func Tanh() StreamFunc {
 	return NewStreamFunc(initf)
 }
 
-// Sigmoid returns a StreamFunc that applies element-wise sigmoid to its input.
 func Sigmoid() StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewSigmoid(), nil
@@ -33,7 +30,6 @@ func Sigmoid() StreamFunc {
 	return NewStreamFunc(initf)
 }
 
-// Softmax returns a StreamFunc that applies softmax along the dimension given in conf (e.g. Dim: 1 for classes).
 func Softmax(conf *activations.SoftmaxConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewSoftmax(conf)
@@ -42,7 +38,6 @@ func Softmax(conf *activations.SoftmaxConfig) StreamFunc {
 	return NewStreamFunc(initf)
 }
 
-// Relu returns a StreamFunc that applies element-wise ReLU (max(0, x)) to its input.
 func Relu() StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewRelu(), nil
@@ -51,8 +46,6 @@ func Relu() StreamFunc {
 	return NewStreamFunc(initf)
 }
 
-// LeakyRelu returns a StreamFunc that applies Leaky ReLU.
-// The negative slope is specified in conf; it determines output for x < 0.
 func LeakyRelu(conf *activations.LeakyReluConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return activations.NewLeakyRelu(conf), nil
@@ -61,7 +54,6 @@ func LeakyRelu(conf *activations.LeakyReluConfig) StreamFunc {
 	return NewStreamFunc(initf)
 }
 
-// Dropout returns a StreamFunc that applies dropout with the probability from conf (training only).
 func Dropout(conf *layers.DropoutConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return layers.NewDropout(conf)
@@ -78,7 +70,6 @@ func BatchNorm(conf *layers.BatchNormConfig) StreamFunc {
 	return NewStreamFunc(initf)
 }
 
-// FC returns a StreamFunc for a fully connected layer with the given config (inputs, outputs, device, initializers).
 func FC(conf *layers.FCConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return layers.NewFC(conf)

@@ -11,16 +11,12 @@ type Dropout struct {
 	rate float64
 }
 
-// DropoutConfig specifies the drop probability (0 < Rate < 1).
-// If Rate is zero, DropoutDefaultRate (0.5) is used.
 type DropoutConfig struct {
 	Rate float64
 }
 
 const DropoutDefaultRate = 0.5
 
-// NewDropout creates a Dropout layer with the given configuration.
-// Returns an error if config validation fails.
 func NewDropout(conf *DropoutConfig) (c *Dropout, err error) {
 	conf, err = toValidDropoutConfig(conf)
 	if err != nil {

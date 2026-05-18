@@ -20,7 +20,13 @@ func (c *Sigmoid) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 		return
 	}
 
-	return c.forward(x)
+	y, err = c.forward(x)
+	if err != nil {
+		err = fmt.Errorf("Sigmoid forward failed: %w", err)
+		return
+	}
+
+	return y, nil
 }
 
 func (c *Sigmoid) forward(x tensor.Tensor) (y tensor.Tensor, err error) {

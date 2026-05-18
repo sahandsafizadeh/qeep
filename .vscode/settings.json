@@ -1,5 +1,4 @@
 {
-  "go.buildTags": "cuda",
   "go.formatTool": "gofmt",
   "go.lintTool": "golangci-lint",
   "go.lintFlags": ["--fast"],

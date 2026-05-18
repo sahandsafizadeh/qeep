@@ -11,7 +11,6 @@ type Input struct {
 	SeedFunc func() tensor.Tensor
 }
 
-// NewInput returns a new Input layer. The model sets SeedFunc before each forward pass.
 func NewInput() (c *Input) {
 	return &Input{}
 }

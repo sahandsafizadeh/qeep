@@ -12,13 +12,11 @@ import (
 )
 
 // NewModel builds a Model with a single input stream, the given output stream, and config.
-// It returns an error if conf or the streams are invalid.
 func NewModel(input *stream.Stream, output *stream.Stream, conf *ModelConfig) (m *Model, err error) {
 	return NewMultiInputModel([]*stream.Stream{input}, output, conf)
 }
 
 // NewMultiInputModel builds a Model with one or more input streams, the given output stream, and config.
-// It returns an error if conf is nil or if any input/output stream is invalid or not properly connected.
 func NewMultiInputModel(inputs []*stream.Stream, output *stream.Stream, conf *ModelConfig) (m *Model, err error) {
 	err = validateModelConfig(conf)
 	if err != nil {
@@ -48,7 +46,6 @@ func NewMultiInputModel(inputs []*stream.Stream, output *stream.Stream, conf *Mo
 }
 
 // Predict runs a forward pass without gradient tracking and returns the model output.
-// xs must match the number of input streams; each element is the input tensor for one stream.
 func (m *Model) Predict(xs []tensor.Tensor) (yp tensor.Tensor, err error) {
 	err = m.disableGrad()
 	if err != nil {
@@ -59,7 +56,6 @@ func (m *Model) Predict(xs []tensor.Tensor) (yp tensor.Tensor, err error) {
 }
 
 // Eval runs Predict over all batches from batchGen and aggregates the given metrics.
-// It resets the batch generator and returns a map of metric name to result (e.g. "Accuracy": 0.95).
 func (m *Model) Eval(batchGen contract.BatchGenerator, metrics map[string]contract.Metric) (result map[string]float64, err error) {
 	var xs []tensor.Tensor
 	var yt tensor.Tensor
@@ -93,7 +89,6 @@ func (m *Model) Eval(batchGen contract.BatchGenerator, metrics map[string]contra
 }
 
 // Fit trains the model for conf.Epochs using trainBatchGen, optionally evaluating on validBatchGen each epoch.
-// If validBatchGen is non-nil, conf.Metrics are computed on validation data after each epoch.
 func (m *Model) Fit(
 	trainBatchGen contract.BatchGenerator,
 	validBatchGen contract.BatchGenerator,

@@ -13,8 +13,6 @@ type FC struct {
 	Bias   tensor.Tensor
 }
 
-// FCConfig specifies the layer dimensions, target device, and weight initializers.
-// Initializers map uses keys "Weight" and "Bias"; defaults are applied if not provided.
 type FCConfig struct {
 	Inputs       int
 	Outputs      int
@@ -27,8 +25,6 @@ const (
 	fcBiasKey   = "Bias"
 )
 
-// NewFC creates a fully connected layer with the given configuration.
-// Returns an error if config validation fails.
 func NewFC(conf *FCConfig) (c *FC, err error) {
 	conf, err = toValidFCConfig(conf)
 	if err != nil {

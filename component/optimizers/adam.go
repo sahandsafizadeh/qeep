@@ -8,7 +8,6 @@ import (
 )
 
 // Adam implements the Adam optimizer with adaptive moment estimation.
-// It maintains per-parameter first and second moment estimates.
 type Adam struct {
 	learningRate float64
 	weightDecay  float64
@@ -20,8 +19,6 @@ type Adam struct {
 	velocities2  map[*tensor.Tensor]tensor.Tensor
 }
 
-// AdamConfig specifies learning rate, L2 weight decay, and moment coefficients.
-// Zero values are replaced with package defaults (see AdamDefault* constants).
 type AdamConfig struct {
 	LearningRate float64
 	WeightDecay  float64
@@ -38,7 +35,6 @@ const (
 	AdamDefaultEps          = 1e-8
 )
 
-// NewAdam creates an Adam optimizer. conf may be nil; then defaults are used.
 func NewAdam(conf *AdamConfig) (c *Adam, err error) {
 	conf, err = toValidAdamConfig(conf)
 	if err != nil {

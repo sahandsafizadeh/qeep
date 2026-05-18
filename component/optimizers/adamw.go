@@ -8,7 +8,6 @@ import (
 )
 
 // AdamW implements Adam with decoupled weight decay regularization.
-// Unlike standard Adam, weight decay is applied directly rather than through gradient.
 type AdamW struct {
 	learningRate float64
 	weightDecay  float64
@@ -20,8 +19,6 @@ type AdamW struct {
 	velocities2  map[*tensor.Tensor]tensor.Tensor
 }
 
-// AdamWConfig specifies learning rate, decoupled weight decay, and moment coefficients.
-// Zero values are replaced with package defaults (see AdamWDefault* constants).
 type AdamWConfig struct {
 	LearningRate float64
 	WeightDecay  float64
@@ -38,7 +35,6 @@ const (
 	AdamWDefaultEps          = 1e-8
 )
 
-// NewAdamW creates an AdamW optimizer. conf may be nil; then defaults are used.
 func NewAdamW(conf *AdamWConfig) (c *AdamW, err error) {
 	conf, err = toValidAdamWConfig(conf)
 	if err != nil {

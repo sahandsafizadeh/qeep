@@ -14,13 +14,11 @@ type Model struct {
 	optimizer contract.Optimizer
 }
 
-// ModelConfig holds the loss and optimizer used to construct a Model.
 type ModelConfig struct {
 	Loss      contract.Loss
 	Optimizer contract.Optimizer
 }
 
-// FitConfig configures a training run: number of epochs and optional validation metrics.
 type FitConfig struct {
 	Epochs  int
 	Metrics map[string]contract.Metric
@@ -36,7 +34,6 @@ type WeightedLayer = contract.WeightedLayer
 type Loss = contract.Loss
 
 // Metric accumulates predictions and targets across batches.
-// Call Result() after all batches to get the final scalar value (e.g. accuracy).
 type Metric = contract.Metric
 
 // Optimizer updates layer weights using gradients computed during backpropagation.

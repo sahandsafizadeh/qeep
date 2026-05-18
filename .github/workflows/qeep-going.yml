@@ -43,6 +43,8 @@ jobs:
         run: bash $SCRIPTS_ROOT/gotest.sh
 
       - name: Security
-        uses: securego/gosec@master
+        uses: securego/gosec@v2.26.1
+        env:
+          GOTOOLCHAIN: go${{ env.GO_VERSION }}
         with:
           args: ./...

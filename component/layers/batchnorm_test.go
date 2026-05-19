@@ -545,6 +545,38 @@ func TestBatchNorm(t *testing.T) {
 
 		/* ------------------------------ */
 
+		layer, err = layers.NewBatchNorm(&layers.BatchNormConfig{
+			Momentum: 0.5,
+			Eps:      1e-10,
+			Device:   dev,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		weights = layer.Weights()
+		if len(weights) != 4 {
+			t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
+		}
+
+		if *weights[0].Value != nil {
+			t.Fatal("expected BatchNorm weight (0) to be nil")
+		}
+
+		if *weights[1].Value != nil {
+			t.Fatal("expected BatchNorm weight (1) to be nil")
+		}
+
+		if *weights[2].Value != nil {
+			t.Fatal("expected BatchNorm weight (2) to be nil")
+		}
+
+		if *weights[3].Value != nil {
+			t.Fatal("expected BatchNorm weight (3) to be nil")
+		}
+
+		/* ------------------------------ */
+
 	})
 }
 

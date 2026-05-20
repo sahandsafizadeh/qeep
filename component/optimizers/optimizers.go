@@ -8,6 +8,12 @@ import (
 
 func getValidOptimizerInputs(wptr *tensor.Tensor) (w tensor.Tensor, g tensor.Tensor, err error) {
 	w = *wptr
+
+	if w == nil {
+		err = fmt.Errorf("test error")
+		return
+	}
+
 	g = w.Gradient()
 
 	if g == nil {

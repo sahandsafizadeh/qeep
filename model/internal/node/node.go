@@ -92,7 +92,12 @@ func (n *Node) DisableGrad() {
 	}
 
 	for _, w := range wl.Weights() {
-		(*w.Value).ResetGradContext(false)
+		x := *w.Value
+		if x == nil { // the component was simply not initialized
+			continue
+		}
+
+		x.ResetGradContext(false)
 	}
 }
 
@@ -103,6 +108,11 @@ func (n *Node) EnableGrad() {
 	}
 
 	for _, w := range wl.Weights() {
-		(*w.Value).ResetGradContext(w.Trainable)
+		x := *w.Value
+		if x == nil { // the component was simply not initialized
+			continue
+		}
+
+		x.ResetGradContext(w.Trainable)
 	}
 }

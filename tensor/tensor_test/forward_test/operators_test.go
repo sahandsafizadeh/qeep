@@ -8,6 +8,8 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// TODO: add a seprate test for the equals method validated with At.
+
 func TestScale(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 

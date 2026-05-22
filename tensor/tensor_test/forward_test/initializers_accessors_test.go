@@ -86,6 +86,144 @@ func TestEye(t *testing.T) {
 	})
 }
 
+func TestRandU(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== side effects ==============================
+
+		t.Run("RandU([3,4], -1, 1) does not share dims slice / Shape() after mutating dims / returns [3,4]", func(t *testing.T) {
+			dims := []int{3, 4}
+			ten, err := tensor.RandU(dims, -1., 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			dims[0] = 1
+			dims[1] = 1
+			shape := ten.Shape()
+			if !slices.Equal(shape, []int{3, 4}) {
+				t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+			}
+		})
+
+		// ============================== validations ==============================
+
+		t.Run("RandU(nil, 0, -1) / lower bound >= upper bound / returns error: lower bound not less than upper bound", func(t *testing.T) {
+			_, err := tensor.RandU(nil, 0., -1., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatalf("expected error because of lower bound not being less than upper bound")
+			} else if err.Error() != "RandU random parameter validation failed: expected uniform random lower bound to be less than the upper bound: (0.000000) >= (-1.000000)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("RandU(nil, 1, 1) / equal bounds / returns error: lower bound not less than upper bound", func(t *testing.T) {
+			_, err := tensor.RandU(nil, 1., 1., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatalf("expected error because of lower bound not being less than upper bound")
+			} else if err.Error() != "RandU random parameter validation failed: expected uniform random lower bound to be less than the upper bound: (1.000000) >= (1.000000)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("RandU([-1], -1, 1) / negative dimension / returns error: non-positive dimension", func(t *testing.T) {
+			_, err := tensor.RandU([]int{-1}, -1., 1., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatalf("expected error because of non-positive dimension")
+			} else if err.Error() != "RandU input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("RandU([1x7], -1, 1) / too many dimensions / returns error: exceeds max dimensions", func(t *testing.T) {
+			_, err := tensor.RandU([]int{1, 1, 1, 1, 1, 1, 1}, -1., 1., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatalf("expected error because of too many dimensions")
+			} else if err.Error() != "RandU input dimension validation failed: expected at most (6) dimensions: got (7)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("RandU(nil, 0, 1) with invalid device / returns error: invalid input device", func(t *testing.T) {
+			_, err := tensor.RandU(nil, 0., 1., &tensor.Config{Device: -1})
+			if err == nil {
+				t.Fatalf("expected error because of invalid input device")
+			} else if err.Error() != "RandU tensor config data validation failed: invalid input device" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+	})
+}
+
+func TestRandN(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== side effects ==============================
+
+		t.Run("RandN([3,4], 0, 1) does not share dims slice / Shape() after mutating dims / returns [3,4]", func(t *testing.T) {
+			dims := []int{3, 4}
+			ten, err := tensor.RandN(dims, 0., 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			dims[0] = 1
+			dims[1] = 1
+			shape := ten.Shape()
+			if !slices.Equal(shape, []int{3, 4}) {
+				t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+			}
+		})
+
+		// ============================== validations ==============================
+
+		t.Run("RandN(nil, 0, -1) / negative standard deviation / returns error: std dev not positive", func(t *testing.T) {
+			_, err := tensor.RandN(nil, 0., -1., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatalf("expected error because of non-positive standard deviation")
+			} else if err.Error() != "RandN random parameter validation failed: expected normal random standard deviation to be positive: got (-1.000000)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("RandN(nil, -1, 0) / zero standard deviation / returns error: std dev not positive", func(t *testing.T) {
+			_, err := tensor.RandN(nil, -1., 0., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatalf("expected error because of non-positive standard deviation")
+			} else if err.Error() != "RandN random parameter validation failed: expected normal random standard deviation to be positive: got (0.000000)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("RandN([-1], 0, 1) / negative dimension / returns error: non-positive dimension", func(t *testing.T) {
+			_, err := tensor.RandN([]int{-1}, 0., 1., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatalf("expected error because of non-positive dimension")
+			} else if err.Error() != "RandN input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("RandN([1x9], 0, 1) / too many dimensions / returns error: exceeds max dimensions", func(t *testing.T) {
+			_, err := tensor.RandN([]int{1, 1, 1, 1, 1, 1, 1, 1, 1}, 0., 1., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatalf("expected error because of too many dimensions")
+			} else if err.Error() != "RandN input dimension validation failed: expected at most (6) dimensions: got (9)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("RandN(nil, 0, 1) with invalid device / returns error: invalid input device", func(t *testing.T) {
+			_, err := tensor.RandN(nil, 0., 1., &tensor.Config{Device: -1})
+			if err == nil {
+				t.Fatalf("expected error because of invalid input device")
+			} else if err.Error() != "RandN tensor config data validation failed: invalid input device" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+	})
+}
+
 func TestOfSlice(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 

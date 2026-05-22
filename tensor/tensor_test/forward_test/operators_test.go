@@ -2996,653 +2996,659 @@ func TestDiv(t *testing.T) {
 func TestDot(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("1D tensor [5] and 1D tensor [2] / Dot / returns scalar 10", func(t *testing.T) {
+			t1, err := tensor.Of([]float64{5.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([]float64{2.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		t1, err := tensor.Of([]float64{5.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := t1.Dot(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		t2, err := tensor.Of([]float64{2.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of(10., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err := t1.Dot(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err := tensor.Of(10., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("1D tensor [0, 1, 2] and 1D tensor [3, 4, 5] / Dot / returns scalar 14", func(t *testing.T) {
+			t1, err := tensor.Of([]float64{0., 1., 2.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([]float64{3., 4., 5.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act, err := t1.Dot(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			exp, err := tensor.Of(14., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		t1, err = tensor.Of([]float64{0., 1., 2.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		t2, err = tensor.Of([]float64{3., 4., 5.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("2D ones tensor [5,1] and 2D ones tensor [5,1] / Dot / returns 1D ones tensor [5]", func(t *testing.T) {
+			t1, err := tensor.Ones([]int{5, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Ones([]int{5, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = t1.Dot(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := t1.Dot(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of(14., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Ones([]int{5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		/* ------------------------------ */
+		t.Run("2D ones tensor [5,4] and 2D ones tensor [5,4] / Dot / returns 1D tensor [5] filled with 4", func(t *testing.T) {
+			t1, err := tensor.Ones([]int{5, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Ones([]int{5, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		t1, err = tensor.Ones([]int{5, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := t1.Dot(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		t2, err = tensor.Ones([]int{5, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Full([]int{5}, 4., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = t1.Dot(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err = tensor.Ones([]int{5}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("5D ones tensor [4,5,1,7,8] and 6D ones tensor [3,4,1,6,1,8] / Dot / returns 5D tensor [3,4,5,6,7] filled with 8", func(t *testing.T) {
+			t1, err := tensor.Ones([]int{4, 5, 1, 7, 8}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Ones([]int{3, 4, 1, 6, 1, 8}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act, err := t1.Dot(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			exp, err := tensor.Full([]int{3, 4, 5, 6, 7}, 8., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		t1, err = tensor.Ones([]int{5, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		t2, err = tensor.Ones([]int{5, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		// ============================== validations ==============================
 
-		act, err = t1.Dot(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("nil input tensor / Dot(nil) / returns error: device mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Full([]int{5}, 4., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = t1.Dot(nil)
+			if err == nil {
+				t.Fatalf("expected error because of nil input tensor")
+			} else if err.Error() != fmt.Sprintf("Dot tensors' device validation failed: expected input tensor to be on %s", dev) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("0D tensor and 0D tensor / Dot / returns error: tensors must have at least 1 dimension", func(t *testing.T) {
+			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			_, err = t1.Dot(t1)
+			if err == nil {
+				t.Fatalf("expected error because of tensors having less than 1 dimension")
+			} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		t1, err = tensor.Ones([]int{4, 5, 1, 7, 8}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("0D tensor and 1D tensor / Dot / returns error: first tensor must have at least 1 dimension", func(t *testing.T) {
+			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		t2, err = tensor.Ones([]int{3, 4, 1, 6, 1, 8}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatalf("expected error because of tensors having less than 1 dimension")
+			} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		act, err = t1.Dot(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("1D tensor and 0D tensor / Dot / returns error: second tensor must have at least 1 dimension", func(t *testing.T) {
+			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Full([]int{3, 4, 5, 6, 7}, 8., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = t2.Dot(t1)
+			if err == nil {
+				t.Fatalf("expected error because of tensors having less than 1 dimension")
+			} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (1) and (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("1D tensor of size 3 and 1D tensor of size 2 / Dot / returns error: last dimensions do not match", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatalf("expected error because of incompatible sizes at last dimension")
+			} else if err.Error() != "Dot tensors' dimension validation failed: expected sizes to match at last dimensions: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
+		t.Run("2D tensor [8,4] and 3D tensor [5,2,4] / Dot / returns error: batch dimensions not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{8, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{5, 2, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Dot tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
 func TestMatMul(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		t1, err := tensor.Of([][]float64{{5.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err := tensor.Of([][]float64{{2.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err := t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err := tensor.Of([][]float64{{10.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Of([][]float64{{8.}, {4.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Of([][]float64{{2.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Of([][]float64{{16.}, {8.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Of([][]float64{{2.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Of([][]float64{{8., 4.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Of([][]float64{{16., 8.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Of([][]float64{
-			{0., 1.},
-			{2., 3.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Of([][]float64{
-			{4., 5.},
-			{6., 7.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Of([][]float64{
-			{6., 7.},
-			{26., 31.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Of([][]float64{
-			{1., 1., 1.},
-			{2., 2., 2.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Of([][]float64{
-			{3., 3.},
-			{4., 4.},
-			{5., 5.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Of([][]float64{
-			{12., 12.},
-			{24., 24.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Ones([]int{5, 1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Ones([]int{5, 1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Ones([]int{5, 1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Ones([]int{4, 2, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Ones([]int{4, 1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Ones([]int{4, 2, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Ones([]int{4, 1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Ones([]int{4, 1, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Ones([]int{4, 1, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Ones([]int{5, 4, 2, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Ones([]int{5, 4, 2, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Full([]int{5, 4, 2, 2}, 2., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Ones([]int{7, 6, 1, 4, 3, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Ones([]int{1, 5, 1, 2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act, err = t1.MatMul(t2)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		exp, err = tensor.Full([]int{7, 6, 5, 4, 3, 3}, 2., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-	})
-}
-
-func TestValidationDot(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		conf := &tensor.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		t1, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err := tensor.Zeros([]int{2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.Dot(nil)
-		if err == nil {
-			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != fmt.Sprintf("Dot tensors' device validation failed: expected input tensor to be on %s", dev) {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = t1.Dot(t1)
-		if err == nil {
-			t.Fatalf("expected error because of tensors having less than 1 dimension")
-		} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (0)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = t1.Dot(t2)
-		if err == nil {
-			t.Fatalf("expected error because of tensors having less than 1 dimension")
-		} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = t2.Dot(t1)
-		if err == nil {
-			t.Fatalf("expected error because of tensors having less than 1 dimension")
-		} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (1) and (0)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Zeros([]int{3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Zeros([]int{2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.Dot(t2)
-		if err == nil {
-			t.Fatalf("expected error because of incompatible sizes at last dimension")
-		} else if err.Error() != "Dot tensors' dimension validation failed: expected sizes to match at last dimensions: (3) != (2)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Zeros([]int{8, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Zeros([]int{5, 2, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.Dot(t2)
-		if err == nil {
-			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "Dot tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* -------------------- */
-
-	})
-}
-
-func TestValidationMatMul(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		conf := &tensor.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		t1, err := tensor.Zeros([]int{3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err := tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.MatMul(nil)
-		if err == nil {
-			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != fmt.Sprintf("MatMul tensors' device validation failed: expected input tensor to be on %s", dev) {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = t1.MatMul(t1)
-		if err == nil {
-			t.Fatalf("expected error because of tensors having less than (2) dimensions")
-		} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = t1.MatMul(t2)
-		if err == nil {
-			t.Fatalf("expected error because of tensors having less than (2) dimensions")
-		} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (2)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = t2.MatMul(t1)
-		if err == nil {
-			t.Fatalf("expected error because of tensors having less than (2) dimensions")
-		} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (2) and (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Zeros([]int{3, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.MatMul(t2)
-		if err == nil {
-			t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
-		} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (1) of first tensor to be equal to dimension (0) of second tensor for matrix multiplication: (3) != (2)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Zeros([]int{5, 5, 3, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Zeros([]int{5, 3, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.MatMul(t2)
-		if err == nil {
-			t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
-		} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (3) of first tensor to be equal to dimension (1) of second tensor for matrix multiplication: (2) != (3)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		t1, err = tensor.Zeros([]int{6, 4, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t2, err = tensor.Zeros([]int{6, 2, 5, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = t1.MatMul(t2)
-		if err == nil {
-			t.Fatalf("expected error because of incompatible sizes at dimension (2)")
-		} else if err.Error() != "MatMul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
+		// ============================== main paths ==============================
+
+		t.Run("2D tensor [[5]] / MatMul([[2]]) / returns [[10]]", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{{5.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][]float64{{2.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{{10.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("2D tensor [[8],[4]] / MatMul([[2]]) / returns [[16],[8]]", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{{8.}, {4.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][]float64{{2.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{{16.}, {8.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("2D tensor [[2]] / MatMul([[8,4]]) / returns [[16,8]]", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{{2.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][]float64{{8., 4.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{{16., 8.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("2D tensor [[0,1],[2,3]] / MatMul([[4,5],[6,7]]) / returns [[6,7],[26,31]]", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{
+				{0., 1.},
+				{2., 3.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][]float64{
+				{4., 5.},
+				{6., 7.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{6., 7.},
+				{26., 31.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("2D tensor [2x3] of ones / MatMul([3x2] of 3,4,5) / returns [2x2] result", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{
+				{1., 1., 1.},
+				{2., 2., 2.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][]float64{
+				{3., 3.},
+				{4., 4.},
+				{5., 5.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{12., 12.},
+				{24., 24.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("3D ones tensor [5,1,1] / MatMul([5,1,1] ones) / returns [5,1,1] ones", func(t *testing.T) {
+			t1, err := tensor.Ones([]int{5, 1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Ones([]int{5, 1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Ones([]int{5, 1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("3D ones tensor [4,2,1] / MatMul([4,1,1] ones) / returns [4,2,1] ones", func(t *testing.T) {
+			t1, err := tensor.Ones([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Ones([]int{4, 1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Ones([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("3D ones tensor [4,1,1] / MatMul([4,1,2] ones) / returns [4,1,2] ones", func(t *testing.T) {
+			t1, err := tensor.Ones([]int{4, 1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Ones([]int{4, 1, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Ones([]int{4, 1, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("4D ones tensor [5,4,2,2] / MatMul([5,4,2,2] ones) / returns [5,4,2,2] tensor filled with 2", func(t *testing.T) {
+			t1, err := tensor.Ones([]int{5, 4, 2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Ones([]int{5, 4, 2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{5, 4, 2, 2}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("6D ones tensor [7,6,1,4,3,2] / MatMul([1,5,1,2,3] ones) / returns [7,6,5,4,3,3] tensor filled with 2", func(t *testing.T) {
+			t1, err := tensor.Ones([]int{7, 6, 1, 4, 3, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Ones([]int{1, 5, 1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{7, 6, 5, 4, 3, 3}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		// ============================== validations ==============================
+
+		t.Run("nil input tensor / MatMul(nil) / returns error: device mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(nil)
+			if err == nil {
+				t.Fatalf("expected error because of nil input tensor")
+			} else if err.Error() != fmt.Sprintf("MatMul tensors' device validation failed: expected input tensor to be on %s", dev) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("1D tensor of size 3 and 1D tensor of size 3 / MatMul / returns error: tensors must have at least 2 dimensions", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t1)
+			if err == nil {
+				t.Fatalf("expected error because of tensors having less than (2) dimensions")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("1D tensor of size 3 and 2D tensor [2,3] / MatMul / returns error: first tensor must have at least 2 dimensions", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatalf("expected error because of tensors having less than (2) dimensions")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("2D tensor [2,3] and 1D tensor of size 3 / MatMul / returns error: second tensor must have at least 2 dimensions", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t2.MatMul(t1)
+			if err == nil {
+				t.Fatalf("expected error because of tensors having less than (2) dimensions")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (2) and (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("2D tensor [3,3] and 2D tensor [2,3] / MatMul / returns error: inner dimensions do not match", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (1) of first tensor to be equal to dimension (0) of second tensor for matrix multiplication: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("4D tensor [5,5,3,2] and 3D tensor [5,3,3] / MatMul / returns error: inner dimensions do not match", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{5, 5, 3, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{5, 3, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (3) of first tensor to be equal to dimension (1) of second tensor for matrix multiplication: (2) != (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor [6,4,3] and 5D tensor [6,2,5,3,4] / MatMul / returns error: batch dimensions not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 4, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 2, 5, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+			} else if err.Error() != "MatMul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }

@@ -420,6 +420,44 @@ func TestReshape(t *testing.T) {
 			}
 		})
 
+		t.Run("Of([2,3,3]) 3D tensor with sequential elements 0..17 / Reshape([3,6]) / elements laid out row-major across new shape", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2.},
+					{3., 4., 5.},
+					{6., 7., 8.},
+				},
+				{
+					{9., 10., 11.},
+					{12., 13., 14.},
+					{15., 16., 17.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Reshape([]int{3, 6})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{0., 1., 2., 3., 4., 5.},
+				{6., 7., 8., 9., 10., 11.},
+				{12., 13., 14., 15., 16., 17.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
 		// ============================== side effects ==============================
 
 		t.Run("Zeros([2,3]) does not share shape slice / Reshape([3,2]) after mutating shape / returns correct [3,2] tensor", func(t *testing.T) {

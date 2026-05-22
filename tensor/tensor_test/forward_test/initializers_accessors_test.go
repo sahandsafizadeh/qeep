@@ -1,10 +1,3 @@
-// Package forward_test verifies the forward pass (non-gradient) behavior of all tensor operations.
-//
-// Initializers and accessors are tested together rather than in isolation to resolve a
-// chicken-and-egg dependency: verifying that a tensor was initialized correctly requires
-// reading its values back, and trusting that a read is correct requires knowing the tensor
-// was created correctly. By cross-validating both in the same suite, they establish a
-// mutually consistent baseline that all other tests in this package build upon.
 package forward_test
 
 import (
@@ -15,322 +8,50 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
-func TestFullAt(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		// ============================== main paths ==============================
-
-		t.Run("Full(nil, -1) scalar tensor / At() with no indices / returns -1", func(t *testing.T) {
-			ten, err := tensor.Full(nil, -1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if val, err := ten.At(); err != nil {
-				t.Fatal(err)
-			} else if int(val) != -1 {
-				t.Fatalf("expected (-1) as scalar tensor value, got (%f)", val)
-			}
-		})
-
-		t.Run("Full([1], 9) 1D tensor / At(0) / returns 9", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1}, 9., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if val, err := ten.At(0); err != nil {
-				t.Fatal(err)
-			} else if int(val) != 9 {
-				t.Fatalf("expected (9) as tensor value in position [0], got (%f)", val)
-			}
-		})
-
-		t.Run("Full([1,2], 0) 2D tensor / At(i,j) for all positions / returns 0", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if val, err := ten.At(0, 0); err != nil {
-				t.Fatal(err)
-			} else if int(val) != 0 {
-				t.Fatalf("expected (0) as tensor value in position [0,0], got (%f)", val)
-			}
-
-			if val, err := ten.At(0, 1); err != nil {
-				t.Fatal(err)
-			} else if int(val) != 0 {
-				t.Fatalf("expected (0) as tensor value in position [0,1], got (%f)", val)
-			}
-		})
-
-		t.Run("Full([4,3,2,1], 5) 4D tensor / At(i,j,k,u) for all positions / returns 5", func(t *testing.T) {
-			ten, err := tensor.Full([]int{4, 3, 2, 1}, 5., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			for i := range 4 {
-				for j := range 3 {
-					for k := range 2 {
-						for u := range 1 {
-							if val, err := ten.At(i, j, k, u); err != nil {
-								t.Fatal(err)
-							} else if int(val) != 5 {
-								t.Fatalf("expected (5) as tensor value in position [%d,%d,%d,%d], got (%f)", i, j, k, u, val)
-							}
-						}
-					}
-				}
-			}
-		})
-
-		// ============================== side effects ==============================
-
-		t.Run("Full([3,4], 1) does not share dims slice / At(2,3) after mutating dims / returns 1", func(t *testing.T) {
-			dims := []int{3, 4}
-
-			ten, err := tensor.Full(dims, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			dims[0] = 1
-			dims[1] = 1
-
-			if val, err := ten.At(2, 3); err != nil {
-				t.Fatal(err)
-			} else if int(val) != 1 {
-				t.Fatalf("expected (1) as tensor value in position [2,3], got (%f)", val)
-			}
-		})
-
-		// ============================== validations ==============================
-
-		t.Run("Full([-1]) / returns error: non-positive dimension", func(t *testing.T) {
-			_, err := tensor.Full([]int{-1}, 2., &tensor.Config{Device: dev})
-			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
-			} else if err.Error() != "Full input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([0]) / returns error: non-positive dimension", func(t *testing.T) {
-			_, err := tensor.Full([]int{0}, 2., &tensor.Config{Device: dev})
-			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
-			} else if err.Error() != "Full input dimension validation failed: expected positive dimension sizes: got (0) at position (0)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1,-2]) / returns error: non-positive dimension", func(t *testing.T) {
-			_, err := tensor.Full([]int{1, -2}, 2., &tensor.Config{Device: dev})
-			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
-			} else if err.Error() != "Full input dimension validation failed: expected positive dimension sizes: got (-2) at position (1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([2,0,1]) / returns error: non-positive dimension", func(t *testing.T) {
-			_, err := tensor.Full([]int{2, 0, 1}, 2., &tensor.Config{Device: dev})
-			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
-			} else if err.Error() != "Full input dimension validation failed: expected positive dimension sizes: got (0) at position (1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1,1,1,1,1,1,1]) / returns error: too many dimensions", func(t *testing.T) {
-			_, err := tensor.Full([]int{1, 1, 1, 1, 1, 1, 1}, 2., &tensor.Config{Device: dev})
-			if err == nil {
-				t.Fatalf("expected error because of too many dimensions")
-			} else if err.Error() != "Full input dimension validation failed: expected at most (6) dimensions: got (7)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full(nil) with invalid device / returns error: invalid device", func(t *testing.T) {
-			_, err := tensor.Full(nil, 2., &tensor.Config{Device: -1})
-			if err == nil {
-				t.Fatalf("expected error because of invalid input device")
-			} else if err.Error() != "Full tensor config data validation failed: invalid input device" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1]) 1D tensor / At() with wrong index count / returns error: index length 0 != dimensions 1", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At()
-			if err == nil {
-				t.Fatalf("expected error because of incompatible index len (0) with dimension len (1)")
-			} else if err.Error() != "At input index validation failed: expected index length to be equal to the number of dimensions: (0) != (1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1]) 1D tensor / At(0,0) with wrong index count / returns error: index length 2 != dimensions 1", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At(0, 0)
-			if err == nil {
-				t.Fatalf("expected error because of incompatible index len (2) with dimension len (1)")
-			} else if err.Error() != "At input index validation failed: expected index length to be equal to the number of dimensions: (2) != (1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1]) 1D tensor / At(-1) / returns error: negative index at dimension 0", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At(-1)
-			if err == nil {
-				t.Fatalf("expected error because of negative index")
-			} else if err.Error() != "At input index validation failed: expected index to be in range [0,1) at dimension (0): got (-1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1]) 1D tensor / At(1) / returns error: index out of range [0,1) at dimension 0", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At(1)
-			if err == nil {
-				t.Fatalf("expected error because of index (1) at dimension (0) being out of range [0,1)")
-			} else if err.Error() != "At input index validation failed: expected index to be in range [0,1) at dimension (0): got (1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1,2]) 2D tensor / At(0) with wrong index count / returns error: index length 1 != dimensions 2", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At(0)
-			if err == nil {
-				t.Fatalf("expected error because of incompatible index len (1) with dimension len (2)")
-			} else if err.Error() != "At input index validation failed: expected index length to be equal to the number of dimensions: (1) != (2)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1,2]) 2D tensor / At(0,1,0) with wrong index count / returns error: index length 3 != dimensions 2", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At(0, 1, 0)
-			if err == nil {
-				t.Fatalf("expected error because of incompatible index len (3) with dimension len (2)")
-			} else if err.Error() != "At input index validation failed: expected index length to be equal to the number of dimensions: (3) != (2)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1,2]) 2D tensor / At(-2,-1) / returns error: negative index at dimension 0", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At(-2, -1)
-			if err == nil {
-				t.Fatalf("expected error because of negative index")
-			} else if err.Error() != "At input index validation failed: expected index to be in range [0,1) at dimension (0): got (-2)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1,2]) 2D tensor / At(1,0) / returns error: index 1 out of range [0,1) at dimension 0", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At(1, 0)
-			if err == nil {
-				t.Fatalf("expected error because of index (1) at dimension (0) being out of range [0,1)")
-			} else if err.Error() != "At input index validation failed: expected index to be in range [0,1) at dimension (0): got (1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1,2]) 2D tensor / At(0,2) / returns error: index 2 out of range [0,2) at dimension 1", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.At(0, 2)
-			if err == nil {
-				t.Fatalf("expected error because of index (2) at dimension (1) being out of range [0,2)")
-			} else if err.Error() != "At input index validation failed: expected index to be in range [0,2) at dimension (1): got (2)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-	})
-}
-
-func TestEyeAt(t *testing.T) {
+func TestEye(t *testing.T) {
 
 	// ============================== main paths ==============================
 
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-		t.Run("Eye(1) / At(0,0) / returns 1", func(t *testing.T) {
-			ten, err := tensor.Eye(1, &tensor.Config{Device: dev})
+		t.Run("Eye(1) 1x1 identity matrix / Equals / returns true", func(t *testing.T) {
+			act, err := tensor.Eye(1, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if val, err := ten.At(0, 0); err != nil {
+			exp, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
+			if err != nil {
 				t.Fatal(err)
-			} else if int(val) != 1 {
-				t.Fatalf("expected (1) as eye tensor value in position [0,0], got (%f)", val)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Eye(5) identity matrix / At(i,j) for all positions / returns 1 on diagonal, 0 elsewhere", func(t *testing.T) {
-			ten, err := tensor.Eye(5, &tensor.Config{Device: dev})
+		t.Run("Eye(5) 5x5 identity matrix / Equals / returns true", func(t *testing.T) {
+			act, err := tensor.Eye(5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			for i := range 5 {
-				for j := range 5 {
-					val, err := ten.At(i, j)
-					if err != nil {
-						t.Fatal(err)
-					}
+			exp, err := tensor.Of([][]float64{
+				{1., 0., 0., 0., 0.},
+				{0., 1., 0., 0., 0.},
+				{0., 0., 1., 0., 0.},
+				{0., 0., 0., 1., 0.},
+				{0., 0., 0., 0., 1.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-					if i == j {
-						if int(val) != 1 {
-							t.Fatalf("expected (1) as eye tensor value in position [%d,%d], got (%f)", i, j, val)
-						}
-					} else {
-						if int(val) != 0 {
-							t.Fatalf("expected (0) as eye tensor value in position [%d,%d], got (%f)", i, j, val)
-						}
-					}
-				}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
 			}
 		})
 

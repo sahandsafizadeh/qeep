@@ -273,7 +273,7 @@ func TestBackPropagate(t *testing.T) {
 	})
 }
 
-// ----- helpers -----
+/* ----- helpers ----- */
 
 func assertGradContext(t *testing.T, ten tensor.Tensor, tracked, gradSet bool) {
 	t.Helper()

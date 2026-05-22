@@ -224,6 +224,473 @@ func TestRandN(t *testing.T) {
 	})
 }
 
+func TestConcat(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== main paths ==============================
+
+		t.Run("Zeros([3]) and Zeros([5]) / Concat(dim=0) / returns Zeros([8])", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := tensor.Concat([]tensor.Tensor{t1, t2}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{8}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Zeros([1,5,3]), Zeros([3,5,3]), Zeros([2,5,3]), Zeros([4,5,3]) / Concat(dim=0) / returns Zeros([10,5,3])", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{1, 5, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 5, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Zeros([]int{2, 5, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t4, err := tensor.Zeros([]int{4, 5, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3, t4}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{10, 5, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Zeros([4,2,3]), Zeros([4,4,3]), Zeros([4,1,3]), Zeros([4,3,3]) / Concat(dim=1) / returns Zeros([4,10,3])", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 4, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Zeros([]int{4, 1, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t4, err := tensor.Zeros([]int{4, 3, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3, t4}, 1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{4, 10, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Three copies of 1x2x3 tensor / Concat(dim=0) / returns 3x2x3 tensor", func(t *testing.T) {
+			t1, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2.},
+					{3., 4., 5.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := t1.Slice(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := t1.Slice(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2.},
+					{3., 4., 5.},
+				},
+				{
+					{0., 1., 2.},
+					{3., 4., 5.},
+				},
+				{
+					{0., 1., 2.},
+					{3., 4., 5.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Three copies of 1x2x3 tensor / Concat(dim=1) / returns 1x6x3 tensor", func(t *testing.T) {
+			t1, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2.},
+					{3., 4., 5.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := t1.Slice(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := t1.Slice(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3}, 1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2.},
+					{3., 4., 5.},
+					{0., 1., 2.},
+					{3., 4., 5.},
+					{0., 1., 2.},
+					{3., 4., 5.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Three copies of 1x2x3 tensor / Concat(dim=2) / returns 1x2x9 tensor", func(t *testing.T) {
+			t1, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2.},
+					{3., 4., 5.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := t1.Slice(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := t1.Slice(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3}, 2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2., 0., 1., 2., 0., 1., 2.},
+					{3., 4., 5., 3., 4., 5., 3., 4., 5.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Concat([Zeros([4]), Zeros([6])], 0) does not share input slice / Concat then mutating slice / returns Zeros([10])", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			t2, err := tensor.Zeros([]int{6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			ts := []tensor.Tensor{t1, t2}
+
+			act, err := tensor.Concat(ts, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			ts[1], err = tensor.Ones([]int{6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{10}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
+
+		// ============================== validations ==============================
+
+		t.Run("Concat(nil, 0) / returns error: fewer than 2 tensors", func(t *testing.T) {
+			_, err := tensor.Concat(nil, 0)
+			if err == nil {
+				t.Fatalf("expected error because of the number of input tensors being less than (2)")
+			} else if err.Error() != "Concat tensor implementation validation failed: expected at least (2) tensors: got (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([nil], 0) / returns error: fewer than 2 tensors", func(t *testing.T) {
+			_, err := tensor.Concat([]tensor.Tensor{nil}, 0)
+			if err == nil {
+				t.Fatalf("expected error because of the number of input tensors being less than (2)")
+			} else if err.Error() != "Concat tensor implementation validation failed: expected at least (2) tensors: got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([nil, nil], 0) / returns error: unsupported tensor implementation", func(t *testing.T) {
+			_, err := tensor.Concat([]tensor.Tensor{nil, nil}, 0)
+			if err == nil {
+				t.Fatalf("expected error because of nil input tensors")
+			} else if err.Error() != "Concat tensor implementation validation failed: unsupported tensor implementation" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([scalar, scalar], 0) / returns error: scalar tensor cannot be concatenated", func(t *testing.T) {
+			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = tensor.Concat([]tensor.Tensor{t1, t2}, 0)
+			if err == nil {
+				t.Fatalf("expected error because of having scalar tensors as input")
+			} else if err.Error() != "Concat inputs' dimension validation failed: scalar tensor can not be concatenated: got tensor (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([Zeros([2]), Zeros([2]), Zeros([2,2])], 0) / returns error: tensors have different number of dimensions", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Zeros([]int{2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = tensor.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+			if err == nil {
+				t.Fatalf("expected error because of the input tensors not having equal number of dimensions")
+			} else if err.Error() != "Concat inputs' dimension validation failed: expected tensors to have the same number of dimensions: (2) != (1) for tensor (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([Zeros([1]), Zeros([3])], -1) / returns error: dimension out of range [0,1)", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = tensor.Concat([]tensor.Tensor{t1, t2}, -1)
+			if err == nil {
+				t.Fatalf("expected error because of negative dimension")
+			} else if err.Error() != "Concat inputs' dimension validation failed: expected concat dimension to be in range [0,1): got (-1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([Zeros([1]), Zeros([3])], 1) / returns error: dimension out of range [0,1)", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = tensor.Concat([]tensor.Tensor{t1, t2}, 1)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (1) being out of range")
+			} else if err.Error() != "Concat inputs' dimension validation failed: expected concat dimension to be in range [0,1): got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([Zeros([3,3]), Zeros([3,3])], 2) / returns error: dimension out of range [0,2)", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = tensor.Concat([]tensor.Tensor{t1, t2}, 2)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (2) being out of range")
+			} else if err.Error() != "Concat inputs' dimension validation failed: expected concat dimension to be in range [0,2): got (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([Zeros([2,2,2]), Zeros([2,2,1]), Zeros([3,2,2])], 0) / returns error: size mismatch at dim 2", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Zeros([]int{3, 2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = tensor.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+			if err == nil {
+				t.Fatalf("expected error because of size mismatch along dimension (2)")
+			} else if err.Error() != "Concat inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (0): (1) != (2) for dimension (2) for tensor (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([Zeros([2,1,2]), Zeros([2,2,2]), Zeros([3,2,2])], 0) / returns error: size mismatch at dim 1", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 1, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Zeros([]int{3, 2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = tensor.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+			if err == nil {
+				t.Fatalf("expected error because of size mismatch along dimension (1)")
+			} else if err.Error() != "Concat inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (0): (2) != (1) for dimension (1) for tensor (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Concat([Zeros([2,1,2]), Zeros([1,2,2]), Zeros([2,3,2])], 1) / returns error: size mismatch at dim 0", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 1, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{1, 2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Zeros([]int{2, 3, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = tensor.Concat([]tensor.Tensor{t1, t2, t3}, 1)
+			if err == nil {
+				t.Fatalf("expected error because of size mismatch along dimension (0)")
+			} else if err.Error() != "Concat inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (1): (1) != (2) for dimension (0) for tensor (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+}
+
+// TODO: ADD IMMUTABLE TESTS TO ALL OF THE INITIALIZERS THAT TAKE DIM
+
 func TestOfSlice(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 

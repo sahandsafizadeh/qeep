@@ -9,400 +9,504 @@ import (
 func TestTranspose(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("1x1 matrix / Transpose() / returns same matrix", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of([][]float64{{1.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err := ten.Transpose()
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err := tensor.Of([][]float64{{1.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("1x3 row tensor / Transpose() / returns 3x1 column tensor", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{{1., 0., 2.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act, err := ten.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of([][]float64{{1., 0., 2.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of([][]float64{{1.}, {0.}, {2.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Transpose()
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err = tensor.Of([][]float64{{1.}, {0.}, {2.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("3x1 column tensor / Transpose() / returns 1x3 row tensor", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{{-2.}, {0.}, {-1.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act, err := ten.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			exp, err := tensor.Of([][]float64{{-2., 0., -1.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of([][]float64{{-2.}, {0.}, {-1.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act, err = ten.Transpose()
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("3x4 matrix / Transpose() / returns 4x3 transposed matrix", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{0., 1., 2., 3.},
+				{0., 1., 2., 3.},
+				{0., 1., 2., 3.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of([][]float64{{-2., 0., -1.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Of([][]float64{
+				{0., 0., 0.},
+				{1., 1., 1.},
+				{2., 2., 2.},
+				{3., 3., 3.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		ten, err = tensor.Of([][]float64{
-			{0., 1., 2., 3.},
-			{0., 1., 2., 3.},
-			{0., 1., 2., 3.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("3D tensor shape [2,2,2] / Transpose() / transposes last two dimensions", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 2.},
+					{3., 4.},
+				},
+				{
+					{1., 2.},
+					{3., 4.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Transpose()
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of([][]float64{
-			{0., 0., 0.},
-			{1., 1., 1.},
-			{2., 2., 2.},
-			{3., 3., 3.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of([][][]float64{
+				{
+					{1., 3.},
+					{2., 4.},
+				},
+				{
+					{1., 3.},
+					{2., 4.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		/* ------------------------------ */
+		t.Run("Zeros([5,4,3,2]) 4D tensor / Transpose() / returns shape [5,4,2,3]", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{5, 4, 3, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of([][][]float64{
-			{
-				{1., 2.},
-				{3., 4.},
-			},
-			{
-				{1., 2.},
-				{3., 4.},
-			},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Transpose()
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{5, 4, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of([][][]float64{
-			{
-				{1., 3.},
-				{2., 4.},
-			},
-			{
-				{1., 3.},
-				{2., 4.},
-			},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		// ============================== validations ==============================
 
-		/* ------------------------------ */
+		t.Run("Zeros(nil) scalar / Transpose() / returns error: fewer than 2 dimensions", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{5, 4, 3, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = ten.Transpose()
+			if err == nil {
+				t.Fatalf("expected error because of tensor having less than 2 dimensions")
+			} else if err.Error() != "Transpose tensor's dimension validation failed: expected tensor to have at least (2) dimensions for transpose: got (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		act, err = ten.Transpose()
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([3]) 1D tensor / Transpose() / returns error: fewer than 2 dimensions", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{5, 4, 2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			_, err = ten.Transpose()
+			if err == nil {
+				t.Fatalf("expected error because of tensor having less than 2 dimensions")
+			} else if err.Error() != "Transpose tensor's dimension validation failed: expected tensor to have at least (2) dimensions for transpose: got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
 func TestReshape(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("Zeros(nil) scalar / Reshape([1,1]) / returns [1,1] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Reshape([]int{1, 1})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err := ten.Reshape([]int{1, 1})
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err := tensor.Zeros([]int{1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("Zeros([1]) 1D tensor / Reshape(nil) / returns scalar tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act, err := ten.Reshape(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Reshape(nil)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err = tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([1,1,1,1]) 4D tensor / Reshape([1,1]) / returns [1,1] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 1, 1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act, err := ten.Reshape([]int{1, 1})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			exp, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{1, 1, 1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act, err = ten.Reshape([]int{1, 1})
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([4]) 1D tensor / Reshape([1,4]) / returns [1,4] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Reshape([]int{1, 4})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Zeros([]int{1, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		ten, err = tensor.Zeros([]int{4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([4]) 1D tensor / Reshape([4,1]) / returns [4,1] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Reshape([]int{1, 4})
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Reshape([]int{4, 1})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{1, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		/* --------------- */
+		t.Run("Zeros([4]) 1D tensor / Reshape([2,2]) / returns [2,2] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Reshape([]int{4, 1})
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Reshape([]int{2, 2})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{4, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		/* --------------- */
+		t.Run("Zeros([1,2,3]) 3D tensor / Reshape([6]) / returns 1D tensor with 6 elements", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Reshape([]int{2, 2})
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Reshape([]int{6})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{2, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		/* ------------------------------ */
+		t.Run("Zeros([1,2,3]) 3D tensor / Reshape([1,6,1]) / returns [1,6,1] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{1, 2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Reshape([]int{1, 6, 1})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Reshape([]int{6})
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{1, 6, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{6}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("Zeros([1,2,3]) 3D tensor / Reshape([3,2]) / returns [3,2] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* --------------- */
+			act, err := ten.Reshape([]int{3, 2})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Reshape([]int{1, 6, 1})
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{3, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{1, 6, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		// ============================== side effects ==============================
 
-		/* --------------- */
+		t.Run("Zeros([2,3]) does not share shape slice / Reshape([3,2]) after mutating shape / returns correct [3,2] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Reshape([]int{3, 2})
-		if err != nil {
-			t.Fatal(err)
-		}
+			shape := []int{3, 2}
 
-		exp, err = tensor.Zeros([]int{3, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Reshape(shape)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			shape[0] = 1
+			shape[1] = 6
 
-		/* ------------------------------ */
+			exp, err := tensor.Zeros([]int{3, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		shape := []int{3, 2}
+		// ============================== validations ==============================
 
-		act, err = ten.Reshape(shape)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([3,2]) / Reshape([2,3,-1]) / returns error: non-positive dimension", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{3, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		shape[0] = 1
-		shape[1] = 6
+			_, err = ten.Reshape([]int{2, 3, -1})
+			if err == nil {
+				t.Fatalf("expected error because of non-positive dimension")
+			} else if err.Error() != "Reshape input shape validation failed: expected positive dimension sizes: got (-1) at position (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		exp, err = tensor.Zeros([]int{3, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([3,2]) / Reshape([1,1,1,1,1,1,1]) / returns error: too many dimensions", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{3, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			_, err = ten.Reshape([]int{1, 1, 1, 1, 1, 1, 1})
+			if err == nil {
+				t.Fatalf("expected error because of too many dimensions")
+			} else if err.Error() != "Reshape input shape validation failed: expected at most (6) dimensions: got (7)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		/* ------------------------------ */
+		t.Run("Zeros(nil) scalar / Reshape([2]) / returns error: incompatible number of elements", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
+			_, err = ten.Reshape([]int{2})
+			if err == nil {
+				t.Fatalf("expected error because of incompatible number of elements in source (1) with target (2)")
+			} else if err.Error() != "Reshape input shape validation failed: expected number of elements in source and target tensors to match: (1) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Zeros([2]) 1D tensor / Reshape([2,3]) / returns error: incompatible number of elements", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Reshape([]int{2, 3})
+			if err == nil {
+				t.Fatalf("expected error because of incompatible number of elements in source (2) with target (6)")
+			} else if err.Error() != "Reshape input shape validation failed: expected number of elements in source and target tensors to match: (2) != (6)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
@@ -1020,103 +1124,6 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-	})
-}
-
-func TestValidationTranspose(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		conf := &tensor.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		ten, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.Transpose()
-		if err == nil {
-			t.Fatalf("expected error because of tensor having less than 2 dimensions")
-		} else if err.Error() != "Transpose tensor's dimension validation failed: expected tensor to have at least (2) dimensions for transpose: got (0)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.Transpose()
-		if err == nil {
-			t.Fatalf("expected error because of tensor having less than 2 dimensions")
-		} else if err.Error() != "Transpose tensor's dimension validation failed: expected tensor to have at least (2) dimensions for transpose: got (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-	})
-}
-
-func TestValidationReshape(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		conf := &tensor.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		ten, err := tensor.Zeros([]int{3, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.Reshape([]int{2, 3, -1})
-		if err == nil {
-			t.Fatalf("expected error because of non-positive dimension")
-		} else if err.Error() != "Reshape input shape validation failed: expected positive dimension sizes: got (-1) at position (2)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = ten.Reshape([]int{1, 1, 1, 1, 1, 1, 1})
-		if err == nil {
-			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "Reshape input shape validation failed: expected at most (6) dimensions: got (7)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.Reshape([]int{2})
-		if err == nil {
-			t.Fatalf("expected error because of incompatible number of elements in source (1) with target (2)")
-		} else if err.Error() != "Reshape input shape validation failed: expected number of elements in source and target tensors to match: (1) != (2)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.Reshape([]int{2, 3})
-		if err == nil {
-			t.Fatalf("expected error because of incompatible number of elements in source (2) with target (6)")
-		} else if err.Error() != "Reshape input shape validation failed: expected number of elements in source and target tensors to match: (2) != (6)" {
-			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */

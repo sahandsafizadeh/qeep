@@ -8,854 +8,806 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
-// TODO: add a seprate test for the equals method validated with At.
+// TODO: ADD TESTS FOR EVERY OPERATION WHERE TENSOR IS OPERATED ON ITSELF.
 
 func TestScale(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value 1 / Scale(0) / returns scalar 0", func(t *testing.T) {
+			ten, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Scale(0.)
 
-		act := ten.Scale(0.)
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err := tensor.Of(0., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("1D tensor [-1, 0, 1] / Scale(-1) / returns [1, 0, -1]", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-1., 0., 1.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Scale(-1.)
 
-		ten, err = tensor.Of([]float64{-1., 0., 1.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of([]float64{1., 0., -1.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act = ten.Scale(-1.)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err = tensor.Of([]float64{1., 0., -1.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("2D tensor with mixed values / Scale(0.5) / returns halved values", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{-5., 2.},
+				{3., -4.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act := ten.Scale(0.5)
 
-		/* ------------------------------ */
+			exp, err := tensor.Of([][]float64{
+				{-2.5, 1.},
+				{1.5, -2.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of([][]float64{
-			{-5., 2.},
-			{3., -4.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act = ten.Scale(0.5)
+		t.Run("zeros tensor [1,2,3,4] / Scale(5) / returns zeros tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of([][]float64{
-			{-2.5, 1.},
-			{1.5, -2.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Scale(5.)
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Scale(5.)
-
-		exp, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestPow(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value e / Pow(0) / returns scalar 1", func(t *testing.T) {
+			ten, err := tensor.Of(math.E, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(math.E, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Pow(0.)
 
-		act := ten.Pow(0.)
+			exp, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err := tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("1D tensor [-1, 0, 1] / Pow(1) / returns unchanged tensor", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-1., 0., 1.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Pow(1.)
 
-		ten, err = tensor.Of([]float64{-1., 0., 1.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of([]float64{-1., 0., 1.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act = ten.Pow(1.)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err = tensor.Of([]float64{-1., 0., 1.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("2D tensor with mixed values / Pow(-2) / returns reciprocal squares", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{-2., 2.},
+				{-1., 0.5},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act := ten.Pow(-2)
 
-		/* ------------------------------ */
+			exp, err := tensor.Of([][]float64{
+				{0.25, 0.25},
+				{1., 4.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of([][]float64{
-			{-2., 2.},
-			{-1., 0.5},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act = ten.Pow(-2)
+		t.Run("ones tensor [1,2,3,4] / Pow(1000) / returns ones tensor", func(t *testing.T) {
+			ten, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of([][]float64{
-			{0.25, 0.25},
-			{1., 4.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Pow(1000)
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
-
-		ten, err = tensor.Ones([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Pow(1000)
-
-		exp, err = tensor.Ones([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestExp(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value 1 / Exp() / returns e", func(t *testing.T) {
+			ten, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Exp()
 
-		act := ten.Exp()
+			exp, err := tensor.Of(math.E, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err := tensor.Of(math.E, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("1D tensor [-1, 0, 1] / Exp() / returns [1/e, 1, e]", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-1., 0., 1.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Exp()
 
-		ten, err = tensor.Of([]float64{-1., 0., 1.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of([]float64{1 / math.E, 1., math.E}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act = ten.Exp()
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err = tensor.Of([]float64{1 / math.E, 1., math.E}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("2D tensor with positive and negative values / Exp() / returns e-powers", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., -1.},
+				{-2., 0.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act := ten.Exp()
 
-		/* ------------------------------ */
+			exp, err := tensor.Of([][]float64{
+				{math.E, 1 / math.E},
+				{1 / (math.E * math.E), 1.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of([][]float64{
-			{1., -1.},
-			{-2., 0.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act = ten.Exp()
+		t.Run("zeros tensor [1,2,3,4] / Exp() / returns ones tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of([][]float64{
-			{math.E, 1 / math.E},
-			{1 / (math.E * math.E), 1.},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Exp()
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Exp()
-
-		exp, err = tensor.Ones([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestLog(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value -1 / Log() / returns NaN", func(t *testing.T) {
+			ten, err := tensor.Of(-1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(-1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Log()
 
-		act := ten.Log()
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !math.IsNaN(val) {
+				t.Fatalf("expected scalar tensor value to be (NaN): got (%f)", val)
+			}
+		})
 
-		val, err := act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !math.IsNaN(val) {
-			t.Fatalf("expected scalar tensors value to be (NaN): got (%f)", val)
-		}
+		t.Run("scalar tensor with value 0 / Log() / returns -Inf", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Log()
 
-		ten, err = tensor.Of(0., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !math.IsInf(val, -1) {
+				t.Fatalf("expected scalar tensor value to be (-Inf): got (%f)", val)
+			}
+		})
 
-		act = ten.Log()
+		t.Run("scalar tensor with value e / Log() / returns 1", func(t *testing.T) {
+			ten, err := tensor.Of(math.E, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !math.IsInf(val, -1) {
-			t.Fatalf("expected scalar tensors value to be (-Inf): got (%f)", val)
-		}
+			act := ten.Log()
 
-		/* ------------------------------ */
+			exp, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of(math.E, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act = ten.Log()
+		t.Run("1D tensor [1, e, e^2] / Log() / returns [0, 1, 2]", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1., math.E, math.E * math.E}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err := tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Log()
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Of([]float64{0., 1., 2.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		ten, err = tensor.Of([]float64{1., math.E, math.E * math.E}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("2D tensor [[e, 1]] / Log() / returns [[1, 0]]", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{{math.E, 1.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act = ten.Log()
+			act := ten.Log()
 
-		exp, err = tensor.Of([]float64{0., 1., 2.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of([][]float64{{1., 0.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		/* ------------------------------ */
+		t.Run("ones tensor [1,2,3,4] / Log() / returns zeros tensor", func(t *testing.T) {
+			ten, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of([][]float64{{math.E, 1.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Log()
 
-		act = ten.Log()
+			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of([][]float64{{1., 0.}}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Ones([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Log()
-
-		exp, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestSin(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value 0 / Sin() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(0., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Sin()
 
-		act := ten.Sin()
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(0.-1e-10 < val && val < 0.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (0): got (%f)", val)
+			}
+		})
 
-		val, err := act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(0.-1e-10 < val && val < 0.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (0): got (%f)", val)
-		}
+		t.Run("scalar tensor with value pi/6 / Sin() / returns 0.5", func(t *testing.T) {
+			ten, err := tensor.Of(math.Pi/6, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Sin()
 
-		ten, err = tensor.Of(math.Pi/6, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(0.5-1e-10 < val && val < 0.5+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (0.5): got (%f)", val)
+			}
+		})
 
-		act = ten.Sin()
+		t.Run("scalar tensor with value pi/2 / Sin() / returns 1", func(t *testing.T) {
+			ten, err := tensor.Of(math.Pi/2, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(0.5-1e-10 < val && val < 0.5+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (0.5): got (%f)", val)
-		}
+			act := ten.Sin()
 
-		/* ------------------------------ */
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(1.-1e-10 < val && val < 1.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (1): got (%f)", val)
+			}
+		})
 
-		ten, err = tensor.Of(math.Pi/2, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("zeros tensor [1,2,3,4] / Sin() / returns zeros tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act = ten.Sin()
+			act := ten.Sin()
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(1.-1e-10 < val && val < 1.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (1): got (%f)", val)
-		}
+			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Sin()
-
-		exp, err := tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestCos(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value 0 / Cos() / returns 1", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(0., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Cos()
 
-		act := ten.Cos()
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(1.-1e-10 < val && val < 1.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (1): got (%f)", val)
+			}
+		})
 
-		val, err := act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(1.-1e-10 < val && val < 1.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (1): got (%f)", val)
-		}
+		t.Run("scalar tensor with value pi/3 / Cos() / returns 0.5", func(t *testing.T) {
+			ten, err := tensor.Of(math.Pi/3, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Cos()
 
-		ten, err = tensor.Of(math.Pi/3, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(0.5-1e-10 < val && val < 0.5+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (0.5): got (%f)", val)
+			}
+		})
 
-		act = ten.Cos()
+		t.Run("scalar tensor with value pi/2 / Cos() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of(math.Pi/2, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(0.5-1e-10 < val && val < 0.5+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (0.5): got (%f)", val)
-		}
+			act := ten.Cos()
 
-		/* ------------------------------ */
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(0.-1e-10 < val && val < 0.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (0): got (%f)", val)
+			}
+		})
 
-		ten, err = tensor.Of(math.Pi/2, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("zeros tensor [1,2,3,4] / Cos() / returns ones tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act = ten.Cos()
+			act := ten.Cos()
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(0.-1e-10 < val && val < 0.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (0): got (%f)", val)
-		}
+			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Cos()
-
-		exp, err := tensor.Ones([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestTan(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value 0 / Tan() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(0., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Tan()
 
-		act := ten.Tan()
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(0.-1e-10 < val && val < 0.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (0): got (%f)", val)
+			}
+		})
 
-		val, err := act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(0.-1e-10 < val && val < 0.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (0): got (%f)", val)
-		}
+		t.Run("scalar tensor with value pi/4 / Tan() / returns 1", func(t *testing.T) {
+			ten, err := tensor.Of(math.Pi/4, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Tan()
 
-		ten, err = tensor.Of(math.Pi/4, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(1.-1e-10 < val && val < 1.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (1): got (%f)", val)
+			}
+		})
 
-		act = ten.Tan()
+		t.Run("zeros tensor [1,2,3,4] / Tan() / returns zeros tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(1.-1e-10 < val && val < 1.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (1): got (%f)", val)
-		}
+			act := ten.Tan()
 
-		/* ------------------------------ */
+			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Tan()
-
-		exp, err := tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestSinh(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value 0 / Sinh() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(0., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Sinh()
 
-		act := ten.Sinh()
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(0.-1e-10 < val && val < 0.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (0): got (%f)", val)
+			}
+		})
 
-		val, err := act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(0.-1e-10 < val && val < 0.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (0): got (%f)", val)
-		}
+		t.Run("scalar tensor with value 1 / Sinh() / returns (e^2-1)/(2e)", func(t *testing.T) {
+			ten, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Sinh()
+			c := (math.E*math.E - 1) / (2 * math.E)
 
-		ten, err = tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(c-1e-10 < val && val < c+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (e^2-1)/(2e): got (%f)", val)
+			}
+		})
 
-		act = ten.Sinh()
-		c := (math.E*math.E - 1) / (2 * math.E)
+		t.Run("zeros tensor [1,2,3,4] / Sinh() / returns zeros tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(c-1e-10 < val && val < c+1e-10) {
-			t.Fatalf("expected scalar tensors value to be ((e^2-1)/2e): got (%f)", val)
-		}
+			act := ten.Sinh()
 
-		/* ------------------------------ */
+			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Sinh()
-
-		exp, err := tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestCosh(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value 0 / Cosh() / returns 1", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(0., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Cosh()
 
-		act := ten.Cosh()
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(1.-1e-10 < val && val < 1.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (1): got (%f)", val)
+			}
+		})
 
-		val, err := act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(1.-1e-10 < val && val < 1.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (1): got (%f)", val)
-		}
+		t.Run("scalar tensor with value 1 / Cosh() / returns (e^2+1)/(2e)", func(t *testing.T) {
+			ten, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Cosh()
+			c := (math.E*math.E + 1) / (2 * math.E)
 
-		ten, err = tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(c-1e-10 < val && val < c+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (e^2+1)/(2e): got (%f)", val)
+			}
+		})
 
-		act = ten.Cosh()
-		c := (math.E*math.E + 1) / (2 * math.E)
+		t.Run("zeros tensor [1,2,3,4] / Cosh() / returns ones tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(c-1e-10 < val && val < c+1e-10) {
-			t.Fatalf("expected scalar tensors value to be ((e^2+1)/2e): got (%f)", val)
-		}
+			act := ten.Cosh()
 
-		/* ------------------------------ */
+			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Cosh()
-
-		exp, err := tensor.Ones([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
 func TestTanh(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor with value 0 / Tanh() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(0., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Tanh()
 
-		act := ten.Tanh()
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(0.-1e-10 < val && val < 0.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (0): got (%f)", val)
+			}
+		})
 
-		val, err := act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(0.-1e-10 < val && val < 0.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (0): got (%f)", val)
-		}
+		t.Run("scalar tensor with value -Inf / Tanh() / returns -1", func(t *testing.T) {
+			ten, err := tensor.Of(math.Inf(-1), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act := ten.Tanh()
 
-		ten, err = tensor.Of(math.Inf(-1), conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(-1.-1e-10 < val && val < -1.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (-1): got (%f)", val)
+			}
+		})
 
-		act = ten.Tanh()
+		t.Run("scalar tensor with value +Inf / Tanh() / returns 1", func(t *testing.T) {
+			ten, err := tensor.Of(math.Inf(+1), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(-1.-1e-10 < val && val < -1.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (-1): got (%f)", val)
-		}
+			act := ten.Tanh()
 
-		/* ------------------------------ */
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(1.-1e-10 < val && val < 1.+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (1): got (%f)", val)
+			}
+		})
 
-		ten, err = tensor.Of(math.Inf(+1), conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("scalar tensor with value 1 / Tanh() / returns (e^2-1)/(e^2+1)", func(t *testing.T) {
+			ten, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act = ten.Tanh()
+			act := ten.Tanh()
+			c := (math.E*math.E - 1) / (math.E*math.E + 1)
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(1.-1e-10 < val && val < 1.+1e-10) {
-			t.Fatalf("expected scalar tensors value to be (1): got (%f)", val)
-		}
+			if val, err := act.At(); err != nil {
+				t.Fatal(err)
+			} else if !(c-1e-10 < val && val < c+1e-10) {
+				t.Fatalf("expected scalar tensor value to be (e^2-1)/(e^2+1): got (%f)", val)
+			}
+		})
 
-		/* ------------------------------ */
+		t.Run("zeros tensor [1,2,3,4] / Tanh() / returns zeros tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act := ten.Tanh()
 
-		act = ten.Tanh()
-		c := (math.E*math.E - 1) / (math.E*math.E + 1)
+			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err = act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(c-1e-10 < val && val < c+1e-10) {
-			t.Fatalf("expected scalar tensors value to be ((e^2-1)/(e^2+1)): got (%f)", val)
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		act = ten.Tanh()
-
-		exp, err := tensor.Zeros([]int{1, 2, 3, 4}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 	})
 }
 
@@ -2977,13 +2929,6 @@ func TestValidationBinaryOperators(t *testing.T) {
 			t.Fatal("unexpected error message returned")
 		}
 
-		_, err = t1.Equals(nil)
-		if err == nil {
-			t.Fatalf("expected error because of nil input tensor")
-		} else if err.Error() != fmt.Sprintf("Equals tensors' device validation failed: expected input tensor to be on %s", dev) {
-			t.Fatal("unexpected error message returned")
-		}
-
 		/* --------------- */
 
 		_, err = t1.Eq(t2)
@@ -3039,13 +2984,6 @@ func TestValidationBinaryOperators(t *testing.T) {
 		if err == nil {
 			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
 		} else if err.Error() != "ElMin tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = t1.Equals(t2)
-		if err == nil {
-			t.Fatalf("expected error because of incompatible sizes at dimension (1)")
-		} else if err.Error() != "Equals tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 			t.Fatal("unexpected error message returned")
 		}
 

@@ -551,250 +551,388 @@ func TestReshape(t *testing.T) {
 func TestUnSqueeze(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("Zeros(nil) scalar / UnSqueeze(0) / returns [1] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.UnSqueeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err := ten.UnSqueeze(0)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err := tensor.Zeros([]int{1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("Zeros([2]) 1D tensor / UnSqueeze(0) / returns [1,2] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act, err := ten.UnSqueeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.UnSqueeze(0)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err = tensor.Zeros([]int{1, 2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([2]) 1D tensor / UnSqueeze(1) / returns [2,1] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act, err := ten.UnSqueeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			exp, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act, err = ten.UnSqueeze(1)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([2,3]) 2D tensor / UnSqueeze(0) / returns [1,2,3] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{2, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.UnSqueeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		ten, err = tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([2,3]) 2D tensor / UnSqueeze(1) / returns [2,1,3] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.UnSqueeze(0)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.UnSqueeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{1, 2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{2, 1, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		/* ------------------------------ */
+		t.Run("Zeros([2,3]) 2D tensor / UnSqueeze(2) / returns [2,3,1] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.UnSqueeze(2)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.UnSqueeze(1)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{2, 3, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{2, 1, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		// ============================== validations ==============================
 
-		/* ------------------------------ */
+		t.Run("Zeros(nil) scalar / UnSqueeze(-1) / returns error: dimension out of range [0,0]", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = ten.UnSqueeze(-1)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (-1) being out of range")
+			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,0]: got (-1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		act, err = ten.UnSqueeze(2)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros(nil) scalar / UnSqueeze(1) / returns error: dimension out of range [0,0]", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{2, 3, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = ten.UnSqueeze(1)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (1) being out of range")
+			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,0]: got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("Zeros([2]) 1D tensor / UnSqueeze(2) / returns error: dimension out of range [0,1]", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			_, err = ten.UnSqueeze(2)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (2) being out of range")
+			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,1]: got (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
+		t.Run("Zeros([1,1,1,1,1,1]) 6D tensor / UnSqueeze(2) / returns error: exceeds maximum 6 dimensions", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 1, 1, 1, 1, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.UnSqueeze(2)
+			if err == nil {
+				t.Fatalf("expected error because of too many dimensions")
+			} else if err.Error() != "UnSqueeze input dimension validation failed: operation causes tensor to exceed maximum (6) dimensions" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
 func TestSqueeze(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("Zeros([1]) 1D tensor / Squeeze(0) / returns scalar tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Zeros([]int{1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Squeeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err := ten.Squeeze(0)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("Zeros([1,2,3]) 3D tensor / Squeeze(0) / returns [2,3] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act, err := ten.Squeeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{1, 2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.Squeeze(0)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err = tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([2,1,3]) 3D tensor / Squeeze(1) / returns [2,3] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 1, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act, err := ten.Squeeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			exp, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Zeros([]int{2, 1, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act, err = ten.Squeeze(1)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros([2,3,1]) 3D tensor / Squeeze(2) / returns [2,3] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 3, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.Squeeze(2)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		ten, err = tensor.Zeros([]int{2, 3, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		// ============================== validations ==============================
 
-		act, err = ten.Squeeze(2)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Zeros(nil) scalar / Squeeze(-1) / returns error: dimension out of range [0,0)", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Zeros([]int{2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = ten.Squeeze(-1)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (-1) being out of range")
+			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("Zeros(nil) scalar / Squeeze(0) / returns error: dimension out of range [0,0)", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			_, err = ten.Squeeze(0)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (0) being out of range")
+			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
+		t.Run("Zeros([1]) 1D tensor / Squeeze(1) / returns error: dimension out of range [0,1)", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Squeeze(1)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (1) being out of range")
+			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Zeros([1,2,3]) 3D tensor / Squeeze(3) / returns error: dimension out of range [0,3)", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Squeeze(3)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (3) being out of range")
+			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,3): got (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Zeros([1,2,3]) 3D tensor / Squeeze(2) / returns error: squeeze dimension size is 3, not 1", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Squeeze(2)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (2) not being equal to (1)")
+			} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Zeros([1,2,3]) 3D tensor / Squeeze(1) / returns error: squeeze dimension size is 2, not 1", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Squeeze(1)
+			if err == nil {
+				t.Fatalf("expected error because of dimension (1) not being equal to (1)")
+			} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
@@ -1162,138 +1300,6 @@ func TestBroadcast(t *testing.T) {
 			t.Fatal(err)
 		} else if !eq {
 			t.Fatalf("expected tensors to be equal")
-		}
-
-		/* ------------------------------ */
-
-	})
-}
-
-func TestValidationUnSqueeze(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		conf := &tensor.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		ten, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.UnSqueeze(-1)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (-1) being out of range")
-		} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,0]: got (-1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = ten.UnSqueeze(1)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (1) being out of range")
-		} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,0]: got (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{2}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.UnSqueeze(2)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (2) being out of range")
-		} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,1]: got (2)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1, 1, 1, 1, 1, 1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.UnSqueeze(2)
-		if err == nil {
-			t.Fatalf("expected error because of too many dimensions")
-		} else if err.Error() != "UnSqueeze input dimension validation failed: operation causes tensor to exceed maximum (6) dimensions" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-	})
-}
-
-func TestValidationSqueeze(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		conf := &tensor.Config{Device: dev}
-
-		/* ------------------------------ */
-
-		ten, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.Squeeze(-1)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (-1) being out of range")
-		} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = ten.Squeeze(0)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (0) being out of range")
-		} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.Squeeze(1)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (1) being out of range")
-		} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1, 2, 3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.Squeeze(3)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (3) being out of range")
-		} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,3): got (3)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = ten.Squeeze(2)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (2) not being equal to (1)")
-		} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (3)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = ten.Squeeze(1)
-		if err == nil {
-			t.Fatalf("expected error because of dimension (1) not being equal to (1)")
-		} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (2)" {
-			t.Fatal("unexpected error message returned")
 		}
 
 		/* ------------------------------ */

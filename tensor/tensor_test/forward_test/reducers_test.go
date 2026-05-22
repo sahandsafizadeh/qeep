@@ -10,162 +10,224 @@ import (
 func TestSum(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor / Sum() / returns 9", func(t *testing.T) {
+			ten, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err := tensor.Of(9., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if val := ten.Sum(); int(val) != 9 {
+				t.Fatalf("expected (9) as the sum value of tensor, got (%f)", val)
+			}
+		})
 
-		if val := ten.Sum(); int(val) != 9 {
-			t.Fatalf("expected (9) as the sum value of tensor, got (%f)", val)
-		}
+		t.Run("1D tensor [6, 4] / Sum() / returns 10", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{6., 4.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			if val := ten.Sum(); int(val) != 10 {
+				t.Fatalf("expected (10) as the sum value of tensor, got (%f)", val)
+			}
+		})
 
-		ten, err = tensor.Of([]float64{6., 4.}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("3D tensor shape [3,1,4] / Sum() / returns 36", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{{9., -1., 8., 6.}},
+				{{-5., 4., 1., 0.}},
+				{{2., 8., 7., -3.}},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if val := ten.Sum(); int(val) != 10 {
-			t.Fatalf("expected (10) as the sum value of tensor, got (%f)", val)
-		}
+			if val := ten.Sum(); int(val) != 36 {
+				t.Fatalf("expected (36) as the sum value of tensor, got (%f)", val)
+			}
+		})
+	})
+}
 
-		/* ------------------------------ */
+func TestSumAlong(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		ten, err = tensor.Of([][][]float64{
-			{{9., -1., 8., 6.}},
-			{{-5., 4., 1., 0.}},
-			{{2., 8., 7., -3.}},
-		}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		// ============================== main paths ==============================
 
-		if val := ten.Sum(); int(val) != 36 {
-			t.Fatalf("expected (30) as the sum value of tensor, got (%f)", val)
-		}
+		t.Run("Ones([1]) tensor / SumAlong(0) / returns scalar 1", func(t *testing.T) {
+			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			act, err := ten.SumAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Ones([]int{1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err := ten.SumAlong(0)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		exp, err := tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Ones([3]) tensor / SumAlong(0) / returns scalar 3", func(t *testing.T) {
+			ten, err := tensor.Ones([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			act, err := ten.SumAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			exp, err := tensor.Of(3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Ones([]int{3}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		act, err = ten.SumAlong(0)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Ones([3,4,5]) tensor / SumAlong(0) / returns Full([4,5], 3)", func(t *testing.T) {
+			ten, err := tensor.Ones([]int{3, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Of(3., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.SumAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			exp, err := tensor.Full([]int{4, 5}, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		ten, err = tensor.Ones([]int{3, 4, 5}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("Ones([3,4,5]) tensor / SumAlong(1) / returns Full([3,5], 4)", func(t *testing.T) {
+			ten, err := tensor.Ones([]int{3, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.SumAlong(0)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.SumAlong(1)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Full([]int{4, 5}, 3., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Full([]int{3, 5}, 4., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		/* ------------------------------ */
+		t.Run("Ones([3,4,5]) tensor / SumAlong(2) / returns Full([3,4], 5)", func(t *testing.T) {
+			ten, err := tensor.Ones([]int{3, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Ones([]int{3, 4, 5}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := ten.SumAlong(2)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err = ten.SumAlong(1)
-		if err != nil {
-			t.Fatal(err)
-		}
+			exp, err := tensor.Full([]int{3, 4}, 5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Full([]int{3, 5}, 4., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatalf("expected tensors to be equal")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		// ============================== validations ==============================
 
-		/* ------------------------------ */
+		t.Run("scalar tensor / SumAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		ten, err = tensor.Ones([]int{3, 4, 5}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = ten.SumAlong(-1)
+			if err == nil {
+				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		act, err = ten.SumAlong(2)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run("scalar tensor / SumAlong(0) / returns error: dimension 0 out of range [0,0)", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		exp, err = tensor.Full([]int{3, 4}, 5., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			_, err = ten.SumAlong(0)
+			if err == nil {
+				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		if eq, err := act.Equals(exp); err != nil {
-			t.Fatal(err)
-		} else if !eq {
-			t.Fatalf("expected tensors to be equal")
-		}
+		t.Run("Zeros([1]) tensor / SumAlong(1) / returns error: dimension 1 out of range [0,1)", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
+			_, err = ten.SumAlong(1)
+			if err == nil {
+				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
+		t.Run("Zeros([3,1]) tensor / SumAlong(2) / returns error: dimension 2 out of range [0,2)", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{3, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.SumAlong(2)
+			if err == nil {
+				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
@@ -1296,42 +1358,7 @@ func TestValidationReducers(t *testing.T) {
 
 		/* ------------------------------ */
 
-		ten, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.SumAlong(-1)
-		if err == nil {
-			t.Fatalf("expected error because of reduced dimension (-1) being out of range")
-		} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = ten.SumAlong(0)
-		if err == nil {
-			t.Fatalf("expected error because of reduced dimension (0) being out of range")
-		} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{1}, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = ten.SumAlong(1)
-		if err == nil {
-			t.Fatalf("expected error because of reduced dimension (1) being out of range")
-		} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
-		ten, err = tensor.Zeros([]int{3, 1}, conf)
+		ten, err := tensor.Zeros([]int{3, 1}, conf)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1347,13 +1374,6 @@ func TestValidationReducers(t *testing.T) {
 		if err == nil {
 			t.Fatalf("expected error because of reduced dimension (2) being out of range")
 		} else if err.Error() != "Argmin input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = ten.SumAlong(2)
-		if err == nil {
-			t.Fatalf("expected error because of reduced dimension (2) being out of range")
-		} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 			t.Fatal("unexpected error message returned")
 		}
 

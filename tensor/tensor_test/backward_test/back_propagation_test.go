@@ -125,59 +125,15 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if y.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if !y.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if t1.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if !t1.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if x1.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if !x1.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if a.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if !a.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if t2.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if t2.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if x3.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if x3.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if x2.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if x2.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if c.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if c.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if b.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if b.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
+			assertGradContext(t, y, true, false)
+			assertGradContext(t, t1, true, false)
+			assertGradContext(t, x1, true, false)
+			assertGradContext(t, a, true, false)
+			assertGradContext(t, t2, false, false)
+			assertGradContext(t, x3, false, false)
+			assertGradContext(t, x2, false, false)
+			assertGradContext(t, c, false, false)
+			assertGradContext(t, b, false, false)
 		})
 
 		t.Run("mixed tracked/untracked computation graph / after BackPropagate / tracked nodes receive gradient, untracked remain nil", func(t *testing.T) {
@@ -226,59 +182,15 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if y.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			} else if !y.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if t1.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			} else if !t1.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if x1.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			} else if !x1.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if a.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			} else if !a.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if t2.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if t2.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if x3.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if x3.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if x2.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if x2.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if c.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if c.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if b.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if b.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
+			assertGradContext(t, y, true, true)
+			assertGradContext(t, t1, true, true)
+			assertGradContext(t, x1, true, true)
+			assertGradContext(t, a, true, true)
+			assertGradContext(t, t2, false, false)
+			assertGradContext(t, x3, false, false)
+			assertGradContext(t, x2, false, false)
+			assertGradContext(t, c, false, false)
+			assertGradContext(t, b, false, false)
 		})
 
 		t.Run("mixed tracked/untracked computation graph / after ResetGradContext / gradients cleared while tracking flags preserved", func(t *testing.T) {
@@ -337,59 +249,15 @@ func TestBackPropagate(t *testing.T) {
 			c.ResetGradContext(false)
 			b.ResetGradContext(false)
 
-			if y.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if !y.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if t1.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if !t1.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if x1.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if !x1.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if a.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if !a.GradientTracked() {
-				t.Fatal("expected gradient to be tracked")
-			}
-
-			if t2.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if t2.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if x3.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if x3.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if x2.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if x2.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if c.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if c.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
-
-			if b.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			} else if b.GradientTracked() {
-				t.Fatal("expected gradient not to be tracked")
-			}
+			assertGradContext(t, y, true, false)
+			assertGradContext(t, t1, true, false)
+			assertGradContext(t, x1, true, false)
+			assertGradContext(t, a, true, false)
+			assertGradContext(t, t2, false, false)
+			assertGradContext(t, x3, false, false)
+			assertGradContext(t, x2, false, false)
+			assertGradContext(t, c, false, false)
+			assertGradContext(t, b, false, false)
 		})
 
 		// ============================== validations ==============================
@@ -403,4 +271,21 @@ func TestBackPropagate(t *testing.T) {
 			}
 		})
 	})
+}
+
+// ----- helpers -----
+
+func assertGradContext(t *testing.T, ten tensor.Tensor, tracked, gradSet bool) {
+	t.Helper()
+
+	if gradSet && ten.Gradient() == nil {
+		t.Fatal("expected gradient not to be nil")
+	} else if !gradSet && ten.Gradient() != nil {
+		t.Fatal("expected gradient to be nil")
+	}
+	if tracked && !ten.GradientTracked() {
+		t.Fatal("expected gradient to be tracked")
+	} else if !tracked && ten.GradientTracked() {
+		t.Fatal("expected gradient not to be tracked")
+	}
 }

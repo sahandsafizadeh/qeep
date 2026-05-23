@@ -3574,3 +3574,19 @@ func TestMatmul(t *testing.T) {
 
 	})
 }
+
+/* ----- helpers ----- */
+
+func assertGradientEquals(t *testing.T, act, exp tensor.Tensor) {
+	t.Helper()
+
+	if eq, err := act.Equals(exp); err != nil {
+		t.Fatal(err)
+	} else if !eq {
+		t.Fatalf("expected tensors to be equal")
+	}
+
+	if act.Gradient() != nil {
+		t.Fatalf("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
+	}
+}

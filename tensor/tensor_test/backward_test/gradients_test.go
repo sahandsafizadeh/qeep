@@ -2693,9 +2693,17 @@ func TestAdd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act := a.Gradient()
+			acta := a.Gradient()
+			actb := b.Gradient()
 
-			exp, err := tensor.Full(nil, 1., &tensor.Config{
+			expa, err := tensor.Full(nil, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expb, err := tensor.Full(nil, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -2703,19 +2711,8 @@ func TestAdd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
-
-			act = b.Gradient()
-
-			exp, err = tensor.Full(nil, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
+			assertGradientEquals(t, acta, expa)
+			assertGradientEquals(t, actb, expb)
 		})
 
 		t.Run("a untracked, b grad-tracked / Add then BackPropagate / y has non-nil gradient", func(t *testing.T) {

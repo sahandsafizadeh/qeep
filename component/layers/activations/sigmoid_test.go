@@ -40,7 +40,6 @@ func TestSigmoid(t *testing.T) {
 			} else if p.Sum() < float64(p.NElems()) {
 				t.Fatalf("expected output to be in range")
 			}
-
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
@@ -75,7 +74,6 @@ func TestSigmoid(t *testing.T) {
 			} else if p.Sum() < float64(p.NElems()) {
 				t.Fatalf("expected output to be in range")
 			}
-
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
@@ -112,7 +110,6 @@ func TestSigmoid(t *testing.T) {
 			} else if p.Sum() < float64(p.NElems()) {
 				t.Fatalf("expected output to be in range")
 			}
-
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {

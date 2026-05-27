@@ -98,7 +98,7 @@ func TestZeros(t *testing.T) {
 			dims[1] = 1
 
 			if shape := ten.Shape(); !slices.Equal(shape, []int{3, 4}) {
-				t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+				t.Fatal("expected tensor to have shape [3, 4], got", shape)
 			}
 		})
 
@@ -251,7 +251,7 @@ func TestOnes(t *testing.T) {
 			dims[1] = 1
 
 			if shape := ten.Shape(); !slices.Equal(shape, []int{3, 4}) {
-				t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+				t.Fatal("expected tensor to have shape [3, 4], got", shape)
 			}
 		})
 
@@ -406,7 +406,7 @@ func TestRandU(t *testing.T) {
 			dims[1] = 1
 			shape := ten.Shape()
 			if !slices.Equal(shape, []int{3, 4}) {
-				t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+				t.Fatal("expected tensor to have shape [3, 4], got", shape)
 			}
 		})
 
@@ -474,7 +474,7 @@ func TestRandN(t *testing.T) {
 			dims[1] = 1
 			shape := ten.Shape()
 			if !slices.Equal(shape, []int{3, 4}) {
-				t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+				t.Fatal("expected tensor to have shape [3, 4], got", shape)
 			}
 		})
 

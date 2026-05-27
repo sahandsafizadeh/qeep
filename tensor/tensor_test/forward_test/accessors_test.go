@@ -85,7 +85,7 @@ func TestShape(t *testing.T) {
 			}
 
 			if shape := ten.Shape(); !slices.Equal(shape, []int{}) {
-				t.Fatalf("expected tensor to have shape [], got %v", shape)
+				t.Fatal("expected tensor to have shape [], got", shape)
 			}
 		})
 
@@ -96,7 +96,7 @@ func TestShape(t *testing.T) {
 			}
 
 			if shape := ten.Shape(); !slices.Equal(shape, []int{1}) {
-				t.Fatalf("expected tensor to have shape [1], got %v", shape)
+				t.Fatal("expected tensor to have shape [1], got", shape)
 			}
 		})
 
@@ -107,7 +107,7 @@ func TestShape(t *testing.T) {
 			}
 
 			if shape := ten.Shape(); !slices.Equal(shape, []int{2}) {
-				t.Fatalf("expected tensor to have shape [2], got %v", shape)
+				t.Fatal("expected tensor to have shape [2], got", shape)
 			}
 		})
 
@@ -118,7 +118,7 @@ func TestShape(t *testing.T) {
 			}
 
 			if shape := ten.Shape(); !slices.Equal(shape, []int{3, 4}) {
-				t.Fatalf("expected tensor to have shape [3, 4], got %v", shape)
+				t.Fatal("expected tensor to have shape [3, 4], got", shape)
 			}
 		})
 
@@ -129,7 +129,7 @@ func TestShape(t *testing.T) {
 			}
 
 			if shape := ten.Shape(); !slices.Equal(shape, []int{5, 4, 3, 2, 1}) {
-				t.Fatalf("expected tensor to have shape [5, 4, 3, 2, 1], got %v", shape)
+				t.Fatal("expected tensor to have shape [5, 4, 3, 2, 1], got", shape)
 			}
 		})
 	})

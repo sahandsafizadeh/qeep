@@ -30,7 +30,7 @@ func TestNormal(t *testing.T) {
 			}
 
 			if shape := x.Shape(); !slices.Equal(shape, []int{32, 32}) {
-				t.Fatalf("expected tensor to have shape [32, 32], got %v", shape)
+				t.Fatal("expected tensor to have shape [32, 32], got", shape)
 			}
 
 			if x.Gradient() == nil {

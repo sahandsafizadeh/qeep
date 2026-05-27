@@ -200,7 +200,7 @@ func TestModel(t *testing.T) {
 			}
 		})
 
-		t.Run("ReLU model with W=-2 B=-1 / Eval after Fit / cumulative MSE goes 2.5", func(t *testing.T) {
+		t.Run("ReLU model with W=-2 B=-1 / Eval after Fit / cumulative MSE goes 1.25", func(t *testing.T) {
 			// ----- given -----
 			wInitializer := initializers.NewFull(&initializers.FullConfig{Value: -2.})
 			bInitializer := initializers.NewFull(&initializers.FullConfig{Value: -1.})
@@ -256,8 +256,8 @@ func TestModel(t *testing.T) {
 			}
 
 			// ----- then -----
-			if val := result["MSE"]; !(2.4-1e-10 < val && val < 2.6+1e-10) {
-				t.Fatalf("expected metric value to be (2.5): got (%f)", val)
+			if val := result["MSE"]; !(1.24-1e-10 < val && val < 1.26+1e-10) {
+				t.Fatalf("expected metric value to be (1.25): got (%f)", val)
 			}
 		})
 

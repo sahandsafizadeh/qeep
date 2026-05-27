@@ -77,8 +77,8 @@ func TestEpochLogger(t *testing.T) {
 		})
 
 		t.Run("3 epochs 1 batch loss=44.005 with validations / full run / logs match expected format", func(t *testing.T) {
-			epochs := 2
-			batches := 4
+			epochs := 3
+			batches := 1
 			loss, err := tensor.Of(44.005, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)

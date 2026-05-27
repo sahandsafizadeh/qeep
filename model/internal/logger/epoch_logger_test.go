@@ -194,6 +194,8 @@ func TestEpochLogger(t *testing.T) {
 	})
 }
 
+/* ----- helpers ----- */
+
 func runEpochLoggerTest(
 	t *testing.T,
 	epochs int,

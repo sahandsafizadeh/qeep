@@ -62,7 +62,7 @@ func TestQueue(t *testing.T) {
 		}
 	})
 
-	// ============================== validations ==============================
+	// ============================== error handling ==============================
 
 	t.Run("empty queue / Dequeue() / returns error", func(t *testing.T) {
 		q := queue.NewQueue[int]()

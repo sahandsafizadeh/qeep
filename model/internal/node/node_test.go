@@ -485,7 +485,7 @@ func TestNode(t *testing.T) {
 			}
 		})
 
-		// ============================== Error Handling ==============================
+		// ============================== error handling ==============================
 
 		t.Run("FC node with 2 parent inputs / Forward / returns error: expected exactly one input tensor", func(t *testing.T) {
 			input1 := layers.NewInput()

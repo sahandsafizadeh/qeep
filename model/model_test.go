@@ -502,7 +502,7 @@ func TestModel(t *testing.T) {
 				conf   *model.ModelConfig = nil
 				input  *stream.Stream     = nil
 				output *stream.Stream     = nil
-				inputs []*stream.Stream   = []*stream.Stream{input}
+				inputs                    = []*stream.Stream{input}
 			)
 
 			_, err := model.NewMultiInputModel(inputs, output, conf)
@@ -515,9 +515,9 @@ func TestModel(t *testing.T) {
 
 		t.Run("NewMultiInputModel with no input streams / returns error: at least one input stream", func(t *testing.T) {
 			var (
-				conf   *model.ModelConfig = new(model.ModelConfig)
-				output *stream.Stream     = nil
-				inputs []*stream.Stream   = nil
+				conf                    = new(model.ModelConfig)
+				output *stream.Stream   = nil
+				inputs []*stream.Stream = nil
 			)
 
 			_, err := model.NewMultiInputModel(inputs, output, conf)
@@ -530,10 +530,10 @@ func TestModel(t *testing.T) {
 
 		t.Run("NewMultiInputModel with nil input stream at position 0 / returns error: input stream at 0 not to be nil", func(t *testing.T) {
 			var (
-				conf   *model.ModelConfig = new(model.ModelConfig)
-				input  *stream.Stream     = nil
-				output *stream.Stream     = nil
-				inputs []*stream.Stream   = []*stream.Stream{input}
+				conf                  = new(model.ModelConfig)
+				input  *stream.Stream = nil
+				output *stream.Stream = nil
+				inputs                = []*stream.Stream{input}
 			)
 
 			_, err := model.NewMultiInputModel(inputs, output, conf)
@@ -546,10 +546,10 @@ func TestModel(t *testing.T) {
 
 		t.Run("NewMultiInputModel with uninitialized input stream at position 0 / returns error: input at 0 not properly initialized", func(t *testing.T) {
 			var (
-				conf   *model.ModelConfig = new(model.ModelConfig)
-				input  *stream.Stream     = new(stream.Stream)
-				output *stream.Stream     = nil
-				inputs []*stream.Stream   = []*stream.Stream{input}
+				conf                  = new(model.ModelConfig)
+				input                 = new(stream.Stream)
+				output *stream.Stream = nil
+				inputs                = []*stream.Stream{input}
 			)
 
 			_, err := model.NewMultiInputModel(inputs, output, conf)
@@ -562,10 +562,10 @@ func TestModel(t *testing.T) {
 
 		t.Run("NewMultiInputModel with non-Input type layer at position 0 / returns error: input at 0 must contain Input layer type", func(t *testing.T) {
 			var (
-				conf   *model.ModelConfig = new(model.ModelConfig)
-				input  *stream.Stream     = stream.Tanh()()
-				output *stream.Stream     = nil
-				inputs []*stream.Stream   = []*stream.Stream{input}
+				conf                  = new(model.ModelConfig)
+				input                 = stream.Tanh()()
+				output *stream.Stream = nil
+				inputs                = []*stream.Stream{input}
 			)
 
 			_, err := model.NewMultiInputModel(inputs, output, conf)
@@ -578,10 +578,10 @@ func TestModel(t *testing.T) {
 
 		t.Run("NewMultiInputModel with nil output stream / returns error: output stream not to be nil", func(t *testing.T) {
 			var (
-				conf   *model.ModelConfig = new(model.ModelConfig)
-				input  *stream.Stream     = stream.Input()
-				output *stream.Stream     = nil
-				inputs []*stream.Stream   = []*stream.Stream{input}
+				conf                  = new(model.ModelConfig)
+				input                 = stream.Input()
+				output *stream.Stream = nil
+				inputs                = []*stream.Stream{input}
 			)
 
 			_, err := model.NewMultiInputModel(inputs, output, conf)
@@ -594,10 +594,10 @@ func TestModel(t *testing.T) {
 
 		t.Run("NewMultiInputModel with uninitialized output stream / returns error: output stream not properly initialized", func(t *testing.T) {
 			var (
-				conf   *model.ModelConfig = new(model.ModelConfig)
-				input  *stream.Stream     = stream.Input()
-				output *stream.Stream     = new(stream.Stream)
-				inputs []*stream.Stream   = []*stream.Stream{input}
+				conf   = new(model.ModelConfig)
+				input  = stream.Input()
+				output = new(stream.Stream)
+				inputs = []*stream.Stream{input}
 			)
 
 			_, err := model.NewMultiInputModel(inputs, output, conf)
@@ -610,12 +610,12 @@ func TestModel(t *testing.T) {
 
 		t.Run("NewMultiInputModel with Softmax Dim=-1 / returns error: Softmax Dim not to be negative", func(t *testing.T) {
 			var (
-				conf   *model.ModelConfig = new(model.ModelConfig)
-				input  *stream.Stream     = stream.Input()
-				output *stream.Stream     = stream.Softmax(&activations.SoftmaxConfig{
+				conf   = new(model.ModelConfig)
+				input  = stream.Input()
+				output = stream.Softmax(&activations.SoftmaxConfig{
 					Dim: -1,
 				})(input)
-				inputs []*stream.Stream = []*stream.Stream{input}
+				inputs = []*stream.Stream{input}
 			)
 
 			_, err := model.NewMultiInputModel(inputs, output, conf)

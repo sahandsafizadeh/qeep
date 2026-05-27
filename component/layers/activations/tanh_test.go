@@ -11,65 +11,71 @@ import (
 func TestTanh(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		conf := &tensor.Config{Device: dev}
+		// ============================== main paths ==============================
 
-		activation := activations.NewTanh()
+		t.Run("scalar 1 input / Forward() / output is near (e^2-1)/(e^2+1)", func(t *testing.T) {
+			activation := activations.NewTanh()
 
-		/* ------------------------------ */
+			x, err := tensor.Of(1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		x, err := tensor.Of(1., conf)
-		if err != nil {
-			t.Fatal(err)
-		}
+			act, err := activation.Forward(x)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		act, err := activation.Forward(x)
-		if err != nil {
-			t.Fatal(err)
-		}
+			c := (math.E*math.E - 1) / (math.E*math.E + 1)
 
-		c := (math.E*math.E - 1) / (math.E*math.E + 1)
+			expl, err := tensor.Of(c-1e-10, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expu, err := tensor.Of(c+1e-10, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		val, err := act.At()
-		if err != nil {
-			t.Fatal(err)
-		} else if !(c-1e-10 < val && val < c+1e-10) {
-			t.Fatalf("expected scalar tensors value to be ((e^2-1)/(e^2+1)): got (%f)", val)
-		}
+			if p, err := act.Gt(expl); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+			if p, err := act.Lt(expu); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+		})
 
-		/* ------------------------------ */
+		// ============================== validations ==============================
 
-	})
-}
+		t.Run("no input tensors / Forward() / returns error: expected exactly one input tensor", func(t *testing.T) {
+			activation := activations.NewTanh()
 
-func TestValidationTanh(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+			_, err := activation.Forward()
+			if err == nil {
+				t.Fatal("expected error because of not receiving one input tensor")
+			} else if err.Error() != "Tanh input data validation failed: expected exactly one input tensor: got (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 
-		conf := &tensor.Config{Device: dev}
+		t.Run("two input tensors / Forward() / returns error: expected exactly one input tensor", func(t *testing.T) {
+			activation := activations.NewTanh()
 
-		activation := activations.NewTanh()
+			x, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		/* ------------------------------ */
-
-		x, err := tensor.Zeros(nil, conf)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		_, err = activation.Forward()
-		if err == nil {
-			t.Fatalf("expected error because of not receiving one input tensor")
-		} else if err.Error() != "Tanh input data validation failed: expected exactly one input tensor: got (0)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		_, err = activation.Forward(x, x)
-		if err == nil {
-			t.Fatalf("expected error because of not receiving one input tensor")
-		} else if err.Error() != "Tanh input data validation failed: expected exactly one input tensor: got (2)" {
-			t.Fatal("unexpected error message returned")
-		}
-
-		/* ------------------------------ */
-
+			_, err = activation.Forward(x, x)
+			if err == nil {
+				t.Fatal("expected error because of not receiving one input tensor")
+			} else if err.Error() != "Tanh input data validation failed: expected exactly one input tensor: got (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }

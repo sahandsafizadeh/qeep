@@ -258,7 +258,7 @@ func TestAccuracy(t *testing.T) {
 
 			err = metric.Accumulate(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having more/less than two dimensions")
+				t.Fatal("expected error because of tensors having more/less than two dimensions")
 			} else if err.Error() != "Accuracy input data validation failed: expected input tensors to have exactly two dimensions (batch, class)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -278,7 +278,7 @@ func TestAccuracy(t *testing.T) {
 
 			err = metric.Accumulate(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having more/less than two dimensions")
+				t.Fatal("expected error because of tensors having more/less than two dimensions")
 			} else if err.Error() != "Accuracy input data validation failed: expected input tensors to have exactly two dimensions (batch, class)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -298,7 +298,7 @@ func TestAccuracy(t *testing.T) {
 
 			err = metric.Accumulate(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having unequal batch sizes")
+				t.Fatal("expected error because of tensors having unequal batch sizes")
 			} else if err.Error() != "Accuracy input data validation failed: expected input tensor sizes to match along batch dimension: (1) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -318,7 +318,7 @@ func TestAccuracy(t *testing.T) {
 
 			err = metric.Accumulate(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having unequal class sizes")
+				t.Fatal("expected error because of tensors having unequal class sizes")
 			} else if err.Error() != "Accuracy input data validation failed: expected input tensor sizes to match along class dimension: (1) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -338,7 +338,7 @@ func TestAccuracy(t *testing.T) {
 
 			err = metric.Accumulate(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having class sizes unequal to (1) in not one-hot mode")
+				t.Fatal("expected error because of tensors having class sizes unequal to (1) in not one-hot mode")
 			} else if err.Error() != "Accuracy input data validation failed: expected input tensor sizes to be equal to (1) along class dimension when not in one-hot mode: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}

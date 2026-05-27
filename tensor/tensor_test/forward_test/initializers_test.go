@@ -26,7 +26,7 @@ func TestZeros(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -44,7 +44,7 @@ func TestZeros(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -62,7 +62,7 @@ func TestZeros(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -80,7 +80,7 @@ func TestZeros(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -107,7 +107,7 @@ func TestZeros(t *testing.T) {
 		t.Run("Zeros([-1]) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Zeros([]int{-1}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Zeros input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -116,7 +116,7 @@ func TestZeros(t *testing.T) {
 		t.Run("Zeros([0]) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Zeros([]int{0}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Zeros input dimension validation failed: expected positive dimension sizes: got (0) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -125,7 +125,7 @@ func TestZeros(t *testing.T) {
 		t.Run("Zeros([1,-2]) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Zeros([]int{1, -2}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Zeros input dimension validation failed: expected positive dimension sizes: got (-2) at position (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -134,7 +134,7 @@ func TestZeros(t *testing.T) {
 		t.Run("Zeros([2,0,1]) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Zeros([]int{2, 0, 1}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Zeros input dimension validation failed: expected positive dimension sizes: got (0) at position (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -143,7 +143,7 @@ func TestZeros(t *testing.T) {
 		t.Run("Zeros([1,1,1,1,1,1,1]) / returns error: too many dimensions", func(t *testing.T) {
 			_, err := tensor.Zeros([]int{1, 1, 1, 1, 1, 1, 1}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of too many dimensions")
+				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "Zeros input dimension validation failed: expected at most (6) dimensions: got (7)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -152,7 +152,7 @@ func TestZeros(t *testing.T) {
 		t.Run("Zeros(nil) with invalid device / returns error: invalid device", func(t *testing.T) {
 			_, err := tensor.Zeros(nil, &tensor.Config{Device: -1})
 			if err == nil {
-				t.Fatalf("expected error because of invalid input device")
+				t.Fatal("expected error because of invalid input device")
 			} else if err.Error() != "Zeros tensor config data validation failed: invalid input device" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -179,7 +179,7 @@ func TestOnes(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -197,7 +197,7 @@ func TestOnes(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -215,7 +215,7 @@ func TestOnes(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -233,7 +233,7 @@ func TestOnes(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -260,7 +260,7 @@ func TestOnes(t *testing.T) {
 		t.Run("Ones([-1]) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Ones([]int{-1}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Ones input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -269,7 +269,7 @@ func TestOnes(t *testing.T) {
 		t.Run("Ones([0]) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Ones([]int{0}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Ones input dimension validation failed: expected positive dimension sizes: got (0) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -278,7 +278,7 @@ func TestOnes(t *testing.T) {
 		t.Run("Ones([1,-2]) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Ones([]int{1, -2}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Ones input dimension validation failed: expected positive dimension sizes: got (-2) at position (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -287,7 +287,7 @@ func TestOnes(t *testing.T) {
 		t.Run("Ones([2,0,1]) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Ones([]int{2, 0, 1}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Ones input dimension validation failed: expected positive dimension sizes: got (0) at position (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -296,7 +296,7 @@ func TestOnes(t *testing.T) {
 		t.Run("Ones([1,1,1,1,1,1,1]) / returns error: too many dimensions", func(t *testing.T) {
 			_, err := tensor.Ones([]int{1, 1, 1, 1, 1, 1, 1}, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of too many dimensions")
+				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "Ones input dimension validation failed: expected at most (6) dimensions: got (7)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -305,7 +305,7 @@ func TestOnes(t *testing.T) {
 		t.Run("Ones(nil) with invalid device / returns error: invalid device", func(t *testing.T) {
 			_, err := tensor.Ones(nil, &tensor.Config{Device: -1})
 			if err == nil {
-				t.Fatalf("expected error because of invalid input device")
+				t.Fatal("expected error because of invalid input device")
 			} else if err.Error() != "Ones tensor config data validation failed: invalid input device" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -332,7 +332,7 @@ func TestEye(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -356,7 +356,7 @@ func TestEye(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -365,7 +365,7 @@ func TestEye(t *testing.T) {
 		t.Run("Eye(-1) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Eye(-1, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Eye input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -374,7 +374,7 @@ func TestEye(t *testing.T) {
 		t.Run("Eye(0) / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Eye(0, &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Eye input dimension validation failed: expected positive dimension sizes: got (0) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -383,7 +383,7 @@ func TestEye(t *testing.T) {
 		t.Run("Eye(1) with invalid device / returns error: invalid device", func(t *testing.T) {
 			_, err := tensor.Eye(1, &tensor.Config{Device: -1})
 			if err == nil {
-				t.Fatalf("expected error because of invalid input device")
+				t.Fatal("expected error because of invalid input device")
 			} else if err.Error() != "Eye tensor config data validation failed: invalid input device" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -415,7 +415,7 @@ func TestRandU(t *testing.T) {
 		t.Run("RandU(nil, 0, -1) / lower bound >= upper bound / returns error: lower bound not less than upper bound", func(t *testing.T) {
 			_, err := tensor.RandU(nil, 0., -1., &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of lower bound not being less than upper bound")
+				t.Fatal("expected error because of lower bound not being less than upper bound")
 			} else if err.Error() != "RandU random parameter validation failed: expected uniform random lower bound to be less than the upper bound: (0.000000) >= (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -424,7 +424,7 @@ func TestRandU(t *testing.T) {
 		t.Run("RandU(nil, 1, 1) / equal bounds / returns error: lower bound not less than upper bound", func(t *testing.T) {
 			_, err := tensor.RandU(nil, 1., 1., &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of lower bound not being less than upper bound")
+				t.Fatal("expected error because of lower bound not being less than upper bound")
 			} else if err.Error() != "RandU random parameter validation failed: expected uniform random lower bound to be less than the upper bound: (1.000000) >= (1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -433,7 +433,7 @@ func TestRandU(t *testing.T) {
 		t.Run("RandU([-1], -1, 1) / negative dimension / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandU([]int{-1}, -1., 1., &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "RandU input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -442,7 +442,7 @@ func TestRandU(t *testing.T) {
 		t.Run("RandU([1x7], -1, 1) / too many dimensions / returns error: exceeds max dimensions", func(t *testing.T) {
 			_, err := tensor.RandU([]int{1, 1, 1, 1, 1, 1, 1}, -1., 1., &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of too many dimensions")
+				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "RandU input dimension validation failed: expected at most (6) dimensions: got (7)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -451,7 +451,7 @@ func TestRandU(t *testing.T) {
 		t.Run("RandU(nil, 0, 1) with invalid device / returns error: invalid input device", func(t *testing.T) {
 			_, err := tensor.RandU(nil, 0., 1., &tensor.Config{Device: -1})
 			if err == nil {
-				t.Fatalf("expected error because of invalid input device")
+				t.Fatal("expected error because of invalid input device")
 			} else if err.Error() != "RandU tensor config data validation failed: invalid input device" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -483,7 +483,7 @@ func TestRandN(t *testing.T) {
 		t.Run("RandN(nil, 0, -1) / negative standard deviation / returns error: std dev not positive", func(t *testing.T) {
 			_, err := tensor.RandN(nil, 0., -1., &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive standard deviation")
+				t.Fatal("expected error because of non-positive standard deviation")
 			} else if err.Error() != "RandN random parameter validation failed: expected normal random standard deviation to be positive: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -492,7 +492,7 @@ func TestRandN(t *testing.T) {
 		t.Run("RandN(nil, -1, 0) / zero standard deviation / returns error: std dev not positive", func(t *testing.T) {
 			_, err := tensor.RandN(nil, -1., 0., &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive standard deviation")
+				t.Fatal("expected error because of non-positive standard deviation")
 			} else if err.Error() != "RandN random parameter validation failed: expected normal random standard deviation to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -501,7 +501,7 @@ func TestRandN(t *testing.T) {
 		t.Run("RandN([-1], 0, 1) / negative dimension / returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandN([]int{-1}, 0., 1., &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "RandN input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -510,7 +510,7 @@ func TestRandN(t *testing.T) {
 		t.Run("RandN([1x9], 0, 1) / too many dimensions / returns error: exceeds max dimensions", func(t *testing.T) {
 			_, err := tensor.RandN([]int{1, 1, 1, 1, 1, 1, 1, 1, 1}, 0., 1., &tensor.Config{Device: dev})
 			if err == nil {
-				t.Fatalf("expected error because of too many dimensions")
+				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "RandN input dimension validation failed: expected at most (6) dimensions: got (9)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -519,7 +519,7 @@ func TestRandN(t *testing.T) {
 		t.Run("RandN(nil, 0, 1) with invalid device / returns error: invalid input device", func(t *testing.T) {
 			_, err := tensor.RandN(nil, 0., 1., &tensor.Config{Device: -1})
 			if err == nil {
-				t.Fatalf("expected error because of invalid input device")
+				t.Fatal("expected error because of invalid input device")
 			} else if err.Error() != "RandN tensor config data validation failed: invalid input device" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -555,7 +555,7 @@ func TestConcat(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -590,7 +590,7 @@ func TestConcat(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -625,7 +625,7 @@ func TestConcat(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -674,7 +674,7 @@ func TestConcat(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -719,7 +719,7 @@ func TestConcat(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -760,7 +760,7 @@ func TestConcat(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -797,7 +797,7 @@ func TestConcat(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -806,7 +806,7 @@ func TestConcat(t *testing.T) {
 		t.Run("Concat(nil, 0) / returns error: fewer than 2 tensors", func(t *testing.T) {
 			_, err := tensor.Concat(nil, 0)
 			if err == nil {
-				t.Fatalf("expected error because of the number of input tensors being less than (2)")
+				t.Fatal("expected error because of the number of input tensors being less than (2)")
 			} else if err.Error() != "Concat tensor implementation validation failed: expected at least (2) tensors: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -815,7 +815,7 @@ func TestConcat(t *testing.T) {
 		t.Run("Concat([nil], 0) / returns error: fewer than 2 tensors", func(t *testing.T) {
 			_, err := tensor.Concat([]tensor.Tensor{nil}, 0)
 			if err == nil {
-				t.Fatalf("expected error because of the number of input tensors being less than (2)")
+				t.Fatal("expected error because of the number of input tensors being less than (2)")
 			} else if err.Error() != "Concat tensor implementation validation failed: expected at least (2) tensors: got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -824,7 +824,7 @@ func TestConcat(t *testing.T) {
 		t.Run("Concat([nil, nil], 0) / returns error: unsupported tensor implementation", func(t *testing.T) {
 			_, err := tensor.Concat([]tensor.Tensor{nil, nil}, 0)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensors")
+				t.Fatal("expected error because of nil input tensors")
 			} else if err.Error() != "Concat tensor implementation validation failed: unsupported tensor implementation" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -842,7 +842,7 @@ func TestConcat(t *testing.T) {
 
 			_, err = tensor.Concat([]tensor.Tensor{t1, t2}, 0)
 			if err == nil {
-				t.Fatalf("expected error because of having scalar tensors as input")
+				t.Fatal("expected error because of having scalar tensors as input")
 			} else if err.Error() != "Concat inputs' dimension validation failed: scalar tensor can not be concatenated: got tensor (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -864,7 +864,7 @@ func TestConcat(t *testing.T) {
 
 			_, err = tensor.Concat([]tensor.Tensor{t1, t2, t3}, 0)
 			if err == nil {
-				t.Fatalf("expected error because of the input tensors not having equal number of dimensions")
+				t.Fatal("expected error because of the input tensors not having equal number of dimensions")
 			} else if err.Error() != "Concat inputs' dimension validation failed: expected tensors to have the same number of dimensions: (2) != (1) for tensor (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -882,7 +882,7 @@ func TestConcat(t *testing.T) {
 
 			_, err = tensor.Concat([]tensor.Tensor{t1, t2}, -1)
 			if err == nil {
-				t.Fatalf("expected error because of negative dimension")
+				t.Fatal("expected error because of negative dimension")
 			} else if err.Error() != "Concat inputs' dimension validation failed: expected concat dimension to be in range [0,1): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -900,7 +900,7 @@ func TestConcat(t *testing.T) {
 
 			_, err = tensor.Concat([]tensor.Tensor{t1, t2}, 1)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (1) being out of range")
+				t.Fatal("expected error because of dimension (1) being out of range")
 			} else if err.Error() != "Concat inputs' dimension validation failed: expected concat dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -918,7 +918,7 @@ func TestConcat(t *testing.T) {
 
 			_, err = tensor.Concat([]tensor.Tensor{t1, t2}, 2)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (2) being out of range")
+				t.Fatal("expected error because of dimension (2) being out of range")
 			} else if err.Error() != "Concat inputs' dimension validation failed: expected concat dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -940,7 +940,7 @@ func TestConcat(t *testing.T) {
 
 			_, err = tensor.Concat([]tensor.Tensor{t1, t2, t3}, 0)
 			if err == nil {
-				t.Fatalf("expected error because of size mismatch along dimension (2)")
+				t.Fatal("expected error because of size mismatch along dimension (2)")
 			} else if err.Error() != "Concat inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (0): (1) != (2) for dimension (2) for tensor (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -962,7 +962,7 @@ func TestConcat(t *testing.T) {
 
 			_, err = tensor.Concat([]tensor.Tensor{t1, t2, t3}, 0)
 			if err == nil {
-				t.Fatalf("expected error because of size mismatch along dimension (1)")
+				t.Fatal("expected error because of size mismatch along dimension (1)")
 			} else if err.Error() != "Concat inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (0): (2) != (1) for dimension (1) for tensor (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -984,7 +984,7 @@ func TestConcat(t *testing.T) {
 
 			_, err = tensor.Concat([]tensor.Tensor{t1, t2, t3}, 1)
 			if err == nil {
-				t.Fatalf("expected error because of size mismatch along dimension (0)")
+				t.Fatal("expected error because of size mismatch along dimension (0)")
 			} else if err.Error() != "Concat inputs' dimension validation failed: expected tensor sizes to match in all dimensions except (1): (1) != (2) for dimension (0) for tensor (1)" {
 				t.Fatal("unexpected error message returned")
 			}

@@ -41,7 +41,7 @@ func TestMSE(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -78,7 +78,7 @@ func TestMSE(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -117,7 +117,7 @@ func TestMSE(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -137,7 +137,7 @@ func TestMSE(t *testing.T) {
 
 			_, err = loss.Compute(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having more/less than two dimensions")
+				t.Fatal("expected error because of tensors having more/less than two dimensions")
 			} else if err.Error() != "MSE input data validation failed: expected input tensors to have exactly two dimensions (batch, data)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -157,7 +157,7 @@ func TestMSE(t *testing.T) {
 
 			_, err = loss.Compute(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having more/less than two dimensions")
+				t.Fatal("expected error because of tensors having more/less than two dimensions")
 			} else if err.Error() != "MSE input data validation failed: expected input tensors to have exactly two dimensions (batch, data)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -177,7 +177,7 @@ func TestMSE(t *testing.T) {
 
 			_, err = loss.Compute(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having unequal batch sizes")
+				t.Fatal("expected error because of tensors having unequal batch sizes")
 			} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along batch dimension: (1) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -197,7 +197,7 @@ func TestMSE(t *testing.T) {
 
 			_, err = loss.Compute(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having unequal data sizes")
+				t.Fatal("expected error because of tensors having unequal data sizes")
 			} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (1) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}

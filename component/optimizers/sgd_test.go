@@ -47,7 +47,7 @@ func TestSGD(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -86,7 +86,7 @@ func TestSGD(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -127,7 +127,7 @@ func TestSGD(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 1")
+				t.Fatal("expected tensors to be equal after step 1")
 			}
 
 			// step 2: grad=30, v=0.5*40+30=50, x = 11 - 0.1*50 = 6
@@ -151,7 +151,7 @@ func TestSGD(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 2")
+				t.Fatal("expected tensors to be equal after step 2")
 			}
 
 			// step 3: grad=20, v=0.5*50+20=45, x = 6 - 0.1*45 = 1.5
@@ -175,7 +175,7 @@ func TestSGD(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 3")
+				t.Fatal("expected tensors to be equal after step 3")
 			}
 		})
 
@@ -217,7 +217,7 @@ func TestSGD(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 1")
+				t.Fatal("expected tensors to be equal after step 1")
 			}
 
 			// step 2: grad=30, delta=30+0.2*94+0.5*60=78.8, x = 94 - 0.1*78.8 = 86.12
@@ -241,7 +241,7 @@ func TestSGD(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 2")
+				t.Fatal("expected tensors to be equal after step 2")
 			}
 
 			// step 3: grad=20, delta=20+0.2*86.12+0.5*78.8=76.624, x = 86.12 - 0.1*76.624 = 78.4576
@@ -265,7 +265,7 @@ func TestSGD(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 3")
+				t.Fatal("expected tensors to be equal after step 3")
 			}
 		})
 
@@ -274,7 +274,7 @@ func TestSGD(t *testing.T) {
 		t.Run("NewSGD with LearningRate=0 / returns error: non-positive LearningRate", func(t *testing.T) {
 			_, err := optimizers.NewSGD(&optimizers.SGDConfig{})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'LearningRate'")
+				t.Fatal("expected error because of non-positive 'LearningRate'")
 			} else if err.Error() != "SGD config data validation failed: expected 'LearningRate' to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -285,7 +285,7 @@ func TestSGD(t *testing.T) {
 				LearningRate: -1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'LearningRate'")
+				t.Fatal("expected error because of non-positive 'LearningRate'")
 			} else if err.Error() != "SGD config data validation failed: expected 'LearningRate' to be positive: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -297,7 +297,7 @@ func TestSGD(t *testing.T) {
 				WeightDecay:  -1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of negative 'WeightDecay'")
+				t.Fatal("expected error because of negative 'WeightDecay'")
 			} else if err.Error() != "SGD config data validation failed: expected 'WeightDecay' not to be negative: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -310,7 +310,7 @@ func TestSGD(t *testing.T) {
 				Momentum:     -0.5,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of negative 'Momentum'")
+				t.Fatal("expected error because of negative 'Momentum'")
 			} else if err.Error() != "SGD config data validation failed: expected 'Momentum' not to be negative: got (-0.500000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -329,7 +329,7 @@ func TestSGD(t *testing.T) {
 
 			err = optimizer.Update(&x)
 			if err == nil {
-				t.Fatalf("expected error because of nil tensor gradient")
+				t.Fatal("expected error because of nil tensor gradient")
 			} else if err.Error() != "SGD input data validation failed: expected tensor's gradient not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -351,7 +351,7 @@ func TestSGD(t *testing.T) {
 
 			err = optimizer.Update(&x)
 			if err == nil {
-				t.Fatalf("expected error because of nil tensor gradient")
+				t.Fatal("expected error because of nil tensor gradient")
 			} else if err.Error() != "SGD input data validation failed: expected tensor's gradient not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -375,7 +375,7 @@ func TestSGD(t *testing.T) {
 
 			err = optimizer.Update(&x)
 			if err == nil {
-				t.Fatalf("expected error because of nil tensor gradient")
+				t.Fatal("expected error because of nil tensor gradient")
 			} else if err.Error() != "SGD input data validation failed: expected tensor's gradient not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}

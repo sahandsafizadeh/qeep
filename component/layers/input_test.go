@@ -22,7 +22,7 @@ func TestInput(t *testing.T) {
 			}
 
 			if act != nil {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -49,7 +49,7 @@ func TestInput(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -66,7 +66,7 @@ func TestInput(t *testing.T) {
 
 			_, err = activation.Forward(x)
 			if err == nil {
-				t.Fatalf("expected error because of receiving input tensors")
+				t.Fatal("expected error because of receiving input tensors")
 			} else if err.Error() != "Input input data validation failed: expected no input tensors: got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -83,7 +83,7 @@ func TestInput(t *testing.T) {
 
 			_, err = activation.Forward(x, x)
 			if err == nil {
-				t.Fatalf("expected error because of receiving input tensors")
+				t.Fatal("expected error because of receiving input tensors")
 			} else if err.Error() != "Input input data validation failed: expected no input tensors: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}

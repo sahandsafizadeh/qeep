@@ -46,12 +46,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -89,12 +89,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -133,12 +133,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -190,12 +190,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -246,12 +246,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -299,12 +299,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -382,12 +382,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -459,12 +459,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -533,12 +533,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -577,12 +577,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -634,12 +634,12 @@ func TestBatchNorm(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -696,7 +696,7 @@ func TestBatchNorm(t *testing.T) {
 		t.Run("NewBatchNorm(nil) / returns error: config must not be nil", func(t *testing.T) {
 			_, err := layers.NewBatchNorm(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input config")
+				t.Fatal("expected error because of nil input config")
 			} else if err.Error() != "BatchNorm config data validation failed: expected config not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -707,7 +707,7 @@ func TestBatchNorm(t *testing.T) {
 				Momentum: -0.01,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of negative 'Momentum'")
+				t.Fatal("expected error because of negative 'Momentum'")
 			} else if err.Error() != "BatchNorm config data validation failed: expected 'Momentum' not to be negative: got (-0.010000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -719,7 +719,7 @@ func TestBatchNorm(t *testing.T) {
 				Eps:      -0.001,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Eps'")
+				t.Fatal("expected error because of non-positive 'Eps'")
 			} else if err.Error() != "BatchNorm config data validation failed: expected 'Eps' to be positive: got (-0.001000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -731,7 +731,7 @@ func TestBatchNorm(t *testing.T) {
 				Eps:      0,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Eps'")
+				t.Fatal("expected error because of non-positive 'Eps'")
 			} else if err.Error() != "BatchNorm config data validation failed: expected 'Eps' to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -748,7 +748,7 @@ func TestBatchNorm(t *testing.T) {
 
 			_, err = layer.Forward()
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "BatchNorm input data validation failed: expected exactly one input tensor: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -770,7 +770,7 @@ func TestBatchNorm(t *testing.T) {
 
 			_, err = layer.Forward(x, x)
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "BatchNorm input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -792,7 +792,7 @@ func TestBatchNorm(t *testing.T) {
 
 			_, err = layer.Forward(x)
 			if err == nil {
-				t.Fatalf("expected error because of scalar input")
+				t.Fatal("expected error because of scalar input")
 			} else if err.Error() != "BatchNorm input data validation failed: expected input tensor to have at least two dimensions (batch, ..., feature): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -814,7 +814,7 @@ func TestBatchNorm(t *testing.T) {
 
 			_, err = layer.Forward(x)
 			if err == nil {
-				t.Fatalf("expected error because of 1D input")
+				t.Fatal("expected error because of 1D input")
 			} else if err.Error() != "BatchNorm input data validation failed: expected input tensor to have at least two dimensions (batch, ..., feature): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}

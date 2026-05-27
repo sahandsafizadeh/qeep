@@ -45,7 +45,7 @@ func TestFC(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -81,7 +81,7 @@ func TestFC(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -117,7 +117,7 @@ func TestFC(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -163,7 +163,7 @@ func TestFC(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -208,7 +208,7 @@ func TestFC(t *testing.T) {
 		t.Run("NewFC(nil) / returns error: nil config", func(t *testing.T) {
 			_, err := layers.NewFC(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input config")
+				t.Fatal("expected error because of nil input config")
 			} else if err.Error() != "FC config data validation failed: expected config not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -220,7 +220,7 @@ func TestFC(t *testing.T) {
 				Outputs: 1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Inputs'")
+				t.Fatal("expected error because of non-positive 'Inputs'")
 			} else if err.Error() != "FC config data validation failed: expected 'Inputs' to be positive: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -232,7 +232,7 @@ func TestFC(t *testing.T) {
 				Outputs: 1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Inputs'")
+				t.Fatal("expected error because of non-positive 'Inputs'")
 			} else if err.Error() != "FC config data validation failed: expected 'Inputs' to be positive: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -244,7 +244,7 @@ func TestFC(t *testing.T) {
 				Outputs: 0,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Outputs'")
+				t.Fatal("expected error because of non-positive 'Outputs'")
 			} else if err.Error() != "FC config data validation failed: expected 'Outputs' to be positive: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -256,7 +256,7 @@ func TestFC(t *testing.T) {
 				Outputs: -1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Outputs'")
+				t.Fatal("expected error because of non-positive 'Outputs'")
 			} else if err.Error() != "FC config data validation failed: expected 'Outputs' to be positive: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -271,7 +271,7 @@ func TestFC(t *testing.T) {
 				},
 			})
 			if err == nil {
-				t.Fatalf("expected error because of weights initialized with more/less than one dimension")
+				t.Fatal("expected error because of weights initialized with more/less than one dimension")
 			} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -286,7 +286,7 @@ func TestFC(t *testing.T) {
 				},
 			})
 			if err == nil {
-				t.Fatalf("expected error because of weights initialized with more/less than one dimension")
+				t.Fatal("expected error because of weights initialized with more/less than one dimension")
 			} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -301,7 +301,7 @@ func TestFC(t *testing.T) {
 				},
 			})
 			if err == nil {
-				t.Fatalf("expected error because of weights initialized with more/less than one dimension")
+				t.Fatal("expected error because of weights initialized with more/less than one dimension")
 			} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -316,7 +316,7 @@ func TestFC(t *testing.T) {
 				},
 			})
 			if err == nil {
-				t.Fatalf("expected error because of weights initialized with more/less than one dimension")
+				t.Fatal("expected error because of weights initialized with more/less than one dimension")
 			} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -331,7 +331,7 @@ func TestFC(t *testing.T) {
 				},
 			})
 			if err == nil {
-				t.Fatalf("expected error because of 'Weight' being initialized with mismatched size")
+				t.Fatal("expected error because of 'Weight' being initialized with mismatched size")
 			} else if err.Error() != "FC initialized weight validation failed: expected initialized 'Weight' size to match 'Outputs': (2) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -346,7 +346,7 @@ func TestFC(t *testing.T) {
 				},
 			})
 			if err == nil {
-				t.Fatalf("expected error because of 'Bias' being initialized with mismatched size")
+				t.Fatal("expected error because of 'Bias' being initialized with mismatched size")
 			} else if err.Error() != "FC initialized weight validation failed: expected initialized 'Bias' size to match 'Outputs': (2) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -364,7 +364,7 @@ func TestFC(t *testing.T) {
 
 			_, err = layer.Forward()
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "FC input data validation failed: expected exactly one input tensor: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -387,7 +387,7 @@ func TestFC(t *testing.T) {
 
 			_, err = layer.Forward(x, x)
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "FC input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -410,7 +410,7 @@ func TestFC(t *testing.T) {
 
 			_, err = layer.Forward(x)
 			if err == nil {
-				t.Fatalf("expected error because of tensor having more/less than two dimensions")
+				t.Fatal("expected error because of tensor having more/less than two dimensions")
 			} else if err.Error() != "FC input data validation failed: expected input tensor to have exactly two dimensions (batch, data): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -433,7 +433,7 @@ func TestFC(t *testing.T) {
 
 			_, err = layer.Forward(x)
 			if err == nil {
-				t.Fatalf("expected error because of tensor having more/less than two dimensions")
+				t.Fatal("expected error because of tensor having more/less than two dimensions")
 			} else if err.Error() != "FC input data validation failed: expected input tensor to have exactly two dimensions (batch, data): got (3)" {
 				t.Fatal("unexpected error message returned")
 			}

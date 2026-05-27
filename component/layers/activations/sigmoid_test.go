@@ -38,12 +38,12 @@ func TestSigmoid(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -72,12 +72,12 @@ func TestSigmoid(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -108,12 +108,12 @@ func TestSigmoid(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -138,7 +138,7 @@ func TestSigmoid(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -149,7 +149,7 @@ func TestSigmoid(t *testing.T) {
 
 			_, err := activation.Forward()
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "Sigmoid input data validation failed: expected exactly one input tensor: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -165,7 +165,7 @@ func TestSigmoid(t *testing.T) {
 
 			_, err = activation.Forward(x, x)
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "Sigmoid input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}

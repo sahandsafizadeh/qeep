@@ -31,7 +31,7 @@ func TestFull(t *testing.T) {
 			}
 
 			if x.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 	})

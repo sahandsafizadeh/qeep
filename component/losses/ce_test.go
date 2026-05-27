@@ -41,12 +41,12 @@ func TestCE(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -79,12 +79,12 @@ func TestCE(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -117,12 +117,12 @@ func TestCE(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -163,12 +163,12 @@ func TestCE(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -209,12 +209,12 @@ func TestCE(t *testing.T) {
 			if p, err := act.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := act.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -234,7 +234,7 @@ func TestCE(t *testing.T) {
 
 			_, err = loss.Compute(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having more/less than two dimensions")
+				t.Fatal("expected error because of tensors having more/less than two dimensions")
 			} else if err.Error() != "CE input data validation failed: expected input tensors to have exactly two dimensions (batch, class)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -254,7 +254,7 @@ func TestCE(t *testing.T) {
 
 			_, err = loss.Compute(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having more/less than two dimensions")
+				t.Fatal("expected error because of tensors having more/less than two dimensions")
 			} else if err.Error() != "CE input data validation failed: expected input tensors to have exactly two dimensions (batch, class)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -274,7 +274,7 @@ func TestCE(t *testing.T) {
 
 			_, err = loss.Compute(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having unequal batch sizes")
+				t.Fatal("expected error because of tensors having unequal batch sizes")
 			} else if err.Error() != "CE input data validation failed: expected input tensor sizes to match along batch dimension: (1) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -294,7 +294,7 @@ func TestCE(t *testing.T) {
 
 			_, err = loss.Compute(yp, yt)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having unequal class sizes")
+				t.Fatal("expected error because of tensors having unequal class sizes")
 			} else if err.Error() != "CE input data validation failed: expected input tensor sizes to match along class dimension: (1) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}

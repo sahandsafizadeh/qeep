@@ -34,7 +34,7 @@ func TestNormal(t *testing.T) {
 			}
 
 			if x.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -43,7 +43,7 @@ func TestNormal(t *testing.T) {
 		t.Run("NewNormal(&NormalConfig{StdDev: 0}) / returns error: non-positive StdDev", func(t *testing.T) {
 			_, err := initializers.NewNormal(&initializers.NormalConfig{StdDev: 0.})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'StdDev'")
+				t.Fatal("expected error because of non-positive 'StdDev'")
 			} else if err.Error() != "Normal config data validation failed: expected 'StdDev' to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -52,7 +52,7 @@ func TestNormal(t *testing.T) {
 		t.Run("NewNormal(&NormalConfig{StdDev: negative}) / returns error: non-positive StdDev", func(t *testing.T) {
 			_, err := initializers.NewNormal(&initializers.NormalConfig{StdDev: -1.})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'StdDev'")
+				t.Fatal("expected error because of non-positive 'StdDev'")
 			} else if err.Error() != "Normal config data validation failed: expected 'StdDev' to be positive: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}

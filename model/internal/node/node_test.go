@@ -32,22 +32,22 @@ func TestNode(t *testing.T) {
 			nc2 := node.NewNode(lc2)
 
 			if np1.Layer() != lp1 {
-				t.Fatalf("unexpected node Layer")
+				t.Fatal("unexpected node Layer")
 			}
 			if np2.Layer() != lp2 {
-				t.Fatalf("unexpected node Layer")
+				t.Fatal("unexpected node Layer")
 			}
 			if np3.Layer() != lp3 {
-				t.Fatalf("unexpected node Layer")
+				t.Fatal("unexpected node Layer")
 			}
 			if nm1.Layer() != lm1 {
-				t.Fatalf("unexpected node Layer")
+				t.Fatal("unexpected node Layer")
 			}
 			if nc1.Layer() != lc1 {
-				t.Fatalf("unexpected node Layer")
+				t.Fatal("unexpected node Layer")
 			}
 			if nc2.Layer() != lc2 {
-				t.Fatalf("unexpected node Layer")
+				t.Fatal("unexpected node Layer")
 			}
 		})
 
@@ -60,22 +60,22 @@ func TestNode(t *testing.T) {
 			nc2 := node.NewNode(activations.NewSigmoid())
 
 			if np1.Result() != nil {
-				t.Fatalf("unexpected node Result")
+				t.Fatal("unexpected node Result")
 			}
 			if np2.Result() != nil {
-				t.Fatalf("unexpected node Result")
+				t.Fatal("unexpected node Result")
 			}
 			if np3.Result() != nil {
-				t.Fatalf("unexpected node Result")
+				t.Fatal("unexpected node Result")
 			}
 			if nm1.Result() != nil {
-				t.Fatalf("unexpected node Result")
+				t.Fatal("unexpected node Result")
 			}
 			if nc1.Result() != nil {
-				t.Fatalf("unexpected node Result")
+				t.Fatal("unexpected node Result")
 			}
 			if nc2.Result() != nil {
-				t.Fatalf("unexpected node Result")
+				t.Fatal("unexpected node Result")
 			}
 		})
 
@@ -99,22 +99,22 @@ func TestNode(t *testing.T) {
 			nc2.AddParent(nm1)
 
 			if !slices.Equal(np1.Parents(), nil) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(np2.Parents(), nil) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(np3.Parents(), nil) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(nm1.Parents(), []*node.Node{np1, np2, np3}) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(nc1.Parents(), []*node.Node{nm1}) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(nc2.Parents(), []*node.Node{nm1}) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 		})
 
@@ -138,22 +138,22 @@ func TestNode(t *testing.T) {
 			nc2.AddParent(nm1)
 
 			if !slices.Equal(np1.Children(), []*node.Node{nm1}) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(np2.Children(), []*node.Node{nm1}) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(np3.Children(), []*node.Node{nm1}) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(nm1.Children(), []*node.Node{nc1, nc2}) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(nc1.Children(), nil) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(nc2.Children(), nil) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 		})
 
@@ -173,22 +173,22 @@ func TestNode(t *testing.T) {
 			nc2.SetNLayer(2)
 
 			if np1.NLayer() != 0 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if np2.NLayer() != 0 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if np3.NLayer() != 0 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if nm1.NLayer() != 1 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if nc1.NLayer() != 2 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if nc2.NLayer() != 2 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 		})
 
@@ -249,7 +249,7 @@ func TestNode(t *testing.T) {
 			if eq, err := ni.Result().Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 
 			exp, err = tensor.Full([]int{2}, 6., &tensor.Config{Device: dev})
@@ -259,7 +259,7 @@ func TestNode(t *testing.T) {
 			if eq, err := nw.Result().Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 
 			exp, err = tensor.Full([]int{2}, 6., &tensor.Config{Device: dev})
@@ -269,7 +269,7 @@ func TestNode(t *testing.T) {
 			if eq, err := na.Result().Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -353,7 +353,7 @@ func TestNode(t *testing.T) {
 			if eq, err := weighted.a.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 
 			exp, err = tensor.Full([]int{2}, 2., &tensor.Config{
@@ -366,7 +366,7 @@ func TestNode(t *testing.T) {
 			if eq, err := weighted.b.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -461,7 +461,7 @@ func TestNode(t *testing.T) {
 			if eq, err := ni.Result().Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 
 			exp, err = tensor.Full([]int{2}, 5., &tensor.Config{Device: dev})
@@ -471,7 +471,7 @@ func TestNode(t *testing.T) {
 			if eq, err := nw.Result().Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 
 			exp, err = tensor.Full([]int{2}, 5., &tensor.Config{Device: dev})
@@ -481,7 +481,7 @@ func TestNode(t *testing.T) {
 			if eq, err := na.Result().Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -517,7 +517,7 @@ func TestNode(t *testing.T) {
 
 			err = nw.Forward()
 			if err == nil {
-				t.Fatalf("expected error because of FC forward validation")
+				t.Fatal("expected error because of FC forward validation")
 			} else if err.Error() != "FC input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -558,7 +558,7 @@ func TestNode(t *testing.T) {
 
 			err = nw.Optimize(optimizer)
 			if err == nil {
-				t.Fatalf("expected error because of optimizer validation")
+				t.Fatal("expected error because of optimizer validation")
 			} else if err.Error() != "SGD input data validation failed: expected tensor's gradient not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}

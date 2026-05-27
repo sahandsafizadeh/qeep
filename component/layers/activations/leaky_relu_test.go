@@ -41,7 +41,7 @@ func TestLeakyRelu(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -52,7 +52,7 @@ func TestLeakyRelu(t *testing.T) {
 
 			_, err := activation.Forward()
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "LeakyRelu input data validation failed: expected exactly one input tensor: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -68,7 +68,7 @@ func TestLeakyRelu(t *testing.T) {
 
 			_, err = activation.Forward(x, x)
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "LeakyRelu input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}

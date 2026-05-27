@@ -42,7 +42,7 @@ func TestDropout(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -90,7 +90,7 @@ func TestDropout(t *testing.T) {
 			}
 
 			if !eq1 && !eq2 {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -172,7 +172,7 @@ func TestDropout(t *testing.T) {
 			}
 
 			if !ok1 && !ok2 {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -208,7 +208,7 @@ func TestDropout(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -219,7 +219,7 @@ func TestDropout(t *testing.T) {
 				Rate: -0.1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Rate'")
+				t.Fatal("expected error because of non-positive 'Rate'")
 			} else if err.Error() != "Dropout config data validation failed: expected 'Rate' to be in range [0,1): got (-0.100000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -230,7 +230,7 @@ func TestDropout(t *testing.T) {
 				Rate: 1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of 'Rate' being greater than or equal to (1)")
+				t.Fatal("expected error because of 'Rate' being greater than or equal to (1)")
 			} else if err.Error() != "Dropout config data validation failed: expected 'Rate' to be in range [0,1): got (1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -241,7 +241,7 @@ func TestDropout(t *testing.T) {
 				Rate: 1.001,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of 'Rate' being greater than or equal to (1)")
+				t.Fatal("expected error because of 'Rate' being greater than or equal to (1)")
 			} else if err.Error() != "Dropout config data validation failed: expected 'Rate' to be in range [0,1): got (1.001000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -255,7 +255,7 @@ func TestDropout(t *testing.T) {
 
 			_, err = layer.Forward()
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "Dropout input data validation failed: expected exactly one input tensor: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -274,7 +274,7 @@ func TestDropout(t *testing.T) {
 
 			_, err = layer.Forward(x, x)
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "Dropout input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}

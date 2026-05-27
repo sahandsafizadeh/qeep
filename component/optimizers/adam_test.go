@@ -51,7 +51,7 @@ func TestAdam(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 1")
+				t.Fatal("expected tensors to be equal after step 1")
 			}
 
 			// step 2: x = 1 → 0
@@ -75,7 +75,7 @@ func TestAdam(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 2")
+				t.Fatal("expected tensors to be equal after step 2")
 			}
 
 			// step 3: x = 0 → -1
@@ -99,7 +99,7 @@ func TestAdam(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 3")
+				t.Fatal("expected tensors to be equal after step 3")
 			}
 		})
 
@@ -142,7 +142,7 @@ func TestAdam(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 1")
+				t.Fatal("expected tensors to be equal after step 1")
 			}
 
 			// step 2: x = 2 → 1
@@ -166,7 +166,7 @@ func TestAdam(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 2")
+				t.Fatal("expected tensors to be equal after step 2")
 			}
 
 			// step 3: x = 1 → 0
@@ -190,7 +190,7 @@ func TestAdam(t *testing.T) {
 			if eq, err := x.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal after step 3")
+				t.Fatal("expected tensors to be equal after step 3")
 			}
 		})
 
@@ -232,12 +232,12 @@ func TestAdam(t *testing.T) {
 			if p, err := x.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := x.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 
 			// step 2: x ≈ 0.998
@@ -265,12 +265,12 @@ func TestAdam(t *testing.T) {
 			if p, err := x.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := x.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -317,12 +317,12 @@ func TestAdam(t *testing.T) {
 			if p, err := x.Gt(expl); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 			if p, err := x.Lt(expu); err != nil {
 				t.Fatal(err)
 			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatalf("expected output to be in range")
+				t.Fatal("expected output to be in range")
 			}
 		})
 
@@ -331,7 +331,7 @@ func TestAdam(t *testing.T) {
 		t.Run("NewAdam with LearningRate=0 / returns error: non-positive LearningRate", func(t *testing.T) {
 			_, err := optimizers.NewAdam(&optimizers.AdamConfig{})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'LearningRate'")
+				t.Fatal("expected error because of non-positive 'LearningRate'")
 			} else if err.Error() != "Adam config data validation failed: expected 'LearningRate' to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -342,7 +342,7 @@ func TestAdam(t *testing.T) {
 				LearningRate: -1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'LearningRate'")
+				t.Fatal("expected error because of non-positive 'LearningRate'")
 			} else if err.Error() != "Adam config data validation failed: expected 'LearningRate' to be positive: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -354,7 +354,7 @@ func TestAdam(t *testing.T) {
 				WeightDecay:  -1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of negative 'WeightDecay'")
+				t.Fatal("expected error because of negative 'WeightDecay'")
 			} else if err.Error() != "Adam config data validation failed: expected 'WeightDecay' not to be negative: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -367,7 +367,7 @@ func TestAdam(t *testing.T) {
 				Beta1:        -0.5,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of negative 'Beta1'")
+				t.Fatal("expected error because of negative 'Beta1'")
 			} else if err.Error() != "Adam config data validation failed: expected 'Beta1' not to be negative: got (-0.500000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -381,7 +381,7 @@ func TestAdam(t *testing.T) {
 				Beta2:        -0.1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of negative 'Beta2'")
+				t.Fatal("expected error because of negative 'Beta2'")
 			} else if err.Error() != "Adam config data validation failed: expected 'Beta2' not to be negative: got (-0.100000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -395,7 +395,7 @@ func TestAdam(t *testing.T) {
 				Beta2:        0,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Eps'")
+				t.Fatal("expected error because of non-positive 'Eps'")
 			} else if err.Error() != "Adam config data validation failed: expected 'Eps' to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -410,7 +410,7 @@ func TestAdam(t *testing.T) {
 				Eps:          -1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'Eps'")
+				t.Fatal("expected error because of non-positive 'Eps'")
 			} else if err.Error() != "Adam config data validation failed: expected 'Eps' to be positive: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -429,7 +429,7 @@ func TestAdam(t *testing.T) {
 
 			err = optimizer.Update(&x)
 			if err == nil {
-				t.Fatalf("expected error because of nil tensor gradient")
+				t.Fatal("expected error because of nil tensor gradient")
 			} else if err.Error() != "Adam input data validation failed: expected tensor's gradient not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -451,7 +451,7 @@ func TestAdam(t *testing.T) {
 
 			err = optimizer.Update(&x)
 			if err == nil {
-				t.Fatalf("expected error because of nil tensor gradient")
+				t.Fatal("expected error because of nil tensor gradient")
 			} else if err.Error() != "Adam input data validation failed: expected tensor's gradient not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -475,7 +475,7 @@ func TestAdam(t *testing.T) {
 
 			err = optimizer.Update(&x)
 			if err == nil {
-				t.Fatalf("expected error because of nil tensor gradient")
+				t.Fatal("expected error because of nil tensor gradient")
 			} else if err.Error() != "Adam input data validation failed: expected tensor's gradient not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}

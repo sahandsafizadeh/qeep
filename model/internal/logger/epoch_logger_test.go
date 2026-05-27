@@ -159,7 +159,7 @@ func TestEpochLogger(t *testing.T) {
 		t.Run("NewEpochLogger(0, 1) / returns error: non-positive number of epochs", func(t *testing.T) {
 			_, err := NewEpochLogger(0, 1)
 			if err == nil {
-				t.Fatalf("expected error because of non-positive number of epochs")
+				t.Fatal("expected error because of non-positive number of epochs")
 			} else if err.Error() != "EpochLogger config data validation failed: expected the number of epochs to be positive: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -168,7 +168,7 @@ func TestEpochLogger(t *testing.T) {
 		t.Run("NewEpochLogger(-1, 1) / returns error: non-positive number of epochs", func(t *testing.T) {
 			_, err := NewEpochLogger(-1, 1)
 			if err == nil {
-				t.Fatalf("expected error because of non-positive number of epochs")
+				t.Fatal("expected error because of non-positive number of epochs")
 			} else if err.Error() != "EpochLogger config data validation failed: expected the number of epochs to be positive: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -177,7 +177,7 @@ func TestEpochLogger(t *testing.T) {
 		t.Run("NewEpochLogger(1, 0) / returns error: non-positive number of batches", func(t *testing.T) {
 			_, err := NewEpochLogger(1, 0)
 			if err == nil {
-				t.Fatalf("expected error because of non-positive number of batches")
+				t.Fatal("expected error because of non-positive number of batches")
 			} else if err.Error() != "EpochLogger config data validation failed: expected the number of batches to be positive: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -186,7 +186,7 @@ func TestEpochLogger(t *testing.T) {
 		t.Run("NewEpochLogger(1, -1) / returns error: non-positive number of batches", func(t *testing.T) {
 			_, err := NewEpochLogger(1, -1)
 			if err == nil {
-				t.Fatalf("expected error because of non-positive number of batches")
+				t.Fatal("expected error because of non-positive number of batches")
 			} else if err.Error() != "EpochLogger config data validation failed: expected the number of batches to be positive: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}

@@ -30,7 +30,7 @@ func TestTranspose(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -53,7 +53,7 @@ func TestTranspose(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -76,7 +76,7 @@ func TestTranspose(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -108,7 +108,7 @@ func TestTranspose(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -149,7 +149,7 @@ func TestTranspose(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -172,7 +172,7 @@ func TestTranspose(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -186,7 +186,7 @@ func TestTranspose(t *testing.T) {
 
 			_, err = ten.Transpose()
 			if err == nil {
-				t.Fatalf("expected error because of tensor having less than 2 dimensions")
+				t.Fatal("expected error because of tensor having less than 2 dimensions")
 			} else if err.Error() != "Transpose tensor's dimension validation failed: expected tensor to have at least (2) dimensions for transpose: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -200,7 +200,7 @@ func TestTranspose(t *testing.T) {
 
 			_, err = ten.Transpose()
 			if err == nil {
-				t.Fatalf("expected error because of tensor having less than 2 dimensions")
+				t.Fatal("expected error because of tensor having less than 2 dimensions")
 			} else if err.Error() != "Transpose tensor's dimension validation failed: expected tensor to have at least (2) dimensions for transpose: got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -232,7 +232,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -255,7 +255,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -278,7 +278,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -301,7 +301,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -324,7 +324,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -347,7 +347,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -370,7 +370,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -393,7 +393,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -416,7 +416,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -454,7 +454,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -484,7 +484,7 @@ func TestReshape(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -498,7 +498,7 @@ func TestReshape(t *testing.T) {
 
 			_, err = ten.Reshape([]int{2, 3, -1})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive dimension")
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Reshape input shape validation failed: expected positive dimension sizes: got (-1) at position (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -512,7 +512,7 @@ func TestReshape(t *testing.T) {
 
 			_, err = ten.Reshape([]int{1, 1, 1, 1, 1, 1, 1})
 			if err == nil {
-				t.Fatalf("expected error because of too many dimensions")
+				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "Reshape input shape validation failed: expected at most (6) dimensions: got (7)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -526,7 +526,7 @@ func TestReshape(t *testing.T) {
 
 			_, err = ten.Reshape([]int{2})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible number of elements in source (1) with target (2)")
+				t.Fatal("expected error because of incompatible number of elements in source (1) with target (2)")
 			} else if err.Error() != "Reshape input shape validation failed: expected number of elements in source and target tensors to match: (1) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -540,7 +540,7 @@ func TestReshape(t *testing.T) {
 
 			_, err = ten.Reshape([]int{2, 3})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible number of elements in source (2) with target (6)")
+				t.Fatal("expected error because of incompatible number of elements in source (2) with target (6)")
 			} else if err.Error() != "Reshape input shape validation failed: expected number of elements in source and target tensors to match: (2) != (6)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -572,7 +572,7 @@ func TestUnSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -595,7 +595,7 @@ func TestUnSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -618,7 +618,7 @@ func TestUnSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -641,7 +641,7 @@ func TestUnSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -664,7 +664,7 @@ func TestUnSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -687,7 +687,7 @@ func TestUnSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -701,7 +701,7 @@ func TestUnSqueeze(t *testing.T) {
 
 			_, err = ten.UnSqueeze(-1)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (-1) being out of range")
+				t.Fatal("expected error because of dimension (-1) being out of range")
 			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,0]: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -715,7 +715,7 @@ func TestUnSqueeze(t *testing.T) {
 
 			_, err = ten.UnSqueeze(1)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (1) being out of range")
+				t.Fatal("expected error because of dimension (1) being out of range")
 			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,0]: got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -729,7 +729,7 @@ func TestUnSqueeze(t *testing.T) {
 
 			_, err = ten.UnSqueeze(2)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (2) being out of range")
+				t.Fatal("expected error because of dimension (2) being out of range")
 			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,1]: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -743,7 +743,7 @@ func TestUnSqueeze(t *testing.T) {
 
 			_, err = ten.UnSqueeze(2)
 			if err == nil {
-				t.Fatalf("expected error because of too many dimensions")
+				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "UnSqueeze input dimension validation failed: operation causes tensor to exceed maximum (6) dimensions" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -775,7 +775,7 @@ func TestSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -798,7 +798,7 @@ func TestSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -821,7 +821,7 @@ func TestSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -844,7 +844,7 @@ func TestSqueeze(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -858,7 +858,7 @@ func TestSqueeze(t *testing.T) {
 
 			_, err = ten.Squeeze(-1)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (-1) being out of range")
+				t.Fatal("expected error because of dimension (-1) being out of range")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -872,7 +872,7 @@ func TestSqueeze(t *testing.T) {
 
 			_, err = ten.Squeeze(0)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (0) being out of range")
+				t.Fatal("expected error because of dimension (0) being out of range")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -886,7 +886,7 @@ func TestSqueeze(t *testing.T) {
 
 			_, err = ten.Squeeze(1)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (1) being out of range")
+				t.Fatal("expected error because of dimension (1) being out of range")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -900,7 +900,7 @@ func TestSqueeze(t *testing.T) {
 
 			_, err = ten.Squeeze(3)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (3) being out of range")
+				t.Fatal("expected error because of dimension (3) being out of range")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,3): got (3)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -914,7 +914,7 @@ func TestSqueeze(t *testing.T) {
 
 			_, err = ten.Squeeze(2)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (2) not being equal to (1)")
+				t.Fatal("expected error because of dimension (2) not being equal to (1)")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (3)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -928,7 +928,7 @@ func TestSqueeze(t *testing.T) {
 
 			_, err = ten.Squeeze(1)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (1) not being equal to (1)")
+				t.Fatal("expected error because of dimension (1) not being equal to (1)")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -960,7 +960,7 @@ func TestFlatten(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -983,7 +983,7 @@ func TestFlatten(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1006,7 +1006,7 @@ func TestFlatten(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1029,7 +1029,7 @@ func TestFlatten(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1052,7 +1052,7 @@ func TestFlatten(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1066,7 +1066,7 @@ func TestFlatten(t *testing.T) {
 
 			_, err = ten.Flatten(-1)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (-1) being out of range")
+				t.Fatal("expected error because of dimension (-1) being out of range")
 			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1080,7 +1080,7 @@ func TestFlatten(t *testing.T) {
 
 			_, err = ten.Flatten(0)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (0) being out of range")
+				t.Fatal("expected error because of dimension (0) being out of range")
 			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1094,7 +1094,7 @@ func TestFlatten(t *testing.T) {
 
 			_, err = ten.Flatten(1)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (1) being out of range")
+				t.Fatal("expected error because of dimension (1) being out of range")
 			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1108,7 +1108,7 @@ func TestFlatten(t *testing.T) {
 
 			_, err = ten.Flatten(3)
 			if err == nil {
-				t.Fatalf("expected error because of dimension (3) being out of range")
+				t.Fatal("expected error because of dimension (3) being out of range")
 			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,3): got (3)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1140,7 +1140,7 @@ func TestBroadcast(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1163,7 +1163,7 @@ func TestBroadcast(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1190,7 +1190,7 @@ func TestBroadcast(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1229,7 +1229,7 @@ func TestBroadcast(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1263,7 +1263,7 @@ func TestBroadcast(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1302,7 +1302,7 @@ func TestBroadcast(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1325,7 +1325,7 @@ func TestBroadcast(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1355,7 +1355,7 @@ func TestBroadcast(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1369,7 +1369,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast([]int{3, -2})
 			if err == nil {
-				t.Fatalf("expected error because of negative dimension")
+				t.Fatal("expected error because of negative dimension")
 			} else if err.Error() != "Broadcast input shape validation failed: expected positive dimension sizes: got (-2) at position (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1383,7 +1383,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast([]int{1, 1, 1, 1, 1, 1, 1, 1})
 			if err == nil {
-				t.Fatalf("expected error because of too many dimensions")
+				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "Broadcast input shape validation failed: expected at most (6) dimensions: got (8)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1397,7 +1397,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast(nil)
 			if err == nil {
-				t.Fatalf("expected error because of source number of dimensions (2) being greater than that of target (0)")
+				t.Fatal("expected error because of source number of dimensions (2) being greater than that of target (0)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected number of dimensions in source tensor to be less than or equal to that of target shape: (2) > (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1411,7 +1411,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast([]int{2})
 			if err == nil {
-				t.Fatalf("expected error because of source number of dimensions (2) being greater than that of target (1)")
+				t.Fatal("expected error because of source number of dimensions (2) being greater than that of target (1)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected number of dimensions in source tensor to be less than or equal to that of target shape: (2) > (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1425,7 +1425,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast([]int{1})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (0)")
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1439,7 +1439,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast([]int{3})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (0)")
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1453,7 +1453,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast([]int{4, 3, 5})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1467,7 +1467,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast([]int{2, 3, 4, 4, 5})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1481,7 +1481,7 @@ func TestBroadcast(t *testing.T) {
 
 			_, err = ten.Broadcast([]int{1, 2, 3, 4, 5, 6})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (4)")
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
 				t.Fatal("unexpected error message returned")
 			}

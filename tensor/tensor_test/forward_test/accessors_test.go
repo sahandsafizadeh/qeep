@@ -159,7 +159,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -182,7 +182,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -205,7 +205,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -228,7 +228,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -251,7 +251,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -274,7 +274,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -297,7 +297,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -320,7 +320,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -343,7 +343,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -386,7 +386,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -436,7 +436,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -479,7 +479,7 @@ func TestSlice(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -493,7 +493,7 @@ func TestSlice(t *testing.T) {
 
 			_, err = ten.Slice([]tensor.Range{{From: 0, To: 0}})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible index len (1) with dimension len (0)")
+				t.Fatal("expected error because of incompatible index len (1) with dimension len (0)")
 			} else if err.Error() != "Slice input index validation failed: expected index length to be smaller than or equal to the number of dimensions: (1) > (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -507,7 +507,7 @@ func TestSlice(t *testing.T) {
 
 			_, err = ten.Slice([]tensor.Range{{From: 0, To: 0}, {From: 0, To: 0}})
 			if err == nil {
-				t.Fatalf("expected error because of incompatible index len (2) with dimension len (1)")
+				t.Fatal("expected error because of incompatible index len (2) with dimension len (1)")
 			} else if err.Error() != "Slice input index validation failed: expected index length to be smaller than or equal to the number of dimensions: (2) > (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -521,7 +521,7 @@ func TestSlice(t *testing.T) {
 
 			_, err = ten.Slice([]tensor.Range{{From: 1, To: 1}})
 			if err == nil {
-				t.Fatalf("expected error because of to index (0) not being larger than from index (0)")
+				t.Fatal("expected error because of to index (0) not being larger than from index (0)")
 			} else if err.Error() != "Slice input index validation failed: expected range 'From' to be smaller than 'To' except for special both (0) case (fetchAll): (1) >= (1) at dimension (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -535,7 +535,7 @@ func TestSlice(t *testing.T) {
 
 			_, err = ten.Slice([]tensor.Range{{From: -1, To: 0}})
 			if err == nil {
-				t.Fatalf("expected error because of negative from index (-1)")
+				t.Fatal("expected error because of negative from index (-1)")
 			} else if err.Error() != "Slice input index validation failed: expected index to be in range [0,1) at dimension (0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -549,7 +549,7 @@ func TestSlice(t *testing.T) {
 
 			_, err = ten.Slice([]tensor.Range{{From: 1, To: 2}})
 			if err == nil {
-				t.Fatalf("expected error because of from index (1) being out of range [0,1) at dimension (0)")
+				t.Fatal("expected error because of from index (1) being out of range [0,1) at dimension (0)")
 			} else if err.Error() != "Slice input index validation failed: expected index to be in range [0,1) at dimension (0): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -563,7 +563,7 @@ func TestSlice(t *testing.T) {
 
 			_, err = ten.Slice([]tensor.Range{{From: 0, To: 2}})
 			if err == nil {
-				t.Fatalf("expected error because of to index (2) being out of range [0,1) at dimension (0)")
+				t.Fatal("expected error because of to index (2) being out of range [0,1) at dimension (0)")
 			} else if err.Error() != "Slice input index validation failed: expected index to fall in range [0,1] at dimension (0): got [0,2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -577,7 +577,7 @@ func TestSlice(t *testing.T) {
 
 			_, err = ten.Slice([]tensor.Range{{From: 2, To: 3}})
 			if err == nil {
-				t.Fatalf("expected error because of from index (2) being out of range [0,2) at dimension (0)")
+				t.Fatal("expected error because of from index (2) being out of range [0,2) at dimension (0)")
 			} else if err.Error() != "Slice input index validation failed: expected index to be in range [0,2) at dimension (0): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -591,7 +591,7 @@ func TestSlice(t *testing.T) {
 
 			_, err = ten.Slice([]tensor.Range{{From: 1, To: 3}})
 			if err == nil {
-				t.Fatalf("expected error because of to index (3) being out of range [0,2) at dimension (0)")
+				t.Fatal("expected error because of to index (3) being out of range [0,2) at dimension (0)")
 			} else if err.Error() != "Slice input index validation failed: expected index to fall in range [0,2] at dimension (0): got [1,3)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -627,7 +627,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -654,7 +654,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -685,7 +685,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -716,7 +716,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -747,7 +747,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -778,7 +778,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -826,7 +826,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -874,7 +874,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -922,7 +922,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -951,7 +951,7 @@ func TestPatch(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -965,7 +965,7 @@ func TestPatch(t *testing.T) {
 
 			_, err = t1.Patch([]tensor.Range{}, nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Patch tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -983,7 +983,7 @@ func TestPatch(t *testing.T) {
 
 			_, err = t1.Patch([]tensor.Range{}, t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible number of dimensions")
+				t.Fatal("expected error because of incompatible number of dimensions")
 			} else if err.Error() != "Patch input index or tensors' dimension validation failed: expected number of dimensions to match among source and target tensors: (0) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1001,7 +1001,7 @@ func TestPatch(t *testing.T) {
 
 			_, err = t1.Patch([]tensor.Range{}, t2)
 			if err == nil {
-				t.Fatalf("expected error because of exceeding patch size at dimension (1)")
+				t.Fatal("expected error because of exceeding patch size at dimension (1)")
 			} else if err.Error() != "Patch input index or tensors' dimension validation failed: expected source tensor size not to exceed that of target tensor at dimension (1): (2) > (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1019,7 +1019,7 @@ func TestPatch(t *testing.T) {
 
 			_, err = t1.Patch([]tensor.Range{{From: 2, To: 4}}, t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible index with target tensor")
+				t.Fatal("expected error because of incompatible index with target tensor")
 			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to fall in range [0,3] at dimension (0): got [2,4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1037,7 +1037,7 @@ func TestPatch(t *testing.T) {
 
 			_, err = t1.Patch([]tensor.Range{{}, {From: 2, To: 3}}, t2)
 			if err == nil {
-				t.Fatalf("expected error because of index not covering source tensor at dimension (1)")
+				t.Fatal("expected error because of index not covering source tensor at dimension (1)")
 			} else if err.Error() != "Patch input index or tensors' dimension validation failed: expected index to exactly cover source tensor at dimension (1): #[2,3) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}

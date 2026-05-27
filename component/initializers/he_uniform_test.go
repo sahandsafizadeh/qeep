@@ -34,7 +34,7 @@ func TestHeUniform(t *testing.T) {
 			}
 
 			if x.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -43,7 +43,7 @@ func TestHeUniform(t *testing.T) {
 		t.Run("NewHeUniform(nil) / returns error: nil config", func(t *testing.T) {
 			_, err := initializers.NewHeUniform(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input config")
+				t.Fatal("expected error because of nil input config")
 			} else if err.Error() != "HeUniform config data validation failed: expected config not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -52,7 +52,7 @@ func TestHeUniform(t *testing.T) {
 		t.Run("NewHeUniform(&HeUniformConfig{FanIn: 0}) / returns error: non-positive FanIn", func(t *testing.T) {
 			_, err := initializers.NewHeUniform(&initializers.HeUniformConfig{FanIn: 0})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'FanIn'")
+				t.Fatal("expected error because of non-positive 'FanIn'")
 			} else if err.Error() != "HeUniform config data validation failed: expected 'FanIn' to be positive: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -61,7 +61,7 @@ func TestHeUniform(t *testing.T) {
 		t.Run("NewHeUniform(&HeUniformConfig{FanIn: -1}) / returns error: non-positive FanIn", func(t *testing.T) {
 			_, err := initializers.NewHeUniform(&initializers.HeUniformConfig{FanIn: -1})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'FanIn'")
+				t.Fatal("expected error because of non-positive 'FanIn'")
 			} else if err.Error() != "HeUniform config data validation failed: expected 'FanIn' to be positive: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}

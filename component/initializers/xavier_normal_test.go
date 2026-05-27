@@ -37,7 +37,7 @@ func TestXavierNormal(t *testing.T) {
 			}
 
 			if x.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -46,7 +46,7 @@ func TestXavierNormal(t *testing.T) {
 		t.Run("NewXavierNormal(nil) / returns error: nil config", func(t *testing.T) {
 			_, err := initializers.NewXavierNormal(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input config")
+				t.Fatal("expected error because of nil input config")
 			} else if err.Error() != "XavierNormal config data validation failed: expected config not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -58,7 +58,7 @@ func TestXavierNormal(t *testing.T) {
 				FanOut: 1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'FanIn'")
+				t.Fatal("expected error because of non-positive 'FanIn'")
 			} else if err.Error() != "XavierNormal config data validation failed: expected 'FanIn' to be positive: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -70,7 +70,7 @@ func TestXavierNormal(t *testing.T) {
 				FanOut: 1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'FanIn'")
+				t.Fatal("expected error because of non-positive 'FanIn'")
 			} else if err.Error() != "XavierNormal config data validation failed: expected 'FanIn' to be positive: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -82,7 +82,7 @@ func TestXavierNormal(t *testing.T) {
 				FanOut: 0,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'FanOut'")
+				t.Fatal("expected error because of non-positive 'FanOut'")
 			} else if err.Error() != "XavierNormal config data validation failed: expected 'FanOut' to be positive: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -94,7 +94,7 @@ func TestXavierNormal(t *testing.T) {
 				FanOut: -1,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'FanOut'")
+				t.Fatal("expected error because of non-positive 'FanOut'")
 			} else if err.Error() != "XavierNormal config data validation failed: expected 'FanOut' to be positive: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}

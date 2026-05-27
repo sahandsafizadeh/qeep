@@ -13,7 +13,7 @@ func TestQueue(t *testing.T) {
 	t.Run("new queue / IsEmpty() / returns true", func(t *testing.T) {
 		q := queue.NewQueue[int]()
 		if !q.IsEmpty() {
-			t.Fatalf("expected queue to be empty")
+			t.Fatal("expected queue to be empty")
 		}
 	})
 
@@ -21,7 +21,7 @@ func TestQueue(t *testing.T) {
 		q := queue.NewQueue[int]()
 		q.Enqueue([]int{1})
 		if q.IsEmpty() {
-			t.Fatalf("expected queue not to be empty")
+			t.Fatal("expected queue not to be empty")
 		}
 	})
 
@@ -58,7 +58,7 @@ func TestQueue(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		} else if !q.IsEmpty() {
-			t.Fatalf("expected queue to be empty")
+			t.Fatal("expected queue to be empty")
 		}
 	})
 
@@ -68,7 +68,7 @@ func TestQueue(t *testing.T) {
 		q := queue.NewQueue[int]()
 		_, err := q.Dequeue()
 		if err == nil {
-			t.Fatalf("expected error as queue is empty")
+			t.Fatal("expected error as queue is empty")
 		} else if err.Error() != "can not dequeue as queue is empty" {
 			t.Fatal("unexpected error message returned")
 		}

@@ -331,7 +331,7 @@ func TestSumAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -354,7 +354,7 @@ func TestSumAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -377,7 +377,7 @@ func TestSumAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -400,7 +400,7 @@ func TestSumAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -423,7 +423,7 @@ func TestSumAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -437,7 +437,7 @@ func TestSumAlong(t *testing.T) {
 
 			_, err = ten.SumAlong(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -451,7 +451,7 @@ func TestSumAlong(t *testing.T) {
 
 			_, err = ten.SumAlong(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -465,7 +465,7 @@ func TestSumAlong(t *testing.T) {
 
 			_, err = ten.SumAlong(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -479,7 +479,7 @@ func TestSumAlong(t *testing.T) {
 
 			_, err = ten.SumAlong(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -511,7 +511,7 @@ func TestMaxAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -534,7 +534,7 @@ func TestMaxAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -572,7 +572,7 @@ func TestMaxAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -609,7 +609,7 @@ func TestMaxAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -646,7 +646,7 @@ func TestMaxAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -660,7 +660,7 @@ func TestMaxAlong(t *testing.T) {
 
 			_, err = ten.MaxAlong(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "MaxAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -674,7 +674,7 @@ func TestMaxAlong(t *testing.T) {
 
 			_, err = ten.MaxAlong(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "MaxAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -688,7 +688,7 @@ func TestMaxAlong(t *testing.T) {
 
 			_, err = ten.MaxAlong(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "MaxAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -702,7 +702,7 @@ func TestMaxAlong(t *testing.T) {
 
 			_, err = ten.MaxAlong(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "MaxAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -734,7 +734,7 @@ func TestMinAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -757,7 +757,7 @@ func TestMinAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -795,7 +795,7 @@ func TestMinAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -832,7 +832,7 @@ func TestMinAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -869,7 +869,7 @@ func TestMinAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -883,7 +883,7 @@ func TestMinAlong(t *testing.T) {
 
 			_, err = ten.MinAlong(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "MinAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -897,7 +897,7 @@ func TestMinAlong(t *testing.T) {
 
 			_, err = ten.MinAlong(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "MinAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -911,7 +911,7 @@ func TestMinAlong(t *testing.T) {
 
 			_, err = ten.MinAlong(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "MinAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -925,7 +925,7 @@ func TestMinAlong(t *testing.T) {
 
 			_, err = ten.MinAlong(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "MinAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -957,7 +957,7 @@ func TestAvgAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -980,7 +980,7 @@ func TestAvgAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1003,7 +1003,7 @@ func TestAvgAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1026,7 +1026,7 @@ func TestAvgAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1049,7 +1049,7 @@ func TestAvgAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1063,7 +1063,7 @@ func TestAvgAlong(t *testing.T) {
 
 			_, err = ten.AvgAlong(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "AvgAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1077,7 +1077,7 @@ func TestAvgAlong(t *testing.T) {
 
 			_, err = ten.AvgAlong(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "AvgAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1091,7 +1091,7 @@ func TestAvgAlong(t *testing.T) {
 
 			_, err = ten.AvgAlong(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "AvgAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1105,7 +1105,7 @@ func TestAvgAlong(t *testing.T) {
 
 			_, err = ten.AvgAlong(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "AvgAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1137,7 +1137,7 @@ func TestVarAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1160,7 +1160,7 @@ func TestVarAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1174,7 +1174,7 @@ func TestVarAlong(t *testing.T) {
 
 			_, err = ten.VarAlong(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "VarAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1188,7 +1188,7 @@ func TestVarAlong(t *testing.T) {
 
 			_, err = ten.VarAlong(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "VarAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1202,7 +1202,7 @@ func TestVarAlong(t *testing.T) {
 
 			_, err = ten.VarAlong(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "VarAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1216,7 +1216,7 @@ func TestVarAlong(t *testing.T) {
 
 			_, err = ten.VarAlong(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "VarAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1248,7 +1248,7 @@ func TestStdAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1271,7 +1271,7 @@ func TestStdAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1285,7 +1285,7 @@ func TestStdAlong(t *testing.T) {
 
 			_, err = ten.StdAlong(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "StdAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1299,7 +1299,7 @@ func TestStdAlong(t *testing.T) {
 
 			_, err = ten.StdAlong(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "StdAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1313,7 +1313,7 @@ func TestStdAlong(t *testing.T) {
 
 			_, err = ten.StdAlong(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "StdAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1327,7 +1327,7 @@ func TestStdAlong(t *testing.T) {
 
 			_, err = ten.StdAlong(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "StdAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1359,7 +1359,7 @@ func TestMeanAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1382,7 +1382,7 @@ func TestMeanAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1405,7 +1405,7 @@ func TestMeanAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1428,7 +1428,7 @@ func TestMeanAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1451,7 +1451,7 @@ func TestMeanAlong(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1465,7 +1465,7 @@ func TestMeanAlong(t *testing.T) {
 
 			_, err = ten.MeanAlong(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "MeanAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1479,7 +1479,7 @@ func TestMeanAlong(t *testing.T) {
 
 			_, err = ten.MeanAlong(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "MeanAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1493,7 +1493,7 @@ func TestMeanAlong(t *testing.T) {
 
 			_, err = ten.MeanAlong(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "MeanAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1507,7 +1507,7 @@ func TestMeanAlong(t *testing.T) {
 
 			_, err = ten.MeanAlong(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "MeanAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1539,7 +1539,7 @@ func TestArgmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1562,7 +1562,7 @@ func TestArgmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1600,7 +1600,7 @@ func TestArgmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1637,7 +1637,7 @@ func TestArgmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1674,7 +1674,7 @@ func TestArgmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1688,7 +1688,7 @@ func TestArgmax(t *testing.T) {
 
 			_, err = ten.Argmax(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "Argmax input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1702,7 +1702,7 @@ func TestArgmax(t *testing.T) {
 
 			_, err = ten.Argmax(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "Argmax input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1716,7 +1716,7 @@ func TestArgmax(t *testing.T) {
 
 			_, err = ten.Argmax(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "Argmax input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1730,7 +1730,7 @@ func TestArgmax(t *testing.T) {
 
 			_, err = ten.Argmax(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "Argmax input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1762,7 +1762,7 @@ func TestArgmin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1785,7 +1785,7 @@ func TestArgmin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1823,7 +1823,7 @@ func TestArgmin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1860,7 +1860,7 @@ func TestArgmin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1897,7 +1897,7 @@ func TestArgmin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1911,7 +1911,7 @@ func TestArgmin(t *testing.T) {
 
 			_, err = ten.Argmin(-1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (-1) being out of range")
+				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "Argmin input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1925,7 +1925,7 @@ func TestArgmin(t *testing.T) {
 
 			_, err = ten.Argmin(0)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (0) being out of range")
+				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "Argmin input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1939,7 +1939,7 @@ func TestArgmin(t *testing.T) {
 
 			_, err = ten.Argmin(1)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (1) being out of range")
+				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "Argmin input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1953,7 +1953,7 @@ func TestArgmin(t *testing.T) {
 
 			_, err = ten.Argmin(2)
 			if err == nil {
-				t.Fatalf("expected error because of reduced dimension (2) being out of range")
+				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "Argmin input dimension validation failed: expected dimension to be in range [0,2): got (2)" {
 				t.Fatal("unexpected error message returned")
 			}

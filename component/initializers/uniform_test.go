@@ -34,7 +34,7 @@ func TestUniform(t *testing.T) {
 			}
 
 			if x.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -46,7 +46,7 @@ func TestUniform(t *testing.T) {
 				Upper: 1.,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of 'Lower' not being less than 'Upper'")
+				t.Fatal("expected error because of 'Lower' not being less than 'Upper'")
 			} else if err.Error() != "Uniform config data validation failed: expected 'Lower' to be less than 'Upper': (1.000000) >= (1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -58,7 +58,7 @@ func TestUniform(t *testing.T) {
 				Upper: 1.,
 			})
 			if err == nil {
-				t.Fatalf("expected error because of 'Lower' not being less than 'Upper'")
+				t.Fatal("expected error because of 'Lower' not being less than 'Upper'")
 			} else if err.Error() != "Uniform config data validation failed: expected 'Lower' to be less than 'Upper': (1.500000) >= (1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}

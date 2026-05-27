@@ -40,7 +40,7 @@ func TestBackPropagate(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -80,7 +80,7 @@ func TestBackPropagate(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -265,7 +265,7 @@ func TestBackPropagate(t *testing.T) {
 		t.Run("nil tensor / BackPropagate / returns error: unsupported tensor implementation", func(t *testing.T) {
 			err := tensor.BackPropagate(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != "BackPropagate tensor implementation validation failed: unsupported tensor implementation" {
 				t.Fatal("unexpected error message returned")
 			}

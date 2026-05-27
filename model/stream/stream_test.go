@@ -54,19 +54,19 @@ func TestStream(t *testing.T) {
 			nsoftmax := output.Cursor().(*node.Node)
 
 			if _, ok := ninput.Layer().(*layers.Input); !ok {
-				t.Fatalf("expected stream's cursor to have 'Input' layer")
+				t.Fatal("expected stream's cursor to have 'Input' layer")
 			}
 			if _, ok := nfc1.Layer().(*layers.FC); !ok {
-				t.Fatalf("expected stream's cursor to have 'FC' layer")
+				t.Fatal("expected stream's cursor to have 'FC' layer")
 			}
 			if _, ok := ntanh.Layer().(*activations.Tanh); !ok {
-				t.Fatalf("expected stream's cursor to have 'Tanh' layer")
+				t.Fatal("expected stream's cursor to have 'Tanh' layer")
 			}
 			if _, ok := nfc2.Layer().(*layers.FC); !ok {
-				t.Fatalf("expected stream's cursor to have 'FC' layer")
+				t.Fatal("expected stream's cursor to have 'FC' layer")
 			}
 			if _, ok := nsoftmax.Layer().(*activations.Softmax); !ok {
-				t.Fatalf("expected stream's cursor to have 'Softmax' layer")
+				t.Fatal("expected stream's cursor to have 'Softmax' layer")
 			}
 		})
 
@@ -84,34 +84,34 @@ func TestStream(t *testing.T) {
 			nsoftmax := output.Cursor().(*node.Node)
 
 			if !slices.Equal(ninput.Parents(), nil) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(nfc1.Parents(), []*node.Node{ninput}) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(ntanh.Parents(), []*node.Node{nfc1}) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(nfc2.Parents(), []*node.Node{ntanh}) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(nsoftmax.Parents(), []*node.Node{nfc2}) {
-				t.Fatalf("unexpected node Parents")
+				t.Fatal("unexpected node Parents")
 			}
 			if !slices.Equal(ninput.Children(), []*node.Node{nfc1}) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(nfc1.Children(), []*node.Node{ntanh}) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(ntanh.Children(), []*node.Node{nfc2}) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(nfc2.Children(), []*node.Node{nsoftmax}) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 			if !slices.Equal(nsoftmax.Children(), nil) {
-				t.Fatalf("unexpected node Children")
+				t.Fatal("unexpected node Children")
 			}
 		})
 
@@ -129,19 +129,19 @@ func TestStream(t *testing.T) {
 			nsoftmax := output.Cursor().(*node.Node)
 
 			if ninput.NLayer() != 0 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if nfc1.NLayer() != 1 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if ntanh.NLayer() != 2 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if nfc2.NLayer() != 3 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 			if nsoftmax.NLayer() != 4 {
-				t.Fatalf("unexpected node NLayer")
+				t.Fatal("unexpected node NLayer")
 			}
 		})
 
@@ -168,7 +168,7 @@ func TestStream(t *testing.T) {
 			fc := stream.FC(nil)(tanh)
 
 			if err := fc.Error(); err == nil {
-				t.Fatalf("expected error in the stream")
+				t.Fatal("expected error in the stream")
 			} else {
 				act := err.Error()
 				exp := `
@@ -186,7 +186,7 @@ func TestStream(t *testing.T) {
 			sigmoid := stream.Sigmoid()(fc)
 
 			if err := sigmoid.Error(); err == nil {
-				t.Fatalf("expected error in the stream")
+				t.Fatal("expected error in the stream")
 			} else {
 				act := err.Error()
 				exp := `
@@ -205,7 +205,7 @@ func TestStream(t *testing.T) {
 			fc2 := stream.FC(&layers.FCConfig{Inputs: -1, Outputs: 1})(sigmoid)
 
 			if err := fc2.Error(); err == nil {
-				t.Fatalf("expected error in the stream")
+				t.Fatal("expected error in the stream")
 			} else {
 				act := err.Error()
 				exp := `
@@ -236,7 +236,7 @@ func TestStream(t *testing.T) {
 			output := stream.Softmax(&activations.SoftmaxConfig{Dim: -2})(fc21, fc22)
 
 			if err := output.Error(); err == nil {
-				t.Fatalf("expected error in the stream")
+				t.Fatal("expected error in the stream")
 			} else {
 				act := err.Error()
 				exp := `

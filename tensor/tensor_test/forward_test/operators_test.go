@@ -29,7 +29,7 @@ func TestScale(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -49,7 +49,7 @@ func TestScale(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -75,7 +75,7 @@ func TestScale(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -95,7 +95,7 @@ func TestScale(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -122,7 +122,7 @@ func TestPow(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -142,7 +142,7 @@ func TestPow(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -168,7 +168,7 @@ func TestPow(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -188,7 +188,7 @@ func TestPow(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -215,7 +215,7 @@ func TestExp(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -235,7 +235,7 @@ func TestExp(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -261,7 +261,7 @@ func TestExp(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -281,7 +281,7 @@ func TestExp(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -338,7 +338,7 @@ func TestLog(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -358,7 +358,7 @@ func TestLog(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -378,7 +378,7 @@ func TestLog(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -398,7 +398,7 @@ func TestLog(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -470,7 +470,7 @@ func TestSin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -542,7 +542,7 @@ func TestCos(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -599,7 +599,7 @@ func TestTan(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -657,7 +657,7 @@ func TestSinh(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -715,7 +715,7 @@ func TestCosh(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -803,7 +803,7 @@ func TestTanh(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -837,7 +837,7 @@ func TestEq(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -864,7 +864,7 @@ func TestEq(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -900,7 +900,7 @@ func TestEq(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -927,7 +927,7 @@ func TestEq(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -950,7 +950,7 @@ func TestEq(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -964,7 +964,7 @@ func TestEq(t *testing.T) {
 
 			_, err = ten.Eq(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Eq tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -982,7 +982,7 @@ func TestEq(t *testing.T) {
 
 			_, err = t1.Eq(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Eq tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1018,7 +1018,7 @@ func TestNe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1045,7 +1045,7 @@ func TestNe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1081,7 +1081,7 @@ func TestNe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1108,7 +1108,7 @@ func TestNe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1131,7 +1131,7 @@ func TestNe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1145,7 +1145,7 @@ func TestNe(t *testing.T) {
 
 			_, err = ten.Ne(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Ne tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1163,7 +1163,7 @@ func TestNe(t *testing.T) {
 
 			_, err = t1.Ne(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Ne tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1199,7 +1199,7 @@ func TestGt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1226,7 +1226,7 @@ func TestGt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1262,7 +1262,7 @@ func TestGt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1289,7 +1289,7 @@ func TestGt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1312,7 +1312,7 @@ func TestGt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1326,7 +1326,7 @@ func TestGt(t *testing.T) {
 
 			_, err = ten.Gt(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Gt tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1344,7 +1344,7 @@ func TestGt(t *testing.T) {
 
 			_, err = t1.Gt(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Gt tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1380,7 +1380,7 @@ func TestGe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1407,7 +1407,7 @@ func TestGe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1443,7 +1443,7 @@ func TestGe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1470,7 +1470,7 @@ func TestGe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1493,7 +1493,7 @@ func TestGe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1507,7 +1507,7 @@ func TestGe(t *testing.T) {
 
 			_, err = ten.Ge(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Ge tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1525,7 +1525,7 @@ func TestGe(t *testing.T) {
 
 			_, err = t1.Ge(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Ge tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1561,7 +1561,7 @@ func TestLt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1588,7 +1588,7 @@ func TestLt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1624,7 +1624,7 @@ func TestLt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1651,7 +1651,7 @@ func TestLt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1674,7 +1674,7 @@ func TestLt(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1688,7 +1688,7 @@ func TestLt(t *testing.T) {
 
 			_, err = ten.Lt(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Lt tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1706,7 +1706,7 @@ func TestLt(t *testing.T) {
 
 			_, err = t1.Lt(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Lt tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1742,7 +1742,7 @@ func TestLe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1769,7 +1769,7 @@ func TestLe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1805,7 +1805,7 @@ func TestLe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1832,7 +1832,7 @@ func TestLe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1855,7 +1855,7 @@ func TestLe(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1869,7 +1869,7 @@ func TestLe(t *testing.T) {
 
 			_, err = ten.Le(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Le tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1887,7 +1887,7 @@ func TestLe(t *testing.T) {
 
 			_, err = t1.Le(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Le tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -1923,7 +1923,7 @@ func TestElMax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1950,7 +1950,7 @@ func TestElMax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -1986,7 +1986,7 @@ func TestElMax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2013,7 +2013,7 @@ func TestElMax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2036,7 +2036,7 @@ func TestElMax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2050,7 +2050,7 @@ func TestElMax(t *testing.T) {
 
 			_, err = ten.ElMax(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("ElMax tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2068,7 +2068,7 @@ func TestElMax(t *testing.T) {
 
 			_, err = t1.ElMax(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "ElMax tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2104,7 +2104,7 @@ func TestElMin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2131,7 +2131,7 @@ func TestElMin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2167,7 +2167,7 @@ func TestElMin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2194,7 +2194,7 @@ func TestElMin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2217,7 +2217,7 @@ func TestElMin(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2231,7 +2231,7 @@ func TestElMin(t *testing.T) {
 
 			_, err = ten.ElMin(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("ElMin tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2249,7 +2249,7 @@ func TestElMin(t *testing.T) {
 
 			_, err = t1.ElMin(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "ElMin tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2285,7 +2285,7 @@ func TestAdd(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2312,7 +2312,7 @@ func TestAdd(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2351,7 +2351,7 @@ func TestAdd(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2378,7 +2378,7 @@ func TestAdd(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2401,7 +2401,7 @@ func TestAdd(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2415,7 +2415,7 @@ func TestAdd(t *testing.T) {
 
 			_, err = ten.Add(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Add tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2433,7 +2433,7 @@ func TestAdd(t *testing.T) {
 
 			_, err = t1.Add(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+				t.Fatal("expected error because of incompatible sizes at dimension (2)")
 			} else if err.Error() != "Add tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2469,7 +2469,7 @@ func TestSub(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2496,7 +2496,7 @@ func TestSub(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2535,7 +2535,7 @@ func TestSub(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2562,7 +2562,7 @@ func TestSub(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2585,7 +2585,7 @@ func TestSub(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2599,7 +2599,7 @@ func TestSub(t *testing.T) {
 
 			_, err = ten.Sub(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Sub tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2617,7 +2617,7 @@ func TestSub(t *testing.T) {
 
 			_, err = t1.Sub(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+				t.Fatal("expected error because of incompatible sizes at dimension (2)")
 			} else if err.Error() != "Sub tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2653,7 +2653,7 @@ func TestMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2680,7 +2680,7 @@ func TestMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2719,7 +2719,7 @@ func TestMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2746,7 +2746,7 @@ func TestMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2769,7 +2769,7 @@ func TestMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2783,7 +2783,7 @@ func TestMul(t *testing.T) {
 
 			_, err = ten.Mul(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Mul tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2801,7 +2801,7 @@ func TestMul(t *testing.T) {
 
 			_, err = t1.Mul(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+				t.Fatal("expected error because of incompatible sizes at dimension (2)")
 			} else if err.Error() != "Mul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2837,7 +2837,7 @@ func TestDiv(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2864,7 +2864,7 @@ func TestDiv(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2903,7 +2903,7 @@ func TestDiv(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2930,7 +2930,7 @@ func TestDiv(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2953,7 +2953,7 @@ func TestDiv(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -2967,7 +2967,7 @@ func TestDiv(t *testing.T) {
 
 			_, err = ten.Div(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Div tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -2985,7 +2985,7 @@ func TestDiv(t *testing.T) {
 
 			_, err = t1.Div(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+				t.Fatal("expected error because of incompatible sizes at dimension (2)")
 			} else if err.Error() != "Div tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3021,7 +3021,7 @@ func TestDot(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3048,7 +3048,7 @@ func TestDot(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3075,7 +3075,7 @@ func TestDot(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3102,7 +3102,7 @@ func TestDot(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3129,7 +3129,7 @@ func TestDot(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3143,7 +3143,7 @@ func TestDot(t *testing.T) {
 
 			_, err = t1.Dot(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("Dot tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3157,7 +3157,7 @@ func TestDot(t *testing.T) {
 
 			_, err = t1.Dot(t1)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having less than 1 dimension")
+				t.Fatal("expected error because of tensors having less than 1 dimension")
 			} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3175,7 +3175,7 @@ func TestDot(t *testing.T) {
 
 			_, err = t1.Dot(t2)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having less than 1 dimension")
+				t.Fatal("expected error because of tensors having less than 1 dimension")
 			} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (0) and (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3193,7 +3193,7 @@ func TestDot(t *testing.T) {
 
 			_, err = t2.Dot(t1)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having less than 1 dimension")
+				t.Fatal("expected error because of tensors having less than 1 dimension")
 			} else if err.Error() != "Dot tensors' dimension validation failed: expected tensors to have at least (1) dimension for dot product: got (1) and (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3211,7 +3211,7 @@ func TestDot(t *testing.T) {
 
 			_, err = t1.Dot(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at last dimension")
+				t.Fatal("expected error because of incompatible sizes at last dimension")
 			} else if err.Error() != "Dot tensors' dimension validation failed: expected sizes to match at last dimensions: (3) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3229,7 +3229,7 @@ func TestDot(t *testing.T) {
 
 			_, err = t1.Dot(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (1)")
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Dot tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3265,7 +3265,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3292,7 +3292,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3319,7 +3319,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3355,7 +3355,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3392,7 +3392,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3419,7 +3419,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3446,7 +3446,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3473,7 +3473,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3500,7 +3500,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3527,7 +3527,7 @@ func TestMatMul(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -3541,7 +3541,7 @@ func TestMatMul(t *testing.T) {
 
 			_, err = t1.MatMul(nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input tensor")
+				t.Fatal("expected error because of nil input tensor")
 			} else if err.Error() != fmt.Sprintf("MatMul tensors' device validation failed: expected input tensor to be on %s", dev) {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3555,7 +3555,7 @@ func TestMatMul(t *testing.T) {
 
 			_, err = t1.MatMul(t1)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having less than (2) dimensions")
+				t.Fatal("expected error because of tensors having less than (2) dimensions")
 			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3573,7 +3573,7 @@ func TestMatMul(t *testing.T) {
 
 			_, err = t1.MatMul(t2)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having less than (2) dimensions")
+				t.Fatal("expected error because of tensors having less than (2) dimensions")
 			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (1) and (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3591,7 +3591,7 @@ func TestMatMul(t *testing.T) {
 
 			_, err = t2.MatMul(t1)
 			if err == nil {
-				t.Fatalf("expected error because of tensors having less than (2) dimensions")
+				t.Fatal("expected error because of tensors having less than (2) dimensions")
 			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (2) and (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3609,7 +3609,7 @@ func TestMatMul(t *testing.T) {
 
 			_, err = t1.MatMul(t2)
 			if err == nil {
-				t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
+				t.Fatal("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
 			} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (1) of first tensor to be equal to dimension (0) of second tensor for matrix multiplication: (3) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3627,7 +3627,7 @@ func TestMatMul(t *testing.T) {
 
 			_, err = t1.MatMul(t2)
 			if err == nil {
-				t.Fatalf("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
+				t.Fatal("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
 			} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (3) of first tensor to be equal to dimension (1) of second tensor for matrix multiplication: (2) != (3)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -3645,7 +3645,7 @@ func TestMatMul(t *testing.T) {
 
 			_, err = t1.MatMul(t2)
 			if err == nil {
-				t.Fatalf("expected error because of incompatible sizes at dimension (2)")
+				t.Fatal("expected error because of incompatible sizes at dimension (2)")
 			} else if err.Error() != "MatMul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}

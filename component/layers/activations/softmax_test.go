@@ -36,7 +36,7 @@ func TestSoftmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -64,7 +64,7 @@ func TestSoftmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -92,7 +92,7 @@ func TestSoftmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -120,7 +120,7 @@ func TestSoftmax(t *testing.T) {
 			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
 			} else if !eq {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -129,7 +129,7 @@ func TestSoftmax(t *testing.T) {
 		t.Run("NewSoftmax with negative Dim / returns error: expected Dim not to be negative", func(t *testing.T) {
 			_, err := activations.NewSoftmax(&activations.SoftmaxConfig{Dim: -1})
 			if err == nil {
-				t.Fatalf("expected error because of negative 'Dim'")
+				t.Fatal("expected error because of negative 'Dim'")
 			} else if err.Error() != "Softmax config data validation failed: expected 'Dim' not to be negative: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -143,7 +143,7 @@ func TestSoftmax(t *testing.T) {
 
 			_, err = activation.Forward()
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "Softmax input data validation failed: expected exactly one input tensor: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -162,7 +162,7 @@ func TestSoftmax(t *testing.T) {
 
 			_, err = activation.Forward(x, x)
 			if err == nil {
-				t.Fatalf("expected error because of not receiving one input tensor")
+				t.Fatal("expected error because of not receiving one input tensor")
 			} else if err.Error() != "Softmax input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -181,7 +181,7 @@ func TestSoftmax(t *testing.T) {
 
 			_, err = activation.Forward(x)
 			if err == nil {
-				t.Fatalf("expected error because of input tensors shape not matching softmax 'Dim'")
+				t.Fatal("expected error because of input tensors shape not matching softmax 'Dim'")
 			} else if err.Error() != "Softmax input data validation failed: expected input tensor shape to match 'Dim': [] !~ (0)" {
 				t.Fatal("unexpected error message returned")
 			}

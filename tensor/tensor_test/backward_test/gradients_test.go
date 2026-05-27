@@ -101,7 +101,7 @@ func TestConcat(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -131,7 +131,7 @@ func TestConcat(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -202,7 +202,7 @@ func TestSlice(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -304,7 +304,7 @@ func TestPatch(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -334,7 +334,7 @@ func TestPatch(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -364,7 +364,7 @@ func TestPatch(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -425,7 +425,7 @@ func TestTranspose(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -486,7 +486,7 @@ func TestReshape(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -547,7 +547,7 @@ func TestUnsqueeze(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -608,7 +608,7 @@ func TestSqueeze(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -669,7 +669,7 @@ func TestFlatten(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -730,7 +730,7 @@ func TestBroadcast(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -817,7 +817,7 @@ func TestSum(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -902,7 +902,7 @@ func TestMax(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -989,7 +989,7 @@ func TestMin(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1076,7 +1076,7 @@ func TestAvg(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1190,7 +1190,7 @@ func TestVar(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1300,7 +1300,7 @@ func TestStd(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1387,7 +1387,7 @@ func TestMean(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1442,7 +1442,7 @@ func TestScale(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1497,7 +1497,7 @@ func TestPow(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1552,7 +1552,7 @@ func TestExp(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1607,7 +1607,7 @@ func TestLog(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1662,7 +1662,7 @@ func TestSin(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1717,7 +1717,7 @@ func TestCos(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1772,7 +1772,7 @@ func TestTan(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1804,9 +1804,9 @@ func TestSinh(t *testing.T) {
 			if val, err := act.At(); err != nil {
 				t.Fatal(err)
 			} else if !(c-1e-10 < val && val < c+1e-10) {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			} else if act.Gradient() != nil {
-				t.Fatalf("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
+				t.Fatal("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
 			}
 		})
 
@@ -1826,7 +1826,7 @@ func TestSinh(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1858,9 +1858,9 @@ func TestCosh(t *testing.T) {
 			if val, err := act.At(); err != nil {
 				t.Fatal(err)
 			} else if !(c-1e-10 < val && val < c+1e-10) {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			} else if act.Gradient() != nil {
-				t.Fatalf("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
+				t.Fatal("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
 			}
 		})
 
@@ -1880,7 +1880,7 @@ func TestCosh(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -1911,9 +1911,9 @@ func TestTanh(t *testing.T) {
 			if val, err := act.At(); err != nil {
 				t.Fatal(err)
 			} else if !(1.-1e-10 < val && val < 1.+1e-10) {
-				t.Fatalf("expected tensors to be equal")
+				t.Fatal("expected tensors to be equal")
 			} else if act.Gradient() != nil {
-				t.Fatalf("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
+				t.Fatal("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
 			}
 		})
 
@@ -1933,7 +1933,7 @@ func TestTanh(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -2064,7 +2064,7 @@ func TestElMax(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2094,7 +2094,7 @@ func TestElMax(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2124,7 +2124,7 @@ func TestElMax(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -2255,7 +2255,7 @@ func TestElMin(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2285,7 +2285,7 @@ func TestElMin(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2315,7 +2315,7 @@ func TestElMin(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -2399,7 +2399,7 @@ func TestAdd(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2429,7 +2429,7 @@ func TestAdd(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2459,7 +2459,7 @@ func TestAdd(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -2543,7 +2543,7 @@ func TestSub(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2573,7 +2573,7 @@ func TestSub(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2603,7 +2603,7 @@ func TestSub(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -2687,7 +2687,7 @@ func TestMul(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2717,7 +2717,7 @@ func TestMul(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2747,7 +2747,7 @@ func TestMul(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -2831,7 +2831,7 @@ func TestDiv(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2861,7 +2861,7 @@ func TestDiv(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -2891,7 +2891,7 @@ func TestDiv(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -2975,7 +2975,7 @@ func TestDot(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -3005,7 +3005,7 @@ func TestDot(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -3035,7 +3035,7 @@ func TestDot(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -3119,7 +3119,7 @@ func TestMatmul(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -3149,7 +3149,7 @@ func TestMatmul(t *testing.T) {
 			}
 
 			if y.Gradient() == nil {
-				t.Fatalf("expected gradient not to be nil")
+				t.Fatal("expected gradient not to be nil")
 			}
 		})
 
@@ -3179,7 +3179,7 @@ func TestMatmul(t *testing.T) {
 			}
 
 			if y.Gradient() != nil {
-				t.Fatalf("expected gradient to be nil")
+				t.Fatal("expected gradient to be nil")
 			}
 		})
 	})
@@ -3193,10 +3193,10 @@ func assertGradientEquals(t *testing.T, act, exp tensor.Tensor) {
 	if eq, err := act.Equals(exp); err != nil {
 		t.Fatal(err)
 	} else if !eq {
-		t.Fatalf("expected tensors to be equal")
+		t.Fatal("expected tensors to be equal")
 	}
 
 	if act.Gradient() != nil {
-		t.Fatalf("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
+		t.Fatal("expected gradient of gradient to be nil (gradient tensors should not track their own gradients)")
 	}
 }

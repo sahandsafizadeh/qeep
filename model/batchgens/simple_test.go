@@ -52,13 +52,13 @@ func TestSimple(t *testing.T) {
 			}
 
 			if !batchgen.HasNext() {
-				t.Fatalf("expected batch generator to have next batch")
+				t.Fatal("expected batch generator to have next batch")
 			}
 			for _, exp := range expectedBatches {
 				assertNextBatch(t, batchgen, exp.x, exp.y, dev)
 			}
 			if batchgen.HasNext() {
-				t.Fatalf("expected batch generator not to have next batch")
+				t.Fatal("expected batch generator not to have next batch")
 			}
 		})
 
@@ -100,13 +100,13 @@ func TestSimple(t *testing.T) {
 			}
 
 			if !batchgen.HasNext() {
-				t.Fatalf("expected batch generator to have next batch")
+				t.Fatal("expected batch generator to have next batch")
 			}
 			for _, exp := range expectedBatches {
 				assertNextBatch(t, batchgen, exp.x, exp.y, dev)
 			}
 			if batchgen.HasNext() {
-				t.Fatalf("expected batch generator not to have next batch")
+				t.Fatal("expected batch generator not to have next batch")
 			}
 		})
 
@@ -147,13 +147,13 @@ func TestSimple(t *testing.T) {
 			}
 
 			if !batchgen.HasNext() {
-				t.Fatalf("expected batch generator to have next batch")
+				t.Fatal("expected batch generator to have next batch")
 			}
 			for _, exp := range expectedBatches {
 				assertNextBatch(t, batchgen, exp.x, exp.y, dev)
 			}
 			if batchgen.HasNext() {
-				t.Fatalf("expected batch generator not to have next batch")
+				t.Fatal("expected batch generator not to have next batch")
 			}
 		})
 
@@ -194,13 +194,13 @@ func TestSimple(t *testing.T) {
 			}
 
 			if !batchgen.HasNext() {
-				t.Fatalf("expected batch generator to have next batch")
+				t.Fatal("expected batch generator to have next batch")
 			}
 			for _, exp := range expectedBatches {
 				assertNextBatch(t, batchgen, exp.x, exp.y, dev)
 			}
 			if batchgen.HasNext() {
-				t.Fatalf("expected batch generator not to have next batch")
+				t.Fatal("expected batch generator not to have next batch")
 			}
 		})
 
@@ -243,13 +243,13 @@ func TestSimple(t *testing.T) {
 			}
 
 			if !batchgen.HasNext() {
-				t.Fatalf("expected batch generator to have next batch")
+				t.Fatal("expected batch generator to have next batch")
 			}
 			for _, exp := range expectedBatches {
 				assertNextBatch(t, batchgen, exp.x, exp.y, dev)
 			}
 			if batchgen.HasNext() {
-				t.Fatalf("expected batch generator not to have next batch")
+				t.Fatal("expected batch generator not to have next batch")
 			}
 		})
 
@@ -292,13 +292,13 @@ func TestSimple(t *testing.T) {
 			}
 
 			if !batchgen.HasNext() {
-				t.Fatalf("expected batch generator to have next batch")
+				t.Fatal("expected batch generator to have next batch")
 			}
 			for _, exp := range expectedBatches {
 				assertNextBatch(t, batchgen, exp.x, exp.y, dev)
 			}
 			if batchgen.HasNext() {
-				t.Fatalf("expected batch generator not to have next batch")
+				t.Fatal("expected batch generator not to have next batch")
 			}
 		})
 
@@ -330,13 +330,13 @@ func TestSimple(t *testing.T) {
 			if _, _, err = batchgen.NextBatch(); err != nil {
 				t.Fatal(err)
 			} else if batchgen.HasNext() {
-				t.Fatalf("expected batch generator not to have next batch")
+				t.Fatal("expected batch generator not to have next batch")
 			}
 
 			batchgen.Reset()
 
 			if !batchgen.HasNext() {
-				t.Fatalf("expected batch generator to have next batch")
+				t.Fatal("expected batch generator to have next batch")
 			} else if _, _, err = batchgen.NextBatch(); err != nil {
 				t.Fatal(err)
 			}
@@ -347,7 +347,7 @@ func TestSimple(t *testing.T) {
 		t.Run("NewSimple with nil config / returns error: config not to be nil", func(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}}, [][]float64{{0}}, nil)
 			if err == nil {
-				t.Fatalf("expected error because of nil input config")
+				t.Fatal("expected error because of nil input config")
 			} else if err.Error() != "Simple config data validation failed: expected config not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -357,7 +357,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}}, [][]float64{{0}},
 				&batchgens.SimpleConfig{BatchSize: 0})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'BatchSize'")
+				t.Fatal("expected error because of non-positive 'BatchSize'")
 			} else if err.Error() != "Simple config data validation failed: expected 'BatchSize' to be positive: got (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -367,7 +367,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}}, [][]float64{{0}},
 				&batchgens.SimpleConfig{BatchSize: -1})
 			if err == nil {
-				t.Fatalf("expected error because of non-positive 'BatchSize'")
+				t.Fatal("expected error because of non-positive 'BatchSize'")
 			} else if err.Error() != "Simple config data validation failed: expected 'BatchSize' to be positive: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -377,7 +377,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{}, [][]float64{{0}},
 				&batchgens.SimpleConfig{BatchSize: 2})
 			if err == nil {
-				t.Fatalf("expected error because of input slices not having at least one record along dimension (0)")
+				t.Fatal("expected error because of input slices not having at least one record along dimension (0)")
 			} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have at least one record along dimension (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -387,7 +387,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}}, [][]float64{},
 				&batchgens.SimpleConfig{BatchSize: 2})
 			if err == nil {
-				t.Fatalf("expected error because of input slices not having at least one record along dimension (0)")
+				t.Fatal("expected error because of input slices not having at least one record along dimension (0)")
 			} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have at least one record along dimension (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -397,7 +397,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}, {1}}, [][]float64{{0}},
 				&batchgens.SimpleConfig{BatchSize: 2})
 			if err == nil {
-				t.Fatalf("expected error because of input slices not having the same number of records along dimension (0)")
+				t.Fatal("expected error because of input slices not having the same number of records along dimension (0)")
 			} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have the same number of records along dimension (0): (2) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -407,7 +407,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}, {}}, [][]float64{{0}, {0}},
 				&batchgens.SimpleConfig{BatchSize: 2})
 			if err == nil {
-				t.Fatalf("expected error because of input slices not having at least one record along dimension (1)")
+				t.Fatal("expected error because of input slices not having at least one record along dimension (1)")
 			} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have at least one record along dimension (1): got none at position (1)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -417,7 +417,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}, {1}}, [][]float64{{}, {0}},
 				&batchgens.SimpleConfig{BatchSize: 2})
 			if err == nil {
-				t.Fatalf("expected error because of input slices not having at least one record along dimension (1)")
+				t.Fatal("expected error because of input slices not having at least one record along dimension (1)")
 			} else if err.Error() != "Simple input data validation failed: expected input slices 'x' and 'y' to have at least one record along dimension (1): got none at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -427,7 +427,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}, {1}, {1, 1}}, [][]float64{{0}, {0}, {0}},
 				&batchgens.SimpleConfig{BatchSize: 2})
 			if err == nil {
-				t.Fatalf("expected error because of input slice 'x' not having equal length along every record in dimension (1)")
+				t.Fatal("expected error because of input slice 'x' not having equal length along every record in dimension (1)")
 			} else if err.Error() != "Simple input data validation failed: expected input slice 'x' to have equal length along every record in dimension (1): (2) != (1) at position (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -437,7 +437,7 @@ func TestSimple(t *testing.T) {
 			_, err := batchgens.NewSimple([][]float64{{1}, {1}, {1}}, [][]float64{{0}, {0}, {0, 0}},
 				&batchgens.SimpleConfig{BatchSize: 2})
 			if err == nil {
-				t.Fatalf("expected error because of input slice 'y' not having equal length along every record in dimension (1)")
+				t.Fatal("expected error because of input slice 'y' not having equal length along every record in dimension (1)")
 			} else if err.Error() != "Simple input data validation failed: expected input slice 'y' to have equal length along every record in dimension (1): (2) != (1) at position (2)" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -460,7 +460,7 @@ func TestSimple(t *testing.T) {
 
 			_, _, err = batchgen.NextBatch()
 			if err == nil {
-				t.Fatalf("expected error because of non-existing next batch")
+				t.Fatal("expected error because of non-existing next batch")
 			} else if err.Error() != "Simple state validation failed: expected next batch to exist" {
 				t.Fatal("unexpected error message returned")
 			}
@@ -496,11 +496,11 @@ func assertNextBatch(
 	if eq, err := actx[0].Equals(expx); err != nil {
 		t.Fatal(err)
 	} else if !eq {
-		t.Fatalf("expected tensors to be equal")
+		t.Fatal("expected tensors to be equal")
 	}
 	if eq, err := acty.Equals(expy); err != nil {
 		t.Fatal(err)
 	} else if !eq {
-		t.Fatalf("expected tensors to be equal")
+		t.Fatal("expected tensors to be equal")
 	}
 }

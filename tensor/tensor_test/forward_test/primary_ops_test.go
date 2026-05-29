@@ -790,5 +790,23 @@ func TestEquals(t *testing.T) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
+
+		t.Run("tensors [6,5,2] and [6,5] / Equals / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Equals(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Equals tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }

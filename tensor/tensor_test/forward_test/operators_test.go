@@ -987,6 +987,24 @@ func TestEq(t *testing.T) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
+
+		t.Run("tensors [6,5,2] and [6,5] / Eq / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Eq(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Eq tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
@@ -1165,6 +1183,24 @@ func TestNe(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Ne tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [6,5,2] and [6,5] / Ne / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Ne(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Ne tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -1349,6 +1385,24 @@ func TestGt(t *testing.T) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
+
+		t.Run("tensors [6,5,2] and [6,5] / Gt / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Gt(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Gt tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
@@ -1527,6 +1581,24 @@ func TestGe(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Ge tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [6,5,2] and [6,5] / Ge / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Ge(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Ge tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -1711,6 +1783,24 @@ func TestLt(t *testing.T) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
+
+		t.Run("tensors [6,5,2] and [6,5] / Lt / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Lt(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Lt tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
@@ -1889,6 +1979,24 @@ func TestLe(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Le tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [6,5,2] and [6,5] / Le / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Le(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Le tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -2073,6 +2181,24 @@ func TestElMax(t *testing.T) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
+
+		t.Run("tensors [6,5,2] and [6,5] / ElMax / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.ElMax(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "ElMax tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
@@ -2251,6 +2377,24 @@ func TestElMin(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "ElMin tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [6,5,2] and [6,5] / ElMin / returns error: number of dimensions mismatch", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.ElMin(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "ElMin tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3629,6 +3773,24 @@ func TestMatMul(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of size incompatiblity in the last 2 dimensions for matrix multiplication")
 			} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (3) of first tensor to be equal to dimension (1) of second tensor for matrix multiplication: (2) != (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor [3,4,3] and 4D tensor [5,6,3,4] / MatMul / returns error: first tensor batch dimensions not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 4, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{5, 6, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "MatMul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (1): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

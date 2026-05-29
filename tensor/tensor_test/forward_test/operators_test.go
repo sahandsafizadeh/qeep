@@ -3633,6 +3633,24 @@ func TestMatMul(t *testing.T) {
 			}
 		})
 
+		t.Run("3D tensor [3,4,3] and 4D tensor [5,6,3,4] / MatMul / returns error: first tensor batch dimensions not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 4, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{5, 6, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "MatMul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (1): got shape (6)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
 		t.Run("3D tensor [6,4,3] and 5D tensor [6,2,5,3,4] / MatMul / returns error: batch dimensions not broadcastable", func(t *testing.T) {
 			t1, err := tensor.Zeros([]int{6, 4, 3}, &tensor.Config{Device: dev})
 			if err != nil {

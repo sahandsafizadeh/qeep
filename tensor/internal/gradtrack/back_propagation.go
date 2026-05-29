@@ -1,12 +1,21 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+import (
+	"fmt"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+)
 
 func BackPropagate(t tensor.Tensor) (err error) {
-	return backward(startEdge(t))
+	err = backward(startEdge(t))
+	if err != nil {
+		return fmt.Errorf("BackPropagate: %w", err)
+	}
+
+	return nil
 }
 
-func startEdge(t tensor.Tensor) (edge *backwardEdge) {
+func startEdge(t tensor.Tensor) *backwardEdge {
 	return &backwardEdge{
 		target: t,
 		gradFn: func() (tensor.Tensor, error) {
@@ -27,18 +36,18 @@ func backward(edge *backwardEdge) (err error) {
 
 	grad, err := edge.gradFn()
 	if err != nil {
-		return
+		return err
 	}
 
 	err = accumulateGrad(gctx, grad)
 	if err != nil {
-		return
+		return err
 	}
 
 	for _, e := range gctx.backEdges {
 		err = backward(e)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -51,7 +60,7 @@ func accumulateGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
 	} else {
 		gctx.gradient, err = gctx.gradient.Add(grad)
 		if err != nil {
-			return
+			return err
 		}
 	}
 

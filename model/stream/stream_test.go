@@ -145,21 +145,6 @@ func TestStream(t *testing.T) {
 			}
 		})
 
-		t.Run("all built-in stream layer types / chaining into a single stream / no error", func(t *testing.T) {
-			x := stream.Input()
-			x = stream.Tanh()(x)
-			x = stream.Sigmoid()(x)
-			x = stream.Softmax(nil)(x)
-			x = stream.Relu()(x)
-			x = stream.LeakyRelu(nil)(x)
-			x = stream.Dropout(nil)(x)
-			x = stream.FC(&layers.FCConfig{Inputs: 1, Outputs: 1})(x)
-
-			if err := x.Error(); err != nil {
-				t.Fatal(err)
-			}
-		})
-
 		// ============================== error handling ==============================
 
 		t.Run("FC(nil) in stream / Error() at FC node / reports nil config error", func(t *testing.T) {

@@ -145,9 +145,7 @@ func (t *CPUTensor) At(index ...int) (value float64, err error) {
 		return value, fmt.Errorf("At input index validation failed: %w", err)
 	}
 
-	value = t.dataAt(index).(float64)
-
-	return value, nil
+	return t.dataAt(index).(float64), nil
 }
 
 func (t *CPUTensor) Slice(index []tensor.Range) (o tensor.Tensor, err error) {

@@ -28,13 +28,13 @@ var (
 	cudaAllocMem int64 = 0
 )
 
-func newCUDATensor(dims []int, data *C.double) (t *CUDATensor) {
+func newCUDATensor(dims []int, data *C.double) *CUDATensor {
 	tn := util.DimsToNumElems(dims)
 	tdims := make([]int, len(dims))
 	tdata := unsafe.Pointer(data)
 	copy(tdims, dims)
 
-	t = &CUDATensor{
+	t := &CUDATensor{
 		n:    tn,
 		dims: tdims,
 		data: tdata,

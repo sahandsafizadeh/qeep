@@ -11,153 +11,153 @@ import "C"
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
 
-func (t *CUDATensor) scale(u float64) (o *CUDATensor) {
-	return applyHalfBinaryOperation(t, u, func(x C.CudaData, a C.double) (y *C.double) {
+func (t *CUDATensor) scale(u float64) *CUDATensor {
+	return applyHalfBinaryOperation(t, u, func(x C.CudaData, a C.double) *C.double {
 		return C.Scale(x, a)
 	})
 }
 
-func (t *CUDATensor) pow(u float64) (o *CUDATensor) {
-	return applyHalfBinaryOperation(t, u, func(x C.CudaData, a C.double) (y *C.double) {
+func (t *CUDATensor) pow(u float64) *CUDATensor {
+	return applyHalfBinaryOperation(t, u, func(x C.CudaData, a C.double) *C.double {
 		return C.Pow(x, a)
 	})
 }
 
-func (t *CUDATensor) exp() (o *CUDATensor) {
-	return applyUnaryOperation(t, func(x C.CudaData) (y *C.double) {
+func (t *CUDATensor) exp() *CUDATensor {
+	return applyUnaryOperation(t, func(x C.CudaData) *C.double {
 		return C.Exp(x)
 	})
 }
 
-func (t *CUDATensor) log() (o *CUDATensor) {
-	return applyUnaryOperation(t, func(x C.CudaData) (y *C.double) {
+func (t *CUDATensor) log() *CUDATensor {
+	return applyUnaryOperation(t, func(x C.CudaData) *C.double {
 		return C.Log(x)
 	})
 }
 
-func (t *CUDATensor) sin() (o *CUDATensor) {
-	return applyUnaryOperation(t, func(x C.CudaData) (y *C.double) {
+func (t *CUDATensor) sin() *CUDATensor {
+	return applyUnaryOperation(t, func(x C.CudaData) *C.double {
 		return C.Sin(x)
 	})
 }
 
-func (t *CUDATensor) cos() (o *CUDATensor) {
-	return applyUnaryOperation(t, func(x C.CudaData) (y *C.double) {
+func (t *CUDATensor) cos() *CUDATensor {
+	return applyUnaryOperation(t, func(x C.CudaData) *C.double {
 		return C.Cos(x)
 	})
 }
 
-func (t *CUDATensor) tan() (o *CUDATensor) {
-	return applyUnaryOperation(t, func(x C.CudaData) (y *C.double) {
+func (t *CUDATensor) tan() *CUDATensor {
+	return applyUnaryOperation(t, func(x C.CudaData) *C.double {
 		return C.Tan(x)
 	})
 }
 
-func (t *CUDATensor) sinh() (o *CUDATensor) {
-	return applyUnaryOperation(t, func(x C.CudaData) (y *C.double) {
+func (t *CUDATensor) sinh() *CUDATensor {
+	return applyUnaryOperation(t, func(x C.CudaData) *C.double {
 		return C.Sinh(x)
 	})
 }
 
-func (t *CUDATensor) cosh() (o *CUDATensor) {
-	return applyUnaryOperation(t, func(x C.CudaData) (y *C.double) {
+func (t *CUDATensor) cosh() *CUDATensor {
+	return applyUnaryOperation(t, func(x C.CudaData) *C.double {
 		return C.Cosh(x)
 	})
 }
 
-func (t *CUDATensor) tanh() (o *CUDATensor) {
-	return applyUnaryOperation(t, func(x C.CudaData) (y *C.double) {
+func (t *CUDATensor) tanh() *CUDATensor {
+	return applyUnaryOperation(t, func(x C.CudaData) *C.double {
 		return C.Tanh(x)
 	})
 }
 
-func (t *CUDATensor) eq(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) eq(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Eq(a, b)
 	})
 }
 
-func (t *CUDATensor) ne(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) ne(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Ne(a, b)
 	})
 }
 
-func (t *CUDATensor) gt(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) gt(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Gt(a, b)
 	})
 }
 
-func (t *CUDATensor) ge(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) ge(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Ge(a, b)
 	})
 }
 
-func (t *CUDATensor) lt(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) lt(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Lt(a, b)
 	})
 }
 
-func (t *CUDATensor) le(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) le(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Le(a, b)
 	})
 }
 
-func (t *CUDATensor) elmax(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) elmax(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.ElMax(a, b)
 	})
 }
 
-func (t *CUDATensor) elmin(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) elmin(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.ElMin(a, b)
 	})
 }
 
-func (t *CUDATensor) add(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) add(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Add(a, b)
 	})
 }
 
-func (t *CUDATensor) sub(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) sub(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Sub(a, b)
 	})
 }
 
-func (t *CUDATensor) mul(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) mul(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Mul(a, b)
 	})
 }
 
-func (t *CUDATensor) div(u *CUDATensor) (o *CUDATensor) {
-	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) (c *C.double) {
+func (t *CUDATensor) div(u *CUDATensor) *CUDATensor {
+	return applyBinaryOperation(t, u, func(a C.CudaData, b C.CudaData) *C.double {
 		return C.Div(a, b)
 	})
 }
 
-func (t *CUDATensor) dot(u *CUDATensor) (o *CUDATensor) {
+func (t *CUDATensor) dot(u *CUDATensor) *CUDATensor {
 	return applyDot(t, u)
 }
 
-func (t *CUDATensor) matMul(u *CUDATensor) (o *CUDATensor) {
+func (t *CUDATensor) matMul(u *CUDATensor) *CUDATensor {
 	return applyMatMul(t, u)
 }
 
-func (t *CUDATensor) equals(u *CUDATensor) (are bool) {
+func (t *CUDATensor) equals(u *CUDATensor) bool {
 	o := t.eq(u)
 	n := o.n
 	return o.sum() >= float64(n)
 }
 
-func applyHalfBinaryOperation(x *CUDATensor, a float64, chbf cudacHalfBinaryFunc) (y *CUDATensor) {
+func applyHalfBinaryOperation(x *CUDATensor, a float64, chbf cudacHalfBinaryFunc) *CUDATensor {
 	x_c := getCudaDataOf(x)
 	a_c := (C.double)(a)
 
@@ -166,7 +166,7 @@ func applyHalfBinaryOperation(x *CUDATensor, a float64, chbf cudacHalfBinaryFunc
 	return newCUDATensor(x.dims, data_c)
 }
 
-func applyUnaryOperation(x *CUDATensor, cuf cudacUnaryFunc) (y *CUDATensor) {
+func applyUnaryOperation(x *CUDATensor, cuf cudacUnaryFunc) *CUDATensor {
 	x_c := getCudaDataOf(x)
 
 	data_c := cuf(x_c)
@@ -174,7 +174,7 @@ func applyUnaryOperation(x *CUDATensor, cuf cudacUnaryFunc) (y *CUDATensor) {
 	return newCUDATensor(x.dims, data_c)
 }
 
-func applyBinaryOperation(a *CUDATensor, b *CUDATensor, cbf cudacBinaryFunc) (c *CUDATensor) {
+func applyBinaryOperation(a *CUDATensor, b *CUDATensor, cbf cudacBinaryFunc) *CUDATensor {
 	a_c := getCudaDataOf(a)
 	b_c := getCudaDataOf(b)
 
@@ -183,7 +183,7 @@ func applyBinaryOperation(a *CUDATensor, b *CUDATensor, cbf cudacBinaryFunc) (c 
 	return newCUDATensor(a.dims, data_c)
 }
 
-func applyDot(a *CUDATensor, b *CUDATensor) (c *CUDATensor) {
+func applyDot(a *CUDATensor, b *CUDATensor) *CUDATensor {
 	dims := util.DotDims(a.dims)
 
 	a_c := getCudaDataOf(a)
@@ -196,7 +196,7 @@ func applyDot(a *CUDATensor, b *CUDATensor) (c *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
-func applyMatMul(a *CUDATensor, b *CUDATensor) (c *CUDATensor) {
+func applyMatMul(a *CUDATensor, b *CUDATensor) *CUDATensor {
 	dims := util.MatMulDims(a.dims, b.dims)
 
 	a_c := getCudaDataOf(a)

@@ -11,7 +11,7 @@ import "C"
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
 
-func (t *CUDATensor) transpose() (o *CUDATensor) {
+func (t *CUDATensor) transpose() *CUDATensor {
 	dims := util.TransposeDims(t.dims)
 
 	src_c := getCudaDataOf(t)
@@ -23,7 +23,7 @@ func (t *CUDATensor) transpose() (o *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
-func (t *CUDATensor) broadcast(shape []int) (o *CUDATensor) {
+func (t *CUDATensor) broadcast(shape []int) *CUDATensor {
 	src_c := getCudaDataOf(t)
 	dims_src_c := getDimArrOf(t.dims)
 	dims_dst_c := getDimArrOf(shape)
@@ -33,7 +33,7 @@ func (t *CUDATensor) broadcast(shape []int) (o *CUDATensor) {
 	return newCUDATensor(shape, data_c)
 }
 
-func (t *CUDATensor) reshape(shape []int) (o *CUDATensor) {
+func (t *CUDATensor) reshape(shape []int) *CUDATensor {
 	src_c := getCudaDataOf(t)
 
 	data_c := C.Reshape(src_c)
@@ -41,14 +41,14 @@ func (t *CUDATensor) reshape(shape []int) (o *CUDATensor) {
 	return newCUDATensor(shape, data_c)
 }
 
-func (t *CUDATensor) unsqueeze(dim int) (o *CUDATensor) {
+func (t *CUDATensor) unsqueeze(dim int) *CUDATensor {
 	return t.reshape(util.UnSqueezeDims(dim, t.dims))
 }
 
-func (t *CUDATensor) squeeze(dim int) (o *CUDATensor) {
+func (t *CUDATensor) squeeze(dim int) *CUDATensor {
 	return t.reshape(util.SqueezeDims(dim, t.dims))
 }
 
-func (t *CUDATensor) flatten(fromDim int) (o *CUDATensor) {
+func (t *CUDATensor) flatten(fromDim int) *CUDATensor {
 	return t.reshape(util.FlattenDims(fromDim, t.dims))
 }

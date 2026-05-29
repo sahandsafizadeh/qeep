@@ -15,7 +15,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
-func constTensor(dims []int, value float64) (t *CUDATensor) {
+func constTensor(dims []int, value float64) *CUDATensor {
 	n := util.DimsToNumElems(dims)
 
 	n_c := (C.size_t)(n)
@@ -26,7 +26,7 @@ func constTensor(dims []int, value float64) (t *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
-func eyeMatrix(d int) (t *CUDATensor) {
+func eyeMatrix(d int) *CUDATensor {
 	dims := []int{d, d}
 	n := util.DimsToNumElems(dims)
 
@@ -38,7 +38,7 @@ func eyeMatrix(d int) (t *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
-func uniformRandomTensor(dims []int, l, u float64) (t *CUDATensor) {
+func uniformRandomTensor(dims []int, l, u float64) *CUDATensor {
 	n := util.DimsToNumElems(dims)
 
 	n_c := (C.size_t)(n)
@@ -50,7 +50,7 @@ func uniformRandomTensor(dims []int, l, u float64) (t *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
-func normalRandomTensor(dims []int, u, s float64) (t *CUDATensor) {
+func normalRandomTensor(dims []int, u, s float64) *CUDATensor {
 	n := util.DimsToNumElems(dims)
 
 	n_c := (C.size_t)(n)
@@ -62,7 +62,7 @@ func normalRandomTensor(dims []int, u, s float64) (t *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
-func tensorFromData(data any) (t *CUDATensor) {
+func tensorFromData(data any) *CUDATensor {
 	var dims []int
 	var inputData []C.double
 
@@ -132,7 +132,7 @@ func tensorFromData(data any) (t *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
-func tensorFromConcat(ts []*CUDATensor, dim int) (o *CUDATensor) {
+func tensorFromConcat(ts []*CUDATensor, dim int) *CUDATensor {
 	dims := util.ConcatDims(ts, dim)
 
 	size := len(ts)

@@ -9,8 +9,7 @@ import (
 func assertCPUTensor(t tensor.Tensor) (ct *CPUTensor, err error) {
 	ct, ok := t.(*CPUTensor)
 	if !ok {
-		err = fmt.Errorf("expected input tensor to be on CPU")
-		return
+		return ct, fmt.Errorf("expected input tensor to be on CPU")
 	}
 
 	return ct, nil
@@ -21,7 +20,7 @@ func assertCPUTensors(ts []tensor.Tensor) (cts []*CPUTensor, err error) {
 	for i, t := range ts {
 		cts[i], err = assertCPUTensor(t)
 		if err != nil {
-			return
+			return cts, err
 		}
 	}
 

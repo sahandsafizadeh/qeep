@@ -26,8 +26,8 @@ func (t *CPUTensor) initWith(initFunc initializerFunc) {
 	fill(t.dims, &t.data)
 }
 
-func constTensor(dims []int, value float64) (t *CPUTensor) {
-	t = new(CPUTensor)
+func constTensor(dims []int, value float64) *CPUTensor {
+	t := new(CPUTensor)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 	t.initWith(func() any { return value })
@@ -35,16 +35,16 @@ func constTensor(dims []int, value float64) (t *CPUTensor) {
 	return t
 }
 
-func eyeMatrix(n int) (t *CPUTensor) {
-	t = new(CPUTensor)
+func eyeMatrix(n int) *CPUTensor {
+	t := new(CPUTensor)
 	t.dims = []int{n, n}
 	t.initWith(eyeElemGenerator(n))
 
 	return t
 }
 
-func uniformRandomTensor(dims []int, l, u float64) (t *CPUTensor) {
-	t = new(CPUTensor)
+func uniformRandomTensor(dims []int, l, u float64) *CPUTensor {
+	t := new(CPUTensor)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 	t.initWith(func() any {
@@ -54,8 +54,8 @@ func uniformRandomTensor(dims []int, l, u float64) (t *CPUTensor) {
 	return t
 }
 
-func normalRandomTensor(dims []int, u, s float64) (t *CPUTensor) {
-	t = new(CPUTensor)
+func normalRandomTensor(dims []int, u, s float64) *CPUTensor {
+	t := new(CPUTensor)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 	t.initWith(func() any {
@@ -65,7 +65,7 @@ func normalRandomTensor(dims []int, u, s float64) (t *CPUTensor) {
 	return t
 }
 
-func tensorFromData(data any) (t *CPUTensor) {
+func tensorFromData(data any) *CPUTensor {
 	var dims []int
 	var tensorData any
 
@@ -150,7 +150,7 @@ func tensorFromData(data any) (t *CPUTensor) {
 	}
 }
 
-func tensorFromConcat(ts []*CPUTensor, dim int) (o *CPUTensor) {
+func tensorFromConcat(ts []*CPUTensor, dim int) *CPUTensor {
 	tsDataCopy := make([]any, len(ts))
 	for i, t := range ts {
 		tc := t.slice(nil)
@@ -184,7 +184,7 @@ func tensorFromConcat(ts []*CPUTensor, dim int) (o *CPUTensor) {
 		*data = rows
 	}
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = util.ConcatDims(ts, dim)
 	fillCat(o.dims, &o.data, tsDataCopy, 0)
 

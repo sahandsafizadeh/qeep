@@ -2578,7 +2578,7 @@ func TestAdd(t *testing.T) {
 			_, err = t1.Add(t2)
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "Add tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -2762,7 +2762,7 @@ func TestSub(t *testing.T) {
 			_, err = t1.Sub(t2)
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "Sub tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -2946,7 +2946,7 @@ func TestMul(t *testing.T) {
 			_, err = t1.Mul(t2)
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "Mul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3130,7 +3130,7 @@ func TestDiv(t *testing.T) {
 			_, err = t1.Div(t2)
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "Div tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3374,7 +3374,7 @@ func TestDot(t *testing.T) {
 			_, err = t1.Dot(t2)
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
-			} else if err.Error() != "Dot tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
+			} else if err.Error() != "Dot tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3790,7 +3790,7 @@ func TestMatMul(t *testing.T) {
 			_, err = t1.MatMul(t2)
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
-			} else if err.Error() != "MatMul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (1): got shape (6)" {
+			} else if err.Error() != "MatMul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (1): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3808,7 +3808,7 @@ func TestMatMul(t *testing.T) {
 			_, err = t1.MatMul(t2)
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "MatMul tensors' broadcasting failed: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
+			} else if err.Error() != "MatMul tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

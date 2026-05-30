@@ -393,61 +393,61 @@ func (t *CPUTensor) MeanAlong(dim int) (o tensor.Tensor, err error) {
 	return r, nil
 }
 
-func (t *CPUTensor) Scale(u float64) (o tensor.Tensor) {
+func (t *CPUTensor) Scale(u float64) tensor.Tensor {
 	r := t.scale(u)
 	r.gctx = gradtrack.Scale(r, t, u)
 	return r
 }
 
-func (t *CPUTensor) Pow(u float64) (o tensor.Tensor) {
+func (t *CPUTensor) Pow(u float64) tensor.Tensor {
 	r := t.pow(u)
 	r.gctx = gradtrack.Pow(r, t, u)
 	return r
 }
 
-func (t *CPUTensor) Exp() (o tensor.Tensor) {
+func (t *CPUTensor) Exp() tensor.Tensor {
 	r := t.exp()
 	r.gctx = gradtrack.Exp(r, t)
 	return r
 }
 
-func (t *CPUTensor) Log() (o tensor.Tensor) {
+func (t *CPUTensor) Log() tensor.Tensor {
 	r := t.log()
 	r.gctx = gradtrack.Log(r, t)
 	return r
 }
 
-func (t *CPUTensor) Sin() (o tensor.Tensor) {
+func (t *CPUTensor) Sin() tensor.Tensor {
 	r := t.sin()
 	r.gctx = gradtrack.Sin(r, t)
 	return r
 }
 
-func (t *CPUTensor) Cos() (o tensor.Tensor) {
+func (t *CPUTensor) Cos() tensor.Tensor {
 	r := t.cos()
 	r.gctx = gradtrack.Cos(r, t)
 	return r
 }
 
-func (t *CPUTensor) Tan() (o tensor.Tensor) {
+func (t *CPUTensor) Tan() tensor.Tensor {
 	r := t.tan()
 	r.gctx = gradtrack.Tan(r, t)
 	return r
 }
 
-func (t *CPUTensor) Sinh() (o tensor.Tensor) {
+func (t *CPUTensor) Sinh() tensor.Tensor {
 	r := t.sinh()
 	r.gctx = gradtrack.Sinh(r, t)
 	return r
 }
 
-func (t *CPUTensor) Cosh() (o tensor.Tensor) {
+func (t *CPUTensor) Cosh() tensor.Tensor {
 	r := t.cosh()
 	r.gctx = gradtrack.Cosh(r, t)
 	return r
 }
 
-func (t *CPUTensor) Tanh() (o tensor.Tensor) {
+func (t *CPUTensor) Tanh() tensor.Tensor {
 	r := t.tanh()
 	r.gctx = gradtrack.Tanh(r, t)
 	return r

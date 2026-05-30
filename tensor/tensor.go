@@ -19,19 +19,17 @@ func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) 
 	switch conf.Device {
 	case CPU:
 		t, err = cputensor.Full(dims, value, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Full: %w", err)
-		}
-		return t, nil
 	case CUDA:
 		t, err = cudatensor.Full(dims, value, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Full: %w", err)
-		}
-		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
 }
 
 // Zeros returns a tensor with the given shape, filled with zeros.
@@ -44,19 +42,17 @@ func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	switch conf.Device {
 	case CPU:
 		t, err = cputensor.Zeros(dims, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Zeros: %w", err)
-		}
-		return t, nil
 	case CUDA:
 		t, err = cudatensor.Zeros(dims, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Zeros: %w", err)
-		}
-		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
 }
 
 // Ones returns a tensor with the given shape, filled with ones.
@@ -69,19 +65,17 @@ func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	switch conf.Device {
 	case CPU:
 		t, err = cputensor.Ones(dims, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Ones: %w", err)
-		}
-		return t, nil
 	case CUDA:
 		t, err = cudatensor.Ones(dims, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Ones: %w", err)
-		}
-		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
 }
 
 // Eye returns a d-by-d identity matrix (ones on diagonal, zeros elsewhere).
@@ -94,19 +88,17 @@ func Eye(d int, conf *Config) (t tensor.Tensor, err error) {
 	switch conf.Device {
 	case CPU:
 		t, err = cputensor.Eye(d, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Eye: %w", err)
-		}
-		return t, nil
 	case CUDA:
 		t, err = cudatensor.Eye(d, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Eye: %w", err)
-		}
-		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
 }
 
 // RandU returns a tensor with the given shape, filled with uniformly distributed random values in [l, u).
@@ -119,19 +111,17 @@ func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) 
 	switch conf.Device {
 	case CPU:
 		t, err = cputensor.RandU(dims, l, u, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("RandU: %w", err)
-		}
-		return t, nil
 	case CUDA:
 		t, err = cudatensor.RandU(dims, l, u, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("RandU: %w", err)
-		}
-		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
 }
 
 // RandN returns a tensor with shape dims filled with normally distributed random values.
@@ -144,19 +134,17 @@ func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) 
 	switch conf.Device {
 	case CPU:
 		t, err = cputensor.RandN(dims, u, s, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("RandN: %w", err)
-		}
-		return t, nil
 	case CUDA:
 		t, err = cudatensor.RandN(dims, u, s, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("RandN: %w", err)
-		}
-		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
 }
 
 // Of creates a tensor from slice (float64 or nested slices up to 4D).
@@ -169,19 +157,17 @@ func Of[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
 	switch conf.Device {
 	case CPU:
 		t, err = cputensor.Of(data, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Of: %w", err)
-		}
-		return t, nil
 	case CUDA:
 		t, err = cudatensor.Of(data, conf.GradTrack)
-		if err != nil {
-			return t, fmt.Errorf("Of: %w", err)
-		}
-		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
 }
 
 // Concat joins tensors along the specified dimension.
@@ -195,19 +181,17 @@ func Concat(ts []tensor.Tensor, dim int) (t tensor.Tensor, err error) {
 	switch ts[0].(type) {
 	case *cputensor.CPUTensor:
 		t, err = cputensor.Concat(ts, dim)
-		if err != nil {
-			return t, fmt.Errorf("Concat: %w", err)
-		}
-		return t, nil
 	case *cudatensor.CUDATensor:
 		t, err = cudatensor.Concat(ts, dim)
-		if err != nil {
-			return t, fmt.Errorf("Concat: %w", err)
-		}
-		return t, nil
 	default:
 		panic("unreachable: unsupported implementation")
 	}
+
+	if err != nil {
+		return t, fmt.Errorf("Concat: %w", err)
+	}
+
+	return t, nil
 }
 
 // BackPropagate computes gradients for t and all tensors in its computation graph.
@@ -220,7 +204,7 @@ func BackPropagate(t tensor.Tensor) (err error) {
 
 	err = gradtrack.BackPropagate(t)
 	if err != nil {
-		return fmt.Errorf("BackPropagate: %w", err)
+		return fmt.Errorf("BackPropagate operation failed: %w", err)
 	}
 
 	return nil

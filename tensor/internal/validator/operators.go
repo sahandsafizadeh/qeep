@@ -2,7 +2,7 @@ package validator
 
 import "fmt"
 
-func ValidateBinaryFuncDimsMatch(dims1, dims2 []int) error {
+func ValidateBinaryFuncDimsMatch(dims1, dims2 []int) (err error) {
 	if len(dims1) != len(dims2) {
 		return fmt.Errorf("expected number of dimensions to match: (%d) != (%d)", len(dims1), len(dims2))
 	}
@@ -16,7 +16,7 @@ func ValidateBinaryFuncDimsMatch(dims1, dims2 []int) error {
 	return nil
 }
 
-func ValidateDotProductDims(dims1, dims2 []int) error {
+func ValidateDotProductDims(dims1, dims2 []int) (err error) {
 	ldt1 := len(dims1)
 	ldt2 := len(dims2)
 
@@ -31,7 +31,7 @@ func ValidateDotProductDims(dims1, dims2 []int) error {
 	return nil
 }
 
-func ValidateMatMulDims(dims1, dims2 []int) error {
+func ValidateMatMulDims(dims1, dims2 []int) (err error) {
 	ldt1 := len(dims1)
 	ldt2 := len(dims2)
 

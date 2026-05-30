@@ -7,7 +7,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
-func ValidateTransposeDims(dims []int) error {
+func ValidateTransposeDims(dims []int) (err error) {
 	if len(dims) < 2 {
 		return fmt.Errorf("expected tensor to have at least (2) dimensions for transpose: got (%d)", len(dims))
 	}
@@ -15,7 +15,7 @@ func ValidateTransposeDims(dims []int) error {
 	return nil
 }
 
-func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) error {
+func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err error) {
 	srcElems := util.DimsToNumElems(srcDims)
 	dstElems := util.DimsToNumElems(dstDims)
 
@@ -26,7 +26,7 @@ func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) error {
 	return nil
 }
 
-func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) error {
+func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 	if len(dims) == tensor.MaxDims {
 		return fmt.Errorf("operation causes tensor to exceed maximum (%d) dimensions", tensor.MaxDims)
 	}
@@ -38,7 +38,7 @@ func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) error {
 	return nil
 }
 
-func ValidateSqueezeDimAgainstDims(dim int, dims []int) error {
+func ValidateSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 	if dim < 0 || dim >= len(dims) {
 		return fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 	}
@@ -50,7 +50,7 @@ func ValidateSqueezeDimAgainstDims(dim int, dims []int) error {
 	return nil
 }
 
-func ValidateFlattenDimAgainstDims(dim int, dims []int) error {
+func ValidateFlattenDimAgainstDims(dim int, dims []int) (err error) {
 	if dim < 0 || dim >= len(dims) {
 		return fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 	}
@@ -58,7 +58,7 @@ func ValidateFlattenDimAgainstDims(dim int, dims []int) error {
 	return nil
 }
 
-func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int) error {
+func ValidateBroadcastSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err error) {
 	i := len(srcDims)
 	j := len(dstDims)
 

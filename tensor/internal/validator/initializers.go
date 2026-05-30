@@ -6,7 +6,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func ValidateInputDims(dims []int) error {
+func ValidateInputDims(dims []int) (err error) {
 	if len(dims) > tensor.MaxDims {
 		return fmt.Errorf("expected at most (%d) dimensions: got (%d)", tensor.MaxDims, len(dims))
 	}
@@ -20,7 +20,7 @@ func ValidateInputDims(dims []int) error {
 	return nil
 }
 
-func ValidateRandUParams(l, u float64) error {
+func ValidateRandUParams(l, u float64) (err error) {
 	if !(l < u) {
 		return fmt.Errorf("expected uniform random lower bound to be less than the upper bound: (%f) >= (%f)", l, u)
 	}
@@ -28,7 +28,7 @@ func ValidateRandUParams(l, u float64) error {
 	return nil
 }
 
-func ValidateRandNParams(_, s float64) error {
+func ValidateRandNParams(_, s float64) (err error) {
 	if !(s > 0) {
 		return fmt.Errorf("expected normal random standard deviation to be positive: got (%f)", s)
 	}
@@ -36,7 +36,7 @@ func ValidateRandNParams(_, s float64) error {
 	return nil
 }
 
-func ValidateInputDataDimUnity(data any) error {
+func ValidateInputDataDimUnity(data any) (err error) {
 	zeroLenErr := fmt.Errorf("expected data to not have zero length along any dimension")
 	dimUnityErr := fmt.Errorf("expected data to have have equal length along every dimension")
 
@@ -102,7 +102,7 @@ func ValidateInputDataDimUnity(data any) error {
 	return nil
 }
 
-func ValidateConcatTensorsDimsAlongDim(tsDims [][]int, dim int) error {
+func ValidateConcatTensorsDimsAlongDim(tsDims [][]int, dim int) (err error) {
 	base := tsDims[0]
 	for i, dims := range tsDims {
 		if len(dims) == 0 {

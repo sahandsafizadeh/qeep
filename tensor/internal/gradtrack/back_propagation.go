@@ -6,8 +6,8 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func BackPropagate(t tensor.Tensor) (err error) {
-	err = backward(startEdge(t))
+func BackPropagate(t tensor.Tensor) error {
+	err := backward(startEdge(t))
 	if err != nil {
 		return fmt.Errorf("BackPropagate: %w", err)
 	}
@@ -25,7 +25,7 @@ func startEdge(t tensor.Tensor) *backwardEdge {
 	}
 }
 
-func backward(edge *backwardEdge) (err error) {
+func backward(edge *backwardEdge) error {
 	gctx := gradContextOf(edge.target)
 
 	if !gctx.tracked {
@@ -58,10 +58,12 @@ func accumulateGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
 	if gctx.gradient == nil {
 		gctx.gradient = grad
 	} else {
-		gctx.gradient, err = gctx.gradient.Add(grad)
+		acc, err := gctx.gradient.Add(grad)
 		if err != nil {
 			return err
 		}
+
+		gctx.gradient = acc
 	}
 
 	return nil

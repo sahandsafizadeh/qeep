@@ -27,14 +27,12 @@ type SimpleConfig struct {
 func NewSimple(x [][]float64, y [][]float64, conf *SimpleConfig) (bg *Simple, err error) {
 	conf, err = toValidSimpleConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Simple config data validation failed: %w", err)
-		return
+		return bg, fmt.Errorf("Simple config data validation failed: %w", err)
 	}
 
 	x, y, err = toValidSimpleData(x, y)
 	if err != nil {
-		err = fmt.Errorf("Simple input data validation failed: %w", err)
-		return
+		return bg, fmt.Errorf("Simple input data validation failed: %w", err)
 	}
 
 	bg = &Simple{
@@ -62,7 +60,7 @@ func (bg *Simple) Reset() {
 	bg.index = 0
 }
 
-func (bg *Simple) Count() (count int) {
+func (bg *Simple) Count() int {
 	if bg.length%bg.batchSize == 0 {
 		return bg.length / bg.batchSize
 	} else {
@@ -70,14 +68,13 @@ func (bg *Simple) Count() (count int) {
 	}
 }
 
-func (bg *Simple) HasNext() (ok bool) {
+func (bg *Simple) HasNext() bool {
 	return bg.index < bg.length
 }
 
 func (bg *Simple) NextBatch() (xs []tensor.Tensor, y tensor.Tensor, err error) {
 	if !bg.HasNext() {
-		err = fmt.Errorf("Simple state validation failed: expected next batch to exist")
-		return
+		return xs, y, fmt.Errorf("Simple state validation failed: expected next batch to exist")
 	}
 
 	index := bg.index
@@ -111,16 +108,14 @@ func (bg *Simple) NextBatch() (xs []tensor.Tensor, y tensor.Tensor, err error) {
 
 func toValidSimpleConfig(iconf *SimpleConfig) (conf *SimpleConfig, err error) {
 	if iconf == nil {
-		err = fmt.Errorf("expected config not to be nil")
-		return
+		return conf, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(SimpleConfig)
 	*conf = *iconf
 
 	if conf.BatchSize <= 0 {
-		err = fmt.Errorf("expected 'BatchSize' to be positive: got (%d)", conf.BatchSize)
-		return
+		return conf, fmt.Errorf("expected 'BatchSize' to be positive: got (%d)", conf.BatchSize)
 	}
 
 	if conf.Device == 0 {
@@ -135,13 +130,11 @@ func toValidSimpleData(ix [][]float64, iy [][]float64) (x [][]float64, y [][]flo
 	leny := len(iy)
 
 	if lenx < 1 || leny < 1 {
-		err = fmt.Errorf("expected input slices 'x' and 'y' to have at least one record along dimension (0)")
-		return
+		return x, y, fmt.Errorf("expected input slices 'x' and 'y' to have at least one record along dimension (0)")
 	}
 
 	if lenx != leny {
-		err = fmt.Errorf("expected input slices 'x' and 'y' to have the same number of records along dimension (0): (%d) != (%d)", lenx, leny)
-		return
+		return x, y, fmt.Errorf("expected input slices 'x' and 'y' to have the same number of records along dimension (0): (%d) != (%d)", lenx, leny)
 	}
 
 	basex := len(ix[0])
@@ -158,18 +151,15 @@ func toValidSimpleData(ix [][]float64, iy [][]float64) (x [][]float64, y [][]flo
 		lenyi := len(iyi)
 
 		if lenxi < 1 || lenyi < 1 {
-			err = fmt.Errorf("expected input slices 'x' and 'y' to have at least one record along dimension (1): got none at position (%d)", i)
-			return
+			return x, y, fmt.Errorf("expected input slices 'x' and 'y' to have at least one record along dimension (1): got none at position (%d)", i)
 		}
 
 		if lenxi != basex {
-			err = fmt.Errorf("expected input slice 'x' to have equal length along every record in dimension (1): (%d) != (%d) at position (%d)", lenxi, basex, i)
-			return
+			return x, y, fmt.Errorf("expected input slice 'x' to have equal length along every record in dimension (1): (%d) != (%d) at position (%d)", lenxi, basex, i)
 		}
 
 		if lenyi != basey {
-			err = fmt.Errorf("expected input slice 'y' to have equal length along every record in dimension (1): (%d) != (%d) at position (%d)", lenyi, basey, i)
-			return
+			return x, y, fmt.Errorf("expected input slice 'y' to have equal length along every record in dimension (1): (%d) != (%d) at position (%d)", lenyi, basey, i)
 		}
 
 		x[i] = make([]float64, len(ixi))

@@ -55,7 +55,7 @@ func ValidateInputDataDimUnity(data any) (err error) {
 		dim := len(v[0])
 		for _, sub := range v {
 			if err := ValidateInputDataDimUnity(sub); err != nil {
-				return fmt.Errorf("ValidateInputDataDimUnity input data validation failed: %w", err)
+				return err
 			}
 
 			if len(sub) != dim {
@@ -71,7 +71,7 @@ func ValidateInputDataDimUnity(data any) (err error) {
 		dim := len(v[0])
 		for _, sub := range v {
 			if err := ValidateInputDataDimUnity(sub); err != nil {
-				return fmt.Errorf("ValidateInputDataDimUnity input data validation failed: %w", err)
+				return err
 			}
 
 			if len(sub) != dim {
@@ -87,7 +87,7 @@ func ValidateInputDataDimUnity(data any) (err error) {
 		dim := len(v[0])
 		for _, sub := range v {
 			if err := ValidateInputDataDimUnity(sub); err != nil {
-				return fmt.Errorf("ValidateInputDataDimUnity input data validation failed: %w", err)
+				return err
 			}
 
 			if len(sub) != dim {

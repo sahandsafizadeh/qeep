@@ -13,15 +13,22 @@ import (
 func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Full tensor config data validation failed: %w", err)
-		return
+		return t, fmt.Errorf("Full tensor config data validation failed: %w", err)
 	}
 
 	switch conf.Device {
 	case CPU:
-		return cputensor.Full(dims, value, conf.GradTrack)
+		t, err = cputensor.Full(dims, value, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Full: %w", err)
+		}
+		return t, nil
 	case CUDA:
-		return cudatensor.Full(dims, value, conf.GradTrack)
+		t, err = cudatensor.Full(dims, value, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Full: %w", err)
+		}
+		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
@@ -31,15 +38,22 @@ func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) 
 func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Zeros tensor config data validation failed: %w", err)
-		return
+		return t, fmt.Errorf("Zeros tensor config data validation failed: %w", err)
 	}
 
 	switch conf.Device {
 	case CPU:
-		return cputensor.Zeros(dims, conf.GradTrack)
+		t, err = cputensor.Zeros(dims, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Zeros: %w", err)
+		}
+		return t, nil
 	case CUDA:
-		return cudatensor.Zeros(dims, conf.GradTrack)
+		t, err = cudatensor.Zeros(dims, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Zeros: %w", err)
+		}
+		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
@@ -49,15 +63,22 @@ func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
 func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Ones tensor config data validation failed: %w", err)
-		return
+		return t, fmt.Errorf("Ones tensor config data validation failed: %w", err)
 	}
 
 	switch conf.Device {
 	case CPU:
-		return cputensor.Ones(dims, conf.GradTrack)
+		t, err = cputensor.Ones(dims, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Ones: %w", err)
+		}
+		return t, nil
 	case CUDA:
-		return cudatensor.Ones(dims, conf.GradTrack)
+		t, err = cudatensor.Ones(dims, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Ones: %w", err)
+		}
+		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
@@ -67,15 +88,22 @@ func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
 func Eye(d int, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Eye tensor config data validation failed: %w", err)
-		return
+		return t, fmt.Errorf("Eye tensor config data validation failed: %w", err)
 	}
 
 	switch conf.Device {
 	case CPU:
-		return cputensor.Eye(d, conf.GradTrack)
+		t, err = cputensor.Eye(d, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Eye: %w", err)
+		}
+		return t, nil
 	case CUDA:
-		return cudatensor.Eye(d, conf.GradTrack)
+		t, err = cudatensor.Eye(d, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Eye: %w", err)
+		}
+		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
@@ -85,15 +113,22 @@ func Eye(d int, conf *Config) (t tensor.Tensor, err error) {
 func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("RandU tensor config data validation failed: %w", err)
-		return
+		return t, fmt.Errorf("RandU tensor config data validation failed: %w", err)
 	}
 
 	switch conf.Device {
 	case CPU:
-		return cputensor.RandU(dims, l, u, conf.GradTrack)
+		t, err = cputensor.RandU(dims, l, u, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("RandU: %w", err)
+		}
+		return t, nil
 	case CUDA:
-		return cudatensor.RandU(dims, l, u, conf.GradTrack)
+		t, err = cudatensor.RandU(dims, l, u, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("RandU: %w", err)
+		}
+		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
@@ -103,15 +138,22 @@ func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) 
 func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("RandN tensor config data validation failed: %w", err)
-		return
+		return t, fmt.Errorf("RandN tensor config data validation failed: %w", err)
 	}
 
 	switch conf.Device {
 	case CPU:
-		return cputensor.RandN(dims, u, s, conf.GradTrack)
+		t, err = cputensor.RandN(dims, u, s, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("RandN: %w", err)
+		}
+		return t, nil
 	case CUDA:
-		return cudatensor.RandN(dims, u, s, conf.GradTrack)
+		t, err = cudatensor.RandN(dims, u, s, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("RandN: %w", err)
+		}
+		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
@@ -121,15 +163,22 @@ func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) 
 func Of[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Of tensor config data validation failed: %w", err)
-		return
+		return t, fmt.Errorf("Of tensor config data validation failed: %w", err)
 	}
 
 	switch conf.Device {
 	case CPU:
-		return cputensor.Of(data, conf.GradTrack)
+		t, err = cputensor.Of(data, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Of: %w", err)
+		}
+		return t, nil
 	case CUDA:
-		return cudatensor.Of(data, conf.GradTrack)
+		t, err = cudatensor.Of(data, conf.GradTrack)
+		if err != nil {
+			return t, fmt.Errorf("Of: %w", err)
+		}
+		return t, nil
 	default:
 		panic("unreachable: unsupported device")
 	}
@@ -140,15 +189,22 @@ func Of[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
 func Concat(ts []tensor.Tensor, dim int) (t tensor.Tensor, err error) {
 	err = validateImplementationsUnity(ts)
 	if err != nil {
-		err = fmt.Errorf("Concat tensor implementation validation failed: %w", err)
-		return
+		return t, fmt.Errorf("Concat tensor implementation validation failed: %w", err)
 	}
 
 	switch ts[0].(type) {
 	case *cputensor.CPUTensor:
-		return cputensor.Concat(ts, dim)
+		t, err = cputensor.Concat(ts, dim)
+		if err != nil {
+			return t, fmt.Errorf("Concat: %w", err)
+		}
+		return t, nil
 	case *cudatensor.CUDATensor:
-		return cudatensor.Concat(ts, dim)
+		t, err = cudatensor.Concat(ts, dim)
+		if err != nil {
+			return t, fmt.Errorf("Concat: %w", err)
+		}
+		return t, nil
 	default:
 		panic("unreachable: unsupported implementation")
 	}
@@ -159,11 +215,15 @@ func Concat(ts []tensor.Tensor, dim int) (t tensor.Tensor, err error) {
 func BackPropagate(t tensor.Tensor) (err error) {
 	err = validateImplementation(t)
 	if err != nil {
-		err = fmt.Errorf("BackPropagate tensor implementation validation failed: %w", err)
-		return
+		return fmt.Errorf("BackPropagate tensor implementation validation failed: %w", err)
 	}
 
-	return gradtrack.BackPropagate(t)
+	err = gradtrack.BackPropagate(t)
+	if err != nil {
+		return fmt.Errorf("BackPropagate: %w", err)
+	}
+
+	return nil
 }
 
 /* ----- helpers ----- */
@@ -183,8 +243,7 @@ func toValidConfig(iconf *Config) (conf *Config, err error) {
 	case CPU:
 	case CUDA:
 	default:
-		err = fmt.Errorf("invalid input device")
-		return
+		return conf, fmt.Errorf("invalid input device")
 	}
 
 	return conf, nil
@@ -197,15 +256,13 @@ func validateImplementation(t tensor.Tensor) (err error) {
 		return nil
 
 	default:
-		err = fmt.Errorf("unsupported tensor implementation")
-		return
+		return fmt.Errorf("unsupported tensor implementation")
 	}
 }
 
 func validateImplementationsUnity(ts []tensor.Tensor) (err error) {
 	if len(ts) < 2 {
-		err = fmt.Errorf("expected at least (2) tensors: got (%d)", len(ts))
-		return
+		return fmt.Errorf("expected at least (2) tensors: got (%d)", len(ts))
 	}
 
 	var dev Device
@@ -216,21 +273,18 @@ func validateImplementationsUnity(ts []tensor.Tensor) (err error) {
 			if dev == 0 {
 				dev = CPU
 			} else if dev != CPU {
-				err = fmt.Errorf("input tensors not on the same device")
-				return
+				return fmt.Errorf("input tensors not on the same device")
 			}
 
 		case *cudatensor.CUDATensor:
 			if dev == 0 {
 				dev = CUDA
 			} else if dev != CUDA {
-				err = fmt.Errorf("input tensors not on the same device")
-				return
+				return fmt.Errorf("input tensors not on the same device")
 			}
 
 		default:
-			err = fmt.Errorf("unsupported tensor implementation")
-			return
+			return fmt.Errorf("unsupported tensor implementation")
 		}
 	}
 

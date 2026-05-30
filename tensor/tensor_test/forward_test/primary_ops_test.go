@@ -514,7 +514,7 @@ func TestOfAt(t *testing.T) {
 			_, err := tensor.Of([][]float64{{}, {}}, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of zero len along dimension (1)")
-			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: ValidateInputDataDimUnity input data validation failed: expected data to not have zero length along any dimension", dev) {
+			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: expected data to not have zero length along any dimension", dev) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -523,7 +523,7 @@ func TestOfAt(t *testing.T) {
 			_, err := tensor.Of([][]float64{{}, {-1.}}, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of zero len along dimension (1)")
-			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: ValidateInputDataDimUnity input data validation failed: expected data to not have zero length along any dimension", dev) {
+			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: expected data to not have zero length along any dimension", dev) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -532,7 +532,7 @@ func TestOfAt(t *testing.T) {
 			_, err := tensor.Of([][][]float64{{{}}}, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of zero len along dimension (1)")
-			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: ValidateInputDataDimUnity input data validation failed: ValidateInputDataDimUnity input data validation failed: expected data to not have zero length along any dimension", dev) {
+			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: expected data to not have zero length along any dimension", dev) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -557,7 +557,7 @@ func TestOfAt(t *testing.T) {
 			}, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of inconsistent tensor len along dimension (2)")
-			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: ValidateInputDataDimUnity input data validation failed: expected data to have have equal length along every dimension", dev) {
+			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: expected data to have have equal length along every dimension", dev) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -583,7 +583,7 @@ func TestOfAt(t *testing.T) {
 			}, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of inconsistent tensor len along dimension (2)")
-			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: ValidateInputDataDimUnity input data validation failed: expected data to have have equal length along every dimension", dev) {
+			} else if err.Error() != fmt.Sprintf("%s initialization: Of input data validation failed: expected data to have have equal length along every dimension", dev) {
 				t.Fatal("unexpected error message returned")
 			}
 		})

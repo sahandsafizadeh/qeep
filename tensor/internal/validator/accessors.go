@@ -6,7 +6,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func ValidateAtIndexAgainstDims(index []int, dims []int) error {
+func ValidateAtIndexAgainstDims(index []int, dims []int) (err error) {
 	if len(index) != len(dims) {
 		return fmt.Errorf("expected index length to be equal to the number of dimensions: (%d) != (%d)", len(index), len(dims))
 	}
@@ -20,7 +20,7 @@ func ValidateAtIndexAgainstDims(index []int, dims []int) error {
 	return nil
 }
 
-func ValidateSliceIndexAgainstDims(index []tensor.Range, dims []int) error {
+func ValidateSliceIndexAgainstDims(index []tensor.Range, dims []int) (err error) {
 	if len(index) > len(dims) {
 		return fmt.Errorf("expected index length to be smaller than or equal to the number of dimensions: (%d) > (%d)", len(index), len(dims))
 	}
@@ -49,7 +49,7 @@ func ValidateSliceIndexAgainstDims(index []tensor.Range, dims []int) error {
 	return nil
 }
 
-func ValidatePatchIndexAgainstDims(index []tensor.Range, srcDims, dstDims []int) error {
+func ValidatePatchIndexAgainstDims(index []tensor.Range, srcDims, dstDims []int) (err error) {
 	if len(srcDims) != len(dstDims) {
 		return fmt.Errorf("expected number of dimensions to match among source and target tensors: (%d) != (%d)", len(srcDims), len(dstDims))
 	}
@@ -60,7 +60,7 @@ func ValidatePatchIndexAgainstDims(index []tensor.Range, srcDims, dstDims []int)
 		}
 	}
 
-	err := ValidateSliceIndexAgainstDims(index, dstDims)
+	err = ValidateSliceIndexAgainstDims(index, dstDims)
 	if err != nil {
 		return fmt.Errorf("index incompatible with target tensor: %w", err)
 	}

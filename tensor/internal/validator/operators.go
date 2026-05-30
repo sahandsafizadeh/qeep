@@ -7,7 +7,7 @@ func ValidateBinaryFuncDimsMatch(dims1, dims2 []int) (err error) {
 		return fmt.Errorf("expected number of dimensions to match: (%d) != (%d)", len(dims1), len(dims2))
 	}
 
-	for i := 0; i < len(dims1); i++ {
+	for i := range dims1 {
 		if dims1[i] != dims2[i] {
 			return fmt.Errorf("expected sizes to match at dimension (%d): (%d) != (%d)", i, dims1[i], dims2[i])
 		}

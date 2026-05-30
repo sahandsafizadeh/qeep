@@ -13,7 +13,7 @@ func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int) *GradContext {
 	backEdges := make([]*backwardEdge, len(xs))
 
 	var base int
-	for i := 0; i < len(backEdges); i++ {
+	for i := range backEdges {
 		shape := xs[i].Shape()
 		index := make([]tensor.Range, len(shape))
 

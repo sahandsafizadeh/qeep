@@ -54,7 +54,7 @@ func ValidatePatchIndexAgainstDims(index []tensor.Range, srcDims, dstDims []int)
 		return fmt.Errorf("expected number of dimensions to match among source and target tensors: (%d) != (%d)", len(srcDims), len(dstDims))
 	}
 
-	for i := 0; i < len(srcDims); i++ {
+	for i := range srcDims {
 		if srcDims[i] > dstDims[i] {
 			return fmt.Errorf("expected source tensor size not to exceed that of target tensor at dimension (%d): (%d) > (%d)", i, srcDims[i], dstDims[i])
 		}

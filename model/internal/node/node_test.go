@@ -518,7 +518,7 @@ func TestNode(t *testing.T) {
 			err = nw.Forward()
 			if err == nil {
 				t.Fatal("expected error because of FC forward validation")
-			} else if err.Error() != "FC input data validation failed: expected exactly one input tensor: got (2)" {
+			} else if err.Error() != "forward operation on node: FC input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -559,7 +559,7 @@ func TestNode(t *testing.T) {
 			err = nw.Optimize(optimizer)
 			if err == nil {
 				t.Fatal("expected error because of optimizer validation")
-			} else if err.Error() != "SGD input data validation failed: expected tensor's gradient not to be nil" {
+			} else if err.Error() != "optimize operation on node: SGD input data validation failed: expected tensor's gradient not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -576,12 +576,12 @@ type simple2DWeightedLayer struct {
 func newSimpleWeightedLayer(conf *tensor.Config) (c *simple2DWeightedLayer, err error) {
 	a, err := tensor.Full([]int{2}, 3., conf)
 	if err != nil {
-		return
+		return c, err
 	}
 
 	b, err := tensor.Full([]int{2}, 2., conf)
 	if err != nil {
-		return
+		return c, err
 	}
 
 	return &simple2DWeightedLayer{a: a, b: b}, nil
@@ -592,12 +592,12 @@ func (c *simple2DWeightedLayer) Forward(xs ...tensor.Tensor) (y tensor.Tensor, e
 
 	y, err = x.Add(c.a)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	y, err = y.Add(c.b)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	return y, nil

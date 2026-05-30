@@ -1,6 +1,8 @@
 package node
 
 import (
+	"fmt"
+
 	"github.com/sahandsafizadeh/qeep/model/internal/contract"
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
@@ -13,7 +15,7 @@ type Node struct {
 	nlayer   int
 }
 
-func NewNode(layer contract.Layer) (n *Node) {
+func NewNode(layer contract.Layer) *Node {
 	return &Node{layer: layer}
 }
 
@@ -57,7 +59,7 @@ func (n *Node) Forward() (err error) {
 
 	y, err := n.layer.Forward(xs...)
 	if err != nil {
-		return
+		return fmt.Errorf("forward operation on node: %w", err)
 	}
 
 	n.result = y
@@ -78,7 +80,7 @@ func (n *Node) Optimize(optimizer contract.Optimizer) (err error) {
 
 		err = optimizer.Update(w.Value)
 		if err != nil {
-			return
+			return fmt.Errorf("optimize operation on node: %w", err)
 		}
 	}
 

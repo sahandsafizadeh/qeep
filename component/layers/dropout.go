@@ -20,8 +20,7 @@ const DropoutDefaultRate = 0.5
 func NewDropout(conf *DropoutConfig) (c *Dropout, err error) {
 	conf, err = toValidDropoutConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Dropout config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("Dropout config data validation failed: %w", err)
 	}
 
 	return &Dropout{
@@ -32,14 +31,12 @@ func NewDropout(conf *DropoutConfig) (c *Dropout, err error) {
 func (c *Dropout) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	x, err := c.toValidInputs(xs)
 	if err != nil {
-		err = fmt.Errorf("Dropout input data validation failed: %w", err)
-		return
+		return y, fmt.Errorf("Dropout input data validation failed: %w", err)
 	}
 
 	y, err = c.forward(x)
 	if err != nil {
-		err = fmt.Errorf("Dropout forward failed: %w", err)
-		return
+		return y, fmt.Errorf("Dropout forward failed: %w", err)
 	}
 
 	return y, nil
@@ -61,7 +58,7 @@ func (c *Dropout) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 		GradTrack: false,
 	})
 	if err != nil {
-		return
+		return y, err
 	}
 
 	droProb, err := tensor.RandU(dims, 0, 1, &tensor.Config{
@@ -69,12 +66,12 @@ func (c *Dropout) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 		GradTrack: false,
 	})
 	if err != nil {
-		return
+		return y, err
 	}
 
 	dropout, err := droRate.Le(droProb)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	dropout = dropout.Scale(scale)
@@ -86,8 +83,7 @@ func (c *Dropout) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 func (c *Dropout) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 	if len(xs) != 1 {
-		err = fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
-		return
+		return x, fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
 	}
 
 	x = xs[0]
@@ -106,8 +102,7 @@ func toValidDropoutConfig(iconf *DropoutConfig) (conf *DropoutConfig, err error)
 	*conf = *iconf
 
 	if conf.Rate < 0 || conf.Rate >= 1 {
-		err = fmt.Errorf("expected 'Rate' to be in range [0,1): got (%f)", conf.Rate)
-		return
+		return conf, fmt.Errorf("expected 'Rate' to be in range [0,1): got (%f)", conf.Rate)
 	}
 
 	return conf, nil

@@ -2,50 +2,50 @@ package cputensor
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
 
-func (t *CPUTensor) transpose() (o *CPUTensor) {
+func (t *CPUTensor) transpose() *CPUTensor {
 	elemGen := t.transposeElemGenerator()
 	dims := util.TransposeDims(t.dims)
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = dims
 	o.initWith(elemGen)
 
 	return o
 }
 
-func (t *CPUTensor) reshape(shape []int) (o *CPUTensor) {
+func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 	elemGen := t.linearElemGenerator()
 	dims := make([]int, len(shape))
 	copy(dims, shape)
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = dims
 	o.initWith(elemGen)
 
 	return o
 }
 
-func (t *CPUTensor) broadcast(shape []int) (o *CPUTensor) {
+func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
 	elemGen := t.broadcastElemGenerator(shape)
 	dims := make([]int, len(shape))
 	copy(dims, shape)
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = dims
 	o.initWith(elemGen)
 
 	return o
 }
 
-func (t *CPUTensor) unsqueeze(dim int) (o *CPUTensor) {
+func (t *CPUTensor) unsqueeze(dim int) *CPUTensor {
 	return t.reshape(util.UnSqueezeDims(dim, t.dims))
 }
 
-func (t *CPUTensor) squeeze(dim int) (o *CPUTensor) {
+func (t *CPUTensor) squeeze(dim int) *CPUTensor {
 	return t.reshape(util.SqueezeDims(dim, t.dims))
 }
 
-func (t *CPUTensor) flatten(fromDim int) (o *CPUTensor) {
+func (t *CPUTensor) flatten(fromDim int) *CPUTensor {
 	return t.reshape(util.FlattenDims(fromDim, t.dims))
 }
 

@@ -1,5 +1,4 @@
 //go:build cuda
-// +build cuda
 
 package cudatensor
 
@@ -18,8 +17,7 @@ import (
 func assertCUDATensor(t tensor.Tensor) (ct *CUDATensor, err error) {
 	ct, ok := t.(*CUDATensor)
 	if !ok {
-		err = fmt.Errorf("expected input tensor to be on CUDA")
-		return
+		return ct, fmt.Errorf("expected input tensor to be on CUDA")
 	}
 
 	return ct, nil
@@ -30,14 +28,14 @@ func assertCUDATensors(ts []tensor.Tensor) (cts []*CUDATensor, err error) {
 	for i, t := range ts {
 		cts[i], err = assertCUDATensor(t)
 		if err != nil {
-			return
+			return cts, err
 		}
 	}
 
 	return cts, nil
 }
 
-func getCudaDataOf(t *CUDATensor) (cd C.CudaData) {
+func getCudaDataOf(t *CUDATensor) C.CudaData {
 	arr := (*C.double)(t.data)
 	size := (C.size_t)(t.n)
 
@@ -47,7 +45,7 @@ func getCudaDataOf(t *CUDATensor) (cd C.CudaData) {
 	}
 }
 
-func getDimArrOf(dims []int) (da C.DimArr) {
+func getDimArrOf(dims []int) C.DimArr {
 	var arr [C.MAX_DIMS]C.int
 	for i, d := range dims {
 		arr[i] = (C.int)(d)
@@ -61,7 +59,7 @@ func getDimArrOf(dims []int) (da C.DimArr) {
 	}
 }
 
-func getRangeArrOf(index []tensor.Range) (ra C.RangeArr) {
+func getRangeArrOf(index []tensor.Range) C.RangeArr {
 	var arr [C.MAX_DIMS]C.Range
 	for i, r := range index {
 		arr[i] = C.Range{

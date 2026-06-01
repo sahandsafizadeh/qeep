@@ -18,7 +18,7 @@ func (s *Stream) Cursor() any {
 	return s.cursor
 }
 
-func (s *Stream) Error() error {
+func (s *Stream) Error() (err error) {
 	if len(s.errCtx) == 0 {
 		return nil
 	}
@@ -41,7 +41,7 @@ func (s *Stream) Error() error {
 	return errors.New(chained.String())
 }
 
-func NewStream(initFunc layerInitFunc, xs []*Stream) (y *Stream) {
+func NewStream(initFunc layerInitFunc, xs []*Stream) *Stream {
 	/*
 		CHANGE WITH CAUTION:
 		- this function only handles error of 'initFunc'.

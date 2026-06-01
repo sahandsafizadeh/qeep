@@ -16,7 +16,7 @@ type LeakyReluConfig struct {
 
 const LeakyReluDefaultM = 0.01
 
-func NewLeakyRelu(conf *LeakyReluConfig) (c *LeakyRelu) {
+func NewLeakyRelu(conf *LeakyReluConfig) *LeakyRelu {
 	conf = toValidLeakyReluConfig(conf)
 
 	return &LeakyRelu{
@@ -27,14 +27,12 @@ func NewLeakyRelu(conf *LeakyReluConfig) (c *LeakyRelu) {
 func (c *LeakyRelu) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	x, err := c.toValidInputs(xs)
 	if err != nil {
-		err = fmt.Errorf("LeakyRelu input data validation failed: %w", err)
-		return
+		return y, fmt.Errorf("LeakyRelu input data validation failed: %w", err)
 	}
 
 	y, err = c.forward(x)
 	if err != nil {
-		err = fmt.Errorf("LeakyRelu forward failed: %w", err)
-		return
+		return y, fmt.Errorf("LeakyRelu forward failed: %w", err)
 	}
 
 	return y, nil
@@ -43,17 +41,17 @@ func (c *LeakyRelu) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 func (c *LeakyRelu) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 	_0, err := c.toUntrackedFull(x, 0)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	s1, err := _0.ElMax(x)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	s2, err := _0.ElMin(x)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	s2 = s2.Scale(c.m)
@@ -65,8 +63,7 @@ func (c *LeakyRelu) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 func (c *LeakyRelu) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 	if len(xs) != 1 {
-		err = fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
-		return
+		return x, fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
 	}
 
 	x = xs[0]
@@ -84,14 +81,14 @@ func (c *LeakyRelu) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Te
 	})
 }
 
-func toValidLeakyReluConfig(iconf *LeakyReluConfig) (conf *LeakyReluConfig) {
+func toValidLeakyReluConfig(iconf *LeakyReluConfig) *LeakyReluConfig {
 	if iconf == nil {
 		iconf = &LeakyReluConfig{
 			M: LeakyReluDefaultM,
 		}
 	}
 
-	conf = new(LeakyReluConfig)
+	conf := new(LeakyReluConfig)
 	*conf = *iconf
 
 	return conf

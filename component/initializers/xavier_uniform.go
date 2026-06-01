@@ -20,8 +20,7 @@ type XavierUniformConfig struct {
 func NewXavierUniform(conf *XavierUniformConfig) (c *XavierUniform, err error) {
 	conf, err = toValidXavierUniformConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("XavierUniform config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("XavierUniform config data validation failed: %w", err)
 	}
 
 	return &XavierUniform{
@@ -31,6 +30,15 @@ func NewXavierUniform(conf *XavierUniformConfig) (c *XavierUniform, err error) {
 }
 
 func (c *XavierUniform) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
+	x, err = c.init(shape, device)
+	if err != nil {
+		return x, fmt.Errorf("XavierUniform init failed: %w", err)
+	}
+
+	return x, nil
+}
+
+func (c *XavierUniform) init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	r := math.Sqrt(6. / float64(c.fanIn+c.fanOut))
 	return tensor.RandU(shape, -r, r, tensorInitConf(device))
 }
@@ -39,21 +47,18 @@ func (c *XavierUniform) Init(shape []int, device tensor.Device) (x tensor.Tensor
 
 func toValidXavierUniformConfig(iconf *XavierUniformConfig) (conf *XavierUniformConfig, err error) {
 	if iconf == nil {
-		err = fmt.Errorf("expected config not to be nil")
-		return
+		return conf, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(XavierUniformConfig)
 	*conf = *iconf
 
 	if conf.FanIn <= 0 {
-		err = fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
-		return
+		return conf, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
 	}
 
 	if conf.FanOut <= 0 {
-		err = fmt.Errorf("expected 'FanOut' to be positive: got (%d)", conf.FanOut)
-		return
+		return conf, fmt.Errorf("expected 'FanOut' to be positive: got (%d)", conf.FanOut)
 	}
 
 	return conf, nil

@@ -31,8 +31,7 @@ const (
 func NewBatchNorm(conf *BatchNormConfig) (c *BatchNorm, err error) {
 	conf, err = toValidBatchNormConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("BatchNorm config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("BatchNorm config data validation failed: %w", err)
 	}
 
 	return &BatchNorm{
@@ -66,14 +65,12 @@ func (c *BatchNorm) Weights() []Weight {
 func (c *BatchNorm) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	x, err := c.toValidInputs(xs)
 	if err != nil {
-		err = fmt.Errorf("BatchNorm input data validation failed: %w", err)
-		return
+		return y, fmt.Errorf("BatchNorm input data validation failed: %w", err)
 	}
 
 	y, err = c.forward(x)
 	if err != nil {
-		err = fmt.Errorf("BatchNorm forward failed: %w", err)
-		return
+		return y, fmt.Errorf("BatchNorm forward failed: %w", err)
 	}
 
 	return y, nil
@@ -96,21 +93,19 @@ func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 		mean = c.MovingMean
 		_var = c.MovingVar
 	} else {
-		var fx tensor.Tensor
-
-		fx, err = flattenToNormDim(x)
+		fx, err := flattenToNormDim(x)
 		if err != nil {
-			return
+			return y, err
 		}
 
 		mean, err = fx.MeanAlong(0)
 		if err != nil {
-			return
+			return y, err
 		}
 
 		_var, err = fx.VarAlong(0)
 		if err != nil {
-			return
+			return y, err
 		}
 
 		momentum := c.momentum
@@ -124,12 +119,12 @@ func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 		c.MovingMean, err = mm1.Add(mm2)
 		if err != nil {
-			return
+			return y, err
 		}
 
 		c.MovingVar, err = mv1.Add(mv2)
 		if err != nil {
-			return
+			return y, err
 		}
 	}
 
@@ -143,34 +138,34 @@ func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 		GradTrack: false,
 	})
 	if err != nil {
-		return
+		return y, err
 	}
 
 	n, err := x.Sub(mean)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	d, err := _var.Add(epsilone)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	d = d.Pow(0.5)
 
 	y, err = n.Div(d)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	y, err = y.Mul(c.Gamma)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	y, err = y.Add(c.Beta)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	return y, nil
@@ -231,7 +226,7 @@ func flattenToNormDim(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 	y, err = x.Reshape([]int{flattened, dims[ndim]})
 	if err != nil {
-		return
+		return y, err
 	}
 
 	return y, nil
@@ -241,8 +236,7 @@ func flattenToNormDim(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 func (c *BatchNorm) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 	if len(xs) != 1 {
-		err = fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
-		return
+		return x, fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
 	}
 
 	x = xs[0]
@@ -250,8 +244,7 @@ func (c *BatchNorm) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err erro
 	shape := x.Shape()
 
 	if len(shape) < 2 {
-		err = fmt.Errorf("expected input tensor to have at least two dimensions (batch, ..., feature): got (%d)", len(shape))
-		return
+		return x, fmt.Errorf("expected input tensor to have at least two dimensions (batch, ..., feature): got (%d)", len(shape))
 	}
 
 	return x, nil
@@ -259,21 +252,18 @@ func (c *BatchNorm) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err erro
 
 func toValidBatchNormConfig(iconf *BatchNormConfig) (conf *BatchNormConfig, err error) {
 	if iconf == nil {
-		err = fmt.Errorf("expected config not to be nil")
-		return
+		return conf, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(BatchNormConfig)
 	*conf = *iconf
 
 	if conf.Momentum < 0 {
-		err = fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
-		return
+		return conf, fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
 	}
 
 	if conf.Eps <= 0 {
-		err = fmt.Errorf("expected 'Eps' to be positive: got (%f)", conf.Eps)
-		return
+		return conf, fmt.Errorf("expected 'Eps' to be positive: got (%f)", conf.Eps)
 	}
 
 	if conf.Device == 0 {

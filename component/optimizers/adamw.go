@@ -38,8 +38,7 @@ const (
 func NewAdamW(conf *AdamWConfig) (c *AdamW, err error) {
 	conf, err = toValidAdamWConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("AdamW config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("AdamW config data validation failed: %w", err)
 	}
 
 	return &AdamW{
@@ -57,10 +56,18 @@ func NewAdamW(conf *AdamWConfig) (c *AdamW, err error) {
 func (c *AdamW) Update(wptr *tensor.Tensor) (err error) {
 	w, g, err := getValidOptimizerInputs(wptr)
 	if err != nil {
-		err = fmt.Errorf("AdamW input data validation failed: %w", err)
-		return
+		return fmt.Errorf("AdamW input data validation failed: %w", err)
 	}
 
+	err = c.update(wptr, w, g)
+	if err != nil {
+		return fmt.Errorf("AdamW update failed: %w", err)
+	}
+
+	return nil
+}
+
+func (c *AdamW) update(wptr *tensor.Tensor, w tensor.Tensor, g tensor.Tensor) (err error) {
 	delta := g
 
 	mh := delta.Scale(1 - c.beta1)
@@ -71,7 +78,7 @@ func (c *AdamW) Update(wptr *tensor.Tensor) (err error) {
 
 		mh, err = mh.Add(m)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -80,7 +87,7 @@ func (c *AdamW) Update(wptr *tensor.Tensor) (err error) {
 
 		vh, err = vh.Add(v)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -97,31 +104,31 @@ func (c *AdamW) Update(wptr *tensor.Tensor) (err error) {
 
 	eps, err := c.toUntrackedFull(vh, c.eps)
 	if err != nil {
-		return
+		return err
 	}
 
 	d, err := vh.Add(eps)
 	if err != nil {
-		return
+		return err
 	}
 
 	delta, err = n.Div(d)
 	if err != nil {
-		return
+		return err
 	}
 
 	wdt := w.Scale(c.weightDecay)
 
 	delta, err = delta.Add(wdt)
 	if err != nil {
-		return
+		return err
 	}
 
 	delta = delta.Scale(c.learningRate)
 
 	*wptr, err = w.Sub(delta)
 	if err != nil {
-		return
+		return err
 	}
 
 	return nil
@@ -154,28 +161,23 @@ func toValidAdamWConfig(iconf *AdamWConfig) (conf *AdamWConfig, err error) {
 	*conf = *iconf
 
 	if conf.LearningRate <= 0 {
-		err = fmt.Errorf("expected 'LearningRate' to be positive: got (%f)", conf.LearningRate)
-		return
+		return conf, fmt.Errorf("expected 'LearningRate' to be positive: got (%f)", conf.LearningRate)
 	}
 
 	if conf.WeightDecay < 0 {
-		err = fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
-		return
+		return conf, fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
 	}
 
 	if conf.Beta1 < 0 {
-		err = fmt.Errorf("expected 'Beta1' not to be negative: got (%f)", conf.Beta1)
-		return
+		return conf, fmt.Errorf("expected 'Beta1' not to be negative: got (%f)", conf.Beta1)
 	}
 
 	if conf.Beta2 < 0 {
-		err = fmt.Errorf("expected 'Beta2' not to be negative: got (%f)", conf.Beta2)
-		return
+		return conf, fmt.Errorf("expected 'Beta2' not to be negative: got (%f)", conf.Beta2)
 	}
 
 	if conf.Eps <= 0 {
-		err = fmt.Errorf("expected 'Eps' to be positive: got (%f)", conf.Eps)
-		return
+		return conf, fmt.Errorf("expected 'Eps' to be positive: got (%f)", conf.Eps)
 	}
 
 	return conf, nil

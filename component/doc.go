@@ -14,4 +14,5 @@ By design:
 - All components must consider the batch dimension.
 - A component is responsible for managing its tensors' device.
 - In the layers, tensors and weights must be initialized lazily after the first Forward call.
+- Public functions must wrap errors from called functions; therefore, never return them as-is.
 */

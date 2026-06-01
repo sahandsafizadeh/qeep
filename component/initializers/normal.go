@@ -22,8 +22,7 @@ const NormalDefaultStdDev = 0.05
 func NewNormal(conf *NormalConfig) (c *Normal, err error) {
 	conf, err = toValidNormalConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Normal config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("Normal config data validation failed: %w", err)
 	}
 
 	return &Normal{
@@ -33,6 +32,15 @@ func NewNormal(conf *NormalConfig) (c *Normal, err error) {
 }
 
 func (c *Normal) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
+	x, err = c.init(shape, device)
+	if err != nil {
+		return x, fmt.Errorf("Normal init failed: %w", err)
+	}
+
+	return x, nil
+}
+
+func (c *Normal) init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	return tensor.RandN(shape, c.mean, c.stdDev, tensorInitConf(device))
 }
 
@@ -50,8 +58,7 @@ func toValidNormalConfig(iconf *NormalConfig) (conf *NormalConfig, err error) {
 	*conf = *iconf
 
 	if !(conf.StdDev > 0) {
-		err = fmt.Errorf("expected 'StdDev' to be positive: got (%f)", conf.StdDev)
-		return
+		return conf, fmt.Errorf("expected 'StdDev' to be positive: got (%f)", conf.StdDev)
 	}
 
 	return conf, nil

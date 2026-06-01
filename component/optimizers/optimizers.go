@@ -17,8 +17,7 @@ func getValidOptimizerInputs(wptr *tensor.Tensor) (w tensor.Tensor, g tensor.Ten
 	g = w.Gradient()
 
 	if g == nil {
-		err = fmt.Errorf("expected tensor's gradient not to be nil")
-		return
+		return w, g, fmt.Errorf("expected tensor's gradient not to be nil")
 	}
 
 	return w, g, nil

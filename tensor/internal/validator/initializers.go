@@ -8,14 +8,12 @@ import (
 
 func ValidateInputDims(dims []int) (err error) {
 	if len(dims) > tensor.MaxDims {
-		err = fmt.Errorf("expected at most (%d) dimensions: got (%d)", tensor.MaxDims, len(dims))
-		return
+		return fmt.Errorf("expected at most (%d) dimensions: got (%d)", tensor.MaxDims, len(dims))
 	}
 
 	for i, d := range dims {
 		if d <= 0 {
-			err = fmt.Errorf("expected positive dimension sizes: got (%d) at position (%d)", d, i)
-			return
+			return fmt.Errorf("expected positive dimension sizes: got (%d) at position (%d)", d, i)
 		}
 	}
 
@@ -24,8 +22,7 @@ func ValidateInputDims(dims []int) (err error) {
 
 func ValidateRandUParams(l, u float64) (err error) {
 	if !(l < u) {
-		err = fmt.Errorf("expected uniform random lower bound to be less than the upper bound: (%f) >= (%f)", l, u)
-		return
+		return fmt.Errorf("expected uniform random lower bound to be less than the upper bound: (%f) >= (%f)", l, u)
 	}
 
 	return nil
@@ -33,8 +30,7 @@ func ValidateRandUParams(l, u float64) (err error) {
 
 func ValidateRandNParams(_, s float64) (err error) {
 	if !(s > 0) {
-		err = fmt.Errorf("expected normal random standard deviation to be positive: got (%f)", s)
-		return
+		return fmt.Errorf("expected normal random standard deviation to be positive: got (%f)", s)
 	}
 
 	return nil
@@ -58,9 +54,8 @@ func ValidateInputDataDimUnity(data any) (err error) {
 
 		dim := len(v[0])
 		for _, sub := range v {
-			err = ValidateInputDataDimUnity(sub)
-			if err != nil {
-				return
+			if err := ValidateInputDataDimUnity(sub); err != nil {
+				return err
 			}
 
 			if len(sub) != dim {
@@ -75,9 +70,8 @@ func ValidateInputDataDimUnity(data any) (err error) {
 
 		dim := len(v[0])
 		for _, sub := range v {
-			err = ValidateInputDataDimUnity(sub)
-			if err != nil {
-				return
+			if err := ValidateInputDataDimUnity(sub); err != nil {
+				return err
 			}
 
 			if len(sub) != dim {
@@ -92,9 +86,8 @@ func ValidateInputDataDimUnity(data any) (err error) {
 
 		dim := len(v[0])
 		for _, sub := range v {
-			err = ValidateInputDataDimUnity(sub)
-			if err != nil {
-				return
+			if err := ValidateInputDataDimUnity(sub); err != nil {
+				return err
 			}
 
 			if len(sub) != dim {
@@ -113,18 +106,15 @@ func ValidateConcatTensorsDimsAlongDim(tsDims [][]int, dim int) (err error) {
 	base := tsDims[0]
 	for i, dims := range tsDims {
 		if len(dims) == 0 {
-			err = fmt.Errorf("scalar tensor can not be concatenated: got tensor (%d)", i)
-			return
+			return fmt.Errorf("scalar tensor can not be concatenated: got tensor (%d)", i)
 		}
 
 		if len(dims) != len(base) {
-			err = fmt.Errorf("expected tensors to have the same number of dimensions: (%d) != (%d) for tensor (%d)", len(dims), len(base), i)
-			return
+			return fmt.Errorf("expected tensors to have the same number of dimensions: (%d) != (%d) for tensor (%d)", len(dims), len(base), i)
 		}
 
 		if dim < 0 || dim >= len(base) {
-			err = fmt.Errorf("expected concat dimension to be in range [0,%d): got (%d)", len(base), dim)
-			return
+			return fmt.Errorf("expected concat dimension to be in range [0,%d): got (%d)", len(base), dim)
 		}
 
 		for j, d := range dims {
@@ -133,8 +123,7 @@ func ValidateConcatTensorsDimsAlongDim(tsDims [][]int, dim int) (err error) {
 			}
 
 			if d != base[j] {
-				err = fmt.Errorf("expected tensor sizes to match in all dimensions except (%d): (%d) != (%d) for dimension (%d) for tensor (%d)", dim, d, base[j], j, i)
-				return
+				return fmt.Errorf("expected tensor sizes to match in all dimensions except (%d): (%d) != (%d) for dimension (%d) for tensor (%d)", dim, d, base[j], j, i)
 			}
 		}
 	}

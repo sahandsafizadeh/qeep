@@ -1,5 +1,6 @@
 # -------------------- DEV --------------------
-QEEP_BUILD_TAGS := cuda
+# Possible values: cuda, (empty for CPU-only)
+QEEP_BUILD_TAGS :=
 
 fmt:
 	@./scripts/gofmt.sh

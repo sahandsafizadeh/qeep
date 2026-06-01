@@ -1,18 +1,22 @@
 package util
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+import (
+	"fmt"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+)
 
 func BroadcastForBinaryOps(t tensor.Tensor, u tensor.Tensor) (t1 tensor.Tensor, t2 tensor.Tensor, err error) {
 	shape := targetBroadcastShape(t.Shape(), u.Shape())
 
 	t1, err = t.Broadcast(shape)
 	if err != nil {
-		return
+		return t1, t2, fmt.Errorf("failed to broadcast first operand: %w", err)
 	}
 
 	t2, err = u.Broadcast(shape)
 	if err != nil {
-		return
+		return t1, t2, fmt.Errorf("failed to broadcast second operand: %w", err)
 	}
 
 	return t1, t2, nil
@@ -32,7 +36,7 @@ func BroadcastForMatMul(t tensor.Tensor, u tensor.Tensor) (t1 tensor.Tensor, t2 
 
 	t1, err = t.Broadcast(shape)
 	if err != nil {
-		return
+		return t1, t2, fmt.Errorf("failed to broadcast first operand: %w", err)
 	}
 
 	shape[lt-1] = dims2[l2-1]
@@ -40,13 +44,13 @@ func BroadcastForMatMul(t tensor.Tensor, u tensor.Tensor) (t1 tensor.Tensor, t2 
 
 	t2, err = u.Broadcast(shape)
 	if err != nil {
-		return
+		return t1, t2, fmt.Errorf("failed to broadcast second operand: %w", err)
 	}
 
 	return t1, t2, nil
 }
 
-func targetBroadcastShape(dims1, dims2 []int) (dims []int) {
+func targetBroadcastShape(dims1, dims2 []int) []int {
 	var small, large []int
 	if len(dims1) > len(dims2) {
 		small = dims2
@@ -58,7 +62,7 @@ func targetBroadcastShape(dims1, dims2 []int) (dims []int) {
 
 	i := len(small)
 	j := len(large)
-	dims = make([]int, j)
+	dims := make([]int, j)
 
 	for i > 0 {
 		i--

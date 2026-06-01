@@ -43,12 +43,12 @@ func main() {
 func run() (result map[string]float64, err error) {
 	trainBatchGen, validBatchGen, testBatchGen, err := prepareData()
 	if err != nil {
-		return
+		return result, err
 	}
 
 	bhmodel, err := prepareModel()
 	if err != nil {
-		return
+		return result, err
 	}
 
 	err = bhmodel.Fit(trainBatchGen, validBatchGen, &model.FitConfig{
@@ -58,14 +58,14 @@ func run() (result map[string]float64, err error) {
 		},
 	})
 	if err != nil {
-		return
+		return result, err
 	}
 
 	result, err = bhmodel.Eval(testBatchGen, map[string]model.Metric{
 		"Mean Squared Error (MSE)": metrics.NewMSE(),
 	})
 	if err != nil {
-		return
+		return result, err
 	}
 
 	return result, nil
@@ -88,7 +88,7 @@ func prepareModel() (m *model.Model, err error) {
 
 	optimizer, err := optimizers.NewAdamW(nil)
 	if err != nil {
-		return
+		return m, err
 	}
 
 	m, err = model.NewModel(input, output, &model.ModelConfig{
@@ -96,7 +96,7 @@ func prepareModel() (m *model.Model, err error) {
 		Optimizer: optimizer,
 	})
 	if err != nil {
-		return
+		return m, err
 	}
 
 	return m, nil
@@ -107,7 +107,7 @@ func prepareModel() (m *model.Model, err error) {
 func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenerator, err error) {
 	x, y, err := loadData()
 	if err != nil {
-		return
+		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
 
 	data := splitData(x, y)
@@ -120,7 +120,7 @@ func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenera
 		Device:    dev,
 	})
 	if err != nil {
-		return
+		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
 
 	validBatchGen, err = batchgens.NewSimple(data.xValid, data.yValid, &batchgens.SimpleConfig{
@@ -129,7 +129,7 @@ func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenera
 		Device:    dev,
 	})
 	if err != nil {
-		return
+		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
 
 	testBatchGen, err = batchgens.NewSimple(data.xTest, data.yTest, &batchgens.SimpleConfig{
@@ -138,7 +138,7 @@ func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenera
 		Device:    dev,
 	})
 	if err != nil {
-		return
+		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
 
 	return trainBatchGen, validBatchGen, testBatchGen, nil

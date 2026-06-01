@@ -22,8 +22,7 @@ const UniformDefaultUpper = 0.05
 func NewUniform(conf *UniformConfig) (c *Uniform, err error) {
 	conf, err = toValidUniformConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Uniform config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("Uniform config data validation failed: %w", err)
 	}
 
 	return &Uniform{
@@ -33,6 +32,15 @@ func NewUniform(conf *UniformConfig) (c *Uniform, err error) {
 }
 
 func (c *Uniform) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
+	x, err = c.init(shape, device)
+	if err != nil {
+		return x, fmt.Errorf("Uniform init failed: %w", err)
+	}
+
+	return x, nil
+}
+
+func (c *Uniform) init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	return tensor.RandU(shape, c.lower, c.upper, tensorInitConf(device))
 }
 
@@ -50,8 +58,7 @@ func toValidUniformConfig(iconf *UniformConfig) (conf *UniformConfig, err error)
 	*conf = *iconf
 
 	if !(conf.Lower < conf.Upper) {
-		err = fmt.Errorf("expected 'Lower' to be less than 'Upper': (%f) >= (%f)", conf.Lower, conf.Upper)
-		return
+		return conf, fmt.Errorf("expected 'Lower' to be less than 'Upper': (%f) >= (%f)", conf.Lower, conf.Upper)
 	}
 
 	return conf, nil

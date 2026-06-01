@@ -19,8 +19,7 @@ const SoftmaxDefaultDim = 0
 func NewSoftmax(conf *SoftmaxConfig) (c *Softmax, err error) {
 	conf, err = toValidSoftmaxConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("Softmax config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("Softmax config data validation failed: %w", err)
 	}
 
 	return &Softmax{
@@ -31,11 +30,15 @@ func NewSoftmax(conf *SoftmaxConfig) (c *Softmax, err error) {
 func (c *Softmax) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	x, err := c.toValidInputs(xs)
 	if err != nil {
-		err = fmt.Errorf("Softmax input data validation failed: %w", err)
-		return
+		return y, fmt.Errorf("Softmax input data validation failed: %w", err)
 	}
 
-	return c.forward(x)
+	y, err = c.forward(x)
+	if err != nil {
+		return y, fmt.Errorf("Softmax forward failed: %w", err)
+	}
+
+	return y, nil
 }
 
 func (c *Softmax) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
@@ -43,12 +46,12 @@ func (c *Softmax) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 	s, err := x.SumAlong(c.dim)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	s, err = s.UnSqueeze(c.dim)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	return x.Div(s)
@@ -58,8 +61,7 @@ func (c *Softmax) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 func (c *Softmax) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 	if len(xs) != 1 {
-		err = fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
-		return
+		return x, fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
 	}
 
 	x = xs[0]
@@ -67,8 +69,7 @@ func (c *Softmax) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error)
 	shape := x.Shape()
 
 	if len(shape) <= c.dim {
-		err = fmt.Errorf("expected input tensor shape to match 'Dim': %v !~ (%d)", shape, c.dim)
-		return
+		return x, fmt.Errorf("expected input tensor shape to match 'Dim': %v !~ (%d)", shape, c.dim)
 	}
 
 	return x, nil
@@ -85,8 +86,7 @@ func toValidSoftmaxConfig(iconf *SoftmaxConfig) (conf *SoftmaxConfig, err error)
 	*conf = *iconf
 
 	if conf.Dim < 0 {
-		err = fmt.Errorf("expected 'Dim' not to be negative: got (%d)", conf.Dim)
-		return
+		return conf, fmt.Errorf("expected 'Dim' not to be negative: got (%d)", conf.Dim)
 	}
 
 	return conf, nil

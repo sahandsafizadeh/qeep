@@ -1,7 +1,7 @@
 package util
 
-func TransposeDims(dims []int) (res []int) {
-	res = make([]int, len(dims))
+func TransposeDims(dims []int) []int {
+	res := make([]int, len(dims))
 	copy(res, dims)
 
 	i := len(res)
@@ -10,9 +10,9 @@ func TransposeDims(dims []int) (res []int) {
 	return res
 }
 
-func UnSqueezeDims(dim int, dims []int) (res []int) {
+func UnSqueezeDims(dim int, dims []int) []int {
 	left := dims[:dim]
-	res = make([]int, len(left))
+	res := make([]int, len(left))
 	copy(res, left)
 	res = append(res, 1)
 
@@ -25,9 +25,9 @@ func UnSqueezeDims(dim int, dims []int) (res []int) {
 	return res
 }
 
-func SqueezeDims(dim int, dims []int) (res []int) {
+func SqueezeDims(dim int, dims []int) []int {
 	left := dims[:dim]
-	res = make([]int, len(left))
+	res := make([]int, len(left))
 	copy(res, left)
 
 	lastDim := len(dims) - 1
@@ -39,9 +39,9 @@ func SqueezeDims(dim int, dims []int) (res []int) {
 	return res
 }
 
-func FlattenDims(dim int, dims []int) (res []int) {
+func FlattenDims(dim int, dims []int) []int {
 	left := dims[:dim]
-	res = make([]int, len(left))
+	res := make([]int, len(left))
 	copy(res, left)
 
 	nElems := 1
@@ -55,19 +55,19 @@ func FlattenDims(dim int, dims []int) (res []int) {
 	return res
 }
 
-func DotDims(idims []int) (dims []int) {
+func DotDims(idims []int) []int {
 	td := len(idims)
 	cd := idims[:td-1]
-	dims = make([]int, len(cd))
+	dims := make([]int, len(cd))
 	copy(dims, cd)
 
 	return dims
 }
 
-func MatMulDims(dims1, dims2 []int) (dims []int) {
+func MatMulDims(dims1, dims2 []int) []int {
 	td := len(dims1)
 	cd := dims1[:td-2]
-	dims = make([]int, len(cd))
+	dims := make([]int, len(cd))
 	copy(dims, cd)
 
 	m := dims1[td-2]

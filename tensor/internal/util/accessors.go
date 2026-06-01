@@ -2,8 +2,8 @@ package util
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 
-func DimsToNumElems(dims []int) (elems int) {
-	elems = 1
+func DimsToNumElems(dims []int) int {
+	elems := 1
 	for _, dim := range dims {
 		elems *= dim
 	}
@@ -11,8 +11,8 @@ func DimsToNumElems(dims []int) (elems int) {
 	return elems
 }
 
-func IndexToDims(index []tensor.Range) (dims []int) {
-	dims = make([]int, len(index))
+func IndexToDims(index []tensor.Range) []int {
+	dims := make([]int, len(index))
 	for i, idx := range index {
 		dims[i] = idx.To - idx.From
 	}
@@ -20,8 +20,8 @@ func IndexToDims(index []tensor.Range) (dims []int) {
 	return dims
 }
 
-func CompleteIndex(index []tensor.Range, dims []int) (cidx []tensor.Range) {
-	cidx = make([]tensor.Range, len(dims))
+func CompleteIndex(index []tensor.Range, dims []int) []tensor.Range {
+	cidx := make([]tensor.Range, len(dims))
 	for i := range cidx {
 		// special case of all elements along dim
 		if i >= len(index) || (index[i].From == 0 && index[i].To == 0) {

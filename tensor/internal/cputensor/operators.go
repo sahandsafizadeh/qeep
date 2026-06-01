@@ -8,47 +8,47 @@ import (
 
 const float64EqualityThreshold = 1e-240
 
-func (t *CPUTensor) scale(u float64) (o *CPUTensor) {
+func (t *CPUTensor) scale(u float64) *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return u * a })
 }
 
-func (t *CPUTensor) pow(u float64) (o *CPUTensor) {
+func (t *CPUTensor) pow(u float64) *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Pow(a, u) })
 }
 
-func (t *CPUTensor) exp() (o *CPUTensor) {
+func (t *CPUTensor) exp() *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Exp(a) })
 }
 
-func (t *CPUTensor) log() (o *CPUTensor) {
+func (t *CPUTensor) log() *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Log(a) })
 }
 
-func (t *CPUTensor) sin() (o *CPUTensor) {
+func (t *CPUTensor) sin() *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Sin(a) })
 }
 
-func (t *CPUTensor) cos() (o *CPUTensor) {
+func (t *CPUTensor) cos() *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Cos(a) })
 }
 
-func (t *CPUTensor) tan() (o *CPUTensor) {
+func (t *CPUTensor) tan() *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Tan(a) })
 }
 
-func (t *CPUTensor) sinh() (o *CPUTensor) {
+func (t *CPUTensor) sinh() *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Sinh(a) })
 }
 
-func (t *CPUTensor) cosh() (o *CPUTensor) {
+func (t *CPUTensor) cosh() *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Cosh(a) })
 }
 
-func (t *CPUTensor) tanh() (o *CPUTensor) {
+func (t *CPUTensor) tanh() *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return math.Tanh(a) })
 }
 
-func (t *CPUTensor) eq(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) eq(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u,
 		func(a, b float64) float64 {
 			if math.Abs(a-b) <= float64EqualityThreshold {
@@ -59,7 +59,7 @@ func (t *CPUTensor) eq(u *CPUTensor) (o *CPUTensor) {
 		})
 }
 
-func (t *CPUTensor) ne(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) ne(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u,
 		func(a, b float64) float64 {
 			if math.Abs(a-b) <= float64EqualityThreshold {
@@ -70,7 +70,7 @@ func (t *CPUTensor) ne(u *CPUTensor) (o *CPUTensor) {
 		})
 }
 
-func (t *CPUTensor) gt(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) gt(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u,
 		func(a, b float64) float64 {
 			if a > b {
@@ -81,7 +81,7 @@ func (t *CPUTensor) gt(u *CPUTensor) (o *CPUTensor) {
 		})
 }
 
-func (t *CPUTensor) ge(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) ge(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u,
 		func(a, b float64) float64 {
 			if a >= b {
@@ -92,7 +92,7 @@ func (t *CPUTensor) ge(u *CPUTensor) (o *CPUTensor) {
 		})
 }
 
-func (t *CPUTensor) lt(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) lt(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u,
 		func(a, b float64) float64 {
 			if a < b {
@@ -103,7 +103,7 @@ func (t *CPUTensor) lt(u *CPUTensor) (o *CPUTensor) {
 		})
 }
 
-func (t *CPUTensor) le(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) le(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u,
 		func(a, b float64) float64 {
 			if a <= b {
@@ -114,49 +114,49 @@ func (t *CPUTensor) le(u *CPUTensor) (o *CPUTensor) {
 		})
 }
 
-func (t *CPUTensor) elmax(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) elmax(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return math.Max(a, b) })
 }
 
-func (t *CPUTensor) elmin(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) elmin(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return math.Min(a, b) })
 }
 
-func (t *CPUTensor) add(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) add(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return a + b })
 }
 
-func (t *CPUTensor) sub(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) sub(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return a - b })
 }
 
-func (t *CPUTensor) mul(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) mul(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return a * b })
 }
 
-func (t *CPUTensor) div(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) div(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return a / b })
 }
 
-func (t *CPUTensor) dot(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
 	dims := util.DotDims(t1.dims)
 	elemGen := linearLastDimDotProductElemGenerator(t1, t2)
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = dims
 	o.initWith(elemGen)
 
 	return o
 }
 
-func (t *CPUTensor) matMul(u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) matMul(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
 	td := len(t1.dims)
 	dims := util.MatMulDims(t1.dims, t2.dims)
 	elemGen := linearLast2DimsMatMulElemGenerator(t1, t2)
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = dims[:td-2]
 	o.initWith(elemGen)
 
@@ -164,13 +164,13 @@ func (t *CPUTensor) matMul(u *CPUTensor) (o *CPUTensor) {
 	return o
 }
 
-func (t *CPUTensor) equals(u *CPUTensor) (are bool) {
+func (t *CPUTensor) equals(u *CPUTensor) bool {
 	o := t.eq(u)
 	n := o.numElems()
 	return o.sum() >= float64(n)
 }
 
-func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) (o *CPUTensor) {
+func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTensor {
 
 	var calcData func([]int, *any, *any)
 	calcData = func(dims []int, a, r *any) {
@@ -190,7 +190,7 @@ func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) (o *CPUTe
 		*r = rRows
 	}
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = make([]int, len(t.dims))
 	copy(o.dims, t.dims)
 	calcData(t.dims, &t.data, &o.data)
@@ -198,7 +198,7 @@ func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) (o *CPUTe
 	return o
 }
 
-func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) (o *CPUTensor) {
+func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
 
 	var calcData func([]int, *any, *any, *any)
 	calcData = func(dims []int, a, b, r *any) {
@@ -219,7 +219,7 @@ func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) (
 		*r = rRows
 	}
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = make([]int, len(t1.dims))
 	copy(o.dims, t1.dims)
 	calcData(t1.dims, &t1.data, &t2.data, &o.data)
@@ -279,14 +279,13 @@ func linearLast2DimsMatMulElemGenerator(t1, t2 *CPUTensor) initializerFunc {
 	}
 }
 
-func dotProductOf1DInputs(a, b any) (c any) {
+func dotProductOf1DInputs(a, b any) any {
 	v1 := a.([]any)
 	v2 := b.([]any)
 	n := len(v1)
 
 	s := 0.
-	var i int
-	for i = range n {
+	for i := range n {
 		eiv1 := v1[i].(float64)
 		eiv2 := v2[i].(float64)
 		s += eiv1 * eiv2
@@ -295,7 +294,7 @@ func dotProductOf1DInputs(a, b any) (c any) {
 	return s
 }
 
-func matMulDataOf2DInputs(a, b any) (c any) {
+func matMulDataOf2DInputs(a, b any) any {
 	m1 := a.([]any)
 	m2 := b.([]any)
 	r0m1 := m1[0].([]any)
@@ -306,13 +305,12 @@ func matMulDataOf2DInputs(a, b any) (c any) {
 	n := len(r0m1)
 	k := len(r0m2)
 
-	var i, j, p int
 	cRows := make([]any, m)
-	for i = range m {
+	for i := range m {
 		row := make([]any, k)
-		for j = range k {
+		for j := range k {
 			eij := 0.
-			for p = range n {
+			for p := range n {
 				rim1 := m1[i].([]any)
 				rpm2 := m2[p].([]any)
 				eipm1 := rim1[p].(float64)

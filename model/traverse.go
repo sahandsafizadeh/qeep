@@ -37,18 +37,15 @@ func traverseBFS(roots []*node.Node, applyFunc func(*node.Node) error) (err erro
 	q := queue.NewQueue[*node.Node]()
 	q.Enqueue(roots)
 
-	var cn *node.Node
-
 	for !q.IsEmpty() {
-		cn, err = q.Dequeue()
+		cn, err := q.Dequeue()
 		if err != nil {
 			panic(fmt.Sprintf("traverseBFS: dequeue failed on non-empty queue: %v", err))
 		}
 
 		err = applyFunc(cn)
 		if err != nil {
-			err = fmt.Errorf("(Layer %d): %w", cn.NLayer(), err)
-			return
+			return fmt.Errorf("(Layer %d): %w", cn.NLayer(), err)
 		}
 
 		q.Enqueue(cn.Children())

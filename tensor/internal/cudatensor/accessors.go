@@ -1,5 +1,4 @@
 //go:build cuda
-// +build cuda
 
 package cudatensor
 
@@ -14,7 +13,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
-func (t *CUDATensor) at(index []int) (elem float64) {
+func (t *CUDATensor) at(index []int) float64 {
 	data_c := getCudaDataOf(t)
 	dims_c := getDimArrOf(t.dims)
 	index_c := getDimArrOf(index)
@@ -24,7 +23,7 @@ func (t *CUDATensor) at(index []int) (elem float64) {
 	return float64(elem_c)
 }
 
-func (t *CUDATensor) slice(index []tensor.Range) (o *CUDATensor) {
+func (t *CUDATensor) slice(index []tensor.Range) *CUDATensor {
 	index = util.CompleteIndex(index, t.dims)
 	dims := util.IndexToDims(index)
 
@@ -37,7 +36,7 @@ func (t *CUDATensor) slice(index []tensor.Range) (o *CUDATensor) {
 	return newCUDATensor(dims, data_c)
 }
 
-func (t *CUDATensor) patch(index []tensor.Range, u *CUDATensor) (o *CUDATensor) {
+func (t *CUDATensor) patch(index []tensor.Range, u *CUDATensor) *CUDATensor {
 	index = util.CompleteIndex(index, u.dims)
 	dims := t.dims
 

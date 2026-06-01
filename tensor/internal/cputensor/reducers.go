@@ -7,13 +7,13 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
-func (t *CPUTensor) sum() (data float64) {
+func (t *CPUTensor) sum() float64 {
 	return t.reduceByAssociativeFunc(func(a, b reducerPair) reducerPair {
 		return reducerPair{value: a.value + b.value}
 	}, unwrapValue, 0.)
 }
 
-func (t *CPUTensor) max(uf reducerUnwrapFunc) (data float64) {
+func (t *CPUTensor) max(uf reducerUnwrapFunc) float64 {
 	return t.reduceByAssociativeFunc(func(a, b reducerPair) reducerPair {
 		if a.value >= b.value {
 			return a
@@ -23,7 +23,7 @@ func (t *CPUTensor) max(uf reducerUnwrapFunc) (data float64) {
 	}, uf, math.Inf(-1))
 }
 
-func (t *CPUTensor) min(uf reducerUnwrapFunc) (data float64) {
+func (t *CPUTensor) min(uf reducerUnwrapFunc) float64 {
 	return t.reduceByAssociativeFunc(func(a, b reducerPair) reducerPair {
 		if a.value <= b.value {
 			return a
@@ -33,11 +33,11 @@ func (t *CPUTensor) min(uf reducerUnwrapFunc) (data float64) {
 	}, uf, math.Inf(+1))
 }
 
-func (t *CPUTensor) avg() (data float64) {
+func (t *CPUTensor) avg() float64 {
 	return t.sum() / float64(t.numElems())
 }
 
-func (t *CPUTensor) _var() (data float64) {
+func (t *CPUTensor) _var() float64 {
 	xBar := t.mean()
 	sigma := t.reduceByAssociativeFunc(func(s, x reducerPair) reducerPair {
 		xdiff := x.value - xBar
@@ -53,53 +53,53 @@ func (t *CPUTensor) _var() (data float64) {
 	}
 }
 
-func (t *CPUTensor) std() (data float64) {
+func (t *CPUTensor) std() float64 {
 	return math.Sqrt(t._var())
 }
 
-func (t *CPUTensor) mean() (data float64) {
+func (t *CPUTensor) mean() float64 {
 	return t.avg()
 }
 
-func (t *CPUTensor) argmax(dim int) (o *CPUTensor) {
+func (t *CPUTensor) argmax(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.max(unwrapIndex) })
 }
 
-func (t *CPUTensor) argmin(dim int) (o *CPUTensor) {
+func (t *CPUTensor) argmin(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.min(unwrapIndex) })
 }
 
-func (t *CPUTensor) sumAlong(dim int) (o *CPUTensor) {
+func (t *CPUTensor) sumAlong(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.sum() })
 }
 
-func (t *CPUTensor) maxAlong(dim int) (o *CPUTensor) {
+func (t *CPUTensor) maxAlong(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.max(unwrapValue) })
 }
 
-func (t *CPUTensor) minAlong(dim int) (o *CPUTensor) {
+func (t *CPUTensor) minAlong(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.min(unwrapValue) })
 }
 
-func (t *CPUTensor) avgAlong(dim int) (o *CPUTensor) {
+func (t *CPUTensor) avgAlong(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.avg() })
 }
 
-func (t *CPUTensor) varAlong(dim int) (o *CPUTensor) {
+func (t *CPUTensor) varAlong(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u._var() })
 }
 
-func (t *CPUTensor) stdAlong(dim int) (o *CPUTensor) {
+func (t *CPUTensor) stdAlong(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.std() })
 }
 
-func (t *CPUTensor) meanAlong(dim int) (o *CPUTensor) {
+func (t *CPUTensor) meanAlong(dim int) *CPUTensor {
 	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.mean() })
 }
 
 /* ----- helpers ----- */
 
-func (t *CPUTensor) reduceByAssociativeFunc(af reducerFunc, uf reducerUnwrapFunc, identityValue float64) (reducedData float64) {
+func (t *CPUTensor) reduceByAssociativeFunc(af reducerFunc, uf reducerUnwrapFunc, identityValue float64) float64 {
 	result := reducerPair{value: identityValue}
 	index := 0
 
@@ -126,11 +126,11 @@ func (t *CPUTensor) reduceByAssociativeFunc(af reducerFunc, uf reducerUnwrapFunc
 	return uf(result)
 }
 
-func (t *CPUTensor) reduceDimUsingTensorFunc(dim int, rtf reducerTensorFunc) (o *CPUTensor) {
+func (t *CPUTensor) reduceDimUsingTensorFunc(dim int, rtf reducerTensorFunc) *CPUTensor {
 	dims := util.SqueezeDims(dim, t.dims)
 	elemGen := t.linearElemGeneratorWithReducedDim(dim, rtf)
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = dims
 	o.initWith(elemGen)
 

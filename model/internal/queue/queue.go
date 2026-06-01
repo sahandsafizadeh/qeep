@@ -12,11 +12,11 @@ type node[T any] struct {
 	next  *node[T]
 }
 
-func NewQueue[T any]() (q *Queue[T]) {
+func NewQueue[T any]() *Queue[T] {
 	return new(Queue[T])
 }
 
-func (q *Queue[T]) IsEmpty() (is bool) {
+func (q *Queue[T]) IsEmpty() bool {
 	return q.head == nil && q.tail == nil
 }
 
@@ -40,8 +40,7 @@ func (q *Queue[T]) enqueue(value T) {
 
 func (q *Queue[T]) Dequeue() (value T, err error) {
 	if q.IsEmpty() {
-		err = fmt.Errorf("can not dequeue as queue is empty")
-		return
+		return value, fmt.Errorf("can not dequeue as queue is empty")
 	}
 
 	value = q.head.value

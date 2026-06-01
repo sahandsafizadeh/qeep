@@ -18,8 +18,7 @@ type HeNormalConfig struct {
 func NewHeNormal(conf *HeNormalConfig) (c *HeNormal, err error) {
 	conf, err = toValidHeNormalConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("HeNormal config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("HeNormal config data validation failed: %w", err)
 	}
 
 	return &HeNormal{
@@ -28,6 +27,15 @@ func NewHeNormal(conf *HeNormalConfig) (c *HeNormal, err error) {
 }
 
 func (c *HeNormal) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
+	x, err = c.init(shape, device)
+	if err != nil {
+		return x, fmt.Errorf("HeNormal init failed: %w", err)
+	}
+
+	return x, nil
+}
+
+func (c *HeNormal) init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	s := math.Sqrt(2. / float64(c.fanIn))
 	return tensor.RandN(shape, 0., s, tensorInitConf(device))
 }
@@ -36,16 +44,14 @@ func (c *HeNormal) Init(shape []int, device tensor.Device) (x tensor.Tensor, err
 
 func toValidHeNormalConfig(iconf *HeNormalConfig) (conf *HeNormalConfig, err error) {
 	if iconf == nil {
-		err = fmt.Errorf("expected config not to be nil")
-		return
+		return conf, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(HeNormalConfig)
 	*conf = *iconf
 
 	if conf.FanIn <= 0 {
-		err = fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
-		return
+		return conf, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
 	}
 
 	return conf, nil

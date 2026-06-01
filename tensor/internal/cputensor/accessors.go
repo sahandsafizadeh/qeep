@@ -5,12 +5,12 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
-func (t *CPUTensor) numElems() (n int) {
+func (t *CPUTensor) numElems() int {
 	return util.DimsToNumElems(t.dims)
 }
 
-func (t *CPUTensor) dataAt(index []int) (data any) {
-	data = t.data
+func (t *CPUTensor) dataAt(index []int) any {
+	data := t.data
 	for _, i := range index {
 		data = data.([]any)[i]
 	}
@@ -18,17 +18,17 @@ func (t *CPUTensor) dataAt(index []int) (data any) {
 	return data
 }
 
-func (t *CPUTensor) slice(index []tensor.Range) (o *CPUTensor) {
+func (t *CPUTensor) slice(index []tensor.Range) *CPUTensor {
 	return t.copiedSliceOf(util.CompleteIndex(index, t.dims))
 }
 
-func (t *CPUTensor) patch(index []tensor.Range, u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) patch(index []tensor.Range, u *CPUTensor) *CPUTensor {
 	return t.copiedWithPatchOf(util.CompleteIndex(index, u.dims), u)
 }
 
 /* ----- helpers ----- */
 
-func (t *CPUTensor) copiedSliceOf(index []tensor.Range) (o *CPUTensor) {
+func (t *CPUTensor) copiedSliceOf(index []tensor.Range) *CPUTensor {
 
 	var copyData func([]tensor.Range, *any, *any)
 	copyData = func(index []tensor.Range, src, dst *any) {
@@ -49,14 +49,14 @@ func (t *CPUTensor) copiedSliceOf(index []tensor.Range) (o *CPUTensor) {
 		*dst = dstRows
 	}
 
-	o = new(CPUTensor)
+	o := new(CPUTensor)
 	o.dims = util.IndexToDims(index)
 	copyData(index, &t.data, &o.data)
 
 	return o
 }
 
-func (t *CPUTensor) copiedWithPatchOf(index []tensor.Range, u *CPUTensor) (o *CPUTensor) {
+func (t *CPUTensor) copiedWithPatchOf(index []tensor.Range, u *CPUTensor) *CPUTensor {
 
 	var copyData func([]tensor.Range, *any, *any)
 	copyData = func(index []tensor.Range, src, dst *any) {
@@ -75,7 +75,7 @@ func (t *CPUTensor) copiedWithPatchOf(index []tensor.Range, u *CPUTensor) (o *CP
 		}
 	}
 
-	o = t.slice(nil)
+	o := t.slice(nil)
 	copyData(index, &u.data, &o.data)
 
 	return o

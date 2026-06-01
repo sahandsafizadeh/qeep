@@ -21,8 +21,7 @@ type EpochLogger struct {
 func NewEpochLogger(epochs int, batches int) (el *EpochLogger, err error) {
 	err = validate(epochs, batches)
 	if err != nil {
-		err = fmt.Errorf("EpochLogger config data validation failed: %w", err)
-		return
+		return el, fmt.Errorf("EpochLogger config data validation failed: %w", err)
 	}
 
 	return &EpochLogger{
@@ -150,13 +149,11 @@ func space() string {
 
 func validate(epochs int, batches int) (err error) {
 	if epochs <= 0 {
-		err = fmt.Errorf("expected the number of epochs to be positive: got (%d)", epochs)
-		return
+		return fmt.Errorf("expected the number of epochs to be positive: got (%d)", epochs)
 	}
 
 	if batches <= 0 {
-		err = fmt.Errorf("expected the number of batches to be positive: got (%d)", batches)
-		return
+		return fmt.Errorf("expected the number of batches to be positive: got (%d)", batches)
 	}
 
 	return nil

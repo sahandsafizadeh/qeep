@@ -19,17 +19,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # ----- Preparation -----
+      - name: Setup Sources
+        uses: actions/checkout@v6
+
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
-
-      - name: Setup Sources
-        uses: actions/checkout@v6
+          cache: true
 
       # ----- Integration -----
-      - name: Build
-        run: bash $SCRIPTS_ROOT/gobuild.sh
+      - name: Module Check
+        run: |
+          go mod verify
+          go mod tidy
+          git diff --exit-code go.mod go.sum
 
       - name: Format
         run: bash $SCRIPTS_ROOT/gofmt.sh
@@ -39,12 +43,12 @@ jobs:
         with:
           version: v2.9
 
-      - name: Test
-        run: bash $SCRIPTS_ROOT/gotest.sh
-
       - name: Security
         uses: securego/gosec@v2.26.1
         env:
           GOTOOLCHAIN: go${{ env.GO_VERSION }}
         with:
           args: ./...
+
+      - name: Test
+        run: bash $SCRIPTS_ROOT/gotest.sh

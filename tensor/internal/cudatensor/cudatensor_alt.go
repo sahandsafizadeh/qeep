@@ -1,5 +1,4 @@
 //go:build !cuda
-// +build !cuda
 
 package cudatensor
 
@@ -47,11 +46,11 @@ func Concat(ts []tensor.Tensor, dim int) (o tensor.Tensor, err error) {
 	panic(message)
 }
 
-func (t *CUDATensor) NElems() (n int) {
+func (t *CUDATensor) NElems() int {
 	panic(message)
 }
 
-func (t *CUDATensor) Shape() (shape []int) {
+func (t *CUDATensor) Shape() []int {
 	panic(message)
 }
 
@@ -91,31 +90,31 @@ func (t *CUDATensor) Broadcast(shape []int) (o tensor.Tensor, err error) {
 	panic(message)
 }
 
-func (t *CUDATensor) Sum() (value float64) {
+func (t *CUDATensor) Sum() float64 {
 	panic(message)
 }
 
-func (t *CUDATensor) Max() (value float64) {
+func (t *CUDATensor) Max() float64 {
 	panic(message)
 }
 
-func (t *CUDATensor) Min() (value float64) {
+func (t *CUDATensor) Min() float64 {
 	panic(message)
 }
 
-func (t *CUDATensor) Avg() (value float64) {
+func (t *CUDATensor) Avg() float64 {
 	panic(message)
 }
 
-func (t *CUDATensor) Var() (value float64) {
+func (t *CUDATensor) Var() float64 {
 	panic(message)
 }
 
-func (t *CUDATensor) Std() (value float64) {
+func (t *CUDATensor) Std() float64 {
 	panic(message)
 }
 
-func (t *CUDATensor) Mean() (value float64) {
+func (t *CUDATensor) Mean() float64 {
 	panic(message)
 }
 
@@ -155,43 +154,43 @@ func (t *CUDATensor) MeanAlong(dim int) (o tensor.Tensor, err error) {
 	panic(message)
 }
 
-func (t *CUDATensor) Scale(u float64) (o tensor.Tensor) {
+func (t *CUDATensor) Scale(u float64) tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Pow(u float64) (o tensor.Tensor) {
+func (t *CUDATensor) Pow(u float64) tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Exp() (o tensor.Tensor) {
+func (t *CUDATensor) Exp() tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Log() (o tensor.Tensor) {
+func (t *CUDATensor) Log() tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Sin() (o tensor.Tensor) {
+func (t *CUDATensor) Sin() tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Cos() (o tensor.Tensor) {
+func (t *CUDATensor) Cos() tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Tan() (o tensor.Tensor) {
+func (t *CUDATensor) Tan() tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Sinh() (o tensor.Tensor) {
+func (t *CUDATensor) Sinh() tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Cosh() (o tensor.Tensor) {
+func (t *CUDATensor) Cosh() tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) Tanh() (o tensor.Tensor) {
+func (t *CUDATensor) Tanh() tensor.Tensor {
 	panic(message)
 }
 
@@ -255,11 +254,11 @@ func (t *CUDATensor) Equals(u tensor.Tensor) (are bool, err error) {
 	panic(message)
 }
 
-func (t *CUDATensor) Gradient() (g tensor.Tensor) {
+func (t *CUDATensor) Gradient() tensor.Tensor {
 	panic(message)
 }
 
-func (t *CUDATensor) GradientTracked() (tracked bool) {
+func (t *CUDATensor) GradientTracked() bool {
 	panic(message)
 }
 
@@ -267,10 +266,10 @@ func (t *CUDATensor) ResetGradContext(tracked bool) {
 	panic(message)
 }
 
-func (t *CUDATensor) GradContext() (gctx any) {
+func (t *CUDATensor) GradContext() any {
 	panic(message)
 }
 
-func (t *CUDATensor) Device() (d tensor.Device) {
+func (t *CUDATensor) Device() tensor.Device {
 	panic(message)
 }

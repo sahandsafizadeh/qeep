@@ -302,7 +302,7 @@ func TestModel(t *testing.T) {
 			err = m.Fit(batchGen, nil, &model.FitConfig{Epochs: 1})
 			if err == nil {
 				t.Fatal("expected error because of feed-forward validation")
-			} else if err.Error() != "(Layer 1): FC input data validation failed: expected exactly one input tensor: got (2)" {
+			} else if err.Error() != "Fit operation failed: (Layer 1): forward operation on node: FC input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -346,7 +346,7 @@ func TestModel(t *testing.T) {
 			_, err = m.Eval(batchGen, nil)
 			if err == nil {
 				t.Fatal("expected error because of feed-forward validation")
-			} else if err.Error() != "(Layer 1): FC input data validation failed: expected exactly one input tensor: got (2)" {
+			} else if err.Error() != "Eval operation failed: Predict operation failed: (Layer 1): forward operation on node: FC input data validation failed: expected exactly one input tensor: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -390,7 +390,7 @@ func TestModel(t *testing.T) {
 			err = m.Fit(batchgen, nil, &model.FitConfig{Epochs: 1})
 			if err == nil {
 				t.Fatal("expected error because of loss validation")
-			} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
+			} else if err.Error() != "Fit operation failed: MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -434,7 +434,7 @@ func TestModel(t *testing.T) {
 			_, err = m.Eval(batchgen, map[string]model.Metric{"MSE": metrics.NewMSE()})
 			if err == nil {
 				t.Fatal("expected error because of metric validation")
-			} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
+			} else if err.Error() != "Eval operation failed: MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -490,7 +490,7 @@ func TestModel(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of metric validation")
-			} else if err.Error() != "MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
+			} else if err.Error() != "Fit operation failed: Eval operation failed: MSE input data validation failed: expected input tensor sizes to match along data dimension: (2) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -508,7 +508,7 @@ func TestModel(t *testing.T) {
 			_, err := model.NewMultiInputModel(inputs, output, conf)
 			if err == nil {
 				t.Fatal("expected error because of nil input config")
-			} else if err.Error() != "Model config data validation failed: expected config not to be nil" {
+			} else if err.Error() != "Model initialization failed: expected config not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -523,7 +523,7 @@ func TestModel(t *testing.T) {
 			_, err := model.NewMultiInputModel(inputs, output, conf)
 			if err == nil {
 				t.Fatal("expected error because of not having at least one input stream")
-			} else if err.Error() != "Model input/output stream validation failed: expected to have at least one input stream" {
+			} else if err.Error() != "Model initialization failed: expected to have at least one input stream" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -539,7 +539,7 @@ func TestModel(t *testing.T) {
 			_, err := model.NewMultiInputModel(inputs, output, conf)
 			if err == nil {
 				t.Fatal("expected error because of receiving nil input stream")
-			} else if err.Error() != "Model input/output stream validation failed: expected input stream at position (0) not to be nil" {
+			} else if err.Error() != "Model initialization failed: expected input stream at position (0) not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -555,7 +555,7 @@ func TestModel(t *testing.T) {
 			_, err := model.NewMultiInputModel(inputs, output, conf)
 			if err == nil {
 				t.Fatal("expected error because of receiving input stream which is not properly initialized")
-			} else if err.Error() != "Model input/output stream validation failed: expected input stream at position (0) to be proparely initialized" {
+			} else if err.Error() != "Model initialization failed: expected input stream at position (0) to be proparely initialized" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -571,7 +571,7 @@ func TestModel(t *testing.T) {
 			_, err := model.NewMultiInputModel(inputs, output, conf)
 			if err == nil {
 				t.Fatal("expected error because of receiving input stream which does not contain layer of type 'Input'")
-			} else if err.Error() != "Model input/output stream validation failed: expected input stream at position (0) to contain layer of type 'Input'" {
+			} else if err.Error() != "Model initialization failed: expected input stream at position (0) to contain layer of type 'Input'" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -587,7 +587,7 @@ func TestModel(t *testing.T) {
 			_, err := model.NewMultiInputModel(inputs, output, conf)
 			if err == nil {
 				t.Fatal("expected error because of receiving nil output stream")
-			} else if err.Error() != "Model input/output stream validation failed: expected output stream not to be nil" {
+			} else if err.Error() != "Model initialization failed: expected output stream not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -603,7 +603,7 @@ func TestModel(t *testing.T) {
 			_, err := model.NewMultiInputModel(inputs, output, conf)
 			if err == nil {
 				t.Fatal("expected error because of receiving output stream which is not properly initialized")
-			} else if err.Error() != "Model input/output stream validation failed: expected output stream to be proparely initialized" {
+			} else if err.Error() != "Model initialization failed: expected output stream to be proparely initialized" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -621,7 +621,7 @@ func TestModel(t *testing.T) {
 			_, err := model.NewMultiInputModel(inputs, output, conf)
 			if err == nil {
 				t.Fatal("expected error because of receiving output stream which is not properly initialized")
-			} else if err.Error() != "Model input/output stream validation failed: \n(Layer 1): Softmax config data validation failed: expected 'Dim' not to be negative: got (-1)" {
+			} else if err.Error() != "Model initialization failed: \n(Layer 1): Softmax config data validation failed: expected 'Dim' not to be negative: got (-1)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -669,7 +669,7 @@ func TestModel(t *testing.T) {
 			_, err = m.Predict([]tensor.Tensor{nil, nil})
 			if err == nil {
 				t.Fatal("expected error because of wrong number of input tensors")
-			} else if err.Error() != "Predict input data validation failed: expected exactly (1) input tensors: got (2)" {
+			} else if err.Error() != "Predict operation failed: expected exactly (1) input tensors: got (2)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

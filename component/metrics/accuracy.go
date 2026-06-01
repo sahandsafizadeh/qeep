@@ -20,7 +20,7 @@ type AccuracyConfig struct {
 
 const AccuracyDefaultOneHotMode = false
 
-func NewAccuracy(conf *AccuracyConfig) (c *Accuracy) {
+func NewAccuracy(conf *AccuracyConfig) *Accuracy {
 	conf = toValidAccuracyConfig(conf)
 
 	return &Accuracy{
@@ -31,42 +31,48 @@ func NewAccuracy(conf *AccuracyConfig) (c *Accuracy) {
 func (c *Accuracy) Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	err = c.validateInputs(yp, yt)
 	if err != nil {
-		err = fmt.Errorf("Accuracy input data validation failed: %w", err)
-		return
+		return fmt.Errorf("Accuracy input data validation failed: %w", err)
 	}
 
+	err = c.accumulate(yp, yt)
+	if err != nil {
+		return fmt.Errorf("Accuracy accumulate failed: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Accuracy) accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	if c.oneHotMode {
 		yp, err = yp.Argmax(1)
 		if err != nil {
-			return
+			return err
 		}
 
 		yt, err = yt.Argmax(1)
 		if err != nil {
-			return
+			return err
 		}
 	} else {
-		var mid tensor.Tensor
-
-		mid, err = c.toUntrackedFull(yp, 0.5)
+		mid, err := c.toUntrackedFull(yp, 0.5)
 		if err != nil {
-			return
+			return err
 		}
 
 		yp, err = yp.Ge(mid)
 		if err != nil {
-			return
+			return err
 		}
 
 		yt, err = yt.Ge(mid)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
 	eq, err := yp.Eq(yt)
 	if err != nil {
-		return
+		return err
 	}
 
 	shape := eq.Shape()
@@ -77,7 +83,7 @@ func (c *Accuracy) Accumulate(yp tensor.Tensor, yt tensor.Tensor) (err error) {
 	return nil
 }
 
-func (c *Accuracy) Result() (result float64) {
+func (c *Accuracy) Result() float64 {
 	if c.count == 0 {
 		return math.NaN()
 	}
@@ -92,23 +98,19 @@ func (c *Accuracy) validateInputs(yp tensor.Tensor, yt tensor.Tensor) (err error
 	shapet := yt.Shape()
 
 	if len(shapep) != 2 || len(shapet) != 2 {
-		err = fmt.Errorf("expected input tensors to have exactly two dimensions (batch, class)")
-		return
+		return fmt.Errorf("expected input tensors to have exactly two dimensions (batch, class)")
 	}
 
 	if shapep[0] != shapet[0] {
-		err = fmt.Errorf("expected input tensor sizes to match along batch dimension: (%d) != (%d)", shapep[0], shapet[0])
-		return
+		return fmt.Errorf("expected input tensor sizes to match along batch dimension: (%d) != (%d)", shapep[0], shapet[0])
 	}
 
 	if shapep[1] != shapet[1] {
-		err = fmt.Errorf("expected input tensor sizes to match along class dimension: (%d) != (%d)", shapep[1], shapet[1])
-		return
+		return fmt.Errorf("expected input tensor sizes to match along class dimension: (%d) != (%d)", shapep[1], shapet[1])
 	}
 
 	if !c.oneHotMode && shapep[1] != 1 {
-		err = fmt.Errorf("expected input tensor sizes to be equal to (1) along class dimension when not in one-hot mode: got (%d)", shapep[1])
-		return
+		return fmt.Errorf("expected input tensor sizes to be equal to (1) along class dimension when not in one-hot mode: got (%d)", shapep[1])
 	}
 
 	return nil
@@ -124,14 +126,14 @@ func (c *Accuracy) toUntrackedFull(x tensor.Tensor, value float64) (y tensor.Ten
 	})
 }
 
-func toValidAccuracyConfig(iconf *AccuracyConfig) (conf *AccuracyConfig) {
+func toValidAccuracyConfig(iconf *AccuracyConfig) *AccuracyConfig {
 	if iconf == nil {
 		iconf = &AccuracyConfig{
 			OneHotMode: AccuracyDefaultOneHotMode,
 		}
 	}
 
-	conf = new(AccuracyConfig)
+	conf := new(AccuracyConfig)
 	*conf = *iconf
 
 	return conf

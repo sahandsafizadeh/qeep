@@ -272,7 +272,7 @@ func TestFC(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of weights initialized with more/less than one dimension")
-			} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
+			} else if err.Error() != "FC initialization failed: FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -287,7 +287,7 @@ func TestFC(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of weights initialized with more/less than one dimension")
-			} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
+			} else if err.Error() != "FC initialization failed: FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -302,7 +302,7 @@ func TestFC(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of weights initialized with more/less than one dimension")
-			} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
+			} else if err.Error() != "FC initialization failed: FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -317,7 +317,7 @@ func TestFC(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of weights initialized with more/less than one dimension")
-			} else if err.Error() != "FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
+			} else if err.Error() != "FC initialization failed: FC initialized weight validation failed: expected initialized weights to have exactly one dimension" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -332,7 +332,7 @@ func TestFC(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of 'Weight' being initialized with mismatched size")
-			} else if err.Error() != "FC initialized weight validation failed: expected initialized 'Weight' size to match 'Outputs': (2) != (1)" {
+			} else if err.Error() != "FC initialization failed: FC initialized weight validation failed: expected initialized 'Weight' size to match 'Outputs': (2) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -347,7 +347,7 @@ func TestFC(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of 'Bias' being initialized with mismatched size")
-			} else if err.Error() != "FC initialized weight validation failed: expected initialized 'Bias' size to match 'Outputs': (2) != (1)" {
+			} else if err.Error() != "FC initialization failed: FC initialized weight validation failed: expected initialized 'Bias' size to match 'Outputs': (2) != (1)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

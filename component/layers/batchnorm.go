@@ -82,7 +82,7 @@ func (c *BatchNorm) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 	err = c.initWeights()
 	if err != nil {
-		return
+		return y, err
 	}
 
 	var mean, _var tensor.Tensor
@@ -178,7 +178,7 @@ func (c *BatchNorm) initWeights() (err error) {
 			GradTrack: true,
 		})
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -188,7 +188,7 @@ func (c *BatchNorm) initWeights() (err error) {
 			GradTrack: true,
 		})
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -198,7 +198,7 @@ func (c *BatchNorm) initWeights() (err error) {
 			GradTrack: false,
 		})
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -208,7 +208,7 @@ func (c *BatchNorm) initWeights() (err error) {
 			GradTrack: false,
 		})
 		if err != nil {
-			return
+			return err
 		}
 	}
 

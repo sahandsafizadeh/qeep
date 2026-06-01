@@ -11,15 +11,14 @@ type Input struct {
 	SeedFunc func() tensor.Tensor
 }
 
-func NewInput() (c *Input) {
+func NewInput() *Input {
 	return &Input{}
 }
 
 func (c *Input) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	err = c.validateInputs(xs)
 	if err != nil {
-		err = fmt.Errorf("Input input data validation failed: %w", err)
-		return
+		return y, fmt.Errorf("Input input data validation failed: %w", err)
 	}
 
 	return c.SeedFunc(), nil
@@ -29,8 +28,7 @@ func (c *Input) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 
 func (c *Input) validateInputs(xs []tensor.Tensor) (err error) {
 	if len(xs) != 0 {
-		err = fmt.Errorf("expected no input tensors: got (%d)", len(xs))
-		return
+		return fmt.Errorf("expected no input tensors: got (%d)", len(xs))
 	}
 
 	return nil

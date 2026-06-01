@@ -19,7 +19,7 @@ const SoftmaxDefaultDim = 0
 func NewSoftmax(conf *SoftmaxConfig) (c *Softmax, err error) {
 	conf, err = toValidSoftmaxConfig(conf)
 	if err != nil {
-		return nil, fmt.Errorf("Softmax config data validation failed: %w", err)
+		return c, fmt.Errorf("Softmax config data validation failed: %w", err)
 	}
 
 	return &Softmax{
@@ -86,7 +86,7 @@ func toValidSoftmaxConfig(iconf *SoftmaxConfig) (conf *SoftmaxConfig, err error)
 	*conf = *iconf
 
 	if conf.Dim < 0 {
-		return nil, fmt.Errorf("expected 'Dim' not to be negative: got (%d)", conf.Dim)
+		return conf, fmt.Errorf("expected 'Dim' not to be negative: got (%d)", conf.Dim)
 	}
 
 	return conf, nil

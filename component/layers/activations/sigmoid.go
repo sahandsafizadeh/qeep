@@ -9,24 +9,28 @@ import (
 type Sigmoid struct {
 }
 
-func NewSigmoid() (c *Sigmoid) {
+func NewSigmoid() *Sigmoid {
 	return &Sigmoid{}
 }
 
 func (c *Sigmoid) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	x, err := c.toValidInputs(xs)
 	if err != nil {
-		err = fmt.Errorf("Sigmoid input data validation failed: %w", err)
-		return
+		return y, fmt.Errorf("Sigmoid input data validation failed: %w", err)
 	}
 
-	return c.forward(x)
+	y, err = c.forward(x)
+	if err != nil {
+		return y, fmt.Errorf("Sigmoid forward failed: %w", err)
+	}
+
+	return y, nil
 }
 
 func (c *Sigmoid) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 	_1, err := c.toUntrackedFull(x, 1)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	x = x.Scale(-1)
@@ -34,7 +38,7 @@ func (c *Sigmoid) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 	y, err = _1.Add(x)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	return y.Pow(-1), nil
@@ -44,8 +48,7 @@ func (c *Sigmoid) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 func (c *Sigmoid) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 	if len(xs) != 1 {
-		err = fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
-		return
+		return x, fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
 	}
 
 	x = xs[0]

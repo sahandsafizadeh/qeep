@@ -9,24 +9,28 @@ import (
 type Relu struct {
 }
 
-func NewRelu() (c *Relu) {
+func NewRelu() *Relu {
 	return &Relu{}
 }
 
 func (c *Relu) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	x, err := c.toValidInputs(xs)
 	if err != nil {
-		err = fmt.Errorf("Relu input data validation failed: %w", err)
-		return
+		return y, fmt.Errorf("Relu input data validation failed: %w", err)
 	}
 
-	return c.forward(x)
+	y, err = c.forward(x)
+	if err != nil {
+		return y, fmt.Errorf("Relu forward failed: %w", err)
+	}
+
+	return y, nil
 }
 
 func (c *Relu) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 	_0, err := c.toUntrackedFull(x, 0)
 	if err != nil {
-		return
+		return y, err
 	}
 
 	return _0.ElMax(x)
@@ -36,8 +40,7 @@ func (c *Relu) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 func (c *Relu) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 	if len(xs) != 1 {
-		err = fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
-		return
+		return x, fmt.Errorf("expected exactly one input tensor: got (%d)", len(xs))
 	}
 
 	x = xs[0]

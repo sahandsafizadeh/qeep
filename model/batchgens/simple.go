@@ -77,26 +77,32 @@ func (bg *Simple) NextBatch() (xs []tensor.Tensor, y tensor.Tensor, err error) {
 		return xs, y, fmt.Errorf("Simple state validation failed: expected next batch to exist")
 	}
 
+	xs, y, err = bg.nextBatch()
+	if err != nil {
+		return xs, y, fmt.Errorf("Simple batch fetching failed: %w", err)
+	}
+
+	return xs, y, nil
+}
+
+func (bg *Simple) nextBatch() (xs []tensor.Tensor, y tensor.Tensor, err error) {
 	index := bg.index
 	length := bg.length
 	batchSize := bg.batchSize
 
 	from := index
-	to := from + batchSize
-	if to > length {
-		to = length
-	}
+	to := min(from+batchSize, length)
 
 	conf := &tensor.Config{Device: bg.device}
 
 	x, err := tensor.Of(bg.x[from:to], conf)
 	if err != nil {
-		return
+		return xs, y, err
 	}
 
 	y, err = tensor.Of(bg.y[from:to], conf)
 	if err != nil {
-		return
+		return xs, y, err
 	}
 
 	bg.index += bg.batchSize
@@ -143,7 +149,7 @@ func toValidSimpleData(ix [][]float64, iy [][]float64) (x [][]float64, y [][]flo
 	x = make([][]float64, lenx)
 	y = make([][]float64, leny)
 
-	for i := 0; i < lenx; i++ {
+	for i := range lenx {
 		ixi := ix[i]
 		iyi := iy[i]
 

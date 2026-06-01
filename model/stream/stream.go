@@ -18,7 +18,7 @@ func (s *Stream) Cursor() any {
 	return s.cursor
 }
 
-func (s *Stream) Error() error {
+func (s *Stream) Error() (err error) {
 	if len(s.errCtx) == 0 {
 		return nil
 	}

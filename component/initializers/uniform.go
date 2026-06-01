@@ -22,7 +22,7 @@ const UniformDefaultUpper = 0.05
 func NewUniform(conf *UniformConfig) (c *Uniform, err error) {
 	conf, err = toValidUniformConfig(conf)
 	if err != nil {
-		return nil, fmt.Errorf("Uniform config data validation failed: %w", err)
+		return c, fmt.Errorf("Uniform config data validation failed: %w", err)
 	}
 
 	return &Uniform{
@@ -58,7 +58,7 @@ func toValidUniformConfig(iconf *UniformConfig) (conf *UniformConfig, err error)
 	*conf = *iconf
 
 	if !(conf.Lower < conf.Upper) {
-		return nil, fmt.Errorf("expected 'Lower' to be less than 'Upper': (%f) >= (%f)", conf.Lower, conf.Upper)
+		return conf, fmt.Errorf("expected 'Lower' to be less than 'Upper': (%f) >= (%f)", conf.Lower, conf.Upper)
 	}
 
 	return conf, nil

@@ -18,7 +18,7 @@ type HeNormalConfig struct {
 func NewHeNormal(conf *HeNormalConfig) (c *HeNormal, err error) {
 	conf, err = toValidHeNormalConfig(conf)
 	if err != nil {
-		return nil, fmt.Errorf("HeNormal config data validation failed: %w", err)
+		return c, fmt.Errorf("HeNormal config data validation failed: %w", err)
 	}
 
 	return &HeNormal{
@@ -44,14 +44,14 @@ func (c *HeNormal) init(shape []int, device tensor.Device) (x tensor.Tensor, err
 
 func toValidHeNormalConfig(iconf *HeNormalConfig) (conf *HeNormalConfig, err error) {
 	if iconf == nil {
-		return nil, fmt.Errorf("expected config not to be nil")
+		return conf, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(HeNormalConfig)
 	*conf = *iconf
 
 	if conf.FanIn <= 0 {
-		return nil, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
+		return conf, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
 	}
 
 	return conf, nil

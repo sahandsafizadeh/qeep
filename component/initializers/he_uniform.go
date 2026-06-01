@@ -18,7 +18,7 @@ type HeUniformConfig struct {
 func NewHeUniform(conf *HeUniformConfig) (c *HeUniform, err error) {
 	conf, err = toValidHeUniformConfig(conf)
 	if err != nil {
-		return nil, fmt.Errorf("HeUniform config data validation failed: %w", err)
+		return c, fmt.Errorf("HeUniform config data validation failed: %w", err)
 	}
 
 	return &HeUniform{
@@ -44,14 +44,14 @@ func (c *HeUniform) init(shape []int, device tensor.Device) (x tensor.Tensor, er
 
 func toValidHeUniformConfig(iconf *HeUniformConfig) (conf *HeUniformConfig, err error) {
 	if iconf == nil {
-		return nil, fmt.Errorf("expected config not to be nil")
+		return conf, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(HeUniformConfig)
 	*conf = *iconf
 
 	if conf.FanIn <= 0 {
-		return nil, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
+		return conf, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
 	}
 
 	return conf, nil

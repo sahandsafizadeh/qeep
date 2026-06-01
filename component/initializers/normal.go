@@ -22,7 +22,7 @@ const NormalDefaultStdDev = 0.05
 func NewNormal(conf *NormalConfig) (c *Normal, err error) {
 	conf, err = toValidNormalConfig(conf)
 	if err != nil {
-		return nil, fmt.Errorf("Normal config data validation failed: %w", err)
+		return c, fmt.Errorf("Normal config data validation failed: %w", err)
 	}
 
 	return &Normal{
@@ -58,7 +58,7 @@ func toValidNormalConfig(iconf *NormalConfig) (conf *NormalConfig, err error) {
 	*conf = *iconf
 
 	if !(conf.StdDev > 0) {
-		return nil, fmt.Errorf("expected 'StdDev' to be positive: got (%f)", conf.StdDev)
+		return conf, fmt.Errorf("expected 'StdDev' to be positive: got (%f)", conf.StdDev)
 	}
 
 	return conf, nil

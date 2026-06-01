@@ -20,7 +20,7 @@ type XavierUniformConfig struct {
 func NewXavierUniform(conf *XavierUniformConfig) (c *XavierUniform, err error) {
 	conf, err = toValidXavierUniformConfig(conf)
 	if err != nil {
-		return nil, fmt.Errorf("XavierUniform config data validation failed: %w", err)
+		return c, fmt.Errorf("XavierUniform config data validation failed: %w", err)
 	}
 
 	return &XavierUniform{
@@ -47,18 +47,18 @@ func (c *XavierUniform) init(shape []int, device tensor.Device) (x tensor.Tensor
 
 func toValidXavierUniformConfig(iconf *XavierUniformConfig) (conf *XavierUniformConfig, err error) {
 	if iconf == nil {
-		return nil, fmt.Errorf("expected config not to be nil")
+		return conf, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(XavierUniformConfig)
 	*conf = *iconf
 
 	if conf.FanIn <= 0 {
-		return nil, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
+		return conf, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
 	}
 
 	if conf.FanOut <= 0 {
-		return nil, fmt.Errorf("expected 'FanOut' to be positive: got (%d)", conf.FanOut)
+		return conf, fmt.Errorf("expected 'FanOut' to be positive: got (%d)", conf.FanOut)
 	}
 
 	return conf, nil

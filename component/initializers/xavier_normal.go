@@ -20,7 +20,7 @@ type XavierNormalConfig struct {
 func NewXavierNormal(conf *XavierNormalConfig) (c *XavierNormal, err error) {
 	conf, err = toValidXavierNormalConfig(conf)
 	if err != nil {
-		return nil, fmt.Errorf("XavierNormal config data validation failed: %w", err)
+		return c, fmt.Errorf("XavierNormal config data validation failed: %w", err)
 	}
 
 	return &XavierNormal{
@@ -47,18 +47,18 @@ func (c *XavierNormal) init(shape []int, device tensor.Device) (x tensor.Tensor,
 
 func toValidXavierNormalConfig(iconf *XavierNormalConfig) (conf *XavierNormalConfig, err error) {
 	if iconf == nil {
-		return nil, fmt.Errorf("expected config not to be nil")
+		return conf, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(XavierNormalConfig)
 	*conf = *iconf
 
 	if conf.FanIn <= 0 {
-		return nil, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
+		return conf, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
 	}
 
 	if conf.FanOut <= 0 {
-		return nil, fmt.Errorf("expected 'FanOut' to be positive: got (%d)", conf.FanOut)
+		return conf, fmt.Errorf("expected 'FanOut' to be positive: got (%d)", conf.FanOut)
 	}
 
 	return conf, nil

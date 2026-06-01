@@ -285,8 +285,7 @@ func dotProductOf1DInputs(a, b any) any {
 	n := len(v1)
 
 	s := 0.
-	var i int
-	for i = range n {
+	for i := range n {
 		eiv1 := v1[i].(float64)
 		eiv2 := v2[i].(float64)
 		s += eiv1 * eiv2
@@ -306,13 +305,12 @@ func matMulDataOf2DInputs(a, b any) any {
 	n := len(r0m1)
 	k := len(r0m2)
 
-	var i, j, p int
 	cRows := make([]any, m)
-	for i = range m {
+	for i := range m {
 		row := make([]any, k)
-		for j = range k {
+		for j := range k {
 			eij := 0.
-			for p = range n {
+			for p := range n {
 				rim1 := m1[i].([]any)
 				rpm2 := m2[p].([]any)
 				eipm1 := rim1[p].(float64)

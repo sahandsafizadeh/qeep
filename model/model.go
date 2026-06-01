@@ -13,15 +13,6 @@ import (
 
 // NewModel builds a Model with a single input stream, the given output stream, and config.
 func NewModel(input *stream.Stream, output *stream.Stream, conf *ModelConfig) (m *Model, err error) {
-	m, err = newModel(input, output, conf)
-	if err != nil {
-		return m, fmt.Errorf("NewModel failed: %w", err)
-	}
-
-	return m, nil
-}
-
-func newModel(input *stream.Stream, output *stream.Stream, conf *ModelConfig) (m *Model, err error) {
 	return NewMultiInputModel([]*stream.Stream{input}, output, conf)
 }
 
@@ -29,7 +20,7 @@ func newModel(input *stream.Stream, output *stream.Stream, conf *ModelConfig) (m
 func NewMultiInputModel(inputs []*stream.Stream, output *stream.Stream, conf *ModelConfig) (m *Model, err error) {
 	m, err = newMultiInputModel(inputs, output, conf)
 	if err != nil {
-		return m, fmt.Errorf("NewMultiInputModel failed: %w", err)
+		return m, fmt.Errorf("Model initialization failed: %w", err)
 	}
 
 	return m, nil

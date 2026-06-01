@@ -25,7 +25,7 @@ type transformFunc func(float64) float64
 func loadData() (x [][]float64, y [][]float64, err error) {
 	file, err := os.Open(dataFileAddress)
 	if err != nil {
-		return
+		return x, y, err
 	}
 
 	defer func() {
@@ -79,8 +79,8 @@ func splitData(x [][]float64, y [][]float64) *dataSplit {
 }
 
 func preprocessData(data *dataSplit) {
-	getColumn := func(j int, x [][]float64) (col []float64) {
-		col = make([]float64, len(x))
+	getColumn := func(j int, x [][]float64) []float64 {
+		col := make([]float64, len(x))
 		for i := range x {
 			col[i] = x[i][j]
 		}
@@ -106,7 +106,7 @@ func preprocessData(data *dataSplit) {
 
 /* ----- helpers ----- */
 
-func mustParseFloat64(s string) (f float64) {
+func mustParseFloat64(s string) float64 {
 	f, err := strconv.ParseFloat(s, 64)
 	if err != nil {
 		panic(err)

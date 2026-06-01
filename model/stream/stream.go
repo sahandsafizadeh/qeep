@@ -41,7 +41,7 @@ func (s *Stream) Error() (err error) {
 	return errors.New(chained.String())
 }
 
-func NewStream(initFunc layerInitFunc, xs []*Stream) *Stream {
+func NewStream(initFunc layerInitFunc, xs []*Stream) (y *Stream) {
 	/*
 		CHANGE WITH CAUTION:
 		- this function only handles error of 'initFunc'.

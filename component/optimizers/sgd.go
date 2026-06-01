@@ -29,8 +29,7 @@ const (
 func NewSGD(conf *SGDConfig) (c *SGD, err error) {
 	conf, err = toValidSGDConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("SGD config data validation failed: %w", err)
-		return
+		return c, fmt.Errorf("SGD config data validation failed: %w", err)
 	}
 
 	c = &SGD{
@@ -49,10 +48,18 @@ func NewSGD(conf *SGDConfig) (c *SGD, err error) {
 func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 	w, g, err := getValidOptimizerInputs(wptr)
 	if err != nil {
-		err = fmt.Errorf("SGD input data validation failed: %w", err)
-		return
+		return fmt.Errorf("SGD input data validation failed: %w", err)
 	}
 
+	err = c.update(wptr, w, g)
+	if err != nil {
+		return fmt.Errorf("SGD update failed: %w", err)
+	}
+
+	return nil
+}
+
+func (c *SGD) update(wptr *tensor.Tensor, w tensor.Tensor, g tensor.Tensor) (err error) {
 	delta := g
 
 	if c.hasWeightDecay() {
@@ -60,7 +67,7 @@ func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 
 		delta, err = delta.Add(wdt)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
@@ -70,7 +77,7 @@ func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 
 			delta, err = delta.Add(mmt)
 			if err != nil {
-				return
+				return err
 			}
 		}
 
@@ -81,17 +88,17 @@ func (c *SGD) Update(wptr *tensor.Tensor) (err error) {
 
 	*wptr, err = w.Sub(delta)
 	if err != nil {
-		return
+		return err
 	}
 
 	return nil
 }
 
-func (c *SGD) hasWeightDecay() (has bool) {
+func (c *SGD) hasWeightDecay() bool {
 	return c.weightDecay > 0
 }
 
-func (c *SGD) hasMomentum() (has bool) {
+func (c *SGD) hasMomentum() bool {
 	return c.momentum > 0
 }
 
@@ -110,18 +117,15 @@ func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig, err error) {
 	*conf = *iconf
 
 	if conf.LearningRate <= 0 {
-		err = fmt.Errorf("expected 'LearningRate' to be positive: got (%f)", conf.LearningRate)
-		return
+		return conf, fmt.Errorf("expected 'LearningRate' to be positive: got (%f)", conf.LearningRate)
 	}
 
 	if conf.WeightDecay < 0 {
-		err = fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
-		return
+		return conf, fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
 	}
 
 	if conf.Momentum < 0 {
-		err = fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
-		return
+		return conf, fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
 	}
 
 	return conf, nil

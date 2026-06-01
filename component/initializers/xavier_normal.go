@@ -20,8 +20,7 @@ type XavierNormalConfig struct {
 func NewXavierNormal(conf *XavierNormalConfig) (c *XavierNormal, err error) {
 	conf, err = toValidXavierNormalConfig(conf)
 	if err != nil {
-		err = fmt.Errorf("XavierNormal config data validation failed: %w", err)
-		return
+		return nil, fmt.Errorf("XavierNormal config data validation failed: %w", err)
 	}
 
 	return &XavierNormal{
@@ -31,6 +30,15 @@ func NewXavierNormal(conf *XavierNormalConfig) (c *XavierNormal, err error) {
 }
 
 func (c *XavierNormal) Init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
+	x, err = c.init(shape, device)
+	if err != nil {
+		return x, fmt.Errorf("XavierNormal init failed: %w", err)
+	}
+
+	return x, nil
+}
+
+func (c *XavierNormal) init(shape []int, device tensor.Device) (x tensor.Tensor, err error) {
 	s := math.Sqrt(2. / float64(c.fanIn+c.fanOut))
 	return tensor.RandN(shape, 0., s, tensorInitConf(device))
 }
@@ -39,21 +47,18 @@ func (c *XavierNormal) Init(shape []int, device tensor.Device) (x tensor.Tensor,
 
 func toValidXavierNormalConfig(iconf *XavierNormalConfig) (conf *XavierNormalConfig, err error) {
 	if iconf == nil {
-		err = fmt.Errorf("expected config not to be nil")
-		return
+		return nil, fmt.Errorf("expected config not to be nil")
 	}
 
 	conf = new(XavierNormalConfig)
 	*conf = *iconf
 
 	if conf.FanIn <= 0 {
-		err = fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
-		return
+		return nil, fmt.Errorf("expected 'FanIn' to be positive: got (%d)", conf.FanIn)
 	}
 
 	if conf.FanOut <= 0 {
-		err = fmt.Errorf("expected 'FanOut' to be positive: got (%d)", conf.FanOut)
-		return
+		return nil, fmt.Errorf("expected 'FanOut' to be positive: got (%d)", conf.FanOut)
 	}
 
 	return conf, nil

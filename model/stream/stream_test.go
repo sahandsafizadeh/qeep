@@ -18,9 +18,9 @@ func TestStream(t *testing.T) {
 
 		t.Run("Input→FC→Tanh→FC→Softmax stream / building stream / no error at any node", func(t *testing.T) {
 			input := stream.Input()
-			fc1 := stream.FC(&layers.FCConfig{Inputs: 16, Outputs: 4})(input)
+			fc1 := stream.FC(&layers.FCConfig{Outputs: 4})(input)
 			tanh := stream.Tanh()(fc1)
-			fc2 := stream.FC(&layers.FCConfig{Inputs: 4, Outputs: 2})(tanh)
+			fc2 := stream.FC(&layers.FCConfig{Outputs: 2})(tanh)
 			output := stream.Softmax(nil)(fc2)
 
 			if err := input.Error(); err != nil {
@@ -42,9 +42,9 @@ func TestStream(t *testing.T) {
 
 		t.Run("Input→FC→Tanh→FC→Softmax stream / each node's cursor / holds the correct layer type", func(t *testing.T) {
 			input := stream.Input()
-			fc1 := stream.FC(&layers.FCConfig{Inputs: 16, Outputs: 4})(input)
+			fc1 := stream.FC(&layers.FCConfig{Outputs: 4})(input)
 			tanh := stream.Tanh()(fc1)
-			fc2 := stream.FC(&layers.FCConfig{Inputs: 4, Outputs: 2})(tanh)
+			fc2 := stream.FC(&layers.FCConfig{Outputs: 2})(tanh)
 			output := stream.Softmax(nil)(fc2)
 
 			ninput := input.Cursor().(*node.Node)
@@ -72,9 +72,9 @@ func TestStream(t *testing.T) {
 
 		t.Run("Input→FC→Tanh→FC→Softmax stream / parent and child links between nodes / form a correct linear chain", func(t *testing.T) {
 			input := stream.Input()
-			fc1 := stream.FC(&layers.FCConfig{Inputs: 16, Outputs: 4})(input)
+			fc1 := stream.FC(&layers.FCConfig{Outputs: 4})(input)
 			tanh := stream.Tanh()(fc1)
-			fc2 := stream.FC(&layers.FCConfig{Inputs: 4, Outputs: 2})(tanh)
+			fc2 := stream.FC(&layers.FCConfig{Outputs: 2})(tanh)
 			output := stream.Softmax(nil)(fc2)
 
 			ninput := input.Cursor().(*node.Node)
@@ -117,9 +117,9 @@ func TestStream(t *testing.T) {
 
 		t.Run("Input→FC→Tanh→FC→Softmax stream / NLayer of each node / reflects correct depth in graph", func(t *testing.T) {
 			input := stream.Input()
-			fc1 := stream.FC(&layers.FCConfig{Inputs: 16, Outputs: 4})(input)
+			fc1 := stream.FC(&layers.FCConfig{Outputs: 4})(input)
 			tanh := stream.Tanh()(fc1)
-			fc2 := stream.FC(&layers.FCConfig{Inputs: 4, Outputs: 2})(tanh)
+			fc2 := stream.FC(&layers.FCConfig{Outputs: 2})(tanh)
 			output := stream.Softmax(nil)(fc2)
 
 			ninput := input.Cursor().(*node.Node)
@@ -182,12 +182,12 @@ func TestStream(t *testing.T) {
 			}
 		})
 
-		t.Run("FC(nil) followed by FC(Inputs:-1) / Error() at second FC node / accumulates both errors", func(t *testing.T) {
+		t.Run("FC(nil) followed by FC(Outputs:-1) / Error() at second FC node / accumulates both errors", func(t *testing.T) {
 			input := stream.Input()
 			tanh := stream.Tanh()(input)
 			fc1 := stream.FC(nil)(tanh)
 			sigmoid := stream.Sigmoid()(fc1)
-			fc2 := stream.FC(&layers.FCConfig{Inputs: -1, Outputs: 1})(sigmoid)
+			fc2 := stream.FC(&layers.FCConfig{Outputs: -1})(sigmoid)
 
 			if err := fc2.Error(); err == nil {
 				t.Fatal("expected error in the stream")
@@ -195,14 +195,14 @@ func TestStream(t *testing.T) {
 				act := err.Error()
 				exp := `
 (Layer 2): FC config data validation failed: expected config not to be nil
-(Layer 4): FC config data validation failed: expected 'Inputs' to be positive: got (-1)`
+(Layer 4): FC config data validation failed: expected 'Outputs' to be positive: got (-1)`
 				if act != exp {
 					t.Fatal("unexpected error message returned")
 				}
 			}
 		})
 
-		t.Run("two-branch stream with FC(nil), FC(Inputs:-1), and Softmax(Dim:-2) / Error() at output node / aggregates all upstream errors from both branches", func(t *testing.T) {
+		t.Run("two-branch stream with FC(nil), FC(Outputs:-1), and Softmax(Dim:-2) / Error() at output node / aggregates all upstream errors from both branches", func(t *testing.T) {
 			input1 := stream.Input()
 			input2 := stream.Input()
 
@@ -215,8 +215,8 @@ func TestStream(t *testing.T) {
 			sigmoid1 := stream.Sigmoid()(fc11)
 			sigmoid2 := stream.Sigmoid()(fc12)
 
-			fc21 := stream.FC(&layers.FCConfig{Inputs: -1, Outputs: 1})(sigmoid1)
-			fc22 := stream.FC(&layers.FCConfig{Inputs: -1, Outputs: 1})(sigmoid2)
+			fc22 := stream.FC(&layers.FCConfig{Outputs: -1})(sigmoid2)
+			fc21 := stream.FC(&layers.FCConfig{Outputs: -1})(sigmoid1)
 
 			output := stream.Softmax(&activations.SoftmaxConfig{Dim: -2})(fc21, fc22)
 
@@ -227,8 +227,8 @@ func TestStream(t *testing.T) {
 				exp := `
 (Layer 2): FC config data validation failed: expected config not to be nil
 (Layer 2): FC config data validation failed: expected config not to be nil
-(Layer 4): FC config data validation failed: expected 'Inputs' to be positive: got (-1)
-(Layer 4): FC config data validation failed: expected 'Inputs' to be positive: got (-1)
+(Layer 4): FC config data validation failed: expected 'Outputs' to be positive: got (-1)
+(Layer 4): FC config data validation failed: expected 'Outputs' to be positive: got (-1)
 (Layer 5): Softmax config data validation failed: expected 'Dim' not to be negative: got (-2)`
 				if act != exp {
 					t.Fatal("unexpected error message returned")

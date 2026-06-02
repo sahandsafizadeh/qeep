@@ -68,6 +68,11 @@ func (c *BatchNorm) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 		return y, fmt.Errorf("BatchNorm input data validation failed: %w", err)
 	}
 
+	err = c.initWeights()
+	if err != nil {
+		return y, fmt.Errorf("BatchNorm weight initialization failed: %w", err)
+	}
+
 	y, err = c.forward(x)
 	if err != nil {
 		return y, fmt.Errorf("BatchNorm forward failed: %w", err)
@@ -80,10 +85,6 @@ func (c *BatchNorm) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 // If the input's shape is (..., F), then the core mean and variance will have (F) shape.
 // Broadcasted mean and variance will normalize the whole tensor.
 func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
-	err = c.initWeights()
-	if err != nil {
-		return y, err
-	}
 
 	var mean, _var tensor.Tensor
 

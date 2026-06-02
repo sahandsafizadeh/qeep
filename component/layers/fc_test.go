@@ -177,10 +177,10 @@ func TestFC(t *testing.T) {
 				t.Fatalf("expected FC to have (2) weights: got (%d)", len(weights))
 			}
 
-			if !(weights[0].Trainable && *weights[0].Value == nil) {
+			if !weights[0].Trainable || *weights[0].Value != nil {
 				t.Fatal("expected FC weight (0) to be trainable with nil value")
 			}
-			if !(weights[1].Trainable && *weights[1].Value == nil) {
+			if !weights[1].Trainable || *weights[1].Value != nil {
 				t.Fatal("expected FC weight (1) to be trainable with nil value")
 			}
 		})
@@ -209,10 +209,10 @@ func TestFC(t *testing.T) {
 				t.Fatalf("expected FC to have (2) weights: got (%d)", len(weights))
 			}
 
-			if !(weights[0].Trainable && *weights[0].Value != nil && weights[0].Value == &layer.Weight) {
+			if !weights[0].Trainable || *weights[0].Value == nil || weights[0].Value != &layer.Weight {
 				t.Fatal("expected FC weight (0) to be trainable, non-nil and point to 'Weight'")
 			}
-			if !(weights[1].Trainable && *weights[1].Value != nil && weights[1].Value == &layer.Bias) {
+			if !weights[1].Trainable || *weights[1].Value == nil || weights[1].Value != &layer.Bias {
 				t.Fatal("expected FC weight (1) to be trainable, non-nil and point to 'Bias'")
 			}
 		})
@@ -262,10 +262,10 @@ func TestFC(t *testing.T) {
 				t.Fatalf("expected FC to have (2) weights: got (%d)", len(weights))
 			}
 
-			if !(weights[0].Trainable && *weights[0].Value == w && weights[0].Value == &layer.Weight) {
+			if !weights[0].Trainable || *weights[0].Value != w || weights[0].Value != &layer.Weight {
 				t.Fatal("expected FC weight (0) to be trainable, stay the same and point to 'Weight'")
 			}
-			if !(weights[1].Trainable && *weights[1].Value == b && weights[1].Value == &layer.Bias) {
+			if !weights[1].Trainable || *weights[1].Value != b || weights[1].Value != &layer.Bias {
 				t.Fatal("expected FC weight (1) to be trainable, stay the same and point to 'Bias'")
 			}
 		})
@@ -389,6 +389,9 @@ func TestFC(t *testing.T) {
 					"Weight": new(zeroDInitializer),
 				},
 			})
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			x, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -410,6 +413,9 @@ func TestFC(t *testing.T) {
 					"Bias": new(zeroDInitializer),
 				},
 			})
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			x, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -431,6 +437,9 @@ func TestFC(t *testing.T) {
 					"Weight": new(twoDInitializer),
 				},
 			})
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			x, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -452,6 +461,9 @@ func TestFC(t *testing.T) {
 					"Bias": new(twoDInitializer),
 				},
 			})
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			x, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -473,6 +485,9 @@ func TestFC(t *testing.T) {
 					"Weight": new(wrong1DInitializer),
 				},
 			})
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			x, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -494,6 +509,9 @@ func TestFC(t *testing.T) {
 					"Bias": new(wrong1DInitializer),
 				},
 			})
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			x, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
 			if err != nil {

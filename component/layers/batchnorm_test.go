@@ -658,16 +658,16 @@ func TestBatchNorm(t *testing.T) {
 				t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
 			}
 
-			if !(weights[0].Trainable && *weights[0].Value == nil) {
+			if !weights[0].Trainable || *weights[0].Value != nil {
 				t.Fatal("expected BatchNorm weight (0) to be trainable with nil value")
 			}
-			if !(weights[1].Trainable && *weights[1].Value == nil) {
+			if !weights[1].Trainable || *weights[1].Value != nil {
 				t.Fatal("expected BatchNorm weight (1) to be trainable with nil value")
 			}
-			if !(!weights[2].Trainable && *weights[2].Value == nil) {
+			if weights[2].Trainable || *weights[2].Value != nil {
 				t.Fatal("expected BatchNorm weight (2) to be non-trainable with nil value")
 			}
-			if !(!weights[3].Trainable && *weights[3].Value == nil) {
+			if weights[3].Trainable || *weights[3].Value != nil {
 				t.Fatal("expected BatchNorm weight (3) to be non-trainable with nil value")
 			}
 		})
@@ -696,16 +696,16 @@ func TestBatchNorm(t *testing.T) {
 				t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
 			}
 
-			if !(weights[0].Trainable && *weights[0].Value != nil && weights[0].Value == &layer.Beta) {
+			if !weights[0].Trainable || *weights[0].Value == nil || weights[0].Value != &layer.Beta {
 				t.Fatal("expected BatchNorm weight (0) to be trainable, non-nil and point to 'Beta'")
 			}
-			if !(weights[1].Trainable && *weights[1].Value != nil && weights[1].Value == &layer.Gamma) {
+			if !weights[1].Trainable || *weights[1].Value == nil || weights[1].Value != &layer.Gamma {
 				t.Fatal("expected BatchNorm weight (1) to be trainable, non-nil and point to 'Gamma'")
 			}
-			if !(!weights[2].Trainable && *weights[2].Value != nil && weights[2].Value == &layer.MovingMean) {
+			if weights[2].Trainable || *weights[2].Value == nil || weights[2].Value != &layer.MovingMean {
 				t.Fatal("expected BatchNorm weight (2) to be non-trainable, non-nil and point to 'MovingMean'")
 			}
-			if !(!weights[3].Trainable && *weights[3].Value != nil && weights[3].Value == &layer.MovingVar) {
+			if weights[3].Trainable || *weights[3].Value == nil || weights[3].Value != &layer.MovingVar {
 				t.Fatal("expected BatchNorm weight (3) to be non-trainable, non-nil and point to 'MovingVar'")
 			}
 		})
@@ -771,16 +771,16 @@ func TestBatchNorm(t *testing.T) {
 				t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
 			}
 
-			if !(weights[0].Trainable && *weights[0].Value == b && weights[0].Value == &layer.Beta) {
+			if !weights[0].Trainable || *weights[0].Value != b || weights[0].Value != &layer.Beta {
 				t.Fatal("expected BatchNorm weight (0) to be trainable, stay the same and point to 'Beta'")
 			}
-			if !(weights[1].Trainable && *weights[1].Value == g && weights[1].Value == &layer.Gamma) {
+			if !weights[1].Trainable || *weights[1].Value != g || weights[1].Value != &layer.Gamma {
 				t.Fatal("expected BatchNorm weight (1) to be trainable, stay the same and point to 'Gamma'")
 			}
-			if !(!weights[2].Trainable && *weights[2].Value == mm && weights[2].Value == &layer.MovingMean) {
+			if weights[2].Trainable || *weights[2].Value != mm || weights[2].Value != &layer.MovingMean {
 				t.Fatal("expected BatchNorm weight (2) to be non-trainable, stay the same and point to 'MovingMean'")
 			}
-			if !(!weights[3].Trainable && *weights[3].Value == mv && weights[3].Value == &layer.MovingVar) {
+			if weights[3].Trainable || *weights[3].Value != mv || weights[3].Value != &layer.MovingVar {
 				t.Fatal("expected BatchNorm weight (3) to be non-trainable, stay the same and point to 'MovingVar'")
 			}
 		})
@@ -849,16 +849,16 @@ func TestBatchNorm(t *testing.T) {
 				t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
 			}
 
-			if !(weights[0].Trainable && *weights[0].Value == b && weights[0].Value == &layer.Beta) {
+			if !weights[0].Trainable || *weights[0].Value != b || weights[0].Value != &layer.Beta {
 				t.Fatal("expected BatchNorm weight (0) to be trainable, stay the same and point to 'Beta'")
 			}
-			if !(weights[1].Trainable && *weights[1].Value == g && weights[1].Value == &layer.Gamma) {
+			if !weights[1].Trainable || *weights[1].Value != g || weights[1].Value != &layer.Gamma {
 				t.Fatal("expected BatchNorm weight (1) to be trainable, stay the same and point to 'Gamma'")
 			}
-			if !(!weights[2].Trainable && *weights[2].Value != mm && weights[2].Value == &layer.MovingMean) {
+			if weights[2].Trainable || *weights[2].Value == mm || weights[2].Value != &layer.MovingMean {
 				t.Fatal("expected BatchNorm weight (2) to be non-trainable, change and point to 'MovingMean'")
 			}
-			if !(!weights[3].Trainable && *weights[3].Value != mv && weights[3].Value == &layer.MovingVar) {
+			if weights[3].Trainable || *weights[3].Value == mv || weights[3].Value != &layer.MovingVar {
 				t.Fatal("expected BatchNorm weight (3) to be non-trainable, change and point to 'MovingVar'")
 			}
 		})

@@ -27,7 +27,6 @@ func TestModel(t *testing.T) {
 
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 1,
 				Initializers: map[string]layers.Initializer{
 					"Weight": wInitializer,
@@ -81,7 +80,6 @@ func TestModel(t *testing.T) {
 
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 1,
 				Initializers: map[string]layers.Initializer{
 					"Weight": wInitializer,
@@ -151,7 +149,6 @@ func TestModel(t *testing.T) {
 
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 1,
 				Initializers: map[string]layers.Initializer{
 					"Weight": wInitializer,
@@ -207,7 +204,6 @@ func TestModel(t *testing.T) {
 
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 1,
 				Initializers: map[string]layers.Initializer{
 					"Weight": wInitializer,
@@ -267,7 +263,6 @@ func TestModel(t *testing.T) {
 			// ----- given -----
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 1,
 				Device:  dev,
 			})(input, input)
@@ -311,7 +306,6 @@ func TestModel(t *testing.T) {
 			// ----- given -----
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 1,
 				Device:  dev,
 			})(input, input)
@@ -355,7 +349,6 @@ func TestModel(t *testing.T) {
 			// ----- given -----
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 2,
 				Device:  dev,
 			})(input)
@@ -399,7 +392,6 @@ func TestModel(t *testing.T) {
 			// ----- given -----
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 2,
 				Device:  dev,
 			})(input)
@@ -443,7 +435,6 @@ func TestModel(t *testing.T) {
 			// ----- given -----
 			input := stream.Input()
 			hidden := stream.FC(&layers.FCConfig{
-				Inputs:  1,
 				Outputs: 2,
 				Device:  dev,
 			})(input)

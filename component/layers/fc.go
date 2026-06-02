@@ -11,10 +11,13 @@ import (
 type FC struct {
 	Weight tensor.Tensor
 	Bias   tensor.Tensor
+
+	outputs      int
+	initializers map[string]Initializer
+	device       tensor.Device
 }
 
 type FCConfig struct {
-	Inputs       int
 	Outputs      int
 	Initializers map[string]Initializer
 	Device       tensor.Device
@@ -31,38 +34,10 @@ func NewFC(conf *FCConfig) (c *FC, err error) {
 		return c, fmt.Errorf("FC config data validation failed: %w", err)
 	}
 
-	c, err = newFC(conf)
-	if err != nil {
-		return c, fmt.Errorf("FC initialization failed: %w", err)
-	}
-
-	return c, nil
-}
-
-func newFC(conf *FCConfig) (c *FC, err error) {
-	var (
-		win = conf.Initializers[fcWeightKey]
-		bin = conf.Initializers[fcBiasKey]
-	)
-
-	w, err := win.Init([]int{conf.Outputs}, conf.Device)
-	if err != nil {
-		return c, err
-	}
-
-	b, err := bin.Init([]int{conf.Outputs}, conf.Device)
-	if err != nil {
-		return c, err
-	}
-
-	err = validateInitializedWeights(w, b, conf)
-	if err != nil {
-		return c, fmt.Errorf("FC initialized weight validation failed: %w", err)
-	}
-
 	return &FC{
-		Weight: w,
-		Bias:   b,
+		outputs:      conf.Outputs,
+		initializers: conf.Initializers,
+		device:       conf.Device,
 	}, nil
 }
 
@@ -83,6 +58,11 @@ func (c *FC) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	x, err := c.toValidInputs(xs)
 	if err != nil {
 		return y, fmt.Errorf("FC input data validation failed: %w", err)
+	}
+
+	err = c.initWeights(x)
+	if err != nil {
+		return y, fmt.Errorf("FC weight initialization failed: %w", err)
 	}
 
 	y, err = c.forward(x)
@@ -124,6 +104,56 @@ func (c *FC) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 	return y, nil
 }
 
+func (c *FC) initWeights(x tensor.Tensor) (err error) {
+	if c.Weight == nil {
+		initializer, ok := c.initializers[fcWeightKey]
+		if !ok {
+			initializer, err = initializers.NewXavierUniform(&initializers.XavierUniformConfig{
+				FanIn:  x.Shape()[1],
+				FanOut: c.outputs,
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		w, err := initializer.Init([]int{c.outputs}, c.device)
+		if err != nil {
+			return err
+		}
+
+		err = c.validateInitializedWeight(w)
+		if err != nil {
+			return err
+		}
+
+		c.Weight = w
+	}
+
+	if c.Bias == nil {
+		initializer, ok := c.initializers[fcBiasKey]
+		if !ok {
+			initializer = initializers.NewFull(&initializers.FullConfig{
+				Value: 0.,
+			})
+		}
+
+		b, err := initializer.Init([]int{c.outputs}, c.device)
+		if err != nil {
+			return err
+		}
+
+		err = c.validateInitializedWeight(b)
+		if err != nil {
+			return err
+		}
+
+		c.Bias = b
+	}
+
+	return nil
+}
+
 /* ----- helpers ----- */
 
 func (c *FC) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
@@ -142,6 +172,20 @@ func (c *FC) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 	return x, nil
 }
 
+func (c *FC) validateInitializedWeight(t tensor.Tensor) (err error) {
+	shape := t.Shape()
+
+	if len(shape) != 1 {
+		return fmt.Errorf("expected initialized weights to have exactly one dimension")
+	}
+
+	if shape[0] != c.outputs {
+		return fmt.Errorf("expected initialized size to match the output size: (%d) != (%d)", shape[0], c.outputs)
+	}
+
+	return nil
+}
+
 func toValidFCConfig(iconf *FCConfig) (conf *FCConfig, err error) {
 	if iconf == nil {
 		return conf, fmt.Errorf("expected config not to be nil")
@@ -150,34 +194,8 @@ func toValidFCConfig(iconf *FCConfig) (conf *FCConfig, err error) {
 	conf = new(FCConfig)
 	*conf = *iconf
 
-	if conf.Inputs <= 0 {
-		return conf, fmt.Errorf("expected 'Inputs' to be positive: got (%d)", conf.Inputs)
-	}
-
 	if conf.Outputs <= 0 {
 		return conf, fmt.Errorf("expected 'Outputs' to be positive: got (%d)", conf.Outputs)
-	}
-
-	if conf.Initializers == nil {
-		conf.Initializers = make(map[string]Initializer)
-	}
-
-	if _, ok := conf.Initializers[fcWeightKey]; !ok {
-		conf.Initializers[fcWeightKey], err = initializers.NewXavierUniform(
-			&initializers.XavierUniformConfig{
-				FanIn:  conf.Inputs,
-				FanOut: conf.Outputs,
-			})
-		if err != nil {
-			return conf, err
-		}
-	}
-
-	if _, ok := conf.Initializers[fcBiasKey]; !ok {
-		conf.Initializers[fcBiasKey] = initializers.NewFull(
-			&initializers.FullConfig{
-				Value: 0.,
-			})
 	}
 
 	if conf.Device == 0 {
@@ -185,23 +203,4 @@ func toValidFCConfig(iconf *FCConfig) (conf *FCConfig, err error) {
 	}
 
 	return conf, nil
-}
-
-func validateInitializedWeights(w tensor.Tensor, b tensor.Tensor, conf *FCConfig) (err error) {
-	shapew := w.Shape()
-	shapeb := b.Shape()
-
-	if len(shapew) != 1 || len(shapeb) != 1 {
-		return fmt.Errorf("expected initialized weights to have exactly one dimension")
-	}
-
-	if shapew[0] != conf.Outputs {
-		return fmt.Errorf("expected initialized 'Weight' size to match 'Outputs': (%d) != (%d)", shapew[0], conf.Outputs)
-	}
-
-	if shapeb[0] != conf.Outputs {
-		return fmt.Errorf("expected initialized 'Bias' size to match 'Outputs': (%d) != (%d)", shapeb[0], conf.Outputs)
-	}
-
-	return nil
 }

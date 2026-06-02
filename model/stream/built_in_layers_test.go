@@ -86,7 +86,7 @@ func TestBuiltInLayers(t *testing.T) {
 
 		t.Run("FC(valid config) / applying to stream / no error", func(t *testing.T) {
 			x := stream.Input()
-			x = stream.FC(&layers.FCConfig{Inputs: 1, Outputs: 1})(x)
+			x = stream.FC(&layers.FCConfig{Outputs: 1})(x)
 
 			if err := x.Error(); err != nil {
 				t.Fatal(err)

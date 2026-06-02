@@ -76,11 +76,11 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Inputs: 13, Outputs: 32, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(input)
 	x = stream.Relu()(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.5})(x)
 
-	output := stream.FC(&layers.FCConfig{Inputs: 32, Outputs: 1, Device: dev})(x)
+	output := stream.FC(&layers.FCConfig{Outputs: 1, Device: dev})(x)
 
 	/* -------------------- */
 

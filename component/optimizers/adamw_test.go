@@ -366,6 +366,22 @@ func TestAdamW(t *testing.T) {
 			}
 		})
 
+		t.Run("Update on nil tensor / returns error: nil tensor", func(t *testing.T) {
+			optimizer, err := optimizers.NewAdamW(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var x tensor.Tensor
+
+			err = optimizer.Update(&x)
+			if err == nil {
+				t.Fatal("expected error because of nil tensor")
+			} else if err.Error() != "AdamW input data validation failed: expected optimized tensor not to be nil" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
 		t.Run("Update on tensor without gradient tracking / returns error: nil gradient", func(t *testing.T) {
 			optimizer, err := optimizers.NewAdamW(nil)
 			if err != nil {

@@ -8,6 +8,11 @@ import (
 
 func getValidOptimizerInputs(wptr *tensor.Tensor) (w tensor.Tensor, g tensor.Tensor, err error) {
 	w = *wptr
+
+	if w == nil {
+		return w, g, fmt.Errorf("expected optimized tensor not to be nil")
+	}
+
 	g = w.Gradient()
 
 	if g == nil {

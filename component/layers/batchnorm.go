@@ -7,13 +7,14 @@ import (
 )
 
 type BatchNorm struct {
-	momentum float64
-	eps      float64
-
 	Beta       tensor.Tensor
 	Gamma      tensor.Tensor
 	MovingMean tensor.Tensor
 	MovingVar  tensor.Tensor
+
+	momentum float64
+	eps      float64
+	device   tensor.Device
 }
 
 type BatchNormConfig struct {
@@ -33,53 +34,11 @@ func NewBatchNorm(conf *BatchNormConfig) (c *BatchNorm, err error) {
 		return c, fmt.Errorf("BatchNorm config data validation failed: %w", err)
 	}
 
-	c, err = newBatchNorm(conf)
-	if err != nil {
-		return c, fmt.Errorf("BatchNorm initialization failed: %w", err)
-	}
-
-	return c, nil
-}
-
-func newBatchNorm(conf *BatchNormConfig) (c *BatchNorm, err error) {
-	c = &BatchNorm{
+	return &BatchNorm{
 		momentum: conf.Momentum,
 		eps:      conf.Eps,
-	}
-
-	c.Beta, err = tensor.Full(nil, 0., &tensor.Config{
-		Device:    conf.Device,
-		GradTrack: true,
-	})
-	if err != nil {
-		return c, err
-	}
-
-	c.Gamma, err = tensor.Full(nil, 1., &tensor.Config{
-		Device:    conf.Device,
-		GradTrack: true,
-	})
-	if err != nil {
-		return c, err
-	}
-
-	c.MovingMean, err = tensor.Full(nil, 0., &tensor.Config{
-		Device:    conf.Device,
-		GradTrack: false,
-	})
-	if err != nil {
-		return c, err
-	}
-
-	c.MovingVar, err = tensor.Full(nil, 1., &tensor.Config{
-		Device:    conf.Device,
-		GradTrack: false,
-	})
-	if err != nil {
-		return c, err
-	}
-
-	return c, nil
+		device:   conf.Device,
+	}, nil
 }
 
 func (c *BatchNorm) Weights() []Weight {
@@ -107,6 +66,11 @@ func (c *BatchNorm) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 	x, err := c.toValidInputs(xs)
 	if err != nil {
 		return y, fmt.Errorf("BatchNorm input data validation failed: %w", err)
+	}
+
+	err = c.initWeights()
+	if err != nil {
+		return y, fmt.Errorf("BatchNorm weight initialization failed: %w", err)
 	}
 
 	y, err = c.forward(x)
@@ -206,6 +170,50 @@ func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 	}
 
 	return y, nil
+}
+
+func (c *BatchNorm) initWeights() (err error) {
+	if c.Beta == nil {
+		c.Beta, err = tensor.Full(nil, 0., &tensor.Config{
+			Device:    c.device,
+			GradTrack: true,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	if c.Gamma == nil {
+		c.Gamma, err = tensor.Full(nil, 1., &tensor.Config{
+			Device:    c.device,
+			GradTrack: true,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	if c.MovingMean == nil {
+		c.MovingMean, err = tensor.Full(nil, 0., &tensor.Config{
+			Device:    c.device,
+			GradTrack: false,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	if c.MovingVar == nil {
+		c.MovingVar, err = tensor.Full(nil, 1., &tensor.Config{
+			Device:    c.device,
+			GradTrack: false,
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func flattenToNormDim(x tensor.Tensor) (y tensor.Tensor, err error) {

@@ -76,11 +76,11 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Inputs: 30, Outputs: 16, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 16, Device: dev})(input)
 	x = stream.Relu()(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
-	x = stream.FC(&layers.FCConfig{Inputs: 16, Outputs: 1, Device: dev})(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 1, Device: dev})(x)
 	output := stream.Sigmoid()(x)
 
 	/* -------------------- */

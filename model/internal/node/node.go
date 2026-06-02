@@ -94,7 +94,10 @@ func (n *Node) DisableGrad() {
 	}
 
 	for _, w := range wl.Weights() {
-		(*w.Value).ResetGradContext(false)
+		// due to lazy weight initialization, weight might still need a Forward call
+		if wv := *w.Value; wv != nil {
+			wv.ResetGradContext(false)
+		}
 	}
 }
 
@@ -105,6 +108,9 @@ func (n *Node) EnableGrad() {
 	}
 
 	for _, w := range wl.Weights() {
-		(*w.Value).ResetGradContext(w.Trainable)
+		// due to lazy weight initialization, weight might still need a Forward call
+		if wv := *w.Value; wv != nil {
+			wv.ResetGradContext(w.Trainable)
+		}
 	}
 }

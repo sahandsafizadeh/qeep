@@ -643,7 +643,7 @@ func TestBatchNorm(t *testing.T) {
 			}
 		})
 
-		t.Run("BatchNorm layer / Weights() / returns 4 weights pointing to Beta, Gamma, MovingMean, MovingVar", func(t *testing.T) {
+		t.Run("BatchNorm layer / Weights() / before first forward, all 4 weights are uninitialized", func(t *testing.T) {
 			layer, err := layers.NewBatchNorm(&layers.BatchNormConfig{
 				Momentum: 0.5,
 				Eps:      1e-10,
@@ -658,36 +658,208 @@ func TestBatchNorm(t *testing.T) {
 				t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
 			}
 
-			expb := layers.Weight{
-				Value:     &layer.Beta,
-				Trainable: true,
+			if !(weights[0].Trainable && *weights[0].Value == nil) {
+				t.Fatal("expected BatchNorm weight (0) to be trainable with nil value")
 			}
-			if weights[0] != expb {
-				t.Fatal("expected BatchNorm weight (0) to be trainable and point to 'Beta'")
+			if !(weights[1].Trainable && *weights[1].Value == nil) {
+				t.Fatal("expected BatchNorm weight (1) to be trainable with nil value")
+			}
+			if !(!weights[2].Trainable && *weights[2].Value == nil) {
+				t.Fatal("expected BatchNorm weight (2) to be non-trainable with nil value")
+			}
+			if !(!weights[3].Trainable && *weights[3].Value == nil) {
+				t.Fatal("expected BatchNorm weight (3) to be non-trainable with nil value")
+			}
+		})
+
+		t.Run("BatchNorm layer / Weights() / after Forward(), returns 4 initialized weights pointing to Beta, Gamma, MovingMean, MovingVar", func(t *testing.T) {
+			layer, err := layers.NewBatchNorm(&layers.BatchNormConfig{
+				Momentum: 0.5,
+				Eps:      1e-10,
+				Device:   dev,
+			})
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			expg := layers.Weight{
-				Value:     &layer.Gamma,
-				Trainable: true,
+			x, err := tensor.Ones([]int{4, 8, 8}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
 			}
-			if weights[1] != expg {
-				t.Fatal("expected BatchNorm weight (1) to be trainable and point to 'Gamma'")
-			}
-
-			expmm := layers.Weight{
-				Value:     &layer.MovingMean,
-				Trainable: false,
-			}
-			if weights[2] != expmm {
-				t.Fatal("expected BatchNorm weight (2) to be trainable and point to 'MovingMean'")
+			_, err = layer.Forward(x)
+			if err != nil {
+				t.Fatal(err)
 			}
 
-			expmv := layers.Weight{
-				Value:     &layer.MovingVar,
-				Trainable: false,
+			weights := layer.Weights()
+			if len(weights) != 4 {
+				t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
 			}
-			if weights[3] != expmv {
-				t.Fatal("expected BatchNorm weight (3) to be trainable and point to 'MovingVar'")
+
+			if !(weights[0].Trainable && *weights[0].Value != nil && weights[0].Value == &layer.Beta) {
+				t.Fatal("expected BatchNorm weight (0) to be trainable, non-nil and point to 'Beta'")
+			}
+			if !(weights[1].Trainable && *weights[1].Value != nil && weights[1].Value == &layer.Gamma) {
+				t.Fatal("expected BatchNorm weight (1) to be trainable, non-nil and point to 'Gamma'")
+			}
+			if !(!weights[2].Trainable && *weights[2].Value != nil && weights[2].Value == &layer.MovingMean) {
+				t.Fatal("expected BatchNorm weight (2) to be non-trainable, non-nil and point to 'MovingMean'")
+			}
+			if !(!weights[3].Trainable && *weights[3].Value != nil && weights[3].Value == &layer.MovingVar) {
+				t.Fatal("expected BatchNorm weight (3) to be non-trainable, non-nil and point to 'MovingVar'")
+			}
+		})
+
+		t.Run("BatchNorm layer / Weights() / inference, pre-initialized weights stay the same after Forward()", func(t *testing.T) {
+			// ----- given -----
+			layer, err := layers.NewBatchNorm(&layers.BatchNormConfig{
+				Momentum: 0.5,
+				Eps:      1e-10,
+				Device:   dev,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			b, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			g, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			mm, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			mv, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			layer.Beta = b
+			layer.Gamma = g
+			layer.MovingMean = mm
+			layer.MovingVar = mv
+
+			// ----- when -----
+			x, err := tensor.Ones([]int{4, 8, 8}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = layer.Forward(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			weights := layer.Weights()
+			if len(weights) != 4 {
+				t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
+			}
+
+			if !(weights[0].Trainable && *weights[0].Value == b && weights[0].Value == &layer.Beta) {
+				t.Fatal("expected BatchNorm weight (0) to be trainable, stay the same and point to 'Beta'")
+			}
+			if !(weights[1].Trainable && *weights[1].Value == g && weights[1].Value == &layer.Gamma) {
+				t.Fatal("expected BatchNorm weight (1) to be trainable, stay the same and point to 'Gamma'")
+			}
+			if !(!weights[2].Trainable && *weights[2].Value == mm && weights[2].Value == &layer.MovingMean) {
+				t.Fatal("expected BatchNorm weight (2) to be non-trainable, stay the same and point to 'MovingMean'")
+			}
+			if !(!weights[3].Trainable && *weights[3].Value == mv && weights[3].Value == &layer.MovingVar) {
+				t.Fatal("expected BatchNorm weight (3) to be non-trainable, stay the same and point to 'MovingVar'")
+			}
+		})
+
+		t.Run("BatchNorm layer / Weights() / train, only trainable pre-initialized weights stay the same after Forward()", func(t *testing.T) {
+			// ----- given -----
+			layer, err := layers.NewBatchNorm(&layers.BatchNormConfig{
+				Momentum: 0.5,
+				Eps:      1e-10,
+				Device:   dev,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			b, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			g, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			mm, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			mv, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			layer.Beta = b
+			layer.Gamma = g
+			layer.MovingMean = mm
+			layer.MovingVar = mv
+
+			// ----- when -----
+			x, err := tensor.Ones([]int{4, 8, 8}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = layer.Forward(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			weights := layer.Weights()
+			if len(weights) != 4 {
+				t.Fatalf("expected BatchNorm to have (4) weights: got (%d)", len(weights))
+			}
+
+			if !(weights[0].Trainable && *weights[0].Value == b && weights[0].Value == &layer.Beta) {
+				t.Fatal("expected BatchNorm weight (0) to be trainable, stay the same and point to 'Beta'")
+			}
+			if !(weights[1].Trainable && *weights[1].Value == g && weights[1].Value == &layer.Gamma) {
+				t.Fatal("expected BatchNorm weight (1) to be trainable, stay the same and point to 'Gamma'")
+			}
+			if !(!weights[2].Trainable && *weights[2].Value != mm && weights[2].Value == &layer.MovingMean) {
+				t.Fatal("expected BatchNorm weight (2) to be non-trainable, change and point to 'MovingMean'")
+			}
+			if !(!weights[3].Trainable && *weights[3].Value != mv && weights[3].Value == &layer.MovingVar) {
+				t.Fatal("expected BatchNorm weight (3) to be non-trainable, change and point to 'MovingVar'")
 			}
 		})
 

@@ -494,10 +494,7 @@ func TestNode(t *testing.T) {
 			input1.SeedFunc = func() tensor.Tensor { return nil }
 			input2.SeedFunc = func() tensor.Tensor { return nil }
 
-			weighted, err := layers.NewFC(&layers.FCConfig{
-				Inputs:  1,
-				Outputs: 1,
-			})
+			weighted, err := layers.NewFC(&layers.FCConfig{Outputs: 1})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -523,17 +520,14 @@ func TestNode(t *testing.T) {
 			}
 		})
 
-		t.Run("FC node with nil result / Optimize(SGD) / returns error: gradient is nil", func(t *testing.T) {
+		t.Run("FC node with nil result / Optimize(SGD) / returns error: optimized tensor is nil", func(t *testing.T) {
 			input1 := layers.NewInput()
 			input2 := layers.NewInput()
 
 			input1.SeedFunc = func() tensor.Tensor { return nil }
 			input2.SeedFunc = func() tensor.Tensor { return nil }
 
-			weighted, err := layers.NewFC(&layers.FCConfig{
-				Inputs:  1,
-				Outputs: 1,
-			})
+			weighted, err := layers.NewFC(&layers.FCConfig{Outputs: 1})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -559,7 +553,7 @@ func TestNode(t *testing.T) {
 			err = nw.Optimize(optimizer)
 			if err == nil {
 				t.Fatal("expected error because of optimizer validation")
-			} else if err.Error() != "optimize operation on node: SGD input data validation failed: expected tensor's gradient not to be nil" {
+			} else if err.Error() != "optimize operation on node: SGD input data validation failed: expected optimized tensor not to be nil" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

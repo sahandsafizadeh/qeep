@@ -68,7 +68,7 @@ func (c *BatchNorm) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 		return y, fmt.Errorf("BatchNorm input data validation failed: %w", err)
 	}
 
-	err = c.initWeights()
+	err = c.initWeights(x)
 	if err != nil {
 		return y, fmt.Errorf("BatchNorm weight initialization failed: %w", err)
 	}
@@ -172,9 +172,12 @@ func (c *BatchNorm) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 	return y, nil
 }
 
-func (c *BatchNorm) initWeights() (err error) {
+func (c *BatchNorm) initWeights(x tensor.Tensor) (err error) {
+	shape := x.Shape()
+	features := shape[len(shape)-1]
+
 	if c.Beta == nil {
-		c.Beta, err = tensor.Full(nil, 0., &tensor.Config{
+		c.Beta, err = tensor.Full([]int{features}, 0., &tensor.Config{
 			Device:    c.device,
 			GradTrack: true,
 		})
@@ -184,7 +187,7 @@ func (c *BatchNorm) initWeights() (err error) {
 	}
 
 	if c.Gamma == nil {
-		c.Gamma, err = tensor.Full(nil, 1., &tensor.Config{
+		c.Gamma, err = tensor.Full([]int{features}, 1., &tensor.Config{
 			Device:    c.device,
 			GradTrack: true,
 		})
@@ -194,7 +197,7 @@ func (c *BatchNorm) initWeights() (err error) {
 	}
 
 	if c.MovingMean == nil {
-		c.MovingMean, err = tensor.Full(nil, 0., &tensor.Config{
+		c.MovingMean, err = tensor.Full([]int{features}, 0., &tensor.Config{
 			Device:    c.device,
 			GradTrack: false,
 		})
@@ -204,7 +207,7 @@ func (c *BatchNorm) initWeights() (err error) {
 	}
 
 	if c.MovingVar == nil {
-		c.MovingVar, err = tensor.Full(nil, 1., &tensor.Config{
+		c.MovingVar, err = tensor.Full([]int{features}, 1., &tensor.Config{
 			Device:    c.device,
 			GradTrack: false,
 		})

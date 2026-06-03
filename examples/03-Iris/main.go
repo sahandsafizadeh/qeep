@@ -22,8 +22,8 @@ const (
 )
 
 const (
-	batchSize = 32
-	epochs    = 200
+	batchSize = 16
+	epochs    = 300
 	dev       = tensor.CPU
 )
 
@@ -37,8 +37,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: 0.63
-	// Total Duration (CPU: 2s, CUDA: 14s)
+	// Best Accuracy: 0.53
 }
 
 func run() (result map[string]float64, err error) {
@@ -83,7 +82,11 @@ func prepareModel() (m *model.Model, err error) {
 
 	x := stream.FC(&layers.FCConfig{Outputs: 16, Device: dev})(input)
 	x = stream.Relu()(x)
-	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
+
+	x = stream.FC(&layers.FCConfig{Outputs: 8, Device: dev})(x)
+	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.1})(x)
 
 	x = stream.FC(&layers.FCConfig{Outputs: 3, Device: dev})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
@@ -93,8 +96,8 @@ func prepareModel() (m *model.Model, err error) {
 	loss := losses.NewCE()
 
 	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{
-		LearningRate: 1e-5,
-		WeightDecay:  optimizers.AdamWDefaultWeightDecay,
+		LearningRate: optimizers.AdamWDefaultLearningRate,
+		WeightDecay:  1e-4,
 		Beta1:        optimizers.AdamWDefaultBeta1,
 		Beta2:        optimizers.AdamWDefaultBeta2,
 		Eps:          optimizers.AdamWDefaultEps,

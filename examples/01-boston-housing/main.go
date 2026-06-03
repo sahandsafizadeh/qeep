@@ -21,8 +21,8 @@ const (
 )
 
 const (
-	batchSize = 128
-	epochs    = 1000
+	batchSize = 64
+	epochs    = 200
 	dev       = tensor.CPU
 )
 
@@ -36,8 +36,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Mean Squared Error (MSE): 56.35
-	// Total Duration (CPU: 33s, CUDA: 30s)
+	// Best Mean Squared Error (MSE): 75.83
 }
 
 func run() (result map[string]float64, err error) {
@@ -76,9 +75,32 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 128, Device: dev})(input)
 	x = stream.Relu()(x)
-	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.5})(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{
+		Momentum: layers.BatchNormDefaultMomentum,
+		Eps:      layers.BatchNormDefaultEps,
+		Device:   dev,
+	})(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
+
+	x = stream.FC(&layers.FCConfig{Outputs: 64, Device: dev})(x)
+	x = stream.Relu()(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{
+		Momentum: layers.BatchNormDefaultMomentum,
+		Eps:      layers.BatchNormDefaultEps,
+		Device:   dev,
+	})(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
+
+	x = stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(x)
+	x = stream.Relu()(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{
+		Momentum: layers.BatchNormDefaultMomentum,
+		Eps:      layers.BatchNormDefaultEps,
+		Device:   dev,
+	})(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
 	output := stream.FC(&layers.FCConfig{Outputs: 1, Device: dev})(x)
 
@@ -86,7 +108,7 @@ func prepareModel() (m *model.Model, err error) {
 
 	loss := losses.NewMSE()
 
-	optimizer, err := optimizers.NewAdamW(nil)
+	optimizer, err := optimizers.NewAdam(nil)
 	if err != nil {
 		return m, err
 	}

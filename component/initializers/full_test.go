@@ -13,8 +13,28 @@ func TestFull(t *testing.T) {
 
 		// ============================== main paths ==============================
 
-		t.Run("NewFull(nil) default-value initializer / Init([32,32]) / returns tensor with correct shape and non-nil gradient after backprop", func(t *testing.T) {
-			initializer := initializers.NewFull(nil)
+		t.Run("NewFull(Value=-1) / Init([]) / returns scalar tensor with value -1", func(t *testing.T) {
+			initializer := initializers.NewFull(&initializers.FullConfig{Value: -1.})
+
+			x, err := initializer.Init(nil, dev)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(-1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("NewFull(Value=5) / Init([32,32]) / returns tensor with correct shape and non-nil gradient after backprop", func(t *testing.T) {
+			initializer := initializers.NewFull(&initializers.FullConfig{Value: 5.})
 
 			x, err := initializer.Init([]int{32, 32}, dev)
 			if err != nil {
@@ -32,6 +52,26 @@ func TestFull(t *testing.T) {
 
 			if x.Gradient() == nil {
 				t.Fatal("expected gradient not to be nil")
+			}
+		})
+
+		t.Run("NewFull(nil) / Init([]) / returns scalar tensor with default value 0", func(t *testing.T) {
+			initializer := initializers.NewFull(nil)
+
+			x, err := initializer.Init(nil, dev)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})

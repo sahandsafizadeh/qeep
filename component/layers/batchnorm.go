@@ -256,22 +256,32 @@ func (c *BatchNorm) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err erro
 
 func toValidBatchNormConfig(iconf *BatchNormConfig) (conf *BatchNormConfig, err error) {
 	if iconf == nil {
-		return conf, fmt.Errorf("expected config not to be nil")
+		iconf = &BatchNormConfig{
+			Momentum: BatchNormDefaultMomentum,
+			Eps:      BatchNormDefaultEps,
+			Device:   tensor.CPU,
+		}
 	}
 
 	conf = new(BatchNormConfig)
 	*conf = *iconf
 
-	if conf.Momentum < 0 {
-		return conf, fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
+	if conf.Momentum == 0. {
+		conf.Momentum = BatchNormDefaultMomentum
 	}
-
-	if conf.Eps <= 0 {
-		return conf, fmt.Errorf("expected 'Eps' to be positive: got (%f)", conf.Eps)
+	if conf.Eps == 0. {
+		conf.Eps = BatchNormDefaultEps
 	}
-
 	if conf.Device == 0 {
 		conf.Device = tensor.CPU
+	}
+
+	if conf.Momentum < 0 {
+		return conf, fmt.Errorf("expected 'Momentum' to be positive: got (%f)", conf.Momentum)
+	}
+
+	if conf.Eps < 0 {
+		return conf, fmt.Errorf("expected 'Eps' to be positive: got (%f)", conf.Eps)
 	}
 
 	return conf, nil

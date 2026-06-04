@@ -120,12 +120,12 @@ func toValidSimpleConfig(iconf *SimpleConfig) (conf *SimpleConfig, err error) {
 	conf = new(SimpleConfig)
 	*conf = *iconf
 
-	if conf.BatchSize <= 0 {
-		return conf, fmt.Errorf("expected 'BatchSize' to be positive: got (%d)", conf.BatchSize)
-	}
-
 	if conf.Device == 0 {
 		conf.Device = tensor.CPU
+	}
+
+	if conf.BatchSize <= 0 {
+		return conf, fmt.Errorf("expected 'BatchSize' to be positive: got (%d)", conf.BatchSize)
 	}
 
 	return conf, nil

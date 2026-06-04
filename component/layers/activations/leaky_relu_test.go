@@ -12,6 +12,39 @@ func TestLeakyRelu(t *testing.T) {
 
 		// ============================== main paths ==============================
 
+		t.Run("LeakyRelu(nil) on mixed negative/zero/positive matrix / Forward() / scales negatives by default 0.01, passes positives unchanged", func(t *testing.T) {
+			activation := activations.NewLeakyRelu(nil)
+
+			x, err := tensor.Of([][]float64{
+				{-2., -1., -0.01},
+				{0., 0., 0.},
+				{0.01, 1., 2.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := activation.Forward(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{-0.02, -0.01, -0.0001},
+				{0., 0., 0.},
+				{0.01, 1., 2.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("LeakyRelu(M=0.5) on mixed negative/zero/positive matrix / Forward() / scales negatives by 0.5, passes positives unchanged", func(t *testing.T) {
 			activation := activations.NewLeakyRelu(&activations.LeakyReluConfig{M: 0.5})
 

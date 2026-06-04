@@ -194,6 +194,58 @@ func TestAdam(t *testing.T) {
 			}
 		})
 
+		t.Run("Adam lr=2 weightDecay=2 beta1=0.5 beta2=0.75 eps=100, scalar x=2 / one update step with grad 100 / x becomes ~0.9803", func(t *testing.T) {
+			optimizer, err := optimizers.NewAdam(&optimizers.AdamConfig{
+				LearningRate: 2.,
+				WeightDecay:  2.,
+				Beta1:        0.5,
+				Beta2:        0.75,
+				Eps:          100.,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			x, err := tensor.Full(nil, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Scale(4.).Scale(5.).Scale(5.)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = optimizer.Update(&x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expl, err := tensor.Full(nil, 0.9803-1e-4, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expu, err := tensor.Full(nil, 0.9803+1e-4, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if p, err := x.Gt(expl); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+			if p, err := x.Lt(expu); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+		})
+
 		t.Run("Adam nil config (defaults), scalar x=1 / 2 consecutive update steps with grad 100 / x converges by 0.001 each step: 1→0.999→0.998", func(t *testing.T) {
 			optimizer, err := optimizers.NewAdam(nil)
 			if err != nil {
@@ -274,19 +326,13 @@ func TestAdam(t *testing.T) {
 			}
 		})
 
-		t.Run("Adam lr=2 weightDecay=2 beta1=0.5 beta2=0.75 eps=100, scalar x=2 / one update step with grad 100 / x becomes ~0.9803", func(t *testing.T) {
-			optimizer, err := optimizers.NewAdam(&optimizers.AdamConfig{
-				LearningRate: 2.,
-				WeightDecay:  2.,
-				Beta1:        0.5,
-				Beta2:        0.75,
-				Eps:          100.,
-			})
+		t.Run("Adam empty config (defaults), scalar x=1 / 2 consecutive update steps with grad 100 / x converges by 0.001 each step: 1→0.999→0.998", func(t *testing.T) {
+			optimizer, err := optimizers.NewAdam(&optimizers.AdamConfig{})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			x, err := tensor.Full(nil, 2., &tensor.Config{
+			x, err := tensor.Full(nil, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -294,6 +340,7 @@ func TestAdam(t *testing.T) {
 				t.Fatal(err)
 			}
 
+			// step 1: x ≈ 0.999
 			y := x.Scale(4.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -305,11 +352,44 @@ func TestAdam(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err := tensor.Full(nil, 0.9803-1e-4, &tensor.Config{Device: dev})
+			expl, err := tensor.Full(nil, 0.999-1e-10, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			expu, err := tensor.Full(nil, 0.9803+1e-4, &tensor.Config{Device: dev})
+			expu, err := tensor.Full(nil, 0.999+1e-10, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if p, err := x.Gt(expl); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+			if p, err := x.Lt(expu); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+
+			// step 2: x ≈ 0.998
+			x.ResetGradContext(true)
+			y = x.Scale(4.).Scale(5.).Scale(5.)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = optimizer.Update(&x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expl, err = tensor.Full(nil, 0.998-1e-10, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expu, err = tensor.Full(nil, 0.998+1e-10, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -327,15 +407,6 @@ func TestAdam(t *testing.T) {
 		})
 
 		// ============================== validations ==============================
-
-		t.Run("NewAdam with LearningRate=0 / returns error: non-positive LearningRate", func(t *testing.T) {
-			_, err := optimizers.NewAdam(&optimizers.AdamConfig{})
-			if err == nil {
-				t.Fatal("expected error because of non-positive 'LearningRate'")
-			} else if err.Error() != "Adam config data validation failed: expected 'LearningRate' to be positive: got (0.000000)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
 
 		t.Run("NewAdam with LearningRate=-1 / returns error: non-positive LearningRate", func(t *testing.T) {
 			_, err := optimizers.NewAdam(&optimizers.AdamConfig{
@@ -355,7 +426,7 @@ func TestAdam(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'WeightDecay'")
-			} else if err.Error() != "Adam config data validation failed: expected 'WeightDecay' not to be negative: got (-1.000000)" {
+			} else if err.Error() != "Adam config data validation failed: expected 'WeightDecay' to be positive: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -368,7 +439,7 @@ func TestAdam(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'Beta1'")
-			} else if err.Error() != "Adam config data validation failed: expected 'Beta1' not to be negative: got (-0.500000)" {
+			} else if err.Error() != "Adam config data validation failed: expected 'Beta1' to be positive: got (-0.500000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -382,21 +453,7 @@ func TestAdam(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'Beta2'")
-			} else if err.Error() != "Adam config data validation failed: expected 'Beta2' not to be negative: got (-0.100000)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("NewAdam with Eps=0 / returns error: non-positive Eps", func(t *testing.T) {
-			_, err := optimizers.NewAdam(&optimizers.AdamConfig{
-				LearningRate: 100,
-				WeightDecay:  10,
-				Beta1:        1,
-				Beta2:        0,
-			})
-			if err == nil {
-				t.Fatal("expected error because of non-positive 'Eps'")
-			} else if err.Error() != "Adam config data validation failed: expected 'Eps' to be positive: got (0.000000)" {
+			} else if err.Error() != "Adam config data validation failed: expected 'Beta2' to be positive: got (-0.100000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

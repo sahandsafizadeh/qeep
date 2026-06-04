@@ -36,7 +36,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: 0.47
+	// Best Accuracy: 0.50
 }
 
 func run() (result map[string]float64, err error) {
@@ -77,20 +77,12 @@ func prepareModel() (m *model.Model, err error) {
 
 	x := stream.FC(&layers.FCConfig{Outputs: 64, Device: dev})(input)
 	x = stream.Relu()(x)
-	x = stream.BatchNorm(&layers.BatchNormConfig{
-		Momentum: layers.BatchNormDefaultMomentum,
-		Eps:      layers.BatchNormDefaultEps,
-		Device:   dev,
-	})(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
 
 	x = stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(x)
 	x = stream.Relu()(x)
-	x = stream.BatchNorm(&layers.BatchNormConfig{
-		Momentum: layers.BatchNormDefaultMomentum,
-		Eps:      layers.BatchNormDefaultEps,
-		Device:   dev,
-	})(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
 
 	x = stream.FC(&layers.FCConfig{Outputs: 1, Device: dev})(x)
@@ -100,13 +92,7 @@ func prepareModel() (m *model.Model, err error) {
 
 	loss := losses.NewBCE()
 
-	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{
-		LearningRate: optimizers.AdamWDefaultLearningRate,
-		WeightDecay:  1e-4,
-		Beta1:        optimizers.AdamWDefaultBeta1,
-		Beta2:        optimizers.AdamWDefaultBeta2,
-		Eps:          optimizers.AdamWDefaultEps,
-	})
+	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{WeightDecay: 1e-4})
 	if err != nil {
 		return m, err
 	}

@@ -194,12 +194,12 @@ func toValidFCConfig(iconf *FCConfig) (conf *FCConfig, err error) {
 	conf = new(FCConfig)
 	*conf = *iconf
 
-	if conf.Outputs <= 0 {
-		return conf, fmt.Errorf("expected 'Outputs' to be positive: got (%d)", conf.Outputs)
-	}
-
 	if conf.Device == 0 {
 		conf.Device = tensor.CPU
+	}
+
+	if conf.Outputs <= 0 {
+		return conf, fmt.Errorf("expected 'Outputs' to be positive: got (%d)", conf.Outputs)
 	}
 
 	return conf, nil

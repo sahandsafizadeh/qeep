@@ -643,6 +643,118 @@ func TestBatchNorm(t *testing.T) {
 			}
 		})
 
+		t.Run("BatchNorm(default config nil) / train [[1,0],[-1,0]] then test [[0,0]] / test near 0", func(t *testing.T) {
+			layer, err := layers.NewBatchNorm(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// tracked pass to update running stat
+			xinit, err := tensor.Of([][]float64{
+				{1., 0.},
+				{-1., 0.},
+			}, &tensor.Config{
+				Device:    tensor.CPU,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = layer.Forward(xinit)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			x, err := tensor.Of([][]float64{{0., 0.}}, &tensor.Config{
+				Device:    tensor.CPU,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := layer.Forward(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expl, err := tensor.Of([][]float64{{-0.0001, -0.0001}}, &tensor.Config{Device: tensor.CPU})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expu, err := tensor.Of([][]float64{{0.0001, 0.0001}}, &tensor.Config{Device: tensor.CPU})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if p, err := act.Gt(expl); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected test output to be in range")
+			}
+			if p, err := act.Lt(expu); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected test output to be in range")
+			}
+		})
+
+		t.Run("BatchNorm(default config empty) / train [[1,0],[-1,0]] then test [[0,0]] / test near 0", func(t *testing.T) {
+			layer, err := layers.NewBatchNorm(&layers.BatchNormConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// tracked pass to update running stat
+			xinit, err := tensor.Of([][]float64{
+				{1., 0.},
+				{-1., 0.},
+			}, &tensor.Config{
+				Device:    tensor.CPU,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = layer.Forward(xinit)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			x, err := tensor.Of([][]float64{{0., 0.}}, &tensor.Config{
+				Device:    tensor.CPU,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := layer.Forward(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expl, err := tensor.Of([][]float64{{-0.0001, -0.0001}}, &tensor.Config{Device: tensor.CPU})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expu, err := tensor.Of([][]float64{{0.0001, 0.0001}}, &tensor.Config{Device: tensor.CPU})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if p, err := act.Gt(expl); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected test output to be in range")
+			}
+			if p, err := act.Lt(expu); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected test output to be in range")
+			}
+		})
+
 		t.Run("BatchNorm layer / Weights() / before first forward, all 4 weights are uninitialized", func(t *testing.T) {
 			layer, err := layers.NewBatchNorm(&layers.BatchNormConfig{
 				Momentum: 0.5,
@@ -865,22 +977,13 @@ func TestBatchNorm(t *testing.T) {
 
 		// ============================== validations ==============================
 
-		t.Run("NewBatchNorm(nil) / returns error: config must not be nil", func(t *testing.T) {
-			_, err := layers.NewBatchNorm(nil)
-			if err == nil {
-				t.Fatal("expected error because of nil input config")
-			} else if err.Error() != "BatchNorm config data validation failed: expected config not to be nil" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
 		t.Run("NewBatchNorm(Momentum=-0.01) / returns error: Momentum must not be negative", func(t *testing.T) {
 			_, err := layers.NewBatchNorm(&layers.BatchNormConfig{
 				Momentum: -0.01,
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'Momentum'")
-			} else if err.Error() != "BatchNorm config data validation failed: expected 'Momentum' not to be negative: got (-0.010000)" {
+			} else if err.Error() != "BatchNorm config data validation failed: expected 'Momentum' to be positive: got (-0.010000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -893,18 +996,6 @@ func TestBatchNorm(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of non-positive 'Eps'")
 			} else if err.Error() != "BatchNorm config data validation failed: expected 'Eps' to be positive: got (-0.001000)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("NewBatchNorm(Eps=0) / returns error: Eps must be positive", func(t *testing.T) {
-			_, err := layers.NewBatchNorm(&layers.BatchNormConfig{
-				Momentum: 0,
-				Eps:      0,
-			})
-			if err == nil {
-				t.Fatal("expected error because of non-positive 'Eps'")
-			} else if err.Error() != "BatchNorm config data validation failed: expected 'Eps' to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

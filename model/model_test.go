@@ -619,7 +619,7 @@ func TestModel(t *testing.T) {
 
 		t.Run("Fit with nil config / returns error: Fit config not to be nil", func(t *testing.T) {
 			input := stream.Input()
-			output := stream.Softmax(nil)(input)
+			output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(input)
 			m, err := model.NewMultiInputModel([]*stream.Stream{input}, output, new(model.ModelConfig))
 			if err != nil {
 				t.Fatal(err)
@@ -635,7 +635,7 @@ func TestModel(t *testing.T) {
 
 		t.Run("Fit with 0 epochs / returns error: Epochs to be positive", func(t *testing.T) {
 			input := stream.Input()
-			output := stream.Softmax(nil)(input)
+			output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(input)
 			m, err := model.NewMultiInputModel([]*stream.Stream{input}, output, new(model.ModelConfig))
 			if err != nil {
 				t.Fatal(err)
@@ -651,7 +651,7 @@ func TestModel(t *testing.T) {
 
 		t.Run("Predict with 2 inputs for 1-input model / returns error: expected exactly 1 input tensor", func(t *testing.T) {
 			input := stream.Input()
-			output := stream.Softmax(nil)(input)
+			output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(input)
 			m, err := model.NewMultiInputModel([]*stream.Stream{input}, output, new(model.ModelConfig))
 			if err != nil {
 				t.Fatal(err)

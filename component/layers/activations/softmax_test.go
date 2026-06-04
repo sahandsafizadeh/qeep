@@ -145,7 +145,7 @@ func TestSoftmax(t *testing.T) {
 		})
 
 		t.Run("no input tensors / Forward() / returns error: expected exactly one input tensor", func(t *testing.T) {
-			activation, err := activations.NewSoftmax(&activations.SoftmaxConfig{Dim: 0})
+			activation, err := activations.NewSoftmax(&activations.SoftmaxConfig{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -159,7 +159,7 @@ func TestSoftmax(t *testing.T) {
 		})
 
 		t.Run("two input tensors / Forward() / returns error: expected exactly one input tensor", func(t *testing.T) {
-			activation, err := activations.NewSoftmax(&activations.SoftmaxConfig{Dim: 0})
+			activation, err := activations.NewSoftmax(&activations.SoftmaxConfig{})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -178,7 +178,7 @@ func TestSoftmax(t *testing.T) {
 		})
 
 		t.Run("scalar input with Dim=0 / Forward() / returns error: input shape does not match Dim", func(t *testing.T) {
-			activation, err := activations.NewSoftmax(&activations.SoftmaxConfig{Dim: 0})
+			activation, err := activations.NewSoftmax(&activations.SoftmaxConfig{})
 			if err != nil {
 				t.Fatal(err)
 			}

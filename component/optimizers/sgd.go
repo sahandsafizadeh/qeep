@@ -131,11 +131,11 @@ func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig, err error) {
 	}
 
 	if conf.WeightDecay < 0 {
-		return conf, fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
+		return conf, fmt.Errorf("expected 'WeightDecay' to be positive: got (%f)", conf.WeightDecay)
 	}
 
 	if conf.Momentum < 0 {
-		return conf, fmt.Errorf("expected 'Momentum' not to be negative: got (%f)", conf.Momentum)
+		return conf, fmt.Errorf("expected 'Momentum' to be positive: got (%f)", conf.Momentum)
 	}
 
 	return conf, nil

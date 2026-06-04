@@ -413,7 +413,7 @@ func TestSGD(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'WeightDecay'")
-			} else if err.Error() != "SGD config data validation failed: expected 'WeightDecay' not to be negative: got (-1.000000)" {
+			} else if err.Error() != "SGD config data validation failed: expected 'WeightDecay' to be positive: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -426,7 +426,7 @@ func TestSGD(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'Momentum'")
-			} else if err.Error() != "SGD config data validation failed: expected 'Momentum' not to be negative: got (-0.500000)" {
+			} else if err.Error() != "SGD config data validation failed: expected 'Momentum' to be positive: got (-0.500000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

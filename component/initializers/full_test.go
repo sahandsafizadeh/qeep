@@ -13,6 +13,46 @@ func TestFull(t *testing.T) {
 
 		// ============================== main paths ==============================
 
+		t.Run("NewFull(nil) / Init([1,1]) / returns tensor equal to zero tensor", func(t *testing.T) {
+			initializer := initializers.NewFull(nil)
+
+			act, err := initializer.Init([]int{1, 1}, dev)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("NewFull(&FullConfig{}) / Init([1,1]) / returns tensor equal to zero tensor", func(t *testing.T) {
+			initializer := initializers.NewFull(&initializers.FullConfig{})
+
+			act, err := initializer.Init([]int{1, 1}, dev)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("NewFull(Value=5) / Init([32,32]) / returns tensor with correct shape and non-nil gradient after backprop", func(t *testing.T) {
 			initializer := initializers.NewFull(&initializers.FullConfig{Value: 5.})
 
@@ -32,26 +72,6 @@ func TestFull(t *testing.T) {
 
 			if x.Gradient() == nil {
 				t.Fatal("expected gradient not to be nil")
-			}
-		})
-
-		t.Run("NewFull(nil) / NewFull(&FullConfig{}) / both use FullDefaultValue and produce equal tensors", func(t *testing.T) {
-			initializer1 := initializers.NewFull(nil)
-			initializer2 := initializers.NewFull(&initializers.FullConfig{})
-
-			x1, err := initializer1.Init(nil, dev)
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := initializer2.Init(nil, dev)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})

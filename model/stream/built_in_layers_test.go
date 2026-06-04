@@ -78,7 +78,7 @@ func TestBuiltInLayers(t *testing.T) {
 
 		t.Run("BatchNorm(valid config) / applying to stream / no error", func(t *testing.T) {
 			x := stream.Input()
-			x = stream.BatchNorm(&layers.BatchNormConfig{Momentum: 0.99, Eps: 1e-3})(x)
+			x = stream.BatchNorm(nil)(x)
 
 			if err := x.Error(); err != nil {
 				t.Fatal(err)

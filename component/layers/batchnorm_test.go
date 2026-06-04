@@ -699,7 +699,7 @@ func TestBatchNorm(t *testing.T) {
 			}
 		})
 
-		t.Run("BatchNorm(default config nil) / train [[1,0],[-1,0]] then test [[0,0]] / test near 0", func(t *testing.T) {
+		t.Run("BatchNorm(default config empty) / train [[1,0],[-1,0]] then test [[0,0]] / test near 0", func(t *testing.T) {
 			layer, err := layers.NewBatchNorm(&layers.BatchNormConfig{})
 			if err != nil {
 				t.Fatal(err)

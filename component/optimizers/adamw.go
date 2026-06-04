@@ -181,15 +181,15 @@ func toValidAdamWConfig(iconf *AdamWConfig) (conf *AdamWConfig, err error) {
 	}
 
 	if conf.WeightDecay < 0 {
-		return conf, fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
+		return conf, fmt.Errorf("expected 'WeightDecay' to be positive: got (%f)", conf.WeightDecay)
 	}
 
 	if conf.Beta1 < 0 {
-		return conf, fmt.Errorf("expected 'Beta1' not to be negative: got (%f)", conf.Beta1)
+		return conf, fmt.Errorf("expected 'Beta1' to be positive: got (%f)", conf.Beta1)
 	}
 
 	if conf.Beta2 < 0 {
-		return conf, fmt.Errorf("expected 'Beta2' not to be negative: got (%f)", conf.Beta2)
+		return conf, fmt.Errorf("expected 'Beta2' to be positive: got (%f)", conf.Beta2)
 	}
 
 	if conf.Eps < 0 {

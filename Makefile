@@ -8,9 +8,6 @@ fmt:
 lint:
 	@./scripts/golint.sh $(QEEP_BUILD_TAGS)
 
-gosec:
-	@./scripts/gosec.sh $(QEEP_BUILD_TAGS)
-
 cover:
 	@./scripts/gotest.sh $(QEEP_BUILD_TAGS)
 

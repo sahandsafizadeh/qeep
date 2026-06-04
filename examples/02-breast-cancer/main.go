@@ -36,7 +36,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: 0.47
+	// Best Accuracy: 0.50
 }
 
 func run() (result map[string]float64, err error) {

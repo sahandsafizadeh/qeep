@@ -22,6 +22,20 @@ func TestFullAt(t *testing.T) {
 
 		// ============================== main paths ==============================
 
+		t.Run("Full(nil, 0) with nil config / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
+			ten, err := tensor.Full(nil, 0., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
 		t.Run("Full(nil, -1) scalar tensor / At() with no indices / returns -1", func(t *testing.T) {
 			ten, err := tensor.Full(nil, -1., &tensor.Config{Device: dev})
 			if err != nil {
@@ -296,6 +310,20 @@ func TestOfAt(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		// ============================== main paths ==============================
+
+		t.Run("Of(nil config) / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
+			ten, err := tensor.Of(0., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
 
 		t.Run("Of(2) scalar / At() / returns 2", func(t *testing.T) {
 			ten, err := tensor.Of(2., &tensor.Config{Device: dev})

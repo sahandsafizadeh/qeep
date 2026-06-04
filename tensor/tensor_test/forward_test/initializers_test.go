@@ -13,6 +13,20 @@ func TestZeros(t *testing.T) {
 
 		// ============================== main paths ==============================
 
+		t.Run("Zeros(nil config) / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
 		t.Run("Zeros(nil) scalar / Equals Full(nil, 0.) / returns true", func(t *testing.T) {
 			act, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
 			if err != nil {
@@ -166,6 +180,20 @@ func TestOnes(t *testing.T) {
 
 		// ============================== main paths ==============================
 
+		t.Run("Ones(nil config) / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
+			ten, err := tensor.Ones(nil, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
 		t.Run("Ones(nil) scalar / Equals Full(nil, 1.) / returns true", func(t *testing.T) {
 			act, err := tensor.Ones(nil, &tensor.Config{Device: dev})
 			if err != nil {
@@ -318,6 +346,20 @@ func TestEye(t *testing.T) {
 
 	// ============================== main paths ==============================
 
+	t.Run("Eye(nil config) / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
+		ten, err := tensor.Eye(1, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if d := ten.Device(); d != tensor.CPU {
+			t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+		}
+		if ten.GradientTracked() {
+			t.Fatal("expected tensor to not be gradient tracked")
+		}
+	})
+
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 		t.Run("Eye(1) 1x1 identity matrix / Equals / returns true", func(t *testing.T) {
 			act, err := tensor.Eye(1, &tensor.Config{Device: dev})
@@ -395,6 +437,22 @@ func TestEye(t *testing.T) {
 func TestRandU(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
+		// ============================== main paths ==============================
+
+		t.Run("RandU(nil config) / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
+			ten, err := tensor.RandU(nil, 0., 1., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
 		// ============================== side effects ==============================
 
 		t.Run("RandU([3,4], -1, 1) does not share dims slice / Shape() after mutating dims / returns [3,4]", func(t *testing.T) {
@@ -462,6 +520,22 @@ func TestRandU(t *testing.T) {
 
 func TestRandN(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== main paths ==============================
+
+		t.Run("RandN(nil config) / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
+			ten, err := tensor.RandN(nil, 0., 1., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
 
 		// ============================== side effects ==============================
 

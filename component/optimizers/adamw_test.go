@@ -376,7 +376,7 @@ func TestAdamW(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'WeightDecay'")
-			} else if err.Error() != "AdamW config data validation failed: expected 'WeightDecay' not to be negative: got (-1.000000)" {
+			} else if err.Error() != "AdamW config data validation failed: expected 'WeightDecay' to be positive: got (-1.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -389,7 +389,7 @@ func TestAdamW(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'Beta1'")
-			} else if err.Error() != "AdamW config data validation failed: expected 'Beta1' not to be negative: got (-0.500000)" {
+			} else if err.Error() != "AdamW config data validation failed: expected 'Beta1' to be positive: got (-0.500000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -403,7 +403,7 @@ func TestAdamW(t *testing.T) {
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'Beta2'")
-			} else if err.Error() != "AdamW config data validation failed: expected 'Beta2' not to be negative: got (-0.100000)" {
+			} else if err.Error() != "AdamW config data validation failed: expected 'Beta2' to be positive: got (-0.100000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

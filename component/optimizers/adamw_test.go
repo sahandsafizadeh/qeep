@@ -276,16 +276,87 @@ func TestAdamW(t *testing.T) {
 			}
 		})
 
-		// ============================== validations ==============================
+		t.Run("AdamW empty config (defaults), scalar x=1 / 2 consecutive update steps with grad 100 / x converges: ~0.99899→~0.99798", func(t *testing.T) {
+			optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		t.Run("NewAdamW with LearningRate=0 / returns error: non-positive LearningRate", func(t *testing.T) {
-			_, err := optimizers.NewAdamW(&optimizers.AdamWConfig{})
-			if err == nil {
-				t.Fatal("expected error because of non-positive 'LearningRate'")
-			} else if err.Error() != "AdamW config data validation failed: expected 'LearningRate' to be positive: got (0.000000)" {
-				t.Fatal("unexpected error message returned")
+			x, err := tensor.Full(nil, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// step 1: x ≈ 0.99899
+			y := x.Scale(4.).Scale(5.).Scale(5.)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = optimizer.Update(&x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expl, err := tensor.Full(nil, 0.99899-1e-5, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expu, err := tensor.Full(nil, 0.99899+1e-5, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if p, err := x.Gt(expl); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+			if p, err := x.Lt(expu); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+
+			// step 2: x ≈ 0.99798
+			x.ResetGradContext(true)
+			y = x.Scale(4.).Scale(5.).Scale(5.)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = optimizer.Update(&x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expl, err = tensor.Full(nil, 0.99798-1e-5, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expu, err = tensor.Full(nil, 0.99798+1e-5, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if p, err := x.Gt(expl); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+			if p, err := x.Lt(expu); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
 			}
 		})
+
+		// ============================== validations ==============================
 
 		t.Run("NewAdamW with LearningRate=-1 / returns error: non-positive LearningRate", func(t *testing.T) {
 			_, err := optimizers.NewAdamW(&optimizers.AdamWConfig{
@@ -333,20 +404,6 @@ func TestAdamW(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of negative 'Beta2'")
 			} else if err.Error() != "AdamW config data validation failed: expected 'Beta2' not to be negative: got (-0.100000)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("NewAdamW with Eps=0 / returns error: non-positive Eps", func(t *testing.T) {
-			_, err := optimizers.NewAdamW(&optimizers.AdamWConfig{
-				LearningRate: 100,
-				WeightDecay:  10,
-				Beta1:        1,
-				Beta2:        0,
-			})
-			if err == nil {
-				t.Fatal("expected error because of non-positive 'Eps'")
-			} else if err.Error() != "AdamW config data validation failed: expected 'Eps' to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

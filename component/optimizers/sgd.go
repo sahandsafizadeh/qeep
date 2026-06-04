@@ -116,7 +116,17 @@ func toValidSGDConfig(iconf *SGDConfig) (conf *SGDConfig, err error) {
 	conf = new(SGDConfig)
 	*conf = *iconf
 
-	if conf.LearningRate <= 0 {
+	if conf.LearningRate == 0. {
+		conf.LearningRate = SGDDefaultLearningRate
+	}
+	if conf.WeightDecay == 0. {
+		conf.WeightDecay = SGDDefaultWeightDecay
+	}
+	if conf.Momentum == 0. {
+		conf.Momentum = SGDDefaultMomentum
+	}
+
+	if conf.LearningRate < 0 {
 		return conf, fmt.Errorf("expected 'LearningRate' to be positive: got (%f)", conf.LearningRate)
 	}
 

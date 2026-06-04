@@ -166,23 +166,39 @@ func toValidAdamConfig(iconf *AdamConfig) (conf *AdamConfig, err error) {
 	conf = new(AdamConfig)
 	*conf = *iconf
 
-	if conf.LearningRate <= 0 {
+	if conf.LearningRate == 0. {
+		conf.LearningRate = AdamDefaultLearningRate
+	}
+	if conf.WeightDecay == 0. {
+		conf.WeightDecay = AdamDefaultWeightDecay
+	}
+	if conf.Beta1 == 0. {
+		conf.Beta1 = AdamDefaultBeta1
+	}
+	if conf.Beta2 == 0. {
+		conf.Beta2 = AdamDefaultBeta2
+	}
+	if conf.Eps == 0. {
+		conf.Eps = AdamDefaultEps
+	}
+
+	if conf.LearningRate < 0 {
 		return conf, fmt.Errorf("expected 'LearningRate' to be positive: got (%f)", conf.LearningRate)
 	}
 
 	if conf.WeightDecay < 0 {
-		return conf, fmt.Errorf("expected 'WeightDecay' not to be negative: got (%f)", conf.WeightDecay)
+		return conf, fmt.Errorf("expected 'WeightDecay' to be positive: got (%f)", conf.WeightDecay)
 	}
 
 	if conf.Beta1 < 0 {
-		return conf, fmt.Errorf("expected 'Beta1' not to be negative: got (%f)", conf.Beta1)
+		return conf, fmt.Errorf("expected 'Beta1' to be positive: got (%f)", conf.Beta1)
 	}
 
 	if conf.Beta2 < 0 {
-		return conf, fmt.Errorf("expected 'Beta2' not to be negative: got (%f)", conf.Beta2)
+		return conf, fmt.Errorf("expected 'Beta2' to be positive: got (%f)", conf.Beta2)
 	}
 
-	if conf.Eps <= 0 {
+	if conf.Eps < 0 {
 		return conf, fmt.Errorf("expected 'Eps' to be positive: got (%f)", conf.Eps)
 	}
 

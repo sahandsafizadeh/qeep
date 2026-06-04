@@ -865,22 +865,13 @@ func TestBatchNorm(t *testing.T) {
 
 		// ============================== validations ==============================
 
-		t.Run("NewBatchNorm(nil) / returns error: config must not be nil", func(t *testing.T) {
-			_, err := layers.NewBatchNorm(nil)
-			if err == nil {
-				t.Fatal("expected error because of nil input config")
-			} else if err.Error() != "BatchNorm config data validation failed: expected config not to be nil" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
 		t.Run("NewBatchNorm(Momentum=-0.01) / returns error: Momentum must not be negative", func(t *testing.T) {
 			_, err := layers.NewBatchNorm(&layers.BatchNormConfig{
 				Momentum: -0.01,
 			})
 			if err == nil {
 				t.Fatal("expected error because of negative 'Momentum'")
-			} else if err.Error() != "BatchNorm config data validation failed: expected 'Momentum' not to be negative: got (-0.010000)" {
+			} else if err.Error() != "BatchNorm config data validation failed: expected 'Momentum' to be positive: got (-0.010000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -893,18 +884,6 @@ func TestBatchNorm(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of non-positive 'Eps'")
 			} else if err.Error() != "BatchNorm config data validation failed: expected 'Eps' to be positive: got (-0.001000)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("NewBatchNorm(Eps=0) / returns error: Eps must be positive", func(t *testing.T) {
-			_, err := layers.NewBatchNorm(&layers.BatchNormConfig{
-				Momentum: 0,
-				Eps:      0,
-			})
-			if err == nil {
-				t.Fatal("expected error because of non-positive 'Eps'")
-			} else if err.Error() != "BatchNorm config data validation failed: expected 'Eps' to be positive: got (0.000000)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

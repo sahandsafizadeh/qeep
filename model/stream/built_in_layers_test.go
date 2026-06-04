@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
+	"github.com/sahandsafizadeh/qeep/component/layers/activations"
 	"github.com/sahandsafizadeh/qeep/model/stream"
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
@@ -41,7 +42,7 @@ func TestBuiltInLayers(t *testing.T) {
 
 		t.Run("Softmax(nil) / applying to stream with nil config / no error", func(t *testing.T) {
 			x := stream.Input()
-			x = stream.Softmax(nil)(x)
+			x = stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
 
 			if err := x.Error(); err != nil {
 				t.Fatal(err)

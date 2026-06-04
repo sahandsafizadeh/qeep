@@ -21,7 +21,7 @@ func TestStream(t *testing.T) {
 			fc1 := stream.FC(&layers.FCConfig{Outputs: 4})(input)
 			tanh := stream.Tanh()(fc1)
 			fc2 := stream.FC(&layers.FCConfig{Outputs: 2})(tanh)
-			output := stream.Softmax(nil)(fc2)
+			output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(fc2)
 
 			if err := input.Error(); err != nil {
 				t.Fatal(err)

@@ -2,6 +2,7 @@ package cputensor
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
@@ -243,6 +244,10 @@ func (t *CPUTensor) Flatten(fromDim int) (o tensor.Tensor, err error) {
 }
 
 func (t *CPUTensor) Broadcast(shape []int) (o tensor.Tensor, err error) {
+	if slices.Equal(t.dims, shape) {
+		return t, nil
+	}
+
 	err = validator.ValidateInputDims(shape)
 	if err != nil {
 		return o, fmt.Errorf("Broadcast input shape validation failed: %w", err)

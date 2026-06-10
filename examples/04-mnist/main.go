@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"runtime/pprof"
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
 	"github.com/sahandsafizadeh/qeep/component/layers/activations"
@@ -27,11 +29,18 @@ const (
 
 const (
 	batchSize = 100
-	epochs    = 5
+	epochs    = 1
 	dev       = tensor.CPU
 )
 
 func main() {
+	f, _ := os.Create("cpu.prof")
+	defer f.Close()
+
+	// Start the profiler
+	pprof.StartCPUProfile(f)
+	defer pprof.StopCPUProfile()
+
 	result, err := run()
 	if err != nil {
 		panic(err)
@@ -118,7 +127,7 @@ func prepareDataBatches() (trainBatchGen, validBatchGen, testBatchGen model.Batc
 
 	preprocessData(data)
 
-	trainBatchGen, err = batchgens.NewSimple(data.xTrain, data.yTrain, &batchgens.SimpleConfig{
+	trainBatchGen, err = batchgens.NewSimple(data.xTrain[:5000], data.yTrain[:5000], &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   true,
 		Device:    dev,
@@ -127,7 +136,7 @@ func prepareDataBatches() (trainBatchGen, validBatchGen, testBatchGen model.Batc
 		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
 
-	validBatchGen, err = batchgens.NewSimple(data.xValid, data.yValid, &batchgens.SimpleConfig{
+	validBatchGen, err = batchgens.NewSimple(data.xValid[:200], data.yValid[:200], &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   false,
 		Device:    dev,
@@ -136,7 +145,7 @@ func prepareDataBatches() (trainBatchGen, validBatchGen, testBatchGen model.Batc
 		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
 
-	testBatchGen, err = batchgens.NewSimple(data.xTest, data.yTest, &batchgens.SimpleConfig{
+	testBatchGen, err = batchgens.NewSimple(data.xTest[:5000], data.yTest[:5000], &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   false,
 		Device:    dev,

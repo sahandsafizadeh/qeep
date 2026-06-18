@@ -9,13 +9,13 @@ func (t *CPUTensor) numElems() int {
 	return util.DimsToNumElems(t.dims)
 }
 
-func (t *CPUTensor) dataAt(index []int) any {
-	data := t.data
-	for _, i := range index {
-		data = data.([]any)[i]
+func (t *CPUTensor) at(index []int) float64 {
+	lnpos := 0
+	for i, idx := range index {
+		lnpos += t.strd[i] * idx
 	}
 
-	return data
+	return t.data[lnpos]
 }
 
 func (t *CPUTensor) slice(index []tensor.Range) *CPUTensor {

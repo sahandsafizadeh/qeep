@@ -3,8 +3,9 @@ package cputensor
 import "github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 
 type CPUTensor struct {
-	data any
 	dims []int
+	strd []int
+	data []float64
 	gctx *gradtrack.GradContext
 }
 
@@ -13,7 +14,6 @@ type reducerPair struct {
 	value float64
 }
 
-type initializerFunc func() any
 type scalarUnaryFunc func(float64) float64
 type scalarBinaryFunc func(float64, float64) float64
 type reducerFunc func(reducerPair, reducerPair) reducerPair

@@ -5,32 +5,17 @@ import (
 	"gonum.org/v1/gonum/stat/distuv"
 )
 
-func (t *CPUTensor) initWith(initFunc initializerFunc) {
-
-	var fill func([]int, *any)
-	fill = func(dims []int, data *any) {
-		if len(dims) == 0 {
-			*data = initFunc()
-			return
-		}
-
-		rows := make([]any, dims[0])
-		dims = dims[1:]
-		for i := range rows {
-			fill(dims, &rows[i])
-		}
-
-		*data = rows
-	}
-
-	fill(t.dims, &t.data)
-}
-
 func constTensor(dims []int, value float64) *CPUTensor {
 	t := new(CPUTensor)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
-	t.initWith(func() any { return value })
+	t.strd = util.DimsToStrides(dims)
+
+	n := util.DimsToNumElems(dims)
+	t.data = make([]float64, n)
+	for i := range n {
+		t.data[i] = value
+	}
 
 	return t
 }

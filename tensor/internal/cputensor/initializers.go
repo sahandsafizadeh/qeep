@@ -50,88 +50,75 @@ func normalRandomTensor(dims []int, u, s float64) *CPUTensor {
 	return t
 }
 
-func tensorFromData(data any) *CPUTensor {
+func tensorFromData(idata any) *CPUTensor {
 	var dims []int
-	var tensorData any
+	var strd []int
+	var data []float64
 
-	switch v := data.(type) {
+	switch v := idata.(type) {
 	case float64:
 		dims = []int{}
-		tensorData = v
+		strd = util.DimsToStrides(dims)
+		n := util.DimsToNumElems(dims)
+		data = make([]float64, n)
+		data[0] = v
 
 	case []float64:
-		d0 := len(v)
-		dims = []int{d0}
-		data0 := make([]any, d0)
+		dims = []int{len(v)}
+		strd = util.DimsToStrides(dims)
+		n := util.DimsToNumElems(dims)
+		data = make([]float64, n)
 		for i, v0 := range v {
-			data0[i] = v0
+			data[i*strd[0]] = v0
 		}
-		tensorData = data0
 
 	case [][]float64:
-		d0 := len(v)
-		d1 := len(v[0])
-		dims = []int{d0, d1}
-		data0 := make([]any, d0)
+		dims = []int{len(v), len(v[0])}
+		strd = util.DimsToStrides(dims)
+		n := util.DimsToNumElems(dims)
+		data = make([]float64, n)
 		for i, v0 := range v {
-			data1 := make([]any, d1)
-			for i, v1 := range v0 {
-				data1[i] = v1
+			for j, v1 := range v0 {
+				data[i*strd[0]+j*strd[1]] = v1
 			}
-			data0[i] = data1
 		}
-		tensorData = data0
 
 	case [][][]float64:
-		d0 := len(v)
-		d1 := len(v[0])
-		d2 := len(v[0][0])
-		dims = []int{d0, d1, d2}
-		data0 := make([]any, d0)
+		dims = []int{len(v), len(v[0]), len(v[0][0])}
+		strd = util.DimsToStrides(dims)
+		n := util.DimsToNumElems(dims)
+		data = make([]float64, n)
 		for i, v0 := range v {
-			data1 := make([]any, d1)
-			for i, v1 := range v0 {
-				data2 := make([]any, d2)
-				for i, v2 := range v1 {
-					data2[i] = v2
+			for j, v1 := range v0 {
+				for k, v2 := range v1 {
+					data[i*strd[0]+j*strd[1]+k*strd[2]] = v2
 				}
-				data1[i] = data2
 			}
-			data0[i] = data1
 		}
-		tensorData = data0
 
 	case [][][][]float64:
-		d0 := len(v)
-		d1 := len(v[0])
-		d2 := len(v[0][0])
-		d3 := len(v[0][0][0])
-		dims = []int{d0, d1, d2, d3}
-		data0 := make([]any, d0)
+		dims = []int{len(v), len(v[0]), len(v[0][0]), len(v[0][0][0])}
+		strd = util.DimsToStrides(dims)
+		n := util.DimsToNumElems(dims)
+		data = make([]float64, n)
 		for i, v0 := range v {
-			data1 := make([]any, d1)
-			for i, v1 := range v0 {
-				data2 := make([]any, d2)
-				for i, v2 := range v1 {
-					data3 := make([]any, d3)
-					for i, v3 := range v2 {
-						data3[i] = v3
+			for j, v1 := range v0 {
+				for k, v2 := range v1 {
+					for l, v3 := range v2 {
+						data[i*strd[0]+j*strd[1]+k*strd[2]+l*strd[3]] = v3
 					}
-					data2[i] = data3
 				}
-				data1[i] = data2
 			}
-			data0[i] = data1
 		}
-		tensorData = data0
 
 	default:
 		panic("invalid input data type: data must have been based on float64 slices")
 	}
 
 	return &CPUTensor{
-		data: tensorData,
 		dims: dims,
+		strd: strd,
+		data: data,
 	}
 }
 

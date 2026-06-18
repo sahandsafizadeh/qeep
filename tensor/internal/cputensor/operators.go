@@ -199,30 +199,16 @@ func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTenso
 }
 
 func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
-
-	var calcData func([]int, *any, *any, *any)
-	calcData = func(dims []int, a, b, r *any) {
-		if len(dims) == 0 {
-			*r = sbf((*a).(float64), (*b).(float64))
-			return
-		}
-
-		aRows := (*a).([]any)
-		bRows := (*b).([]any)
-		rRows := make([]any, dims[0])
-		dims = dims[1:]
-
-		for i := range rRows {
-			calcData(dims, &aRows[i], &bRows[i], &rRows[i])
-		}
-
-		*r = rRows
-	}
-
 	o := new(CPUTensor)
 	o.dims = make([]int, len(t1.dims))
 	copy(o.dims, t1.dims)
-	calcData(t1.dims, &t1.data, &t2.data, &o.data)
+	o.strd = util.DimsToStrides(t1.dims)
+
+	n := t1.numElems()
+	o.data = make([]float64, n)
+	for i := range n {
+		o.data[i] = sbf(t1.data[i], t2.data[i])
+	}
 
 	return o
 }

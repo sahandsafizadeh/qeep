@@ -100,28 +100,10 @@ func (t *CPUTensor) meanAlong(dim int) *CPUTensor {
 /* ----- helpers ----- */
 
 func (t *CPUTensor) reduceByAssociativeFunc(af reducerFunc, uf reducerUnwrapFunc, identityValue float64) float64 {
-	result := reducerPair{value: identityValue}
-	index := 0
-
-	var trav func([]int, any)
-	trav = func(dims []int, data any) {
-		if len(dims) == 0 {
-			result = af(result, reducerPair{
-				index: index,
-				value: data.(float64),
-			})
-			index++
-			return
-		}
-
-		dims = dims[1:]
-		rows := data.([]any)
-		for i := range rows {
-			trav(dims, rows[i])
-		}
+	result := reducerPair{0, identityValue}
+	for i, v := range t.data {
+		result = af(result, reducerPair{i, v})
 	}
-
-	trav(t.dims, t.data)
 
 	return uf(result)
 }

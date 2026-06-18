@@ -14,6 +14,7 @@ type reducerPair struct {
 	value float64
 }
 
+type elemInitFunc func(i int) float64
 type scalarUnaryFunc func(float64) float64
 type scalarBinaryFunc func(float64, float64) float64
 type reducerFunc func(reducerPair, reducerPair) reducerPair

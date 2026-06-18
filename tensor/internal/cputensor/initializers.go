@@ -5,7 +5,7 @@ import (
 	"gonum.org/v1/gonum/stat/distuv"
 )
 
-func constTensor(dims []int, value float64) *CPUTensor {
+func newTensorWithElementWiseInit(dims []int, fn elemInitFunc) *CPUTensor {
 	t := new(CPUTensor)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
@@ -14,40 +14,38 @@ func constTensor(dims []int, value float64) *CPUTensor {
 	n := util.DimsToNumElems(dims)
 	t.data = make([]float64, n)
 	for i := range n {
-		t.data[i] = value
+		t.data[i] = fn(i)
 	}
 
 	return t
 }
 
-func eyeMatrix(n int) *CPUTensor {
-	t := new(CPUTensor)
-	t.dims = []int{n, n}
-	t.initWith(eyeElemGenerator(n))
+func constTensor(dims []int, value float64) *CPUTensor {
+	return newTensorWithElementWiseInit(dims, func(int) float64 {
+		return value
+	})
+}
 
-	return t
+func eyeMatrix(n int) *CPUTensor {
+	return newTensorWithElementWiseInit([]int{n, n}, func(i int) float64 {
+		if i%(n+1) == 0 {
+			return 1.
+		} else {
+			return 0.
+		}
+	})
 }
 
 func uniformRandomTensor(dims []int, l, u float64) *CPUTensor {
-	t := new(CPUTensor)
-	t.dims = make([]int, len(dims))
-	copy(t.dims, dims)
-	t.initWith(func() any {
+	return newTensorWithElementWiseInit(dims, func(int) float64 {
 		return distuv.Uniform{Min: l, Max: u}.Rand()
 	})
-
-	return t
 }
 
 func normalRandomTensor(dims []int, u, s float64) *CPUTensor {
-	t := new(CPUTensor)
-	t.dims = make([]int, len(dims))
-	copy(t.dims, dims)
-	t.initWith(func() any {
+	return newTensorWithElementWiseInit(dims, func(int) float64 {
 		return distuv.Normal{Mu: u, Sigma: s}.Rand()
 	})
-
-	return t
 }
 
 func tensorFromData(idata any) *CPUTensor {

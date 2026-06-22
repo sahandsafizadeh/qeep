@@ -10,23 +10,25 @@ func newTensorWithElementWiseInit(dims []int, fn elemInitFunc) *CPUTensor {
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 	t.strd = util.DimsToStrides(dims)
+	t.ofst = make([]int, len(dims))
 
 	t.data = make([]float64, util.DimsToNumElems(dims))
 	for i := range t.data {
-		t.data[i] = fn(i)
+		t.data[i] = fn()
 	}
 
 	return t
 }
 
 func constTensor(dims []int, value float64) *CPUTensor {
-	return newTensorWithElementWiseInit(dims, func(int) float64 {
-		return value
-	})
+	return newTensorWithElementWiseInit(dims, func() float64 { return value })
 }
 
 func eyeMatrix(n int) *CPUTensor {
-	return newTensorWithElementWiseInit([]int{n, n}, func(i int) float64 {
+	i := 0
+	return newTensorWithElementWiseInit([]int{n, n}, func() float64 {
+		defer func() { i++ }()
+
 		if i%(n+1) == 0 {
 			return 1.
 		} else {
@@ -36,32 +38,31 @@ func eyeMatrix(n int) *CPUTensor {
 }
 
 func uniformRandomTensor(dims []int, l, u float64) *CPUTensor {
-	return newTensorWithElementWiseInit(dims, func(int) float64 {
-		return distuv.Uniform{Min: l, Max: u}.Rand()
-	})
+	return newTensorWithElementWiseInit(dims, func() float64 { return distuv.Uniform{Min: l, Max: u}.Rand() })
 }
 
 func normalRandomTensor(dims []int, u, s float64) *CPUTensor {
-	return newTensorWithElementWiseInit(dims, func(int) float64 {
-		return distuv.Normal{Mu: u, Sigma: s}.Rand()
-	})
+	return newTensorWithElementWiseInit(dims, func() float64 { return distuv.Normal{Mu: u, Sigma: s}.Rand() })
 }
 
 func tensorFromData(idata any) *CPUTensor {
 	var dims []int
 	var strd []int
+	var ofst []int
 	var data []float64
 
 	switch v := idata.(type) {
 	case float64:
 		dims = []int{}
 		strd = util.DimsToStrides(dims)
+		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		data[0] = v
 
 	case []float64:
 		dims = []int{len(v)}
 		strd = util.DimsToStrides(dims)
+		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		for i, v0 := range v {
 			data[i*strd[0]] = v0
@@ -70,6 +71,7 @@ func tensorFromData(idata any) *CPUTensor {
 	case [][]float64:
 		dims = []int{len(v), len(v[0])}
 		strd = util.DimsToStrides(dims)
+		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
@@ -80,6 +82,7 @@ func tensorFromData(idata any) *CPUTensor {
 	case [][][]float64:
 		dims = []int{len(v), len(v[0]), len(v[0][0])}
 		strd = util.DimsToStrides(dims)
+		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
@@ -92,6 +95,7 @@ func tensorFromData(idata any) *CPUTensor {
 	case [][][][]float64:
 		dims = []int{len(v), len(v[0]), len(v[0][0]), len(v[0][0][0])}
 		strd = util.DimsToStrides(dims)
+		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
@@ -110,64 +114,46 @@ func tensorFromData(idata any) *CPUTensor {
 	return &CPUTensor{
 		dims: dims,
 		strd: strd,
+		ofst: ofst,
 		data: data,
 	}
 }
 
 func tensorFromConcat(ts []*CPUTensor, dim int) *CPUTensor {
-	tsDataCopy := make([]any, len(ts))
+	dims := util.ConcatDims(ts, dim)
+	dstidx := make([]int, len(dims))
+	srcidx := make([]int, len(dims))
+
+	ofsts := make([]int, len(ts)+1)
 	for i, t := range ts {
-		tc := t.slice(nil)
-		tsDataCopy[i] = tc.data
+		ofsts[i+1] = ofsts[i] + t.dims[dim]
 	}
 
-	var fillCat func([]int, *any, []any, int)
-	fillCat = func(dims []int, data *any, seeds []any, depth int) {
-		if depth == dim {
-			catData := make([]any, 0, dims[0])
-			for _, seed := range seeds {
-				catData = append(catData, seed.([]any)...)
-			}
+	return newTensorWithElementWiseInit(dims, func() float64 {
+		defer updateElementWiseIndex(dstidx, dims)
 
-			*data = catData
-			return
+		i := 0
+		for i < len(ts)-1 && dstidx[dim] >= ofsts[i+1] {
+			i++
 		}
 
-		rows := make([]any, dims[0])
-		dims = dims[1:]
-		depth++
+		copy(srcidx, dstidx)
+		srcidx[dim] = dstidx[dim] - ofsts[i]
 
-		for i := range rows {
-			seedRows := make([]any, 0, len(rows))
-			for _, seed := range seeds {
-				seedRows = append(seedRows, seed.([]any)[i])
-			}
-			fillCat(dims, &rows[i], seedRows, depth)
-		}
-
-		*data = rows
-	}
-
-	o := new(CPUTensor)
-	o.dims = util.ConcatDims(ts, dim)
-	fillCat(o.dims, &o.data, tsDataCopy, 0)
-
-	return o
+		return ts[i].at(srcidx)
+	})
 }
 
 /* ----- helpers ----- */
 
-func eyeElemGenerator(n int) initializerFunc {
-	var state int
-
-	return func() any {
-		atDiag := state%(n+1) == 0
-		state++
-
-		if atDiag {
-			return 1.
+func updateElementWiseIndex(index []int, dims []int) {
+	for i := len(index) - 1; i >= 0; {
+		if index[i] < dims[i]-1 {
+			index[i]++
+			break
 		} else {
-			return 0.
+			index[i] = 0
+			i--
 		}
 	}
 }

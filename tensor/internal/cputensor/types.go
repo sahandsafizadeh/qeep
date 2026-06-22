@@ -5,6 +5,7 @@ import "github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 type CPUTensor struct {
 	dims []int
 	strd []int
+	ofst []int
 	data []float64
 	gctx *gradtrack.GradContext
 }
@@ -14,7 +15,7 @@ type reducerPair struct {
 	value float64
 }
 
-type elemInitFunc func(i int) float64
+type elemInitFunc func() float64
 type scalarUnaryFunc func(float64) float64
 type scalarBinaryFunc func(float64, float64) float64
 type reducerFunc func(reducerPair, reducerPair) reducerPair

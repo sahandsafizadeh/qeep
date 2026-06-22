@@ -787,7 +787,7 @@ func TestPatch(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Full([]int{3, 2, 1}, 1., &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 2, 1}, 2., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -799,18 +799,18 @@ func TestPatch(t *testing.T) {
 
 			exp, err := tensor.Of([][][]float64{
 				{
-					{1., 0.},
-					{1., 0.},
+					{2., 0.},
+					{2., 0.},
 					{0., 0.},
 				},
 				{
-					{1., 0.},
-					{1., 0.},
+					{2., 0.},
+					{2., 0.},
 					{0., 0.},
 				},
 				{
-					{1., 0.},
-					{1., 0.},
+					{2., 0.},
+					{2., 0.},
 					{0., 0.},
 				},
 				{
@@ -835,7 +835,7 @@ func TestPatch(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Full([]int{3, 2, 1}, 1., &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 2, 1}, 3., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -852,18 +852,18 @@ func TestPatch(t *testing.T) {
 					{0., 0.},
 				},
 				{
-					{1., 0.},
-					{1., 0.},
+					{3., 0.},
+					{3., 0.},
 					{0., 0.},
 				},
 				{
-					{1., 0.},
-					{1., 0.},
+					{3., 0.},
+					{3., 0.},
 					{0., 0.},
 				},
 				{
-					{1., 0.},
-					{1., 0.},
+					{3., 0.},
+					{3., 0.},
 					{0., 0.},
 				},
 			}, &tensor.Config{Device: dev})
@@ -883,7 +883,7 @@ func TestPatch(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Full([]int{3, 2, 1}, 1., &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 2, 1}, 4., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -901,18 +901,18 @@ func TestPatch(t *testing.T) {
 				},
 				{
 					{0., 0.},
-					{0., 1.},
-					{0., 1.},
+					{0., 4.},
+					{0., 4.},
 				},
 				{
 					{0., 0.},
-					{0., 1.},
-					{0., 1.},
+					{0., 4.},
+					{0., 4.},
 				},
 				{
 					{0., 0.},
-					{0., 1.},
-					{0., 1.},
+					{0., 4.},
+					{0., 4.},
 				},
 			}, &tensor.Config{Device: dev})
 			if err != nil {

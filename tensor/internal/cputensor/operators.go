@@ -171,46 +171,47 @@ func (t *CPUTensor) equals(u *CPUTensor) bool {
 }
 
 func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTensor {
+	dims := t.dims
+	n := len(dims) - 1
+	index := make([]int, n)
 
-	var calcData func([]int, *any, *any)
-	calcData = func(dims []int, a, r *any) {
-		if len(dims) == 0 {
-			*r = suf((*a).(float64))
-			return
-		}
+	return newTensorWithElementWiseInit(t.dims, func() float64 {
+		defer func() {
+			for i := n - 1; i >= 0; {
+				if index[i] < dims[i]-1 {
+					index[i]++
+					break
+				} else {
+					index[i] = 0
+					i--
+				}
+			}
+		}()
 
-		aRows := (*a).([]any)
-		rRows := make([]any, dims[0])
-		dims = dims[1:]
-
-		for i := range rRows {
-			calcData(dims, &aRows[i], &rRows[i])
-		}
-
-		*r = rRows
-	}
-
-	o := new(CPUTensor)
-	o.dims = make([]int, len(t.dims))
-	copy(o.dims, t.dims)
-	calcData(t.dims, &t.data, &o.data)
-
-	return o
+		return suf(t.at(index))
+	})
 }
 
 func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
-	o := new(CPUTensor)
-	o.dims = make([]int, len(t1.dims))
-	copy(o.dims, t1.dims)
-	o.strd = util.DimsToStrides(t1.dims)
+	dims := t1.dims
+	n := len(dims) - 1
+	index := make([]int, n)
 
-	n := t1.numElems()
-	o.data = make([]float64, n)
-	for i := range n {
-		o.data[i] = sbf(t1.data[i], t2.data[i])
-	}
+	return newTensorWithElementWiseInit(t1.dims, func() float64 {
+		defer func() {
+			for i := n - 1; i >= 0; {
+				if index[i] < dims[i]-1 {
+					index[i]++
+					break
+				} else {
+					index[i] = 0
+					i--
+				}
+			}
+		}()
 
-	return o
+		return sbf(t1.at(index), t2.at(index))
+	})
 }
 
 /* ----- helpers ----- */

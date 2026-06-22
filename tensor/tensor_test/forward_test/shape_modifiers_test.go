@@ -222,8 +222,18 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([5,4,3,2]) 4D tensor / Transpose() / returns shape [5,4,2,3]", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{5, 4, 3, 2}, &tensor.Config{Device: dev})
+		t.Run("Of([4,5]) 2D tensor values 0..19 / Slice([1,4),[1,3)) then Transpose() / returns [2,3] transposed middle submatrix", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{0., 1., 2., 3., 4.},
+				{5., 6., 7., 8., 9.},
+				{10., 11., 12., 13., 14.},
+				{15., 16., 17., 18., 19.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			ten, err = ten.Slice([]tensor.Range{{From: 1, To: 4}, {From: 1, To: 3}})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -233,7 +243,55 @@ func TestTranspose(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{5, 4, 2, 3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Of([][]float64{
+				{6., 11., 16.},
+				{7., 12., 17.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Of([2,3,4]) 3D tensor values 0..23 / Slice([1,2),[0,2),[1,4)) then Transpose() / returns [1,3,2] transposed slice", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2., 3.},
+					{4., 5., 6., 7.},
+					{8., 9., 10., 11.},
+				},
+				{
+					{12., 13., 14., 15.},
+					{16., 17., 18., 19.},
+					{20., 21., 22., 23.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			ten, err = ten.Slice([]tensor.Range{{From: 1, To: 2}, {From: 0, To: 2}, {From: 1, To: 4}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{13., 17.},
+					{14., 18.},
+					{15., 19.},
+				},
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -760,6 +818,35 @@ func TestUnSqueeze(t *testing.T) {
 			}
 		})
 
+		t.Run("Of([2,3]) 2D tensor with distinct values / UnSqueeze(1) / returns [2,1,3] tensor with values preserved", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.UnSqueeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{{1., 2., 3.}},
+				{{4., 5., 6.}},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / UnSqueeze(-1) / returns error: dimension out of range [0,0]", func(t *testing.T) {
@@ -906,6 +993,35 @@ func TestSqueeze(t *testing.T) {
 			}
 
 			exp, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Of([2,1,3]) 3D tensor with distinct values / Squeeze(1) / returns [2,3] tensor with values preserved", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{{1., 2., 3.}},
+				{{4., 5., 6.}},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Squeeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1114,6 +1230,43 @@ func TestFlatten(t *testing.T) {
 			}
 
 			exp, err := tensor.Zeros([]int{1, 2, 360}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Of([2,3,4]) 3D tensor with sequential values 0..23 / Flatten(1) / returns [2,12] tensor with values preserved in row-major order", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2., 3.},
+					{4., 5., 6., 7.},
+					{8., 9., 10., 11.},
+				},
+				{
+					{12., 13., 14., 15.},
+					{16., 17., 18., 19.},
+					{20., 21., 22., 23.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Flatten(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.},
+				{12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23.},
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}

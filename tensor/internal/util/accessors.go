@@ -11,6 +11,21 @@ func DimsToNumElems(dims []int) int {
 	return elems
 }
 
+func DimsToStrides(dims []int) []int {
+	lend := len(dims)
+	strd := make([]int, lend)
+	if lend == 0 {
+		return strd
+	}
+
+	strd[lend-1] = 1
+	for i := lend - 2; i >= 0; i-- {
+		strd[i] = strd[i+1] * dims[i+1]
+	}
+
+	return strd
+}
+
 func IndexToDims(index []tensor.Range) []int {
 	dims := make([]int, len(index))
 	for i, idx := range index {

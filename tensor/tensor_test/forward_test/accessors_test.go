@@ -499,6 +499,8 @@ func TestSlice(t *testing.T) {
 			}
 		})
 
+		// ============================== side effects ==============================
+
 		t.Run("2x4x2x2 tensor / Slice([1,2),[2,4)) then Slice([{},[1,2),{},[1,2))) / returns end subtensor from double slice", func(t *testing.T) {
 			ten, err := tensor.Of([][][][]float64{
 				{

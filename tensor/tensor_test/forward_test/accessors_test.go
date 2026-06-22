@@ -132,6 +132,22 @@ func TestShape(t *testing.T) {
 				t.Fatal("expected tensor to have shape [5, 4, 3, 2, 1], got", shape)
 			}
 		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Full([3,4], 0) 2D tensor / Shape() then mutate result / original shape unchanged", func(t *testing.T) {
+			ten, err := tensor.Full([]int{3, 4}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			shape := ten.Shape()
+			shape[0] = 99
+
+			if shape := ten.Shape(); !slices.Equal(shape, []int{3, 4}) {
+				t.Fatal("expected tensor shape to remain [3, 4] after mutating returned slice, got", shape)
+			}
+		})
 	})
 }
 

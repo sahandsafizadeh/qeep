@@ -153,6 +153,75 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
+		t.Run("4D tensor shape [2,2,2,3] / Transpose() / transposes last two dims leaving batch dims unchanged", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2., 3.},
+						{4., 5., 6.},
+					},
+					{
+						{7., 8., 9.},
+						{10., 11., 12.},
+					},
+				},
+				{
+					{
+						{13., 14., 15.},
+						{16., 17., 18.},
+					},
+					{
+						{19., 20., 21.},
+						{22., 23., 24.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 4.},
+						{2., 5.},
+						{3., 6.},
+					},
+					{
+						{7., 10.},
+						{8., 11.},
+						{9., 12.},
+					},
+				},
+				{
+					{
+						{13., 16.},
+						{14., 17.},
+						{15., 18.},
+					},
+					{
+						{19., 22.},
+						{20., 23.},
+						{21., 24.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("Zeros([5,4,3,2]) 4D tensor / Transpose() / returns shape [5,4,2,3]", func(t *testing.T) {
 			ten, err := tensor.Zeros([]int{5, 4, 3, 2}, &tensor.Config{Device: dev})
 			if err != nil {

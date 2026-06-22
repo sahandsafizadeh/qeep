@@ -3,12 +3,18 @@ package cputensor
 import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
 
 func (t *CPUTensor) transpose() *CPUTensor {
-	elemGen := t.transposeElemGenerator()
-	dims := util.TransposeDims(t.dims)
+	n := len(t.dims)
 
 	o := new(CPUTensor)
-	o.dims = dims
-	o.initWith(elemGen)
+	o.dims = util.TransposeDims(t.dims)
+	o.strd = make([]int, n)
+	copy(o.strd, t.strd)
+	o.strd[n-2], o.strd[n-1] = o.strd[n-1], o.strd[n-2]
+	o.ofst = make([]int, n)
+	copy(o.ofst, t.ofst)
+	o.ofst[n-2], o.ofst[n-1] = o.ofst[n-1], o.ofst[n-2]
+
+	o.data = t.data // reuse data
 
 	return o
 }

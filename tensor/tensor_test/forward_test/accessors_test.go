@@ -499,6 +499,102 @@ func TestSlice(t *testing.T) {
 			}
 		})
 
+		t.Run("2x4x2x2 tensor / Slice([1,2),[2,4)) then Slice([{},[1,2),{},[1,2))) / returns end subtensor from double slice", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2.},
+						{3., 4.},
+					},
+					{
+						{5., 6.},
+						{7., 8.},
+					},
+					{
+						{9., 10.},
+						{11., 12.},
+					},
+					{
+						{13., 14.},
+						{15., 16.},
+					},
+				},
+				{
+					{
+						{17., 18.},
+						{19., 20.},
+					},
+					{
+						{21., 22.},
+						{23., 24.},
+					},
+					{
+						{25., 26.},
+						{27., 28.},
+					},
+					{
+						{29., 30.},
+						{31., 32.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// --- slice 1 ---
+			act, err := ten.Slice([]tensor.Range{{From: 1, To: 2}, {From: 2, To: 4}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][][]float64{
+				{
+					{
+						{25., 26.},
+						{27., 28.},
+					},
+					{
+						{29., 30.},
+						{31., 32.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+
+			// --- slice 2 ---
+			act, err = act.Slice([]tensor.Range{{}, {From: 1, To: 2}, {}, {From: 1, To: 2}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err = tensor.Of([][][][]float64{
+				{
+					{
+						{30.},
+						{32.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / Slice with 1 range / returns error: index length exceeds dimensions", func(t *testing.T) {

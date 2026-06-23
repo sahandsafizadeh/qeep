@@ -171,45 +171,17 @@ func (t *CPUTensor) equals(u *CPUTensor) bool {
 }
 
 func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTensor {
-	dims := t.dims
-	n := len(dims) - 1
-	index := make([]int, n)
-
+	index := make([]int, len(t.dims))
 	return newTensorWithElementWiseInit(t.dims, func() float64 {
-		defer func() {
-			for i := n - 1; i >= 0; {
-				if index[i] < dims[i]-1 {
-					index[i]++
-					break
-				} else {
-					index[i] = 0
-					i--
-				}
-			}
-		}()
-
+		defer updateElementWiseIndex(index, t.dims)
 		return suf(t.at(index))
 	})
 }
 
 func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
-	dims := t1.dims
-	n := len(dims) - 1
-	index := make([]int, n)
-
+	index := make([]int, len(t1.dims))
 	return newTensorWithElementWiseInit(t1.dims, func() float64 {
-		defer func() {
-			for i := n - 1; i >= 0; {
-				if index[i] < dims[i]-1 {
-					index[i]++
-					break
-				} else {
-					index[i] = 0
-					i--
-				}
-			}
-		}()
-
+		defer updateElementWiseIndex(index, t1.dims)
 		return sbf(t1.at(index), t2.at(index))
 	})
 }

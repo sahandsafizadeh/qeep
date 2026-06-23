@@ -3277,6 +3277,60 @@ func TestDot(t *testing.T) {
 			}
 		})
 
+		t.Run("4D tensor [2,3,1,3] and 2D tensor [4,3] / Dot / returns 3D tensor [2,3,4] via broadcasting", func(t *testing.T) {
+			t1, err := tensor.Of([][][][]float64{
+				{
+					{{1., 1., 1.}},
+					{{1., 1., 1.}},
+					{{1., 1., 1.}},
+				},
+				{
+					{{1., 1., 1.}},
+					{{1., 1., 1.}},
+					{{1., 1., 1.}},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+				{-1., 0., 1.},
+				{2., -2., 2.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.Dot(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{6., 15., 0., 2.},
+					{6., 15., 0., 2.},
+					{6., 15., 0., 2.},
+				},
+				{
+					{6., 15., 0., 2.},
+					{6., 15., 0., 2.},
+					{6., 15., 0., 2.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Dot(nil) / returns error: device mismatch", func(t *testing.T) {
@@ -3540,6 +3594,128 @@ func TestMatMul(t *testing.T) {
 			}
 		})
 
+		t.Run("3D tensor [2,2,2] / MatMul([2,2,2]) / returns batched 2x2 matrix products", func(t *testing.T) {
+			t1, err := tensor.Of([][][]float64{
+				{
+					{1., 0.},
+					{2., 1.},
+				},
+				{
+					{3., 1.},
+					{0., 2.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][][]float64{
+				{
+					{2., 3.},
+					{0., 1.},
+				},
+				{
+					{1., 2.},
+					{3., 0.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{2., 3.},
+					{4., 7.},
+				},
+				{
+					{6., 6.},
+					{6., 0.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("4D tensor [1,2,3,4] / MatMul([1,2,4,2]) / returns batched 3x2 matrix products", func(t *testing.T) {
+			t1, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2., 3., 4.},
+						{5., 6., 7., 8.},
+						{9., 10., 11., 12.},
+					},
+					{
+						{1., 0., 0., 0.},
+						{0., 1., 0., 0.},
+						{0., 0., 1., 0.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 0.},
+						{0., 1.},
+						{1., 0.},
+						{0., 1.},
+					},
+					{
+						{1., 2.},
+						{3., 4.},
+						{5., 6.},
+						{7., 8.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][][]float64{
+				{
+					{
+						{4., 6.},
+						{12., 14.},
+						{20., 22.},
+					},
+					{
+						{1., 2.},
+						{3., 4.},
+						{5., 6.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("3D ones tensor [5,1,1] / MatMul([5,1,1] ones) / returns [5,1,1] ones", func(t *testing.T) {
 			t1, err := tensor.Ones([]int{5, 1, 1}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -3664,6 +3840,60 @@ func TestMatMul(t *testing.T) {
 			}
 
 			exp, err := tensor.Full([]int{7, 6, 5, 4, 3, 3}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("2D tensor [2,3] / MatMul(4D tensor [1,2,3,2]) / broadcasts and returns [1,2,2,2]", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 0.},
+						{0., 1.},
+						{1., 1.},
+					},
+					{
+						{2., 0.},
+						{0., 2.},
+						{1., 1.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := t1.MatMul(t2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][][]float64{
+				{
+					{
+						{4., 5.},
+						{10., 11.},
+					},
+					{
+						{5., 7.},
+						{14., 16.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -1,6 +1,10 @@
 package cputensor
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
+import (
+	"slices"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+)
 
 func (t *CPUTensor) transpose() *CPUTensor {
 	n := len(t.dims)
@@ -28,15 +32,35 @@ func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 }
 
 func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
-	elemGen := t.broadcastElemGenerator(shape)
-	dims := make([]int, len(shape))
-	copy(dims, shape)
+	if slices.Equal(shape, t.dims) {
+		o := new(CPUTensor)
+		o.dims = make([]int, len(t.dims))
+		copy(o.dims, t.dims)
+		o.strd = make([]int, len(t.strd))
+		copy(o.strd, t.strd)
 
-	o := new(CPUTensor)
-	o.dims = dims
-	o.initWith(elemGen)
+		o.data = t.data // reuse data
 
-	return o
+		return o
+	}
+
+	ofst := len(shape) - len(t.dims)
+	dstidx := make([]int, len(shape))
+	srcidx := make([]int, len(t.dims))
+
+	return newTensorWithElementWiseInit(shape, func() float64 {
+		defer updateElementWiseIndex(dstidx, shape)
+
+		for i := range srcidx {
+			if t.dims[i] == 1 {
+				srcidx[i] = 0
+			} else {
+				srcidx[i] = dstidx[i+ofst]
+			}
+		}
+
+		return t.at(srcidx)
+	})
 }
 
 func (t *CPUTensor) unsqueeze(dim int) *CPUTensor {
@@ -49,49 +73,4 @@ func (t *CPUTensor) squeeze(dim int) *CPUTensor {
 
 func (t *CPUTensor) flatten(fromDim int) *CPUTensor {
 	return t.reshape(util.FlattenDims(fromDim, t.dims))
-}
-
-/* ----- helpers ----- */
-
-func (t *CPUTensor) broadcastElemGenerator(shape []int) func() any {
-	state := make([]int, len(t.dims))
-	repeat := make([]int, len(shape))
-
-	return func() any {
-		elem := t.dataAt(state)
-
-		i := len(t.dims) - 1
-		j := len(shape) - 1
-
-		for j >= 0 {
-			if i >= 0 && state[i] < t.dims[i]-1 {
-				state[i]++
-				break
-
-			} else if i >= 0 {
-				state[i] = 0
-				repeat[j]++
-
-				if t.dims[i] == shape[j] || repeat[j] == shape[j] {
-					repeat[j] = 0
-					i--
-					j--
-				} else {
-					break
-				}
-
-			} else {
-				repeat[j]++
-
-				if repeat[j] == shape[j] {
-					repeat[j] = 0
-					j--
-				} else {
-					break
-				}
-			}
-		}
-
-		return elem
-	}
 }

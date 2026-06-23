@@ -1964,6 +1964,35 @@ func TestBroadcast(t *testing.T) {
 			}
 		})
 
+		t.Run("Of shape [2,1,4] with rows [0..3] and [4..7] / Broadcast([2,1,4]) / returns same tensor unchanged", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{{0., 1., 2., 3.}},
+				{{4., 5., 6., 7.}},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Broadcast([]int{2, 1, 4})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{{0., 1., 2., 3.}},
+				{{4., 5., 6., 7.}},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("Ones([4,1,1,3]) / Broadcast([6,5,4,3,3,3]) / returns all-ones [6,5,4,3,3,3] tensor", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{4, 1, 1, 3}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -1988,6 +2017,77 @@ func TestBroadcast(t *testing.T) {
 		})
 
 		// ============================== side effects ==============================
+
+		t.Run("Of([2,3]) 2D tensor with values 1..6 / Broadcast([2,3]) twice / original tensor unchanged; result equals original each time", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := t1.Broadcast([]int{2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+
+			t2, err = t2.Broadcast([]int{2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err = tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err = tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
 
 		t.Run("Zeros([2,1]) does not share shape slice / Broadcast([2,3]) after mutating shape / returns correct [2,3] tensor", func(t *testing.T) {
 			ten, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})

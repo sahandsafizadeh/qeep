@@ -18,7 +18,7 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); int(val) != 9 {
+			if val := ten.Sum(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the sum value of tensor, got (%f)", val)
 			}
 		})
@@ -29,7 +29,7 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); int(val) != 10 {
+			if val := ten.Sum(); !(10.-1e-10 < val && val < 10.+1e-10) {
 				t.Fatalf("expected (10) as the sum value of tensor, got (%f)", val)
 			}
 		})
@@ -44,7 +44,7 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); int(val) != 36 {
+			if val := ten.Sum(); !(36.-1e-10 < val && val < 36.+1e-10) {
 				t.Fatalf("expected (36) as the sum value of tensor, got (%f)", val)
 			}
 		})
@@ -62,7 +62,7 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); int(val) != 9 {
+			if val := ten.Max(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the max value of tensor, got (%f)", val)
 			}
 		})
@@ -73,7 +73,7 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); int(val) != 6 {
+			if val := ten.Max(); !(6.-1e-10 < val && val < 6.+1e-10) {
 				t.Fatalf("expected (6) as the max value of tensor, got (%f)", val)
 			}
 		})
@@ -88,7 +88,7 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); int(val) != 9 {
+			if val := ten.Max(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the max value of tensor, got (%f)", val)
 			}
 		})
@@ -106,7 +106,7 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); int(val) != 9 {
+			if val := ten.Min(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the min value of tensor, got (%f)", val)
 			}
 		})
@@ -117,7 +117,7 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); int(val) != 4 {
+			if val := ten.Min(); !(4.-1e-10 < val && val < 4.+1e-10) {
 				t.Fatalf("expected (4) as the min value of tensor, got (%f)", val)
 			}
 		})
@@ -132,7 +132,7 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); int(val) != -5 {
+			if val := ten.Min(); !(-5.-1e-10 < val && val < -5.+1e-10) {
 				t.Fatalf("expected (-5) as the min value of tensor, got (%f)", val)
 			}
 		})
@@ -150,7 +150,7 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); int(val) != 9 {
+			if val := ten.Avg(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the avg value of tensor, got (%f)", val)
 			}
 		})
@@ -161,7 +161,7 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); int(val) != 5 {
+			if val := ten.Avg(); !(5.-1e-10 < val && val < 5.+1e-10) {
 				t.Fatalf("expected (5) as the avg value of tensor, got (%f)", val)
 			}
 		})
@@ -176,7 +176,7 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); int(val) != 3 {
+			if val := ten.Avg(); !(3.-1e-10 < val && val < 3.+1e-10) {
 				t.Fatalf("expected (3) as the avg value of tensor, got (%f)", val)
 			}
 		})
@@ -194,7 +194,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 0 {
+			if val := ten.Var(); !(0.-1e-10 < val && val < 0.+1e-10) {
 				t.Fatalf("expected (0) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -205,7 +205,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 4 {
+			if val := ten.Var(); !(4.-1e-10 < val && val < 4.+1e-10) {
 				t.Fatalf("expected (4) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -216,7 +216,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 4 {
+			if val := ten.Var(); !(4.-1e-10 < val && val < 4.+1e-10) {
 				t.Fatalf("expected (4) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -227,7 +227,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 0 {
+			if val := ten.Var(); !(0.-1e-10 < val && val < 0.+1e-10) {
 				t.Fatalf("expected (0) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -241,7 +241,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 6 {
+			if val := ten.Var(); !(6.-1e-10 < val && val < 6.+1e-10) {
 				t.Fatalf("expected (6) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -252,7 +252,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 9 {
+			if val := ten.Var(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -272,7 +272,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 13 {
+			if val := ten.Var(); !(13.-1e-10 < val && val < 13.+1e-10) {
 				t.Fatalf("expected (13) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -290,7 +290,7 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 0 {
+			if val := ten.Std(); !(0.-1e-10 < val && val < 0.+1e-10) {
 				t.Fatalf("expected (0) as the std value of tensor, got (%f)", val)
 			}
 		})
@@ -301,7 +301,7 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 2 {
+			if val := ten.Std(); !(2.-1e-10 < val && val < 2.+1e-10) {
 				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
 			}
 		})
@@ -312,7 +312,7 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 2 {
+			if val := ten.Std(); !(2.-1e-10 < val && val < 2.+1e-10) {
 				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
 			}
 		})
@@ -323,7 +323,7 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 0 {
+			if val := ten.Std(); !(0.-1e-10 < val && val < 0.+1e-10) {
 				t.Fatalf("expected (0) as the std value of tensor, got (%f)", val)
 			}
 		})
@@ -334,12 +334,12 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 3 {
+			if val := ten.Std(); !(3.-1e-10 < val && val < 3.+1e-10) {
 				t.Fatalf("expected (3) as the std value of tensor, got (%f)", val)
 			}
 		})
 
-		t.Run("2D tensor shape [2,4] / Std() / returns 2", func(t *testing.T) {
+		t.Run("2D tensor shape [2,4] / Std() / returns sqrt(6)", func(t *testing.T) {
 			ten, err := tensor.Of([][]float64{
 				{1., 2., 3., 4.},
 				{5., 6., 7., 8.},
@@ -348,12 +348,12 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 2 {
-				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
+			if val := ten.Std(); !(math.Sqrt(6)-1e-10 < val && val < math.Sqrt(6)+1e-10) {
+				t.Fatalf("expected (sqrt(6)) as the std value of tensor, got (%f)", val)
 			}
 		})
 
-		t.Run("3D tensor shape [2,2,3] / Std() / returns 3", func(t *testing.T) {
+		t.Run("3D tensor shape [2,2,3] / Std() / returns sqrt(13)", func(t *testing.T) {
 			ten, err := tensor.Of([][][]float64{
 				{
 					{1., 2., 3.},
@@ -368,8 +368,8 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 3 {
-				t.Fatalf("expected (3) as the std value of tensor, got (%f)", val)
+			if val := ten.Std(); !(math.Sqrt(13)-1e-10 < val && val < math.Sqrt(13)+1e-10) {
+				t.Fatalf("expected (sqrt(13)) as the std value of tensor, got (%f)", val)
 			}
 		})
 	})
@@ -386,7 +386,7 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); int(val) != 9 {
+			if val := ten.Mean(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the mean value of tensor, got (%f)", val)
 			}
 		})
@@ -397,7 +397,7 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); int(val) != 5 {
+			if val := ten.Mean(); !(5.-1e-10 < val && val < 5.+1e-10) {
 				t.Fatalf("expected (5) as the mean value of tensor, got (%f)", val)
 			}
 		})
@@ -412,7 +412,7 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); int(val) != 3 {
+			if val := ten.Mean(); !(3.-1e-10 < val && val < 3.+1e-10) {
 				t.Fatalf("expected (3) as the mean value of tensor, got (%f)", val)
 			}
 		})

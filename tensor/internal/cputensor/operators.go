@@ -140,27 +140,102 @@ func (t *CPUTensor) div(u *CPUTensor) *CPUTensor {
 
 func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
-	dims := util.DotDims(t1.dims)
-	elemGen := linearLastDimDotProductElemGenerator(t1, t2)
+	nd := len(t1.dims)
+	n := t1.dims[nd-1]
 
-	o := new(CPUTensor)
-	o.dims = dims
-	o.initWith(elemGen)
+	t1Stride := t1.strd[nd-1]
+	t2Stride := t2.strd[nd-1]
+
+	dims := util.DotDims(t1.dims)
+	o := &CPUTensor{
+		dims: dims,
+		strd: util.DimsToStrides(dims),
+		data: make([]float64, util.DimsToNumElems(dims)),
+	}
+
+	kernel := func(t1Off, t2Off, oOff int) {
+		for k := range n {
+			o.data[oOff] += t1.data[t1Off+k*t1Stride] * t2.data[t2Off+k*t2Stride]
+		}
+	}
+
+	nb := nd - 1
+	if nb == 0 {
+		kernel(0, 0, 0)
+		return o
+	}
+
+	batchIdx := make([]int, nb)
+	numBatch := util.DimsToNumElems(dims)
+	for range numBatch {
+		t1Off, t2Off, oOff := 0, 0, 0
+		for d := range nb {
+			t1Off += batchIdx[d] * t1.strd[d]
+			t2Off += batchIdx[d] * t2.strd[d]
+			oOff += batchIdx[d] * o.strd[d]
+		}
+		kernel(t1Off, t2Off, oOff)
+		updateElementWiseIndex(batchIdx, dims)
+	}
 
 	return o
 }
 
 func (t *CPUTensor) matMul(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
-	td := len(t1.dims)
+	nd := len(t1.dims)
+
+	m := t1.dims[nd-2]
+	n := t1.dims[nd-1]
+	k := t2.dims[nd-1]
+
+	t1RowStride := t1.strd[nd-2]
+	t1ColStride := t1.strd[nd-1]
+	t2RowStride := t2.strd[nd-2]
+	t2ColStride := t2.strd[nd-1]
+
 	dims := util.MatMulDims(t1.dims, t2.dims)
-	elemGen := linearLast2DimsMatMulElemGenerator(t1, t2)
+	o := &CPUTensor{
+		dims: dims,
+		strd: util.DimsToStrides(dims),
+		data: make([]float64, util.DimsToNumElems(dims)),
+	}
+	oRowStride := o.strd[nd-2]
 
-	o := new(CPUTensor)
-	o.dims = dims[:td-2]
-	o.initWith(elemGen)
+	kernel := func(t1Off, t2Off, oOff int) {
+		for i := range m {
+			t1Row := t1Off + i*t1RowStride
+			oRow := oOff + i*oRowStride
+			for p := range n {
+				a := t1.data[t1Row+p*t1ColStride]
+				t2Row := t2Off + p*t2RowStride
+				for j := range k {
+					o.data[oRow+j] += a * t2.data[t2Row+j*t2ColStride]
+				}
+			}
+		}
+	}
 
-	o.dims = dims
+	nb := nd - 2
+	if nb == 0 {
+		kernel(0, 0, 0)
+		return o
+	}
+
+	batchDims := dims[:nb]
+	batchIdx := make([]int, nb)
+	numBatch := util.DimsToNumElems(batchDims)
+	for range numBatch {
+		t1Off, t2Off, oOff := 0, 0, 0
+		for d := range nb {
+			t1Off += batchIdx[d] * t1.strd[d]
+			t2Off += batchIdx[d] * t2.strd[d]
+			oOff += batchIdx[d] * o.strd[d]
+		}
+		kernel(t1Off, t2Off, oOff)
+		updateElementWiseIndex(batchIdx, batchDims)
+	}
+
 	return o
 }
 
@@ -184,102 +259,4 @@ func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *
 		defer updateElementWiseIndex(index, t1.dims)
 		return sbf(t1.at(index), t2.at(index))
 	})
-}
-
-/* ----- helpers ----- */
-
-func linearLastDimDotProductElemGenerator(t1, t2 *CPUTensor) initializerFunc {
-	dims := t1.dims
-	n := len(dims) - 1
-	state := make([]int, n)
-
-	return func() any {
-		data1 := t1.dataAt(state)
-		data2 := t2.dataAt(state)
-		prodRes := dotProductOf1DInputs(data1, data2)
-
-		i := n - 1
-		for i >= 0 {
-			if state[i] < dims[i]-1 {
-				state[i]++
-				break
-			} else {
-				state[i] = 0
-				i--
-			}
-		}
-
-		return prodRes
-	}
-}
-
-func linearLast2DimsMatMulElemGenerator(t1, t2 *CPUTensor) initializerFunc {
-	dims := t1.dims
-	n := len(dims) - 2
-	state := make([]int, n)
-
-	return func() any {
-		data1 := t1.dataAt(state)
-		data2 := t2.dataAt(state)
-		mulRes := matMulDataOf2DInputs(data1, data2)
-
-		i := n - 1
-		for i >= 0 {
-			if state[i] < dims[i]-1 {
-				state[i]++
-				break
-			} else {
-				state[i] = 0
-				i--
-			}
-		}
-
-		return mulRes
-	}
-}
-
-func dotProductOf1DInputs(a, b any) any {
-	v1 := a.([]any)
-	v2 := b.([]any)
-	n := len(v1)
-
-	s := 0.
-	for i := range n {
-		eiv1 := v1[i].(float64)
-		eiv2 := v2[i].(float64)
-		s += eiv1 * eiv2
-	}
-
-	return s
-}
-
-func matMulDataOf2DInputs(a, b any) any {
-	m1 := a.([]any)
-	m2 := b.([]any)
-	r0m1 := m1[0].([]any)
-	r0m2 := m2[0].([]any)
-
-	// A_mn * B_nk = C_mk
-	m := len(m1)
-	n := len(r0m1)
-	k := len(r0m2)
-
-	cRows := make([]any, m)
-	for i := range m {
-		row := make([]any, k)
-		for j := range k {
-			eij := 0.
-			for p := range n {
-				rim1 := m1[i].([]any)
-				rpm2 := m2[p].([]any)
-				eipm1 := rim1[p].(float64)
-				epjm2 := rpm2[j].(float64)
-				eij += eipm1 * epjm2
-			}
-			row[j] = eij
-		}
-		cRows[i] = row
-	}
-
-	return cRows
 }

@@ -5,7 +5,6 @@ import "github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 type CPUTensor struct {
 	dims []int
 	strd []int
-	ofst []int
 	data []float64
 	gctx *gradtrack.GradContext
 }

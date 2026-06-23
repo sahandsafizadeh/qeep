@@ -10,7 +10,6 @@ func newTensorWithElementWiseInit(dims []int, fn elemInitFunc) *CPUTensor {
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 	t.strd = util.DimsToStrides(dims)
-	t.ofst = make([]int, len(dims))
 
 	t.data = make([]float64, util.DimsToNumElems(dims))
 	for i := range t.data {
@@ -48,21 +47,18 @@ func normalRandomTensor(dims []int, u, s float64) *CPUTensor {
 func tensorFromData(idata any) *CPUTensor {
 	var dims []int
 	var strd []int
-	var ofst []int
 	var data []float64
 
 	switch v := idata.(type) {
 	case float64:
 		dims = []int{}
 		strd = util.DimsToStrides(dims)
-		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		data[0] = v
 
 	case []float64:
 		dims = []int{len(v)}
 		strd = util.DimsToStrides(dims)
-		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		for i, v0 := range v {
 			data[i*strd[0]] = v0
@@ -71,7 +67,6 @@ func tensorFromData(idata any) *CPUTensor {
 	case [][]float64:
 		dims = []int{len(v), len(v[0])}
 		strd = util.DimsToStrides(dims)
-		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
@@ -82,7 +77,6 @@ func tensorFromData(idata any) *CPUTensor {
 	case [][][]float64:
 		dims = []int{len(v), len(v[0]), len(v[0][0])}
 		strd = util.DimsToStrides(dims)
-		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
@@ -95,7 +89,6 @@ func tensorFromData(idata any) *CPUTensor {
 	case [][][][]float64:
 		dims = []int{len(v), len(v[0]), len(v[0][0]), len(v[0][0][0])}
 		strd = util.DimsToStrides(dims)
-		ofst = make([]int, len(dims))
 		data = make([]float64, util.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
@@ -114,7 +107,6 @@ func tensorFromData(idata any) *CPUTensor {
 	return &CPUTensor{
 		dims: dims,
 		strd: strd,
-		ofst: ofst,
 		data: data,
 	}
 }

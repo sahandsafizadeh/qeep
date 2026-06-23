@@ -10,9 +10,6 @@ func (t *CPUTensor) transpose() *CPUTensor {
 	o.strd = make([]int, n)
 	copy(o.strd, t.strd)
 	o.strd[n-2], o.strd[n-1] = o.strd[n-1], o.strd[n-2]
-	o.ofst = make([]int, n)
-	copy(o.ofst, t.ofst)
-	o.ofst[n-2], o.ofst[n-1] = o.ofst[n-1], o.ofst[n-2]
 
 	o.data = t.data // reuse data
 
@@ -20,13 +17,12 @@ func (t *CPUTensor) transpose() *CPUTensor {
 }
 
 func (t *CPUTensor) reshape(shape []int) *CPUTensor {
-	elemGen := t.linearElemGenerator()
-	dims := make([]int, len(shape))
-	copy(dims, shape)
-
 	o := new(CPUTensor)
-	o.dims = dims
-	o.initWith(elemGen)
+	o.dims = make([]int, len(shape))
+	copy(o.dims, shape)
+	o.strd = util.DimsToStrides(shape)
+
+	o.data = t.data // reuse data
 
 	return o
 }
@@ -57,57 +53,7 @@ func (t *CPUTensor) flatten(fromDim int) *CPUTensor {
 
 /* ----- helpers ----- */
 
-func (t *CPUTensor) linearElemGenerator() initializerFunc {
-	state := make([]int, len(t.dims))
-
-	return func() any {
-		elem := t.dataAt(state)
-
-		i := len(t.dims) - 1
-		for i >= 0 {
-			if state[i] < t.dims[i]-1 {
-				state[i]++
-				break
-			} else {
-				state[i] = 0
-				i--
-			}
-		}
-
-		return elem
-	}
-}
-
-func (t *CPUTensor) transposeElemGenerator() initializerFunc {
-	state := make([]int, len(t.dims))
-
-	return func() any {
-		elem := t.dataAt(state)
-
-		i := len(t.dims) - 2
-		for i >= 0 {
-			if state[i] < t.dims[i]-1 {
-				state[i]++
-				break
-			} else {
-				state[i] = 0
-
-				switch i {
-				case len(t.dims) - 2:
-					i += 1
-				case len(t.dims) - 1:
-					i -= 2
-				default:
-					i--
-				}
-			}
-		}
-
-		return elem
-	}
-}
-
-func (t *CPUTensor) broadcastElemGenerator(shape []int) initializerFunc {
+func (t *CPUTensor) broadcastElemGenerator(shape []int) func() any {
 	state := make([]int, len(t.dims))
 	repeat := make([]int, len(shape))
 

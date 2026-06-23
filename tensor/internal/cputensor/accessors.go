@@ -12,7 +12,7 @@ func (t *CPUTensor) numElems() int {
 func (t *CPUTensor) at(index []int) float64 {
 	lnpos := 0
 	for i, idx := range index {
-		lnpos += t.strd[i]*idx + t.ofst[i]
+		lnpos += t.strd[i] * idx
 	}
 
 	return t.data[lnpos]
@@ -20,20 +20,28 @@ func (t *CPUTensor) at(index []int) float64 {
 
 func (t *CPUTensor) slice(index []tensor.Range) *CPUTensor {
 	cidx := util.CompleteIndex(index, t.dims)
+	dims := util.IndexToDims(cidx)
+	tidx := make([]int, len(dims))
 
-	o := new(CPUTensor)
-	o.dims = util.IndexToDims(cidx)
-	o.strd = make([]int, len(t.strd))
-	copy(o.strd, t.strd)
-
-	o.ofst = make([]int, len(t.ofst))
 	for i, r := range cidx {
-		o.ofst[i] = t.strd[i]*r.From + t.ofst[i]
+		tidx[i] = r.From
 	}
 
-	o.data = t.data // reuse data
+	return newTensorWithElementWiseInit(dims, func() float64 {
+		defer func() {
+			for i := len(tidx) - 1; i >= 0; {
+				if tidx[i] < cidx[i].To-1 {
+					tidx[i]++
+					break
+				} else {
+					tidx[i] = cidx[i].From
+					i--
+				}
+			}
+		}()
 
-	return o
+		return t.at(tidx)
+	})
 }
 
 func (t *CPUTensor) patch(index []tensor.Range, u *CPUTensor) *CPUTensor {

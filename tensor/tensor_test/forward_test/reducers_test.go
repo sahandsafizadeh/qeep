@@ -220,6 +220,62 @@ func TestVar(t *testing.T) {
 				t.Fatalf("expected (4) as the var value of tensor, got (%f)", val)
 			}
 		})
+
+		t.Run("1D tensor [5, 5, 5] / Var() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{5., 5., 5.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); int(val) != 0 {
+				t.Fatalf("expected (0) as the var value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("2D tensor shape [2,4] / Var() / returns 6", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2., 3., 4.},
+				{5., 6., 7., 8.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); int(val) != 6 {
+				t.Fatalf("expected (6) as the var value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("1D tensor [-3, 0, 3] / Var() / returns 9", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-3., 0., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); int(val) != 9 {
+				t.Fatalf("expected (9) as the var value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("3D tensor shape [2,2,3] / Var() / returns 13", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+				{
+					{7., 8., 9.},
+					{10., 11., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); int(val) != 13 {
+				t.Fatalf("expected (13) as the var value of tensor, got (%f)", val)
+			}
+		})
 	})
 }
 
@@ -258,6 +314,62 @@ func TestStd(t *testing.T) {
 
 			if val := ten.Std(); int(val) != 2 {
 				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("1D tensor [7, 7, 7] / Std() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{7., 7., 7.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); int(val) != 0 {
+				t.Fatalf("expected (0) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("1D tensor [-3, 0, 3] / Std() / returns 3", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-3., 0., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); int(val) != 3 {
+				t.Fatalf("expected (3) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("2D tensor shape [2,4] / Std() / returns 2", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2., 3., 4.},
+				{5., 6., 7., 8.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); int(val) != 2 {
+				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("3D tensor shape [2,2,3] / Std() / returns 3", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+				{
+					{7., 8., 9.},
+					{10., 11., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); int(val) != 3 {
+				t.Fatalf("expected (3) as the std value of tensor, got (%f)", val)
 			}
 		})
 	})

@@ -222,6 +222,90 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
+		// ============================== side effects ==============================
+
+		t.Run("Of([1,2,3]) 3D tensor with values 1..6 / Transpose() twice / returns original tensor", func(t *testing.T) {
+			t1, err := tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := t1.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err := tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Of([][][]float64{
+				{
+					{1., 4.},
+					{2., 5.},
+					{3., 6.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+
+			t2, err = t2.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err = tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err = tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("Of([4,5]) 2D tensor values 0..19 / Slice([1,4),[1,3)) then Transpose() / returns [2,3] transposed middle submatrix", func(t *testing.T) {
 			ten, err := tensor.Of([][]float64{
 				{0., 1., 2., 3., 4.},
@@ -587,6 +671,118 @@ func TestReshape(t *testing.T) {
 
 		// ============================== side effects ==============================
 
+		t.Run("Of([2,3]) 2D tensor with values 1..6 / Reshape([3,2]) then Reshape([6]) / returns 1D tensor; source tensor unchanged", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			t2, err := t1.Reshape([]int{3, 2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Of([][]float64{
+				{1., 2.},
+				{3., 4.},
+				{5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+
+			t2, err = t2.Reshape([]int{6})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err = tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err = tensor.Of([]float64{1., 2., 3., 4., 5., 6.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Of([2,3,4]) 3D tensor values 0..23 / Slice([1,2),[],[2,4)) then Reshape([3,2]) / returns last-batch tail-columns reshaped row-major", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2., 3.},
+					{4., 5., 6., 7.},
+					{8., 9., 10., 11.},
+				},
+				{
+					{12., 13., 14., 15.},
+					{16., 17., 18., 19.},
+					{20., 21., 22., 23.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			ten, err = ten.Slice([]tensor.Range{{From: 1, To: 2}, {}, {From: 2, To: 4}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Reshape([]int{2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{14., 15., 18.},
+				{19., 22., 23.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("Zeros([2,3]) does not share shape slice / Reshape([3,2]) after mutating shape / returns correct [3,2] tensor", func(t *testing.T) {
 			ten, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -847,6 +1043,85 @@ func TestUnSqueeze(t *testing.T) {
 			}
 		})
 
+		// ============================== side effects ==============================
+
+		t.Run("Of([2,3]) 2D tensor with values 1..6 / UnSqueeze(0) twice / original tensor unchanged; result adds extra leading dimensions", func(t *testing.T) {
+			t1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := t1.UnSqueeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+
+			t2, err = t2.UnSqueeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err = tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err = tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2., 3.},
+						{4., 5., 6.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / UnSqueeze(-1) / returns error: dimension out of range [0,0]", func(t *testing.T) {
@@ -1027,6 +1302,72 @@ func TestSqueeze(t *testing.T) {
 			}
 
 			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Of([1,1,3]) 3D tensor with values 1..3 / Squeeze(0) twice / original tensor unchanged; result reduces to 1D tensor", func(t *testing.T) {
+			t1, err := tensor.Of([][][]float64{
+				{{1., 2., 3.}},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := t1.Squeeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err := tensor.Of([][][]float64{
+				{{1., 2., 3.}},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+
+			t2, err = t2.Squeeze(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err = tensor.Of([][][]float64{
+				{{1., 2., 3.}},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err = tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
@@ -1272,6 +1613,101 @@ func TestFlatten(t *testing.T) {
 			}
 
 			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Of([2,3,4]) 3D tensor with sequential values 0..23 / Flatten(1) then Flatten(0) / original tensor unchanged; result is 1D tensor", func(t *testing.T) {
+			t1, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2., 3.},
+					{4., 5., 6., 7.},
+					{8., 9., 10., 11.},
+				},
+				{
+					{12., 13., 14., 15.},
+					{16., 17., 18., 19.},
+					{20., 21., 22., 23.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			t2, err := t1.Flatten(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2., 3.},
+					{4., 5., 6., 7.},
+					{8., 9., 10., 11.},
+				},
+				{
+					{12., 13., 14., 15.},
+					{16., 17., 18., 19.},
+					{20., 21., 22., 23.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Of([][]float64{
+				{0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.},
+				{12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+
+			t2, err = t2.Flatten(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp1, err = tensor.Of([][][]float64{
+				{
+					{0., 1., 2., 3.},
+					{4., 5., 6., 7.},
+					{8., 9., 10., 11.},
+				},
+				{
+					{12., 13., 14., 15.},
+					{16., 17., 18., 19.},
+					{20., 21., 22., 23.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err = tensor.Of([]float64{0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := t2.Equals(exp2); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")

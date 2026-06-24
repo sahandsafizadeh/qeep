@@ -264,11 +264,11 @@ func (t *CPUTensor) Sum() float64 {
 }
 
 func (t *CPUTensor) Max() float64 {
-	return t.max(unwrapValue)
+	return t.max()
 }
 
 func (t *CPUTensor) Min() float64 {
-	return t.min(unwrapValue)
+	return t.min()
 }
 
 func (t *CPUTensor) Avg() float64 {

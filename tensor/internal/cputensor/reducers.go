@@ -3,7 +3,6 @@ package cputensor
 import (
 	"math"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
@@ -13,24 +12,24 @@ func (t *CPUTensor) sum() float64 {
 	}, unwrapValue, 0.)
 }
 
-func (t *CPUTensor) max(uf reducerUnwrapFunc) float64 {
+func (t *CPUTensor) max() float64 {
 	return t.reduceByAssociativeFunc(func(a, b reducerPair) reducerPair {
 		if a.value >= b.value {
 			return a
 		} else {
 			return b
 		}
-	}, uf, math.Inf(-1))
+	}, unwrapValue, math.Inf(-1))
 }
 
-func (t *CPUTensor) min(uf reducerUnwrapFunc) float64 {
+func (t *CPUTensor) min() float64 {
 	return t.reduceByAssociativeFunc(func(a, b reducerPair) reducerPair {
 		if a.value <= b.value {
 			return a
 		} else {
 			return b
 		}
-	}, uf, math.Inf(+1))
+	}, unwrapValue, math.Inf(+1))
 }
 
 func (t *CPUTensor) avg() float64 {
@@ -62,23 +61,49 @@ func (t *CPUTensor) mean() float64 {
 }
 
 func (t *CPUTensor) argmax(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.max(unwrapIndex) })
+	return t.reduceDimByAssociativeFunc(dim, func(a, b reducerPair) reducerPair {
+		if a.value >= b.value {
+			return a
+		} else {
+			return b
+		}
+	}, unwrapIndex, math.Inf(-1))
 }
 
 func (t *CPUTensor) argmin(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.min(unwrapIndex) })
+	return t.reduceDimByAssociativeFunc(dim, func(a, b reducerPair) reducerPair {
+		if a.value <= b.value {
+			return a
+		} else {
+			return b
+		}
+	}, unwrapIndex, math.Inf(+1))
 }
 
 func (t *CPUTensor) sumAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.sum() })
+	return t.reduceDimByAssociativeFunc(dim, func(a, b reducerPair) reducerPair {
+		return reducerPair{value: a.value + b.value}
+	}, unwrapValue, 0.)
 }
 
 func (t *CPUTensor) maxAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.max(unwrapValue) })
+	return t.reduceDimByAssociativeFunc(dim, func(a, b reducerPair) reducerPair {
+		if a.value >= b.value {
+			return a
+		} else {
+			return b
+		}
+	}, unwrapValue, math.Inf(-1))
 }
 
 func (t *CPUTensor) minAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.min(unwrapValue) })
+	return t.reduceDimByAssociativeFunc(dim, func(a, b reducerPair) reducerPair {
+		if a.value <= b.value {
+			return a
+		} else {
+			return b
+		}
+	}, unwrapValue, math.Inf(+1))
 }
 
 func (t *CPUTensor) avgAlong(dim int) *CPUTensor {
@@ -94,62 +119,47 @@ func (t *CPUTensor) stdAlong(dim int) *CPUTensor {
 }
 
 func (t *CPUTensor) meanAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.mean() })
+	return t.avgAlong(dim)
 }
 
 /* ----- helpers ----- */
 
 func (t *CPUTensor) reduceByAssociativeFunc(af reducerFunc, uf reducerUnwrapFunc, identityValue float64) float64 {
+	index := make([]int, len(t.dims))
+
 	result := reducerPair{0, identityValue}
-	for i, v := range t.data {
-		result = af(result, reducerPair{i, v})
+	for i := range t.numElems() {
+		result = af(result, reducerPair{i, t.at(index)})
+		updateElementWiseIndex(index, t.dims)
 	}
 
 	return uf(result)
 }
 
-func (t *CPUTensor) reduceDimUsingTensorFunc(dim int, rtf reducerTensorFunc) *CPUTensor {
+func (t *CPUTensor) reduceDimByAssociativeFunc(dim int, af reducerFunc, uf reducerUnwrapFunc, identity float64) *CPUTensor {
 	dims := util.SqueezeDims(dim, t.dims)
-	elemGen := t.linearElemGeneratorWithReducedDim(dim, rtf)
+	dstidx := make([]int, len(dims))
+	srcidx := make([]int, len(t.dims))
 
-	o := new(CPUTensor)
-	o.dims = dims
-	o.initWith(elemGen)
+	return newTensorWithElementWiseInit(dims, func() float64 {
+		defer updateElementWiseIndex(dstidx, dims)
 
-	return o
-}
-
-func (t *CPUTensor) linearElemGeneratorWithReducedDim(dim int, rtf reducerTensorFunc) initializerFunc {
-	state := make([]tensor.Range, len(t.dims))
-	for i := range state {
-		state[i].From = 0
-		state[i].To = 1
-	}
-	state[dim].To = t.dims[dim]
-
-	return func() any {
-		row := t.slice(state)
-
-		i := len(t.dims) - 1
-		for i >= 0 {
-			if i == dim {
-				i--
-				continue
-			}
-
-			if state[i].To < t.dims[i] {
-				state[i].From++
-				state[i].To++
-				break
-			} else {
-				state[i].From = 0
-				state[i].To = 1
-				i--
+		i := 0
+		for j := range srcidx {
+			if j != dim {
+				srcidx[j] = dstidx[i]
+				i++
 			}
 		}
 
-		return rtf(row)
-	}
+		result := reducerPair{0, identity}
+		for i := range t.dims[dim] {
+			srcidx[dim] = i
+			result = af(result, reducerPair{i, t.at(srcidx)})
+		}
+
+		return uf(result)
+	})
 }
 
 /* ----- unwrappers ----- */

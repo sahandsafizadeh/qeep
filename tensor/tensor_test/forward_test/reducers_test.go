@@ -2562,6 +2562,75 @@ func TestArgmax(t *testing.T) {
 			}
 		})
 
+		t.Run("tensor shape [2,4,2,2] / Argmax(1) / returns argmax indices along dim 1", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{3., -1.},
+						{0., 7.},
+					},
+					{
+						{1., 5.},
+						{6., -3.},
+					},
+					{
+						{4., 2.},
+						{-2., 1.},
+					},
+					{
+						{2., 0.},
+						{8., 4.},
+					},
+				},
+				{
+					{
+						{2., -4.},
+						{1., 6.},
+					},
+					{
+						{9., 0.},
+						{-5., 2.},
+					},
+					{
+						{-1., 3.},
+						{4., -3.},
+					},
+					{
+						{5., -2.},
+						{0., 8.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Argmax(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{2., 1.},
+					{3., 0.},
+				},
+				{
+					{1., 2.},
+					{2., 3.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / Argmax(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -2773,6 +2842,75 @@ func TestArgmin(t *testing.T) {
 			exp, err := tensor.Of([][]float64{
 				{2., 1., 1.},
 				{1., 2., 1.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [2,4,2,2] / Argmin(1) / returns argmin indices along dim 1", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{3., -1.},
+						{0., 7.},
+					},
+					{
+						{1., 5.},
+						{6., -3.},
+					},
+					{
+						{4., 2.},
+						{-2., 1.},
+					},
+					{
+						{2., 0.},
+						{8., 4.},
+					},
+				},
+				{
+					{
+						{2., -4.},
+						{1., 6.},
+					},
+					{
+						{9., 0.},
+						{-5., 2.},
+					},
+					{
+						{-1., 3.},
+						{4., -3.},
+					},
+					{
+						{5., -2.},
+						{0., 8.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Argmin(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{1., 0.},
+					{2., 1.},
+				},
+				{
+					{2., 0.},
+					{1., 2.},
+				},
 			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)

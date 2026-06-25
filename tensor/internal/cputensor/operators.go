@@ -183,57 +183,56 @@ func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 
 func (t *CPUTensor) matMul(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
-	nd := len(t1.dims)
+	dims := util.MatMulDims(t1.dims, t2.dims)
 
+	o := new(CPUTensor)
+	o.dims = dims
+	o.strd = util.DimsToStrides(dims)
+	o.data = make([]float64, util.DimsToNumElems(dims))
+
+	nd := len(t1.dims)
 	m := t1.dims[nd-2]
 	n := t1.dims[nd-1]
 	k := t2.dims[nd-1]
+	t1rs := t1.strd[nd-2]
+	t1cs := t1.strd[nd-1]
+	t2rs := t2.strd[nd-2]
+	t2cs := t2.strd[nd-1]
+	ors := o.strd[nd-2]
 
-	t1RowStride := t1.strd[nd-2]
-	t1ColStride := t1.strd[nd-1]
-	t2RowStride := t2.strd[nd-2]
-	t2ColStride := t2.strd[nd-1]
-
-	dims := util.MatMulDims(t1.dims, t2.dims)
-	o := &CPUTensor{
-		dims: dims,
-		strd: util.DimsToStrides(dims),
-		data: make([]float64, util.DimsToNumElems(dims)),
-	}
-	oRowStride := o.strd[nd-2]
-
-	kernel := func(t1Off, t2Off, oOff int) {
+	kernel := func(t1ofst, t2ofst, oofst int) {
 		for i := range m {
-			t1Row := t1Off + i*t1RowStride
-			oRow := oOff + i*oRowStride
+			orow := oofst + i*ors
+			t1row := t1ofst + i*t1rs
 			for p := range n {
-				a := t1.data[t1Row+p*t1ColStride]
-				t2Row := t2Off + p*t2RowStride
+				t2row := t2ofst + p*t2rs
+				a := t1.data[t1row+p*t1cs]
 				for j := range k {
-					o.data[oRow+j] += a * t2.data[t2Row+j*t2ColStride]
+					b := t2.data[t2row+j*t2cs]
+					o.data[orow+j] += a * b
 				}
 			}
 		}
 	}
 
-	nb := nd - 2
-	if nb == 0 {
-		kernel(0, 0, 0)
-		return o
-	}
+	bdims := dims[:nd-2]
+	bidx := make([]int, len(bdims))
+	nb := util.DimsToNumElems(bdims)
 
-	batchDims := dims[:nb]
-	batchIdx := make([]int, nb)
-	numBatch := util.DimsToNumElems(batchDims)
-	for range numBatch {
-		t1Off, t2Off, oOff := 0, 0, 0
-		for d := range nb {
-			t1Off += batchIdx[d] * t1.strd[d]
-			t2Off += batchIdx[d] * t2.strd[d]
-			oOff += batchIdx[d] * o.strd[d]
+	for range nb {
+		var (
+			t1ofst = 0
+			t2ofst = 0
+			oofst  = 0
+		)
+		for d := range bdims {
+			t1ofst += bidx[d] * t1.strd[d]
+			t2ofst += bidx[d] * t2.strd[d]
+			oofst += bidx[d] * o.strd[d]
 		}
-		kernel(t1Off, t2Off, oOff)
-		updateElementWiseIndex(batchIdx, batchDims)
+
+		kernel(t1ofst, t2ofst, oofst)
+		updateElementWiseIndex(bidx, bdims)
 	}
 
 	return o

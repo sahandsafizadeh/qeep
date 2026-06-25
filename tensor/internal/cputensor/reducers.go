@@ -34,7 +34,9 @@ func (t *CPUTensor) min() float64 {
 
 func (t *CPUTensor) avg() float64 {
 	n := float64(t.numElems())
-	return t.sum() / n
+	return t.reduceByAssociativeFunc(func(s, x reducerPair) reducerPair {
+		return reducerPair{value: s.value + (x.value / n)}
+	}, unwrapValue, 0.)
 }
 
 func (t *CPUTensor) _var() float64 {

@@ -19,4 +19,3 @@ type scalarUnaryFunc func(float64) float64
 type scalarBinaryFunc func(float64, float64) float64
 type reducerFunc func(reducerPair, reducerPair) reducerPair
 type reducerUnwrapFunc func(reducerPair) float64
-type reducerTensorFunc func(*CPUTensor) float64

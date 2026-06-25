@@ -140,42 +140,43 @@ func (t *CPUTensor) div(u *CPUTensor) *CPUTensor {
 
 func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
+	dims := util.DotDims(t1.dims)
+
+	o := new(CPUTensor)
+	o.dims = dims
+	o.strd = util.DimsToStrides(dims)
+	o.data = make([]float64, util.DimsToNumElems(dims))
+
 	nd := len(t1.dims)
 	n := t1.dims[nd-1]
+	t1s := t1.strd[nd-1]
+	t2s := t2.strd[nd-1]
 
-	t1Stride := t1.strd[nd-1]
-	t2Stride := t2.strd[nd-1]
-
-	dims := util.DotDims(t1.dims)
-	o := &CPUTensor{
-		dims: dims,
-		strd: util.DimsToStrides(dims),
-		data: make([]float64, util.DimsToNumElems(dims)),
-	}
-
-	kernel := func(t1Off, t2Off, oOff int) {
+	kernel := func(t1ofst, t2ofsst, oofst int) {
 		for k := range n {
-			o.data[oOff] += t1.data[t1Off+k*t1Stride] * t2.data[t2Off+k*t2Stride]
+			a := t1.data[t1ofst+k*t1s]
+			b := t2.data[t2ofsst+k*t2s]
+			o.data[oofst] += a * b
 		}
 	}
 
-	nb := nd - 1
-	if nb == 0 {
-		kernel(0, 0, 0)
-		return o
-	}
+	bidx := make([]int, len(dims))
+	nb := util.DimsToNumElems(dims)
 
-	batchIdx := make([]int, nb)
-	numBatch := util.DimsToNumElems(dims)
-	for range numBatch {
-		t1Off, t2Off, oOff := 0, 0, 0
-		for d := range nb {
-			t1Off += batchIdx[d] * t1.strd[d]
-			t2Off += batchIdx[d] * t2.strd[d]
-			oOff += batchIdx[d] * o.strd[d]
+	for range nb {
+		var (
+			t1ofst = 0
+			t2ofst = 0
+			oofst  = 0
+		)
+		for d := range dims {
+			t1ofst += bidx[d] * t1.strd[d]
+			t2ofst += bidx[d] * t2.strd[d]
+			oofst += bidx[d] * o.strd[d]
 		}
-		kernel(t1Off, t2Off, oOff)
-		updateElementWiseIndex(batchIdx, dims)
+
+		kernel(t1ofst, t2ofst, oofst)
+		updateElementWiseIndex(bidx, dims)
 	}
 
 	return o

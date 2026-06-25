@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"runtime/pprof"
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
 	"github.com/sahandsafizadeh/qeep/component/layers/activations"
@@ -24,23 +22,16 @@ const (
 	*/
 	trainFileAddress = "mnist_train.csv"
 	testFileAddress  = "mnist_test.csv"
-	validDataRatio   = 0.05
+	validDataRatio   = 0.1
 )
 
 const (
-	batchSize = 100
-	epochs    = 1
+	batchSize = 64
+	epochs    = 5
 	dev       = tensor.CPU
 )
 
 func main() {
-	f, _ := os.Create("cpu.prof")
-	defer f.Close()
-
-	// Start the profiler
-	pprof.StartCPUProfile(f)
-	defer pprof.StopCPUProfile()
-
 	result, err := run()
 	if err != nil {
 		panic(err)
@@ -91,8 +82,15 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Outputs: 500, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 256, Device: dev})(input)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
+
+	x = stream.FC(&layers.FCConfig{Outputs: 128, Device: dev})(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
+	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
 	x = stream.FC(&layers.FCConfig{Outputs: 10, Device: dev})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
@@ -127,7 +125,7 @@ func prepareDataBatches() (trainBatchGen, validBatchGen, testBatchGen model.Batc
 
 	preprocessData(data)
 
-	trainBatchGen, err = batchgens.NewSimple(data.xTrain[:5000], data.yTrain[:5000], &batchgens.SimpleConfig{
+	trainBatchGen, err = batchgens.NewSimple(data.xTrain, data.yTrain, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   true,
 		Device:    dev,
@@ -136,7 +134,7 @@ func prepareDataBatches() (trainBatchGen, validBatchGen, testBatchGen model.Batc
 		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
 
-	validBatchGen, err = batchgens.NewSimple(data.xValid[:200], data.yValid[:200], &batchgens.SimpleConfig{
+	validBatchGen, err = batchgens.NewSimple(data.xValid, data.yValid, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   false,
 		Device:    dev,
@@ -145,7 +143,7 @@ func prepareDataBatches() (trainBatchGen, validBatchGen, testBatchGen model.Batc
 		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
 
-	testBatchGen, err = batchgens.NewSimple(data.xTest[:5000], data.yTest[:5000], &batchgens.SimpleConfig{
+	testBatchGen, err = batchgens.NewSimple(data.xTest, data.yTest, &batchgens.SimpleConfig{
 		BatchSize: batchSize,
 		Shuffle:   false,
 		Device:    dev,

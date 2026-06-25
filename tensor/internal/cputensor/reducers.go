@@ -33,23 +33,22 @@ func (t *CPUTensor) min() float64 {
 }
 
 func (t *CPUTensor) avg() float64 {
-	return t.sum() / float64(t.numElems())
+	n := float64(t.numElems())
+	return t.sum() / n
 }
 
 func (t *CPUTensor) _var() float64 {
-	xBar := t.mean()
-	sigma := t.reduceByAssociativeFunc(func(s, x reducerPair) reducerPair {
-		xdiff := x.value - xBar
-		xdiff2 := xdiff * xdiff
-		return reducerPair{value: s.value + xdiff2}
-	}, unwrapValue, 0.)
-
 	n := float64(t.numElems())
-	if n > 1 {
-		return sigma / (n - 1)
-	} else {
+	if n <= 1 {
 		return 0.
 	}
+
+	xBar := t.mean()
+	return t.reduceByAssociativeFunc(func(s, x reducerPair) reducerPair {
+		xdiff := x.value - xBar
+		xdiff2 := xdiff * xdiff
+		return reducerPair{value: s.value + (xdiff2 / (n - 1))}
+	}, unwrapValue, 0.)
 }
 
 func (t *CPUTensor) std() float64 {

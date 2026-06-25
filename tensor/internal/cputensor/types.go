@@ -9,13 +9,12 @@ type CPUTensor struct {
 	gctx *gradtrack.GradContext
 }
 
-type reducerPair struct {
-	index int
-	value float64
+type reducer interface {
+	init()
+	feed(index int, value float64)
+	result() float64
 }
 
 type elemInitFunc func() float64
 type scalarUnaryFunc func(float64) float64
 type scalarBinaryFunc func(float64, float64) float64
-type reducerFunc func(reducerPair, reducerPair) reducerPair
-type reducerUnwrapFunc func(reducerPair) float64

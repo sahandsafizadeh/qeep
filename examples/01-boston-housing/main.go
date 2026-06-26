@@ -16,12 +16,12 @@ import (
 const (
 	// https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data
 	dataFileAddress = "data.csv"
-	validDataRatio  = 0.05
+	validDataRatio  = 0.1
 	testDataRatio   = 0.2
 )
 
 const (
-	batchSize = 64
+	batchSize = 32
 	epochs    = 200
 	dev       = tensor.CPU
 )
@@ -36,7 +36,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Mean Squared Error (MSE): 73.03
+	// Best Mean Squared Error (MSE): 7.58
 }
 
 func run() (result map[string]float64, err error) {
@@ -75,19 +75,12 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Outputs: 128, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 64, Device: dev})(input)
 	x = stream.Relu()(x)
-	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
-	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
-
-	x = stream.FC(&layers.FCConfig{Outputs: 64, Device: dev})(x)
-	x = stream.Relu()(x)
-	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
 	x = stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(x)
 	x = stream.Relu()(x)
-	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
 	output := stream.FC(&layers.FCConfig{Outputs: 1, Device: dev})(x)
@@ -96,7 +89,7 @@ func prepareModel() (m *model.Model, err error) {
 
 	loss := losses.NewMSE()
 
-	optimizer, err := optimizers.NewAdam(nil)
+	optimizer, err := optimizers.NewAdamW(nil)
 	if err != nil {
 		return m, err
 	}

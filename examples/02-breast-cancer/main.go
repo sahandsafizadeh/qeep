@@ -16,13 +16,13 @@ import (
 const (
 	// https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
 	dataFileAddress = "data.csv"
-	validDataRatio  = 0.05
+	validDataRatio  = 0.1
 	testDataRatio   = 0.2
 )
 
 const (
 	batchSize = 32
-	epochs    = 25
+	epochs    = 300
 	dev       = tensor.CPU
 )
 
@@ -36,7 +36,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: 0.50
+	// Best Accuracy: 0.89
 }
 
 func run() (result map[string]float64, err error) {
@@ -75,15 +75,15 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Outputs: 64, Device: dev})(input)
-	x = stream.Relu()(x)
+	x := stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(input)
 	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
+	x = stream.Relu()(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
 
-	x = stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(x)
-	x = stream.Relu()(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 16, Device: dev})(x)
 	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
-	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
+	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
 	x = stream.FC(&layers.FCConfig{Outputs: 1, Device: dev})(x)
 	output := stream.Sigmoid()(x)
@@ -92,7 +92,9 @@ func prepareModel() (m *model.Model, err error) {
 
 	loss := losses.NewBCE()
 
-	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{WeightDecay: 1e-4})
+	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{
+		WeightDecay: 1e-4,
+	})
 	if err != nil {
 		return m, err
 	}

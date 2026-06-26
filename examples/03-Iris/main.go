@@ -18,12 +18,12 @@ const (
 	// https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
 	dataFileAddress = "data.csv"
 	validDataRatio  = 0.1
-	testDataRatio   = 0.2
+	testDataRatio   = 0.1
 )
 
 const (
 	batchSize = 16
-	epochs    = 300
+	epochs    = 500
 	dev       = tensor.CPU
 )
 
@@ -37,7 +37,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: 0.53
+	// Best Accuracy: 1.00
 }
 
 func run() (result map[string]float64, err error) {
@@ -82,11 +82,9 @@ func prepareModel() (m *model.Model, err error) {
 
 	x := stream.FC(&layers.FCConfig{Outputs: 16, Device: dev})(input)
 	x = stream.Relu()(x)
-	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
-	x = stream.FC(&layers.FCConfig{Outputs: 8, Device: dev})(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 12, Device: dev})(x)
 	x = stream.Relu()(x)
-	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.1})(x)
 
 	x = stream.FC(&layers.FCConfig{Outputs: 3, Device: dev})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
@@ -95,7 +93,7 @@ func prepareModel() (m *model.Model, err error) {
 
 	loss := losses.NewCE()
 
-	optimizer, err := optimizers.NewAdam(&optimizers.AdamConfig{WeightDecay: 1e-4})
+	optimizer, err := optimizers.NewAdam(nil)
 	if err != nil {
 		return m, err
 	}

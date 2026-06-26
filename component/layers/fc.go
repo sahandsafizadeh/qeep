@@ -12,6 +12,7 @@ type FC struct {
 	Weight tensor.Tensor
 	Bias   tensor.Tensor
 
+	inputs       int
 	outputs      int
 	initializers map[string]Initializer
 	device       tensor.Device
@@ -74,29 +75,12 @@ func (c *FC) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 }
 
 func (c *FC) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
-	w, err := c.Weight.UnSqueeze(1)
+	y, err = x.MatMul(c.Weight) // [batch,in]×[in,out] -> [batch,out]
 	if err != nil {
 		return y, err
 	}
 
-	b := c.Bias
-
-	x, err = x.UnSqueeze(1) // last dim - 1
-	if err != nil {
-		return y, err
-	}
-
-	y, err = w.MatMul(x)
-	if err != nil {
-		return y, err
-	}
-
-	y, err = y.SumAlong(2) // last dim
-	if err != nil {
-		return y, err
-	}
-
-	y, err = y.Add(b)
+	y, err = y.Add(c.Bias) // [batch,out]+[,out] -> [batch,out]
 	if err != nil {
 		return y, err
 	}
@@ -106,10 +90,12 @@ func (c *FC) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
 
 func (c *FC) initWeights(x tensor.Tensor) (err error) {
 	if c.Weight == nil {
+		c.inputs = x.Shape()[1]
+
 		initializer, ok := c.initializers[fcWeightKey]
 		if !ok {
 			initializer, err = initializers.NewXavierUniform(&initializers.XavierUniformConfig{
-				FanIn:  x.Shape()[1],
+				FanIn:  c.inputs,
 				FanOut: c.outputs,
 			})
 			if err != nil {
@@ -117,7 +103,7 @@ func (c *FC) initWeights(x tensor.Tensor) (err error) {
 			}
 		}
 
-		w, err := initializer.Init([]int{c.outputs}, c.device)
+		w, err := initializer.Init([]int{c.inputs, c.outputs}, c.device)
 		if err != nil {
 			return err
 		}
@@ -143,7 +129,7 @@ func (c *FC) initWeights(x tensor.Tensor) (err error) {
 			return err
 		}
 
-		err = c.validateInitializedWeight(b)
+		err = c.validateInitializedBias(b)
 		if err != nil {
 			return err
 		}
@@ -175,12 +161,30 @@ func (c *FC) toValidInputs(xs []tensor.Tensor) (x tensor.Tensor, err error) {
 func (c *FC) validateInitializedWeight(t tensor.Tensor) (err error) {
 	shape := t.Shape()
 
+	if len(shape) != 2 {
+		return fmt.Errorf("expected 'Weight' parameter to have exactly two dimensions")
+	}
+
+	if shape[0] != c.inputs {
+		return fmt.Errorf("expected 'Weight' parameter row size to match the input size: (%d) != (%d)", shape[0], c.inputs)
+	}
+
+	if shape[1] != c.outputs {
+		return fmt.Errorf("expected 'Weight' parameter column size to match the output size: (%d) != (%d)", shape[1], c.outputs)
+	}
+
+	return nil
+}
+
+func (c *FC) validateInitializedBias(t tensor.Tensor) (err error) {
+	shape := t.Shape()
+
 	if len(shape) != 1 {
-		return fmt.Errorf("expected initialized weights to have exactly one dimension")
+		return fmt.Errorf("expected 'Bias' parameter to have exactly one dimension")
 	}
 
 	if shape[0] != c.outputs {
-		return fmt.Errorf("expected initialized size to match the output size: (%d) != (%d)", shape[0], c.outputs)
+		return fmt.Errorf("expected 'Bias' parameter size to match the output size: (%d) != (%d)", shape[0], c.outputs)
 	}
 
 	return nil

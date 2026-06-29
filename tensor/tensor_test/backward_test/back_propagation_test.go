@@ -84,6 +84,96 @@ func TestBackPropagate(t *testing.T) {
 			}
 		})
 
+		t.Run("diamond DAG: tracked tensor fans out to Sin and Cos then adds / BackPropagate / gradient equals cos(a) minus sin(a)", func(t *testing.T) {
+			a, err := tensor.Full(nil, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			s := a.Sin()
+			c := a.Cos()
+
+			y, err := s.Add(c)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Full(nil, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
+		t.Run("multiple independent outputs from same tracked leaf / BackPropagate on one then the other / gradients accumulate without reset", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			a := x.Scale(2.)
+			b := x.Scale(3.)
+
+			err = tensor.BackPropagate(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := x.Gradient()
+
+			exp, err := tensor.Full([]int{2, 2}, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+
+			err = tensor.BackPropagate(b)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act = x.Gradient()
+
+			exp, err = tensor.Full([]int{2, 2}, 5., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("mixed tracked/untracked computation graph / before BackPropagate / tracked paths have GradientTracked true, untracked false", func(t *testing.T) {
 			a, err := tensor.Full([]int{2, 3}, 3., &tensor.Config{
 				Device:    dev,
@@ -258,6 +348,48 @@ func TestBackPropagate(t *testing.T) {
 			assertGradContext(t, x2, false, false)
 			assertGradContext(t, c, false, false)
 			assertGradContext(t, b, false, false)
+		})
+
+		t.Run("re-run after ResetGradContext / BackPropagate twice on same leaf / second gradient equals first", func(t *testing.T) {
+			a, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := a.Scale(2.).Scale(3.)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			a.ResetGradContext(true)
+
+			y2 := a.Scale(2.).Scale(3.)
+
+			err = tensor.BackPropagate(y2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Full([]int{2, 2}, 6., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		// ============================== validations ==============================

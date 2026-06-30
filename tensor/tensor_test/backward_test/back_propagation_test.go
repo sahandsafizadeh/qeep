@@ -44,6 +44,41 @@ func TestBackPropagate(t *testing.T) {
 			}
 		})
 
+		t.Run("diamond DAG: tracked tensor fans out to Sin and Cos then adds / BackPropagate / gradient equals cos(a) minus sin(a)", func(t *testing.T) {
+			a, err := tensor.Full(nil, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			s := a.Sin()
+			c := a.Cos()
+
+			y, err := s.Add(c)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Full(nil, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
 		t.Run("tensor used in multiple branches / BackPropagate / gradient accumulates from all branches", func(t *testing.T) {
 			a, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,

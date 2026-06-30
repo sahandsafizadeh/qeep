@@ -35,7 +35,7 @@ func (m *Model) enableGrad() (err error) {
 
 func traverseBFS(roots []*node.Node, applyFunc func(*node.Node) error) (err error) {
 	q := queue.NewQueue[*node.Node]()
-	q.Enqueue(roots)
+	q.Enqueue(roots...)
 
 	for !q.IsEmpty() {
 		cn, err := q.Dequeue()
@@ -48,7 +48,7 @@ func traverseBFS(roots []*node.Node, applyFunc func(*node.Node) error) (err erro
 			return fmt.Errorf("(Layer %d): %w", cn.NLayer(), err)
 		}
 
-		q.Enqueue(cn.Children())
+		q.Enqueue(cn.Children()...)
 	}
 
 	return nil

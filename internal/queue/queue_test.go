@@ -3,7 +3,7 @@ package queue_test
 import (
 	"testing"
 
-	"github.com/sahandsafizadeh/qeep/model/internal/queue"
+	"github.com/sahandsafizadeh/qeep/internal/queue"
 )
 
 func TestQueue(t *testing.T) {
@@ -19,7 +19,7 @@ func TestQueue(t *testing.T) {
 
 	t.Run("queue with one enqueued item / IsEmpty() / returns false", func(t *testing.T) {
 		q := queue.NewQueue[int]()
-		q.Enqueue([]int{1})
+		q.Enqueue(1)
 		if q.IsEmpty() {
 			t.Fatal("expected queue not to be empty")
 		}
@@ -27,7 +27,7 @@ func TestQueue(t *testing.T) {
 
 	t.Run("queue with one enqueued item / Dequeue() / returns that item", func(t *testing.T) {
 		q := queue.NewQueue[int]()
-		q.Enqueue([]int{1})
+		q.Enqueue(1)
 		if val, err := q.Dequeue(); err != nil {
 			t.Fatal(err)
 		} else if val != 1 {
@@ -37,9 +37,9 @@ func TestQueue(t *testing.T) {
 
 	t.Run("queue with multiple batches enqueued / Dequeue() repeatedly / returns items in FIFO order", func(t *testing.T) {
 		q := queue.NewQueue[int]()
-		q.Enqueue([]int{2, 3, 4})
-		q.Enqueue([]int{5, 6})
-		q.Enqueue([]int{7})
+		q.Enqueue(2, 3, 4)
+		q.Enqueue(5, 6)
+		q.Enqueue(7)
 
 		expected := []int{2, 3, 4, 5, 6, 7}
 		for _, exp := range expected {
@@ -53,7 +53,7 @@ func TestQueue(t *testing.T) {
 
 	t.Run("drained queue / IsEmpty() / returns true", func(t *testing.T) {
 		q := queue.NewQueue[int]()
-		q.Enqueue([]int{1})
+		q.Enqueue(1)
 		_, err := q.Dequeue()
 		if err != nil {
 			t.Fatal(err)

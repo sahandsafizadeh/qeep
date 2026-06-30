@@ -20,7 +20,7 @@ func (q *Queue[T]) IsEmpty() bool {
 	return q.head == nil && q.tail == nil
 }
 
-func (q *Queue[T]) Enqueue(values []T) {
+func (q *Queue[T]) Enqueue(values ...T) {
 	for _, value := range values {
 		q.enqueue(value)
 	}

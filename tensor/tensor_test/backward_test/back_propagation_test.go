@@ -119,7 +119,60 @@ func TestBackPropagate(t *testing.T) {
 			}
 		})
 
-		t.Run("diamond DAG: tracked tensor fans out to Sin and Cos then adds / BackPropagate / gradient equals cos(a) minus sin(a)", func(t *testing.T) {
+		t.Run("shared leaf fed through Add edges / BackPropagate / gradient accumulation not corrupted", func(t *testing.T) {
+			a, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			b, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			s, err := a.Add(b)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := s.Add(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			actA := a.Gradient()
+			actB := b.Gradient()
+
+			expA, err := tensor.Full([]int{2, 2}, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expB, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, actA, expA)
+			assertGradientEquals(t, actB, expB)
+		})
+
+		t.Run("diamond DAG through a non-leaf intermediate / BackPropagate / gradient is finalized before propagating upstream (no double-counting)", func(t *testing.T) {
 			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -128,8 +181,9 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			s := a.Sin()
-			c := a.Cos()
+			m := a.Scale(2.)
+			s := m.Sin()
+			c := m.Cos()
 
 			y, err := s.Add(c)
 			if err != nil {
@@ -143,7 +197,7 @@ func TestBackPropagate(t *testing.T) {
 
 			act := a.Gradient()
 
-			exp, err := tensor.Full(nil, 1., &tensor.Config{
+			exp, err := tensor.Full(nil, 2., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})

@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/internal/queue"
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
-	"github.com/sahandsafizadeh/qeep/model/internal/queue"
 )
 
 func (m *Model) forward() (err error) {

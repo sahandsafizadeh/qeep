@@ -564,6 +564,52 @@ func TestBackPropagate(t *testing.T) {
 			assertGradientEquals(t, acta, expa)
 		})
 
+		t.Run("same output / BackPropagate twice without reset / gradient doubles", func(t *testing.T) {
+			a, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := a.Scale(2.).Scale(3.)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Full([]int{2, 2}, 6., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act = a.Gradient()
+
+			exp, err = tensor.Full([]int{2, 2}, 12., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
 		// ============================== tracking/resetting ==============================
 
 		t.Run("mixed tracked/untracked computation graph / before BackPropagate / tracked paths have GradientTracked true, untracked false", func(t *testing.T) {

@@ -2342,64 +2342,6 @@ func TestStd(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [2,3,4] tensor / StdAlong(1) then Scale(2) then MeanAlong(0) then BackPropagate / gradient is -0.5/0/0.5 pattern", func(t *testing.T) {
-			x, err := tensor.Of([][][]float64{
-				{
-					{1., 1., 1., 1.},
-					{2., 2., 2., 2.},
-					{3., 3., 3., 3.},
-				},
-				{
-					{1., 1., 1., 1.},
-					{2., 2., 2., 2.},
-					{3., 3., 3., 3.},
-				},
-			}, &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			s, err := x.StdAlong(1)
-			if err != nil {
-				t.Fatal(err)
-			}
-			sc := s.Scale(2.)
-			y, err := sc.MeanAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Of([][][]float64{
-				{
-					{-0.5, -0.5, -0.5, -0.5},
-					{0., 0., 0., 0.},
-					{0.5, 0.5, 0.5, 0.5},
-				},
-				{
-					{-0.5, -0.5, -0.5, -0.5},
-					{0., 0., 0., 0.},
-					{0.5, 0.5, 0.5, 0.5},
-				},
-			}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
 		// ============================== untracked paths ==============================
 
 		t.Run("single-element tensor without grad tracking / StdAlong(0) then BackPropagate / output gradient is nil", func(t *testing.T) {

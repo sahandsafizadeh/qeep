@@ -780,6 +780,75 @@ func TestBackPropagate(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
+		t.Run("reset and rebuild a shared-leaf Add graph / BackPropagate, ResetGradContext, then BackPropagate again on a fresh identical graph / gradient matches a single fresh run", func(t *testing.T) {
+			a, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			b, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			s1, err := a.Add(b)
+			if err != nil {
+				t.Fatal(err)
+			}
+			y1, err := s1.Add(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			a.ResetGradContext(true)
+			b.ResetGradContext(true)
+
+			s2, err := a.Add(b)
+			if err != nil {
+				t.Fatal(err)
+			}
+			y2, err := s2.Add(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			acta := a.Gradient()
+			actb := b.Gradient()
+
+			expa, err := tensor.Full([]int{2, 2}, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expb, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, acta, expa)
+			assertGradientEquals(t, actb, expb)
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("nil tensor / BackPropagate / returns error: unsupported tensor implementation", func(t *testing.T) {

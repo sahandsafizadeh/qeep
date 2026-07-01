@@ -611,6 +611,23 @@ func TestBackPropagate(t *testing.T) {
 
 		// ============================== tracking/resetting ==============================
 
+		t.Run("untracked root / BackPropagate / returns nil error and leaves gradient nil", func(t *testing.T) {
+			a, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradContext(t, a, false, false)
+		})
+
 		t.Run("mixed tracked/untracked computation graph / before BackPropagate / tracked paths have GradientTracked true, untracked false", func(t *testing.T) {
 			a, err := tensor.Full([]int{2, 3}, 3., &tensor.Config{
 				Device:    dev,

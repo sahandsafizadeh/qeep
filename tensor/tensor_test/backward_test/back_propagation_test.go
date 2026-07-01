@@ -392,6 +392,8 @@ func TestBackPropagate(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
+		// ============================== partial propagation ==============================
+
 		t.Run("multiple independent outputs from same tracked leaf / BackPropagate on one then the other / gradients accumulate without reset", func(t *testing.T) {
 			x, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
 				Device:    dev,
@@ -437,6 +439,129 @@ func TestBackPropagate(t *testing.T) {
 			}
 
 			assertGradientEquals(t, act, exp)
+		})
+
+		t.Run("multiple outputs sharing a non-leaf ancestor / BackPropagate on one then the other / non-leaf and leaf gradients accumulate across runs", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			m := x.Scale(2.)
+			a := m.Scale(3.)
+			b := m.Scale(5.)
+
+			err = tensor.BackPropagate(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			actm := m.Gradient()
+			actx := x.Gradient()
+
+			expm, err := tensor.Full([]int{2, 2}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expx, err := tensor.Full([]int{2, 2}, 6., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, actm, expm)
+			assertGradientEquals(t, actx, expx)
+
+			err = tensor.BackPropagate(b)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			actm = m.Gradient()
+			actx = x.Gradient()
+
+			expm, err = tensor.Full([]int{2, 2}, 8., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expx, err = tensor.Full([]int{2, 2}, 16., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, actm, expm)
+			assertGradientEquals(t, actx, expx)
+		})
+
+		t.Run("two independent chains from unrelated leaves / BackPropagate one then the other / unrelated leaf gradients remain isolated", func(t *testing.T) {
+			a, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			b, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y1 := a.Scale(2.).Scale(3.)
+			y2 := b.Scale(4.).Scale(5.)
+
+			err = tensor.BackPropagate(y1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			acta := a.Gradient()
+
+			expa, err := tensor.Full([]int{2, 2}, 6., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, acta, expa)
+			assertGradContext(t, b, true, false)
+
+			err = tensor.BackPropagate(y2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			actb := b.Gradient()
+			acta = a.Gradient()
+
+			expb, err := tensor.Full([]int{2, 2}, 20., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, actb, expb)
+			assertGradientEquals(t, acta, expa)
 		})
 
 		// ============================== tracking/resetting ==============================

@@ -3,11 +3,12 @@ package gradtrack
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/internal/queue"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func BackPropagate(t tensor.Tensor) error {
-	err := backward(startEdge(t))
+func BackPropagate(t tensor.Tensor) (err error) {
+	err = backpropagate(t)
 	if err != nil {
 		return fmt.Errorf("BackPropagate: %w", err)
 	}
@@ -15,9 +16,30 @@ func BackPropagate(t tensor.Tensor) error {
 	return nil
 }
 
-func startEdge(t tensor.Tensor) *backwardEdge {
-	return &backwardEdge{
-		target: t,
+func backpropagate(t tensor.Tensor) (err error) {
+	states := prepareBackpropStates(t)
+
+	err = backpropRTS(t, states)
+	if err != nil {
+		return err
+	}
+
+	err = accumulateGradSnapshots(states)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func prepareBackpropStates(root tensor.Tensor) map[*GradContext]*backpropState {
+	panic("unimplemented")
+}
+
+func backpropRTS(root tensor.Tensor, states map[*GradContext]*backpropState) (err error) {
+	q := queue.NewQueue[*backwardEdge]()
+	q.Enqueue(&backwardEdge{
+		target: root,
 		gradFn: func() (tensor.Tensor, error) {
 			return toOnes(root), nil // neutral tensor; same shape, all ones
 		},

@@ -37,11 +37,7 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
+			assertGradientEquals(t, act, exp)
 		})
 
 		t.Run("diamond DAG: tracked tensor fans out to Sin and Cos then adds / BackPropagate / gradient equals cos(a) minus sin(a)", func(t *testing.T) {
@@ -112,11 +108,7 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
+			assertGradientEquals(t, act, exp)
 		})
 
 		t.Run("shared leaf fed through Add edges / BackPropagate / gradient accumulation not corrupted", func(t *testing.T) {
@@ -172,6 +164,121 @@ func TestBackPropagate(t *testing.T) {
 			assertGradientEquals(t, actB, expB)
 		})
 
+		t.Run("residual/skip connection: f(x) + x where x is a non-leaf / BackPropagate / gradient of x finalized before propagating to leaf", func(t *testing.T) {
+			a, err := tensor.Full(nil, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			x := a.Scale(2.)
+			f1 := x.Scale(3.)
+			f2 := f1.Scale(4.)
+
+			y, err := f2.Add(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Full(nil, 26., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
+		t.Run("element-wise value-dependent residual over a non-leaf tensor / BackPropagate / per-element gradient finalized before propagating", func(t *testing.T) {
+			a, err := tensor.Of([][]float64{
+				{1., 2.},
+				{3., 4.},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			x := a.Pow(2.)
+			f1 := x.Scale(3.)
+			f2 := f1.Scale(5.)
+
+			y, err := f2.Add(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Of([][]float64{
+				{32., 64.},
+				{96., 128.},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
+		t.Run("shared non-leaf with a long pending chain / BackPropagate / gradient not propagated until deep contributions arrive", func(t *testing.T) {
+			a, err := tensor.Full(nil, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c := a.Scale(2.)
+			s1 := c.Scale(3.)
+			s2 := s1.Scale(4.)
+			s3 := s2.Scale(5.)
+
+			y, err := s3.Add(c)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Full(nil, 122., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
 		t.Run("diamond DAG through a non-leaf intermediate / BackPropagate / gradient is finalized before propagating upstream (no double-counting)", func(t *testing.T) {
 			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
@@ -198,6 +305,83 @@ func TestBackPropagate(t *testing.T) {
 			act := a.Gradient()
 
 			exp, err := tensor.Full(nil, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
+		t.Run("value-dependent Mul diamond with shared non-leaf dequeued before its sibling contributes / BackPropagate / gradient correct", func(t *testing.T) {
+			a, err := tensor.Full(nil, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c := a.Scale(3.)
+			e := c.Scale(5.)
+
+			// c is the FIRST edge; a simple BFS would process c before the long path of e to c.
+			y, err := c.Mul(e)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Full(nil, 180., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
+		t.Run("nested residuals: two stacked convergence points at different depths / BackPropagate / gradient accumulates correctly through both", func(t *testing.T) {
+			a, err := tensor.Full(nil, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h := a.Scale(2.)
+			p1 := h.Scale(3.)
+			p2 := p1.Scale(5.)
+
+			s1, err := p2.Add(h)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := s1.Add(p1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := a.Gradient()
+
+			exp, err := tensor.Full(nil, 38., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -235,11 +419,7 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
+			assertGradientEquals(t, act, exp)
 
 			err = tensor.BackPropagate(b)
 			if err != nil {
@@ -256,12 +436,10 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
+			assertGradientEquals(t, act, exp)
 		})
+
+		// ============================== tracking/resetting ==============================
 
 		t.Run("mixed tracked/untracked computation graph / before BackPropagate / tracked paths have GradientTracked true, untracked false", func(t *testing.T) {
 			a, err := tensor.Full([]int{2, 3}, 3., &tensor.Config{
@@ -474,11 +652,7 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
+			assertGradientEquals(t, act, exp)
 		})
 
 		// ============================== validations ==============================

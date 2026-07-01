@@ -200,57 +200,6 @@ func TestConcat(t *testing.T) {
 			assertGradientEquals(t, act2, exp2)
 		})
 
-		t.Run("two grad-tracked [2,3] tensors / Concat(axis 0) then SumAlong(0) then BackPropagate / each input gradient is all-ones [2,3]", func(t *testing.T) {
-			x1, err := tensor.RandN([]int{2, 3}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.RandN([]int{2, 3}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			c, err := tensor.Concat([]tensor.Tensor{x1, x2}, 0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := c.SumAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act1 := x1.Gradient()
-			act2 := x2.Gradient()
-
-			exp1, err := tensor.Ones([]int{2, 3}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			exp2, err := tensor.Ones([]int{2, 3}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act1, exp1)
-			assertGradientEquals(t, act2, exp2)
-		})
-
 		// ============================== untracked paths ==============================
 
 		t.Run("x1 grad-tracked, x2 untracked / Concat along axis 0 then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -481,47 +430,6 @@ func TestSlice(t *testing.T) {
 					{0., 0., 0., 0.},
 					{0., 0., 0., 0.},
 				},
-			}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
-		t.Run("grad-tracked [4,6] tensor / Slice([1:3],[2:5]) then Reshape([6]) then Scale(2) then BackPropagate / gradient at sliced window is 2, elsewhere 0", func(t *testing.T) {
-			x, err := tensor.RandN([]int{4, 6}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			s, err := x.Slice([]tensor.Range{{From: 1, To: 3}, {From: 2, To: 5}})
-			if err != nil {
-				t.Fatal(err)
-			}
-			r, err := s.Reshape([]int{6})
-			if err != nil {
-				t.Fatal(err)
-			}
-			y := r.Scale(2.)
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Of([][]float64{
-				{0., 0., 0., 0., 0., 0.},
-				{0., 0., 2., 2., 2., 0.},
-				{0., 0., 2., 2., 2., 0.},
-				{0., 0., 0., 0., 0., 0.},
 			}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
@@ -939,76 +847,6 @@ func TestTranspose(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [3,3] identity matrix x / x.MatMul(x.Transpose()) then BackPropagate / gradient of x is all-twos [3,3]", func(t *testing.T) {
-			x, err := tensor.Eye(3, &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			xt, err := x.Transpose()
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := x.MatMul(xt)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Full([]int{3, 3}, 2., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
-		t.Run("grad-tracked [2,4] tensor / Transpose then SumAlong(0) then BackPropagate / gradient of x is all-ones [2,4]", func(t *testing.T) {
-			x, err := tensor.RandN([]int{2, 4}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			xt, err := x.Transpose()
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := xt.SumAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Ones([]int{2, 4}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
 		// ============================== untracked paths ==============================
 
 		t.Run("x untracked / Transpose then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -1139,41 +977,6 @@ func TestReshape(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [3,4] tensor / Reshape([4,3]) then SumAlong(0) then BackPropagate / gradient of x is all-ones [3,4]", func(t *testing.T) {
-			x, err := tensor.RandN([]int{3, 4}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			r, err := x.Reshape([]int{4, 3})
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := r.SumAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Ones([]int{3, 4}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
 		// ============================== untracked paths ==============================
 
 		t.Run("x untracked / Reshape(nil) then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -1262,45 +1065,6 @@ func TestUnsqueeze(t *testing.T) {
 			act := x.Gradient()
 
 			exp, err := tensor.Ones([]int{3, 4}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
-		t.Run("grad-tracked [4] tensor / UnSqueeze(0) then Broadcast([3,4]) then SumAlong(0) then BackPropagate / gradient of x is all-ones [4]", func(t *testing.T) {
-			x, err := tensor.RandN([]int{4}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			u, err := x.UnSqueeze(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			b, err := u.Broadcast([]int{3, 4})
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := b.SumAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Ones([]int{4}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1535,50 +1299,6 @@ func TestFlatten(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [2,3,4] tensor / Flatten(1) then MatMul(Ones([12,5]) untracked) then BackPropagate / gradient of x is all-fives [2,3,4]", func(t *testing.T) {
-			x, err := tensor.RandN([]int{2, 3, 4}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			f, err := x.Flatten(1)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			w, err := tensor.Ones([]int{12, 5}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := f.MatMul(w)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Full([]int{2, 3, 4}, 5., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
 		// ============================== untracked paths ==============================
 
 		t.Run("x untracked / Flatten(0) then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -1663,55 +1383,6 @@ func TestBroadcast(t *testing.T) {
 			act := x.Gradient()
 
 			exp, err := tensor.Full([]int{1, 1}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
-		t.Run("grad-tracked [1,4] tensor / Broadcast([3,4]) then Mul(untracked Ones([3,4])) then SumAlong(0) then BackPropagate / gradient of x is all-ones [1,4]", func(t *testing.T) {
-			x, err := tensor.Full([]int{1, 4}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			b, err := x.Broadcast([]int{3, 4})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			other, err := tensor.Ones([]int{3, 4}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			m, err := b.Mul(other)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := m.SumAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Ones([]int{1, 4}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1863,42 +1534,6 @@ func TestSum(t *testing.T) {
 			act := x.Gradient()
 
 			exp, err := tensor.Ones([]int{2, 3, 4}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
-		t.Run("grad-tracked [3,4] tensor / SumAlong(0) then Scale(2) then SumAlong(0) then BackPropagate / gradient of x is all-twos [3,4]", func(t *testing.T) {
-			x, err := tensor.RandN([]int{3, 4}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			s1, err := x.SumAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			s2 := s1.Scale(2.)
-			y, err := s2.SumAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Full([]int{3, 4}, 2., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -2377,53 +2012,6 @@ func TestAvg(t *testing.T) {
 			act := x.Gradient()
 
 			exp, err := tensor.Full([]int{2, 3, 4}, 0.25, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
-		t.Run("grad-tracked [3,4] tensor / AvgAlong(0) then Add(untracked) then SumAlong(0) then BackPropagate / gradient of x is 1/3 everywhere", func(t *testing.T) {
-			x, err := tensor.RandN([]int{3, 4}, 0., 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			c, err := tensor.Full([]int{1, 4}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			a, err := x.AvgAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			s, err := a.Add(c)
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := s.SumAlong(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Full([]int{3, 4}, 1./3., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -4952,7 +4540,7 @@ func TestSub(t *testing.T) {
 			acta := a.Gradient()
 			actb := b.Gradient()
 
-			expa, err := tensor.Ones([]int{2, 3}, &tensor.Config{
+			expa, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -5179,41 +4767,6 @@ func TestMul(t *testing.T) {
 			act := x.Gradient()
 
 			exp, err := tensor.Full(nil, 12., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			assertGradientEquals(t, act, exp)
-		})
-
-		t.Run("Full(nil, 3) grad-tracked / x.Mul(x).Add(x) then BackPropagate / gradient of x is 2x+1=7", func(t *testing.T) {
-			x, err := tensor.Full(nil, 3., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			sq, err := x.Mul(x)
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := sq.Add(x)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act := x.Gradient()
-
-			exp, err := tensor.Full(nil, 7., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})

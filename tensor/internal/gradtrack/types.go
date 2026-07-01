@@ -14,4 +14,9 @@ type backwardEdge struct {
 	gradFn chainGradFunc
 }
 
+type backpropState struct {
+	unconsumed int
+	snapshotgr tensor.Tensor
+}
+
 type chainGradFunc func() (tensor.Tensor, error)

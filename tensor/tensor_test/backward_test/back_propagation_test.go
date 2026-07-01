@@ -131,7 +131,6 @@ func TestBackPropagate(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			y, err := s.Add(a)
 			if err != nil {
 				t.Fatal(err)
@@ -142,17 +141,17 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			actA := a.Gradient()
-			actB := b.Gradient()
+			acta := a.Gradient()
+			actb := b.Gradient()
 
-			expA, err := tensor.Full([]int{2, 2}, 2., &tensor.Config{
+			expa, err := tensor.Full([]int{2, 2}, 2., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			expB, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+			expb, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -160,8 +159,8 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, actA, expA)
-			assertGradientEquals(t, actB, expB)
+			assertGradientEquals(t, acta, expa)
+			assertGradientEquals(t, actb, expb)
 		})
 
 		t.Run("residual/skip connection: f(x) + x where x is a non-leaf / BackPropagate / gradient of x finalized before propagating to leaf", func(t *testing.T) {

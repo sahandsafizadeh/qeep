@@ -55,11 +55,7 @@ func prepareBackpropStates(root *GradContext) map[*GradContext]*backpropState {
 	q.Enqueue(root)
 
 	for !q.IsEmpty() {
-		src, err := q.Dequeue()
-		if err != nil {
-			panic(fmt.Sprintf("prepareBackpropStates: dequeue failed on non-empty queue: %v", err))
-		}
-
+		src := q.Dequeue()
 		for _, edge := range src.backEdges {
 			dst := gradContextOf(edge.target)
 			if !dst.tracked {
@@ -90,11 +86,7 @@ func backpropRTS(root *GradContext, states map[*GradContext]*backpropState) (err
 	q.Enqueue(root)
 
 	for !q.IsEmpty() {
-		src, err := q.Dequeue()
-		if err != nil {
-			panic(fmt.Sprintf("backpropRTS: dequeue failed on non-empty queue: %v", err))
-		}
-
+		src := q.Dequeue()
 		for _, edge := range src.backEdges {
 			dst := gradContextOf(edge.target)
 			if !dst.tracked {

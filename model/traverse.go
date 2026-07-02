@@ -38,10 +38,7 @@ func traverseBFS(roots []*node.Node, applyFunc func(*node.Node) error) (err erro
 	q.Enqueue(roots...)
 
 	for !q.IsEmpty() {
-		cn, err := q.Dequeue()
-		if err != nil {
-			panic(fmt.Sprintf("traverseBFS: dequeue failed on non-empty queue: %v", err))
-		}
+		cn := q.Dequeue()
 
 		err = applyFunc(cn)
 		if err != nil {

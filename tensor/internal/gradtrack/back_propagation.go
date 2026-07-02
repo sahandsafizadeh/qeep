@@ -46,42 +46,40 @@ func backpropRTS(root tensor.Tensor, states map[*GradContext]*backpropState) (er
 	})
 
 	for !q.IsEmpty() {
-		edge, err := q.Dequeue()
+		src, err := q.Dequeue()
 		if err != nil {
-			panic(fmt.Sprintf("backpropRTS: dequeue failed on non-empty queue: %v", err))
+			panic(fmt.Sprintf("prepareBackpropStates: dequeue failed on non-empty queue: %v", err))
 		}
 
-		gctx := gradContextOf(edge.target)
-		if !gctx.tracked {
-			continue
-		} else {
-			gctx.bpdirty = true
-		}
+		for _, edge := range src.backEdges {
+			dst := gradContextOf(edge.target)
+			if !dst.tracked {
+				continue
+			}
 
-		grad, err := edge.gradFn()
-		if err != nil {
-			return err
-		}
+			bpst, seen := states[dst]
+			if !seen {
+				bpst = &backpropState{
+					unconsumed: 0,
+					grsnapshot: dst.gradient,
+				}
 
-		err = accumulateGrad(gctx, grad)
-		if err != nil {
-			return err
-		}
+				states[dst] = bpst
+				dst.gradient = nil
+				q.Enqueue(dst)
+			}
 
-		bpst := states[gctx]
-		bpst.unconsumed--
-		if bpst.unconsumed == 0 {
-			q.Enqueue(gctx.backEdges...)
+			bpst.unconsumed++
 		}
 	}
 
-	return nil
+	return states
 }
 
 func accumulateGradSnapshots(states map[*GradContext]*backpropState) (err error) {
 	for gctx, bpst := range states {
-		if bpst.snapshotgr != nil {
-			err := accumulateGrad(gctx, bpst.snapshotgr)
+		if bpst.grsnapshot != nil {
+			err = accumulateGrad(gctx, bpst.grsnapshot)
 			if err != nil {
 				return err
 			}

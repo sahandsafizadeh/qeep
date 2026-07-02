@@ -17,9 +17,10 @@ func BackPropagate(t tensor.Tensor) (err error) {
 }
 
 func backpropagate(t tensor.Tensor) (err error) {
-	states := prepareBackpropStates(t)
+	root := createBackpropRoot(t)
+	states := prepareBackpropStates(root)
 
-	err = backpropRTS(t, states)
+	err = backpropRTS(root, states)
 	if err != nil {
 		return err
 	}
@@ -32,18 +33,26 @@ func backpropagate(t tensor.Tensor) (err error) {
 	return nil
 }
 
-func prepareBackpropStates(root tensor.Tensor) map[*GradContext]*backpropState {
-	panic("unimplemented")
+func createBackpropRoot(t tensor.Tensor) *GradContext {
+	return &GradContext{
+		tracked: false,
+		backEdges: []*backwardEdge{
+			{
+				target: t,
+				gradFn: func() (tensor.Tensor, error) {
+					// neutral tensor; same shape, all ones
+					return toOnes(t), nil
+				},
+			},
+		},
+	}
 }
 
-func backpropRTS(root tensor.Tensor, states map[*GradContext]*backpropState) (err error) {
-	q := queue.NewQueue[*backwardEdge]()
-	q.Enqueue(&backwardEdge{
-		target: root,
-		gradFn: func() (tensor.Tensor, error) {
-			return toOnes(root), nil // neutral tensor; same shape, all ones
-		},
-	})
+func prepareBackpropStates(root *GradContext) map[*GradContext]*backpropState {
+	states := map[*GradContext]*backpropState{}
+
+	q := queue.NewQueue[*GradContext]()
+	q.Enqueue(root)
 
 	for !q.IsEmpty() {
 		src, err := q.Dequeue()
@@ -76,6 +85,43 @@ func backpropRTS(root tensor.Tensor, states map[*GradContext]*backpropState) (er
 	return states
 }
 
+func backpropRTS(root *GradContext, states map[*GradContext]*backpropState) (err error) {
+	q := queue.NewQueue[*GradContext]()
+	q.Enqueue(root)
+
+	for !q.IsEmpty() {
+		src, err := q.Dequeue()
+		if err != nil {
+			panic(fmt.Sprintf("backpropRTS: dequeue failed on non-empty queue: %v", err))
+		}
+
+		for _, edge := range src.backEdges {
+			dst := gradContextOf(edge.target)
+			if !dst.tracked {
+				continue
+			}
+
+			grad, err := edge.gradFn()
+			if err != nil {
+				return err
+			}
+
+			err = accumulateGrad(dst, grad)
+			if err != nil {
+				return err
+			}
+
+			bpst := states[dst]
+			bpst.unconsumed--
+			if bpst.unconsumed == 0 {
+				q.Enqueue(dst)
+			}
+		}
+	}
+
+	return nil
+}
+
 func accumulateGradSnapshots(states map[*GradContext]*backpropState) (err error) {
 	for gctx, bpst := range states {
 		if bpst.grsnapshot != nil {
@@ -88,8 +134,6 @@ func accumulateGradSnapshots(states map[*GradContext]*backpropState) (err error)
 
 	return nil
 }
-
-/* ----- helpers ----- */
 
 func accumulateGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
 	if gctx.gradient == nil {

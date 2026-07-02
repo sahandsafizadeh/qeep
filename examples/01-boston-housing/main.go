@@ -22,7 +22,7 @@ const (
 
 const (
 	batchSize = 32
-	epochs    = 200
+	epochs    = 500
 	dev       = tensor.CPU
 )
 

@@ -1331,7 +1331,7 @@ func TestBroadcast(t *testing.T) {
 
 		// ============================== main paths ==============================
 
-		t.Run("grad-tracked [3,1,4] tensor / Broadcast([6,5,3,3,4]) then BackPropagate / gradient of x is all-ones [3,1,4]", func(t *testing.T) {
+		t.Run("grad-tracked [3,1,4] tensor / Broadcast([6,5,3,3,4]) then BackPropagate / gradient of x is Full([3,1,4], 90.)", func(t *testing.T) {
 			x, err := tensor.RandU([]int{3, 1, 4}, 0., 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -1351,7 +1351,7 @@ func TestBroadcast(t *testing.T) {
 
 			act := x.Gradient()
 
-			exp, err := tensor.Ones([]int{3, 1, 4}, &tensor.Config{
+			exp, err := tensor.Full([]int{3, 1, 4}, 90., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1362,7 +1362,7 @@ func TestBroadcast(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [1,1] tensor / Broadcast([4,4]) then BackPropagate / gradient of x is Full([1,1], 1.)", func(t *testing.T) {
+		t.Run("grad-tracked [1,1] tensor / Broadcast([4,4]) then BackPropagate / gradient of x is Full([1,1], 16.)", func(t *testing.T) {
 			x, err := tensor.Full([]int{1, 1}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -1382,7 +1382,7 @@ func TestBroadcast(t *testing.T) {
 
 			act := x.Gradient()
 
-			exp, err := tensor.Full([]int{1, 1}, 1., &tensor.Config{
+			exp, err := tensor.Full([]int{1, 1}, 16., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1393,7 +1393,7 @@ func TestBroadcast(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [1,3] tensor / Broadcast([4,3]) then Mul by non-uniform [4,3] then BackPropagate / gradient of x is the column-wise average of the incoming gradient [1,3]", func(t *testing.T) {
+		t.Run("grad-tracked [1,3] tensor / Broadcast([4,3]) then Mul by non-uniform [4,3] then BackPropagate / gradient of x is the column-wise sum of the incoming gradient [1,3]", func(t *testing.T) {
 			x, err := tensor.RandN([]int{1, 3}, 0., 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -1430,7 +1430,7 @@ func TestBroadcast(t *testing.T) {
 			act := x.Gradient()
 
 			exp, err := tensor.Of([][]float64{
-				{2.5, 5., 25.},
+				{10., 20., 100.},
 			}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
@@ -1442,7 +1442,7 @@ func TestBroadcast(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [2,1] tensor / Broadcast([2,2,2]) then Mul by non-uniform [2,2,2] then BackPropagate / gradient of x is the mean of the incoming gradient over the broadcast axes [2,1]", func(t *testing.T) {
+		t.Run("grad-tracked [2,1] tensor / Broadcast([2,2,2]) then Mul by non-uniform [2,2,2] then BackPropagate / gradient of x is the sum of the incoming gradient over the broadcast axes [2,1]", func(t *testing.T) {
 			x, err := tensor.RandN([]int{2, 1}, 0., 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -1483,7 +1483,7 @@ func TestBroadcast(t *testing.T) {
 
 			act := x.Gradient()
 
-			exp, err := tensor.Of([][]float64{{3.}, {13.}}, &tensor.Config{
+			exp, err := tensor.Of([][]float64{{12.}, {52.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})

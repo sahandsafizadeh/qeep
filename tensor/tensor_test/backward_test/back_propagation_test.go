@@ -924,9 +924,9 @@ func TestBackPropagate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			y := a.Scale(2.).Scale(3.)
+			y1 := a.Scale(2.).Scale(3.)
 
-			err = tensor.BackPropagate(y)
+			err = tensor.BackPropagate(y1)
 			if err != nil {
 				t.Fatal(err)
 			}

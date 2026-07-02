@@ -1393,6 +1393,55 @@ func TestBroadcast(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
+		t.Run("grad-tracked [1,3] tensor / Broadcast([4,3]) then Mul by non-uniform [4,3] then BackPropagate / gradient of x is the column-wise average of the incoming gradient [1,3]", func(t *testing.T) {
+			x, err := tensor.RandN([]int{1, 3}, 0., 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			w, err := tensor.Of([][]float64{
+				{1., 2., 10.},
+				{2., 4., 20.},
+				{3., 6., 30.},
+				{4., 8., 40.},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			b, err := x.Broadcast([]int{4, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+			y, err := b.Mul(w)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := x.Gradient()
+
+			exp, err := tensor.Of([][]float64{
+				{2.5, 5., 25.},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
 		// ============================== untracked paths ==============================
 
 		t.Run("x untracked / Broadcast(nil) then BackPropagate / y has nil gradient", func(t *testing.T) {

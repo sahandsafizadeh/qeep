@@ -506,6 +506,117 @@ func TestBackPropagate(t *testing.T) {
 			assertGradientEquals(t, actx, expx)
 		})
 
+		t.Run("root of the graph / BackPropagate twice without reset / root's own gradient accumulates like any other node", func(t *testing.T) {
+			a, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := a.Scale(2.)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := y.Gradient()
+
+			exp, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act = y.Gradient()
+
+			exp, err = tensor.Full([]int{2, 2}, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, act, exp)
+		})
+
+		t.Run("non-leaf accumulates gradient as a branch target then is used as its own root / BackPropagate on the branch then on the node itself / gradient combines both contributions", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			m := x.Scale(2.)
+			a := m.Scale(3.)
+
+			err = tensor.BackPropagate(a)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			actm := m.Gradient()
+			actx := x.Gradient()
+
+			expm, err := tensor.Full([]int{2, 2}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expx, err := tensor.Full([]int{2, 2}, 6., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, actm, expm)
+			assertGradientEquals(t, actx, expx)
+
+			err = tensor.BackPropagate(m)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			actm = m.Gradient()
+			actx = x.Gradient()
+
+			expm, err = tensor.Full([]int{2, 2}, 4., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expx, err = tensor.Full([]int{2, 2}, 8., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assertGradientEquals(t, actm, expm)
+			assertGradientEquals(t, actx, expx)
+		})
+
 		t.Run("two independent chains from unrelated leaves / BackPropagate one then the other / unrelated leaf gradients remain isolated", func(t *testing.T) {
 			a, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
 				Device:    dev,

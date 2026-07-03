@@ -141,7 +141,7 @@ func (m *Model) fit(
 	for range conf.Epochs {
 		epochLogger.StartNextEpoch()
 
-		var epochLoss tensor.Tensor
+		var epochLoss float64
 		var validResult map[string]float64
 
 		for trainBatchGen.Reset(); trainBatchGen.HasNext(); {
@@ -155,11 +155,7 @@ func (m *Model) fit(
 				return err
 			}
 
-			epochLoss, err = accumulateLoss(loss, epochLoss)
-			if err != nil {
-				return err
-			}
-
+			epochLoss += loss
 			epochLogger.ProgressBatch()
 		}
 
@@ -204,33 +200,38 @@ func (m *Model) feed(xs []tensor.Tensor) (yp tensor.Tensor, err error) {
 	return m.output.Result(), nil
 }
 
-func (m *Model) trainStep(xs []tensor.Tensor, yt tensor.Tensor) (loss tensor.Tensor, err error) {
+func (m *Model) trainStep(xs []tensor.Tensor, yt tensor.Tensor) (l float64, err error) {
 	err = m.enableGrad()
 	if err != nil {
-		return loss, err
+		return l, err
 	}
 
 	yp, err := m.feed(xs)
 	if err != nil {
-		return loss, err
+		return l, err
 	}
 
-	loss, err = m.loss.Compute(yp, yt)
+	loss, err := m.loss.Compute(yp, yt)
 	if err != nil {
-		return loss, err
+		return l, err
 	}
 
 	err = tensor.BackPropagate(loss)
 	if err != nil {
-		return loss, err
+		return l, err
 	}
 
 	err = m.optimize()
 	if err != nil {
-		return loss, err
+		return l, err
 	}
 
-	return loss, nil
+	l, err = loss.At()
+	if err != nil {
+		return l, err
+	}
+
+	return l, nil
 }
 
 /* ----- helpers ----- */
@@ -299,12 +300,4 @@ func validateModelStreams(inputs []*stream.Stream, output *stream.Stream) (err e
 	}
 
 	return nil
-}
-
-func accumulateLoss(loss tensor.Tensor, netLoss tensor.Tensor) (result tensor.Tensor, err error) {
-	if netLoss == nil {
-		return loss, nil
-	} else {
-		return loss.Add(netLoss)
-	}
 }

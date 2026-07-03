@@ -131,6 +131,8 @@ func accumulateGradSnapshots(states map[*GradContext]*backpropState) (err error)
 }
 
 func accumulateGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
+	ensureGradSafeToAccumulate(grad)
+
 	if gctx.gradient == nil {
 		gctx.gradient = grad
 	} else {
@@ -143,4 +145,11 @@ func accumulateGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
 	}
 
 	return nil
+}
+
+func ensureGradSafeToAccumulate(grad tensor.Tensor) {
+	gctx := gradContextOf(grad)
+	if !gctx.bpdirty || len(gctx.backEdges) > 0 {
+		panic("gradtrack: memory leak danger: gradient tensor must be dirty and untracked")
+	}
 }

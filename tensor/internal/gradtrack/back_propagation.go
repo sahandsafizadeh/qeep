@@ -91,6 +91,8 @@ func backpropRTS(root *GradContext, states map[*GradContext]*backpropState) (err
 			dst := gradContextOf(edge.target)
 			if !dst.tracked {
 				continue
+			} else {
+				dst.bpdirty = true
 			}
 
 			grad, err := edge.gradFn()

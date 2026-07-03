@@ -958,10 +958,7 @@ func Div(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 				gradFn: func() (o tensor.Tensor, err error) {
 					gy := y.Gradient()
 
-					n := a.Scale(-1)
-					d := b.Pow(2)
-
-					gb, err := n.Div(d)
+					gb, err := y.Scale(-1).Div(b)
 					if err != nil {
 						return o, err
 					}

@@ -1450,7 +1450,6 @@ func TestBroadcast(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			w, err := tensor.Of([][][]float64{
 				{
 					{2., 3.},
@@ -1753,6 +1752,7 @@ func TestMax(t *testing.T) {
 			}
 
 			act := x.Gradient()
+
 			exp, err := tensor.Of([][]float64{
 				{0., 1., 1., 1.},
 			}, &tensor.Config{
@@ -1933,6 +1933,7 @@ func TestMin(t *testing.T) {
 			}
 
 			act := x.Gradient()
+
 			exp, err := tensor.Of([][]float64{
 				{0., 1., 1., 1.},
 			}, &tensor.Config{

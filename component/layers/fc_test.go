@@ -708,7 +708,7 @@ func (c *seqInitializer) Init(shape []int, device tensor.Device) (x tensor.Tenso
 		return tensor.Of(data, &tensor.Config{Device: device})
 
 	default:
-		return tensor.Zeros(shape, &tensor.Config{Device: device})
+		panic("unsupported sequence initializer")
 	}
 }
 

@@ -54,6 +54,22 @@ func LeakyRelu(conf *activations.LeakyReluConfig) StreamFunc {
 	return NewStreamFunc(initf)
 }
 
+func Add() StreamFunc {
+	initf := func() (contract.Layer, error) {
+		return layers.NewAdd(), nil
+	}
+
+	return NewStreamFunc(initf)
+}
+
+func Concat(conf *layers.ConcatConfig) StreamFunc {
+	initf := func() (contract.Layer, error) {
+		return layers.NewConcat(conf)
+	}
+
+	return NewStreamFunc(initf)
+}
+
 func Dropout(conf *layers.DropoutConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return layers.NewDropout(conf)

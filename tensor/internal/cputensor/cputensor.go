@@ -145,7 +145,7 @@ func (t *CPUTensor) At(index ...int) (value float64, err error) {
 		return value, fmt.Errorf("At input index validation failed: %w", err)
 	}
 
-	return t.dataAt(index).(float64), nil
+	return t.at(index), nil
 }
 
 func (t *CPUTensor) Slice(index []tensor.Range) (o tensor.Tensor, err error) {
@@ -264,11 +264,11 @@ func (t *CPUTensor) Sum() float64 {
 }
 
 func (t *CPUTensor) Max() float64 {
-	return t.max(unwrapValue)
+	return t.max()
 }
 
 func (t *CPUTensor) Min() float64 {
-	return t.min(unwrapValue)
+	return t.min()
 }
 
 func (t *CPUTensor) Avg() float64 {

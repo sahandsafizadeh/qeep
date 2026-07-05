@@ -141,26 +141,101 @@ func (t *CPUTensor) div(u *CPUTensor) *CPUTensor {
 func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
 	dims := util.DotDims(t1.dims)
-	elemGen := linearLastDimDotProductElemGenerator(t1, t2)
 
 	o := new(CPUTensor)
 	o.dims = dims
-	o.initWith(elemGen)
+	o.strd = util.DimsToStrides(dims)
+	o.data = make([]float64, util.DimsToNumElems(dims))
+
+	nd := len(t1.dims)
+	n := t1.dims[nd-1]
+	t1s := t1.strd[nd-1]
+	t2s := t2.strd[nd-1]
+
+	kernel := func(t1ofst, t2ofsst, oofst int) {
+		for k := range n {
+			a := t1.data[t1ofst+k*t1s]
+			b := t2.data[t2ofsst+k*t2s]
+			o.data[oofst] += a * b
+		}
+	}
+
+	bidx := make([]int, len(dims))
+	nb := util.DimsToNumElems(dims)
+
+	for range nb {
+		var (
+			t1ofst = 0
+			t2ofst = 0
+			oofst  = 0
+		)
+		for d := range dims {
+			t1ofst += bidx[d] * t1.strd[d]
+			t2ofst += bidx[d] * t2.strd[d]
+			oofst += bidx[d] * o.strd[d]
+		}
+
+		kernel(t1ofst, t2ofst, oofst)
+		updateElementWiseIndex(bidx, dims)
+	}
 
 	return o
 }
 
 func (t *CPUTensor) matMul(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
-	td := len(t1.dims)
 	dims := util.MatMulDims(t1.dims, t2.dims)
-	elemGen := linearLast2DimsMatMulElemGenerator(t1, t2)
 
 	o := new(CPUTensor)
-	o.dims = dims[:td-2]
-	o.initWith(elemGen)
-
 	o.dims = dims
+	o.strd = util.DimsToStrides(dims)
+	o.data = make([]float64, util.DimsToNumElems(dims))
+
+	nd := len(t1.dims)
+	m := t1.dims[nd-2]
+	n := t1.dims[nd-1]
+	k := t2.dims[nd-1]
+	t1rs := t1.strd[nd-2]
+	t1cs := t1.strd[nd-1]
+	t2rs := t2.strd[nd-2]
+	t2cs := t2.strd[nd-1]
+	ors := o.strd[nd-2]
+
+	kernel := func(t1ofst, t2ofst, oofst int) {
+		for i := range m {
+			orow := oofst + i*ors
+			t1row := t1ofst + i*t1rs
+			for p := range n {
+				t2row := t2ofst + p*t2rs
+				a := t1.data[t1row+p*t1cs]
+				for j := range k {
+					b := t2.data[t2row+j*t2cs]
+					o.data[orow+j] += a * b
+				}
+			}
+		}
+	}
+
+	bdims := dims[:nd-2]
+	bidx := make([]int, len(bdims))
+	nb := util.DimsToNumElems(bdims)
+
+	for range nb {
+		var (
+			t1ofst = 0
+			t2ofst = 0
+			oofst  = 0
+		)
+		for d := range bdims {
+			t1ofst += bidx[d] * t1.strd[d]
+			t2ofst += bidx[d] * t2.strd[d]
+			oofst += bidx[d] * o.strd[d]
+		}
+
+		kernel(t1ofst, t2ofst, oofst)
+		updateElementWiseIndex(bidx, bdims)
+	}
+
 	return o
 }
 
@@ -171,156 +246,17 @@ func (t *CPUTensor) equals(u *CPUTensor) bool {
 }
 
 func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTensor {
-
-	var calcData func([]int, *any, *any)
-	calcData = func(dims []int, a, r *any) {
-		if len(dims) == 0 {
-			*r = suf((*a).(float64))
-			return
-		}
-
-		aRows := (*a).([]any)
-		rRows := make([]any, dims[0])
-		dims = dims[1:]
-
-		for i := range rRows {
-			calcData(dims, &aRows[i], &rRows[i])
-		}
-
-		*r = rRows
-	}
-
-	o := new(CPUTensor)
-	o.dims = make([]int, len(t.dims))
-	copy(o.dims, t.dims)
-	calcData(t.dims, &t.data, &o.data)
-
-	return o
+	index := make([]int, len(t.dims))
+	return newTensorWithElementWiseInit(t.dims, func() float64 {
+		defer updateElementWiseIndex(index, t.dims)
+		return suf(t.at(index))
+	})
 }
 
 func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
-
-	var calcData func([]int, *any, *any, *any)
-	calcData = func(dims []int, a, b, r *any) {
-		if len(dims) == 0 {
-			*r = sbf((*a).(float64), (*b).(float64))
-			return
-		}
-
-		aRows := (*a).([]any)
-		bRows := (*b).([]any)
-		rRows := make([]any, dims[0])
-		dims = dims[1:]
-
-		for i := range rRows {
-			calcData(dims, &aRows[i], &bRows[i], &rRows[i])
-		}
-
-		*r = rRows
-	}
-
-	o := new(CPUTensor)
-	o.dims = make([]int, len(t1.dims))
-	copy(o.dims, t1.dims)
-	calcData(t1.dims, &t1.data, &t2.data, &o.data)
-
-	return o
-}
-
-/* ----- helpers ----- */
-
-func linearLastDimDotProductElemGenerator(t1, t2 *CPUTensor) initializerFunc {
-	dims := t1.dims
-	n := len(dims) - 1
-	state := make([]int, n)
-
-	return func() any {
-		data1 := t1.dataAt(state)
-		data2 := t2.dataAt(state)
-		prodRes := dotProductOf1DInputs(data1, data2)
-
-		i := n - 1
-		for i >= 0 {
-			if state[i] < dims[i]-1 {
-				state[i]++
-				break
-			} else {
-				state[i] = 0
-				i--
-			}
-		}
-
-		return prodRes
-	}
-}
-
-func linearLast2DimsMatMulElemGenerator(t1, t2 *CPUTensor) initializerFunc {
-	dims := t1.dims
-	n := len(dims) - 2
-	state := make([]int, n)
-
-	return func() any {
-		data1 := t1.dataAt(state)
-		data2 := t2.dataAt(state)
-		mulRes := matMulDataOf2DInputs(data1, data2)
-
-		i := n - 1
-		for i >= 0 {
-			if state[i] < dims[i]-1 {
-				state[i]++
-				break
-			} else {
-				state[i] = 0
-				i--
-			}
-		}
-
-		return mulRes
-	}
-}
-
-func dotProductOf1DInputs(a, b any) any {
-	v1 := a.([]any)
-	v2 := b.([]any)
-	n := len(v1)
-
-	s := 0.
-	for i := range n {
-		eiv1 := v1[i].(float64)
-		eiv2 := v2[i].(float64)
-		s += eiv1 * eiv2
-	}
-
-	return s
-}
-
-func matMulDataOf2DInputs(a, b any) any {
-	m1 := a.([]any)
-	m2 := b.([]any)
-	r0m1 := m1[0].([]any)
-	r0m2 := m2[0].([]any)
-
-	// A_mn * B_nk = C_mk
-	m := len(m1)
-	n := len(r0m1)
-	k := len(r0m2)
-
-	cRows := make([]any, m)
-	for i := range m {
-		row := make([]any, k)
-		for j := range k {
-			eij := 0.
-			for p := range n {
-				rim1 := m1[i].([]any)
-				rpm2 := m2[p].([]any)
-				eipm1 := rim1[p].(float64)
-				epjm2 := rpm2[j].(float64)
-				eij += eipm1 * epjm2
-			}
-			row[j] = eij
-		}
-		cRows[i] = row
-	}
-
-	return cRows
+	index := make([]int, len(t1.dims))
+	return newTensorWithElementWiseInit(t1.dims, func() float64 {
+		defer updateElementWiseIndex(index, t1.dims)
+		return sbf(t1.at(index), t2.at(index))
+	})
 }

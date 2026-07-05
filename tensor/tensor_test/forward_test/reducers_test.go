@@ -18,7 +18,7 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); int(val) != 9 {
+			if val := ten.Sum(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the sum value of tensor, got (%f)", val)
 			}
 		})
@@ -29,7 +29,7 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); int(val) != 10 {
+			if val := ten.Sum(); !(10.-1e-10 < val && val < 10.+1e-10) {
 				t.Fatalf("expected (10) as the sum value of tensor, got (%f)", val)
 			}
 		})
@@ -44,7 +44,7 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); int(val) != 36 {
+			if val := ten.Sum(); !(36.-1e-10 < val && val < 36.+1e-10) {
 				t.Fatalf("expected (36) as the sum value of tensor, got (%f)", val)
 			}
 		})
@@ -62,7 +62,7 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); int(val) != 9 {
+			if val := ten.Max(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the max value of tensor, got (%f)", val)
 			}
 		})
@@ -73,7 +73,7 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); int(val) != 6 {
+			if val := ten.Max(); !(6.-1e-10 < val && val < 6.+1e-10) {
 				t.Fatalf("expected (6) as the max value of tensor, got (%f)", val)
 			}
 		})
@@ -88,7 +88,7 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); int(val) != 9 {
+			if val := ten.Max(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the max value of tensor, got (%f)", val)
 			}
 		})
@@ -106,7 +106,7 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); int(val) != 9 {
+			if val := ten.Min(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the min value of tensor, got (%f)", val)
 			}
 		})
@@ -117,7 +117,7 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); int(val) != 4 {
+			if val := ten.Min(); !(4.-1e-10 < val && val < 4.+1e-10) {
 				t.Fatalf("expected (4) as the min value of tensor, got (%f)", val)
 			}
 		})
@@ -132,7 +132,7 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); int(val) != -5 {
+			if val := ten.Min(); !(-5.-1e-10 < val && val < -5.+1e-10) {
 				t.Fatalf("expected (-5) as the min value of tensor, got (%f)", val)
 			}
 		})
@@ -150,7 +150,7 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); int(val) != 9 {
+			if val := ten.Avg(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the avg value of tensor, got (%f)", val)
 			}
 		})
@@ -161,7 +161,7 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); int(val) != 5 {
+			if val := ten.Avg(); !(5.-1e-10 < val && val < 5.+1e-10) {
 				t.Fatalf("expected (5) as the avg value of tensor, got (%f)", val)
 			}
 		})
@@ -176,8 +176,22 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); int(val) != 3 {
+			if val := ten.Avg(); !(3.-1e-10 < val && val < 3.+1e-10) {
 				t.Fatalf("expected (3) as the avg value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("2D tensor shape [2,3] all-1e308 / Avg() / returns 1e308 despite overflow in naive sum", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1e308, 1e308, 1e308},
+				{1e308, 1e308, 1e308},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Avg(); val != 1e308 {
+				t.Fatalf("expected (1e308) as the avg value of tensor, got (%e)", val)
 			}
 		})
 	})
@@ -194,7 +208,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 0 {
+			if val := ten.Var(); !(0.-1e-10 < val && val < 0.+1e-10) {
 				t.Fatalf("expected (0) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -205,7 +219,7 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 4 {
+			if val := ten.Var(); !(4.-1e-10 < val && val < 4.+1e-10) {
 				t.Fatalf("expected (4) as the var value of tensor, got (%f)", val)
 			}
 		})
@@ -216,8 +230,79 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); int(val) != 4 {
+			if val := ten.Var(); !(4.-1e-10 < val && val < 4.+1e-10) {
 				t.Fatalf("expected (4) as the var value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("1D tensor [5, 5, 5] / Var() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{5., 5., 5.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); !(0.-1e-10 < val && val < 0.+1e-10) {
+				t.Fatalf("expected (0) as the var value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("2D tensor shape [2,4] / Var() / returns 6", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2., 3., 4.},
+				{5., 6., 7., 8.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); !(6.-1e-10 < val && val < 6.+1e-10) {
+				t.Fatalf("expected (6) as the var value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("1D tensor [-3, 0, 3] / Var() / returns 9", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-3., 0., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); !(9.-1e-10 < val && val < 9.+1e-10) {
+				t.Fatalf("expected (9) as the var value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("3D tensor shape [2,2,3] / Var() / returns 13", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+				{
+					{7., 8., 9.},
+					{10., 11., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); !(13.-1e-10 < val && val < 13.+1e-10) {
+				t.Fatalf("expected (13) as the var value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("2D tensor shape [3,1] with values offset around 1e8 / Var() / returns 9 without catastrophic cancellation", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1e8 + 3},
+				{1e8},
+				{1e8 - 3},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Var(); !(9.-1e-10 < val && val < 9.+1e-10) {
+				t.Fatalf("expected (9) as the var value of tensor, got (%f)", val)
 			}
 		})
 	})
@@ -234,7 +319,7 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 0 {
+			if val := ten.Std(); !(0.-1e-10 < val && val < 0.+1e-10) {
 				t.Fatalf("expected (0) as the std value of tensor, got (%f)", val)
 			}
 		})
@@ -245,7 +330,7 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 2 {
+			if val := ten.Std(); !(2.-1e-10 < val && val < 2.+1e-10) {
 				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
 			}
 		})
@@ -256,8 +341,79 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); int(val) != 2 {
+			if val := ten.Std(); !(2.-1e-10 < val && val < 2.+1e-10) {
 				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("1D tensor [7, 7, 7] / Std() / returns 0", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{7., 7., 7.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); !(0.-1e-10 < val && val < 0.+1e-10) {
+				t.Fatalf("expected (0) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("1D tensor [-3, 0, 3] / Std() / returns 3", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-3., 0., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); !(3.-1e-10 < val && val < 3.+1e-10) {
+				t.Fatalf("expected (3) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("2D tensor shape [2,4] / Std() / returns sqrt(6)", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2., 3., 4.},
+				{5., 6., 7., 8.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); !(math.Sqrt(6)-1e-10 < val && val < math.Sqrt(6)+1e-10) {
+				t.Fatalf("expected (sqrt(6)) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("3D tensor shape [2,2,3] / Std() / returns sqrt(13)", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 2., 3.},
+					{4., 5., 6.},
+				},
+				{
+					{7., 8., 9.},
+					{10., 11., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); !(math.Sqrt(13)-1e-10 < val && val < math.Sqrt(13)+1e-10) {
+				t.Fatalf("expected (sqrt(13)) as the std value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("2D tensor shape [3,1] with values offset around 1e8 / Std() / returns 3 without catastrophic cancellation", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1e8 + 3},
+				{1e8},
+				{1e8 - 3},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Std(); !(3.-1e-10 < val && val < 3.+1e-10) {
+				t.Fatalf("expected (3) as the std value of tensor, got (%f)", val)
 			}
 		})
 	})
@@ -274,7 +430,7 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); int(val) != 9 {
+			if val := ten.Mean(); !(9.-1e-10 < val && val < 9.+1e-10) {
 				t.Fatalf("expected (9) as the mean value of tensor, got (%f)", val)
 			}
 		})
@@ -285,7 +441,7 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); int(val) != 5 {
+			if val := ten.Mean(); !(5.-1e-10 < val && val < 5.+1e-10) {
 				t.Fatalf("expected (5) as the mean value of tensor, got (%f)", val)
 			}
 		})
@@ -300,8 +456,22 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); int(val) != 3 {
+			if val := ten.Mean(); !(3.-1e-10 < val && val < 3.+1e-10) {
 				t.Fatalf("expected (3) as the mean value of tensor, got (%f)", val)
+			}
+		})
+
+		t.Run("2D tensor shape [2,3] all-1e308 / Mean() / returns 1e308 despite overflow in naive sum", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1e308, 1e308, 1e308},
+				{1e308, 1e308, 1e308},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val := ten.Mean(); val != 1e308 {
+				t.Fatalf("expected (1e308) as the mean value of tensor, got (%e)", val)
 			}
 		})
 	})
@@ -416,6 +586,122 @@ func TestSumAlong(t *testing.T) {
 			}
 
 			exp, err := tensor.Full([]int{3, 4}, 5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("4D tensor shape [2,2,2,2] / SumAlong(1) / returns [2,2,2] tensor", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2.},
+						{3., 4.},
+					},
+					{
+						{5., 6.},
+						{7., 8.},
+					},
+				},
+				{
+					{
+						{9., 10.},
+						{11., 12.},
+					},
+					{
+						{13., 14.},
+						{15., 16.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.SumAlong(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{6., 8.},
+					{10., 12.},
+				},
+				{
+					{22., 24.},
+					{26., 28.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("4D tensor shape [2,3,2,2] / SumAlong(3) / returns [2,3,2] tensor", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2.},
+						{3., 4.},
+					},
+					{
+						{5., 6.},
+						{7., 8.},
+					},
+					{
+						{9., 10.},
+						{11., 12.},
+					},
+				},
+				{
+					{
+						{-1., -2.},
+						{-3., -4.},
+					},
+					{
+						{-5., -6.},
+						{-7., -8.},
+					},
+					{
+						{-9., -10.},
+						{-11., -12.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.SumAlong(3)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{3., 7.},
+					{11., 15.},
+					{19., 23.},
+				},
+				{
+					{-3., -7.},
+					{-11., -15.},
+					{-19., -23.},
+				},
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1053,6 +1339,209 @@ func TestAvgAlong(t *testing.T) {
 			}
 		})
 
+		t.Run("Of([2,2,2,2]) tensor / AvgAlong(1) / returns Of([2,2,2])", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2.},
+						{3., 4.},
+					},
+					{
+						{5., 6.},
+						{7., 8.},
+					},
+				},
+				{
+					{
+						{9., 10.},
+						{11., 12.},
+					},
+					{
+						{13., 14.},
+						{15., 16.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.AvgAlong(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{3., 4.},
+					{5., 6.},
+				},
+				{
+					{11., 12.},
+					{13., 14.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Of([2,3,2,2]) tensor / AvgAlong(3) / returns Of([2,3,2])", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2.},
+						{3., 4.},
+					},
+					{
+						{5., 6.},
+						{7., 8.},
+					},
+					{
+						{9., 10.},
+						{11., 12.},
+					},
+				},
+				{
+					{
+						{-1., -2.},
+						{-3., -4.},
+					},
+					{
+						{-5., -6.},
+						{-7., -8.},
+					},
+					{
+						{-9., -10.},
+						{-11., -12.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.AvgAlong(3)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{1.5, 3.5},
+					{5.5, 7.5},
+					{9.5, 11.5},
+				},
+				{
+					{-1.5, -3.5},
+					{-5.5, -7.5},
+					{-9.5, -11.5},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("1D tensor [1e308, 1e308, 1e308] / AvgAlong(0) / returns 1e308 despite overflow in naive sum", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1e308, 1e308, 1e308}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.AvgAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(1e308, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("1D large tensor with 1000 elements each 1e306 / AvgAlong(0) / returns 1e306 despite overflow in naive sum", func(t *testing.T) {
+			data := make([]float64, 1000)
+			for i := range data {
+				data[i] = 1e306
+			}
+
+			ten, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.AvgAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(1e306, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("3D tensor shape [3,2,4] with 1e308 / AvgAlong(0) / returns Full([2,4], 1e308) despite overflow in naive sum", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1e308, 1e308, 1e308, 1e308},
+					{1e308, 1e308, 1e308, 1e308},
+				},
+				{
+					{1e308, 1e308, 1e308, 1e308},
+					{1e308, 1e308, 1e308, 1e308},
+				},
+				{
+					{1e308, 1e308, 1e308, 1e308},
+					{1e308, 1e308, 1e308, 1e308},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.AvgAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{2, 4}, 1e308, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / AvgAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -1164,6 +1653,303 @@ func TestVarAlong(t *testing.T) {
 			}
 		})
 
+		t.Run("tensor shape [3] / VarAlong(0) / returns scalar 9", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-3., 0., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3,3] / VarAlong(0) / returns [3] tensor with all 9", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+				{7., 8., 9.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([]float64{9., 9., 9.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3,2,2] / VarAlong(0) / returns [2,2] tensor with all 1", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 4.},
+					{7., 10.},
+				},
+				{
+					{2., 5.},
+					{8., 11.},
+				},
+				{
+					{3., 6.},
+					{9., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{1., 1.},
+				{1., 1.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3,2,2] / VarAlong(1) / returns [3,2] tensor with all 18", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 4.},
+					{7., 10.},
+				},
+				{
+					{2., 5.},
+					{8., 11.},
+				},
+				{
+					{3., 6.},
+					{9., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{18., 18.},
+				{18., 18.},
+				{18., 18.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3,2,2] / VarAlong(2) / returns [3,2] tensor with all 4.5", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 4.},
+					{7., 10.},
+				},
+				{
+					{2., 5.},
+					{8., 11.},
+				},
+				{
+					{3., 6.},
+					{9., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{4.5, 4.5},
+				{4.5, 4.5},
+				{4.5, 4.5},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [1,2,4,5] / VarAlong(3) / returns [1,2,4] tensor", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{0., 2., 4., 6., 8.},
+						{0., 4., 8., 12., 16.},
+						{0., 6., 12., 18., 24.},
+						{0., 8., 16., 24., 32.},
+					},
+					{
+						{0., 10., 20., 30., 40.},
+						{0., 12., 24., 36., 48.},
+						{0., 14., 28., 42., 56.},
+						{0., 16., 32., 48., 64.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(3)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{10., 40., 90., 160.},
+					{250., 360., 490., 640.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("1D tensor [1e8+3, 1e8, 1e8-3] / VarAlong(0) / returns scalar 9 without catastrophic cancellation", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1e8 + 3, 1e8, 1e8 - 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("1D large tensor with 1000 elements each 1e155 / VarAlong(0) / returns scalar 0 despite x^2 overflow in naive computation", func(t *testing.T) {
+			data := make([]float64, 1000)
+			for i := range data {
+				data[i] = 1e155
+			}
+
+			ten, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("3D tensor shape [2,3,4] with ±3 offset around 1e8 / VarAlong(0) / returns Full([3,4], 18) without catastrophic cancellation", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1e8 + 3, 1e8 + 3, 1e8 + 3, 1e8 + 3},
+					{1e8 + 3, 1e8 + 3, 1e8 + 3, 1e8 + 3},
+					{1e8 + 3, 1e8 + 3, 1e8 + 3, 1e8 + 3},
+				},
+				{
+					{1e8 - 3, 1e8 - 3, 1e8 - 3, 1e8 - 3},
+					{1e8 - 3, 1e8 - 3, 1e8 - 3, 1e8 - 3},
+					{1e8 - 3, 1e8 - 3, 1e8 - 3, 1e8 - 3},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.VarAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{3, 4}, 18., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / VarAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -1264,6 +2050,303 @@ func TestStdAlong(t *testing.T) {
 			}
 
 			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3] / StdAlong(0) / returns scalar 3", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{-3., 0., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3,3] / StdAlong(0) / returns [3] tensor with all 3", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+				{7., 8., 9.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([]float64{3., 3., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3,2,2] / StdAlong(0) / returns [2,2] tensor with all 1", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 4.},
+					{7., 10.},
+				},
+				{
+					{2., 5.},
+					{8., 11.},
+				},
+				{
+					{3., 6.},
+					{9., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{1., 1.},
+				{1., 1.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3,2,2] / StdAlong(1) / returns [3,2] tensor with all sqrt(18)", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 4.},
+					{7., 10.},
+				},
+				{
+					{2., 5.},
+					{8., 11.},
+				},
+				{
+					{3., 6.},
+					{9., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{math.Sqrt(18.), math.Sqrt(18.)},
+				{math.Sqrt(18.), math.Sqrt(18.)},
+				{math.Sqrt(18.), math.Sqrt(18.)},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [3,2,2] / StdAlong(2) / returns [3,2] tensor with all sqrt(4.5)", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 4.},
+					{7., 10.},
+				},
+				{
+					{2., 5.},
+					{8., 11.},
+				},
+				{
+					{3., 6.},
+					{9., 12.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{math.Sqrt(4.5), math.Sqrt(4.5)},
+				{math.Sqrt(4.5), math.Sqrt(4.5)},
+				{math.Sqrt(4.5), math.Sqrt(4.5)},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [1,2,4,5] / StdAlong(3) / returns [1,2,4] tensor", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 3., 5., 7., 9.},
+						{2., 6., 10., 14., 18.},
+						{3., 9., 15., 21., 27.},
+						{4., 12., 20., 28., 36.},
+					},
+					{
+						{5., 15., 25., 35., 45.},
+						{6., 18., 30., 42., 54.},
+						{7., 21., 35., 49., 63.},
+						{8., 24., 40., 56., 72.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(3)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{math.Sqrt(10.), math.Sqrt(40.), math.Sqrt(90.), math.Sqrt(160.)},
+					{math.Sqrt(250.), math.Sqrt(360.), math.Sqrt(490.), math.Sqrt(640.)},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("1D tensor [1e8+3, 1e8, 1e8-3] / StdAlong(0) / returns scalar 3 without catastrophic cancellation", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1e8 + 3, 1e8, 1e8 - 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("1D large tensor with 1000 elements each 1e155 / StdAlong(0) / returns scalar 0 despite x^2 overflow in naive computation", func(t *testing.T) {
+			data := make([]float64, 1000)
+			for i := range data {
+				data[i] = 1e155
+			}
+
+			ten, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("3D tensor shape [2,3,4] with ±3 offset around 1e8 / StdAlong(0) / returns Full([3,4], sqrt(18)) without catastrophic cancellation", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1e8 + 3, 1e8 + 3, 1e8 + 3, 1e8 + 3},
+					{1e8 + 3, 1e8 + 3, 1e8 + 3, 1e8 + 3},
+					{1e8 + 3, 1e8 + 3, 1e8 + 3, 1e8 + 3},
+				},
+				{
+					{1e8 - 3, 1e8 - 3, 1e8 - 3, 1e8 - 3},
+					{1e8 - 3, 1e8 - 3, 1e8 - 3, 1e8 - 3},
+					{1e8 - 3, 1e8 - 3, 1e8 - 3, 1e8 - 3},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.StdAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{3, 4}, math.Sqrt(18.), &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1444,6 +2527,209 @@ func TestMeanAlong(t *testing.T) {
 			}
 
 			exp, err := tensor.Full([]int{3, 4}, 5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Of([2,2,2,2]) tensor / MeanAlong(1) / returns Of([2,2,2])", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2.},
+						{3., 4.},
+					},
+					{
+						{5., 6.},
+						{7., 8.},
+					},
+				},
+				{
+					{
+						{9., 10.},
+						{11., 12.},
+					},
+					{
+						{13., 14.},
+						{15., 16.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.MeanAlong(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{3., 4.},
+					{5., 6.},
+				},
+				{
+					{11., 12.},
+					{13., 14.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Of([2,3,2,2]) tensor / MeanAlong(3) / returns Of([2,3,2])", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{1., 2.},
+						{3., 4.},
+					},
+					{
+						{5., 6.},
+						{7., 8.},
+					},
+					{
+						{9., 10.},
+						{11., 12.},
+					},
+				},
+				{
+					{
+						{-1., -2.},
+						{-3., -4.},
+					},
+					{
+						{-5., -6.},
+						{-7., -8.},
+					},
+					{
+						{-9., -10.},
+						{-11., -12.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.MeanAlong(3)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{1.5, 3.5},
+					{5.5, 7.5},
+					{9.5, 11.5},
+				},
+				{
+					{-1.5, -3.5},
+					{-5.5, -7.5},
+					{-9.5, -11.5},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("1D tensor [1e308, 1e308, 1e308] / MeanAlong(0) / returns 1e308 despite overflow in naive sum", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1e308, 1e308, 1e308}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.MeanAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(1e308, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("1D large tensor with 1000 elements each 1e306 / MeanAlong(0) / returns 1e306 despite overflow in naive sum", func(t *testing.T) {
+			data := make([]float64, 1000)
+			for i := range data {
+				data[i] = 1e306
+			}
+
+			ten, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.MeanAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(1e306, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("3D tensor shape [3,2,4] with 1e308 / MeanAlong(0) / returns Full([2,4], 1e308) despite overflow in naive sum", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1e308, 1e308, 1e308, 1e308},
+					{1e308, 1e308, 1e308, 1e308},
+				},
+				{
+					{1e308, 1e308, 1e308, 1e308},
+					{1e308, 1e308, 1e308, 1e308},
+				},
+				{
+					{1e308, 1e308, 1e308, 1e308},
+					{1e308, 1e308, 1e308, 1e308},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.MeanAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{2, 4}, 1e308, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1678,6 +2964,75 @@ func TestArgmax(t *testing.T) {
 			}
 		})
 
+		t.Run("tensor shape [2,4,2,2] / Argmax(1) / returns argmax indices along dim 1", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{3., -1.},
+						{0., 7.},
+					},
+					{
+						{1., 5.},
+						{6., -3.},
+					},
+					{
+						{4., 2.},
+						{-2., 1.},
+					},
+					{
+						{2., 0.},
+						{8., 4.},
+					},
+				},
+				{
+					{
+						{2., -4.},
+						{1., 6.},
+					},
+					{
+						{9., 0.},
+						{-5., 2.},
+					},
+					{
+						{-1., 3.},
+						{4., -3.},
+					},
+					{
+						{5., -2.},
+						{0., 8.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Argmax(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{2., 1.},
+					{3., 0.},
+				},
+				{
+					{1., 2.},
+					{2., 3.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / Argmax(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -1889,6 +3244,75 @@ func TestArgmin(t *testing.T) {
 			exp, err := tensor.Of([][]float64{
 				{2., 1., 1.},
 				{1., 2., 1.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("tensor shape [2,4,2,2] / Argmin(1) / returns argmin indices along dim 1", func(t *testing.T) {
+			ten, err := tensor.Of([][][][]float64{
+				{
+					{
+						{3., -1.},
+						{0., 7.},
+					},
+					{
+						{1., 5.},
+						{6., -3.},
+					},
+					{
+						{4., 2.},
+						{-2., 1.},
+					},
+					{
+						{2., 0.},
+						{8., 4.},
+					},
+				},
+				{
+					{
+						{2., -4.},
+						{1., 6.},
+					},
+					{
+						{9., 0.},
+						{-5., 2.},
+					},
+					{
+						{-1., 3.},
+						{4., -3.},
+					},
+					{
+						{5., -2.},
+						{0., 8.},
+					},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Argmin(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{1., 0.},
+					{2., 1.},
+				},
+				{
+					{2., 0.},
+					{1., 2.},
+				},
 			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)

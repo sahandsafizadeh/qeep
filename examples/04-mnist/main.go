@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
+	"github.com/sahandsafizadeh/qeep/component/layers/activations"
 	"github.com/sahandsafizadeh/qeep/component/losses"
 	"github.com/sahandsafizadeh/qeep/component/metrics"
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
@@ -14,15 +15,19 @@ import (
 )
 
 const (
-	// https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
-	dataFileAddress = "data.csv"
-	validDataRatio  = 0.1
-	testDataRatio   = 0.2
+	/*
+		Download MNIST dataset in CSV format from Kaggle: https://www.kaggle.com/datasets/oddrationale/mnist-in-csv
+		unzip mnist_train.csv.zip
+		unzip mnist_test.csv.zip
+	*/
+	trainFileAddress = "mnist_train.csv"
+	testFileAddress  = "mnist_test.csv"
+	validDataRatio   = 0.1
 )
 
 const (
-	batchSize = 32
-	epochs    = 200
+	batchSize = 64
+	epochs    = 5
 	dev       = tensor.CPU
 )
 
@@ -36,32 +41,36 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: 0.99
+	// Best Accuracy: 0.98
 }
 
 func run() (result map[string]float64, err error) {
-	trainBatchGen, validBatchGen, testBatchGen, err := prepareData()
+	trainBatchGen, validBatchGen, testBatchGen, err := prepareDataBatches()
 	if err != nil {
 		return result, err
 	}
 
-	bcmodel, err := prepareModel()
+	mnistModel, err := prepareModel()
 	if err != nil {
 		return result, err
 	}
 
-	err = bcmodel.Fit(trainBatchGen, validBatchGen, &model.FitConfig{
+	err = mnistModel.Fit(trainBatchGen, validBatchGen, &model.FitConfig{
 		Epochs: epochs,
 		Metrics: map[string]model.Metric{
-			"Accuracy": metrics.NewAccuracy(nil),
+			"Accuracy": metrics.NewAccuracy(&metrics.AccuracyConfig{
+				OneHotMode: true,
+			}),
 		},
 	})
 	if err != nil {
 		return result, err
 	}
 
-	result, err = bcmodel.Eval(testBatchGen, map[string]model.Metric{
-		"Accuracy": metrics.NewAccuracy(nil),
+	result, err = mnistModel.Eval(testBatchGen, map[string]model.Metric{
+		"Accuracy": metrics.NewAccuracy(&metrics.AccuracyConfig{
+			OneHotMode: true,
+		}),
 	})
 	if err != nil {
 		return result, err
@@ -75,24 +84,24 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(input)
-	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
-	x = stream.Relu()(x)
-	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
-
-	x = stream.FC(&layers.FCConfig{Outputs: 16, Device: dev})(x)
+	x := stream.FC(&layers.FCConfig{Outputs: 256, Device: dev})(input)
 	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Relu()(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
-	x = stream.FC(&layers.FCConfig{Outputs: 1, Device: dev})(x)
-	output := stream.Sigmoid()(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 128, Device: dev})(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
+	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
+
+	x = stream.FC(&layers.FCConfig{Outputs: 10, Device: dev})(x)
+	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
 
 	/* -------------------- */
 
-	loss := losses.NewBCE()
+	loss := losses.NewCE()
 
-	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{WeightDecay: 1e-4})
+	optimizer, err := optimizers.NewAdam(nil)
 	if err != nil {
 		return m, err
 	}
@@ -110,13 +119,11 @@ func prepareModel() (m *model.Model, err error) {
 
 /* ----- data preparation ----- */
 
-func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenerator, err error) {
-	x, y, err := loadData()
+func prepareDataBatches() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenerator, err error) {
+	data, err := prepareData()
 	if err != nil {
 		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
-
-	data := splitData(x, y)
 
 	preprocessData(data)
 

@@ -40,6 +40,21 @@ func (c *Softmax) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 }
 
 func (c *Softmax) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
+	m, err := x.MaxAlong(c.dim)
+	if err != nil {
+		return y, err
+	}
+
+	m, err = m.UnSqueeze(c.dim)
+	if err != nil {
+		return y, err
+	}
+
+	x, err = x.Sub(m)
+	if err != nil {
+		return y, err
+	}
+
 	x = x.Exp()
 
 	s, err := x.SumAlong(c.dim)

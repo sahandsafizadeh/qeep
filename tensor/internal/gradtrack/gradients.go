@@ -213,7 +213,7 @@ func Broadcast(y tensor.Tensor, x tensor.Tensor) *GradContext {
 
 					i := 0
 					for ldd-i > lds {
-						gy, err = gy.AvgAlong(0)
+						gy, err = gy.SumAlong(0)
 						if err != nil {
 							return o, err
 						}
@@ -224,7 +224,7 @@ func Broadcast(y tensor.Tensor, x tensor.Tensor) *GradContext {
 					j := 0
 					for i < ldd {
 						if srcDims[j] != dstDims[i] {
-							gy, err = gy.AvgAlong(j)
+							gy, err = gy.SumAlong(j)
 							if err != nil {
 								return o, err
 							}
@@ -958,10 +958,7 @@ func Div(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 				gradFn: func() (o tensor.Tensor, err error) {
 					gy := y.Gradient()
 
-					n := a.Scale(-1)
-					d := b.Pow(2)
-
-					gb, err := n.Div(d)
+					gb, err := y.Scale(-1).Div(b)
 					if err != nil {
 						return o, err
 					}

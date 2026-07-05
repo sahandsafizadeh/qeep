@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"sort"
 	"time"
-
-	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
 type EpochLogger struct {
@@ -45,7 +43,7 @@ func (el *EpochLogger) ProgressBatch() {
 	fmt.Print(el.getProgressBatchLog())
 }
 
-func (el *EpochLogger) FinishEpoch(l tensor.Tensor, vres map[string]float64) {
+func (el *EpochLogger) FinishEpoch(l float64, vres map[string]float64) {
 	el.epochEnd = time.Now()
 
 	fmt.Print("\r")
@@ -70,7 +68,7 @@ func (el *EpochLogger) getProgressBatchLog() string {
 	)
 }
 
-func (el *EpochLogger) getFinishEpochLog(l tensor.Tensor, vres map[string]float64) string {
+func (el *EpochLogger) getFinishEpochLog(l float64, vres map[string]float64) string {
 	format := bytes.NewBuffer(make([]byte, 0, 15))
 	args := make([]any, 0, 10)
 
@@ -112,9 +110,8 @@ func duration(startTime time.Time, endTime time.Time) string {
 	return fmt.Sprintf("Duration: %s", dur)
 }
 
-func loss(l tensor.Tensor) string {
-	loss, _ := l.At() // TODO: TEMPORARY! until tensors implement Stringer interface.
-	return fmt.Sprintf("Loss: %.4f", loss)
+func loss(l float64) string {
+	return fmt.Sprintf("Loss: %.4f", l)
 }
 
 func validation(result map[string]float64) string {

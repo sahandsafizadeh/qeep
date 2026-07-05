@@ -73,7 +73,7 @@ func TestModel(t *testing.T) {
 			}
 		})
 
-		t.Run("ReLU model with W=-2 B=-1 after Fit for 2 epochs / Predict / returns [0, 0, 0, 0]", func(t *testing.T) {
+		t.Run("ReLU model with W=-2 B=-1 after Fit for 2 epochs / Predict / returns [0, 0, 0, 2]", func(t *testing.T) {
 			// ----- given -----
 			wInitializer := initializers.NewFull(&initializers.FullConfig{Value: -2.})
 			bInitializer := initializers.NewFull(&initializers.FullConfig{Value: -1.})
@@ -130,7 +130,7 @@ func TestModel(t *testing.T) {
 			}
 
 			// ----- then -----
-			exp, err := tensor.Of([][]float64{{0.}, {0.}, {0.}, {0.}}, &tensor.Config{Device: dev})
+			exp, err := tensor.Of([][]float64{{0.}, {0.}, {0.}, {2.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -197,7 +197,7 @@ func TestModel(t *testing.T) {
 			}
 		})
 
-		t.Run("ReLU model with W=-2 B=-1 / Eval after Fit / cumulative MSE goes 1.25", func(t *testing.T) {
+		t.Run("ReLU model with W=-2 B=-1 / Eval after Fit / cumulative MSE goes 0.25", func(t *testing.T) {
 			// ----- given -----
 			wInitializer := initializers.NewFull(&initializers.FullConfig{Value: -2.})
 			bInitializer := initializers.NewFull(&initializers.FullConfig{Value: -1.})
@@ -252,8 +252,8 @@ func TestModel(t *testing.T) {
 			}
 
 			// ----- then -----
-			if val := result["MSE"]; !(1.24-1e-10 < val && val < 1.26+1e-10) {
-				t.Fatalf("expected metric value to be (1.25): got (%f)", val)
+			if val := result["MSE"]; !(0.25-1e-10 < val && val < 0.25+1e-10) {
+				t.Fatalf("expected metric value to be (0.25): got (%f)", val)
 			}
 		})
 

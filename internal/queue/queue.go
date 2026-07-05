@@ -1,7 +1,5 @@
 package queue
 
-import "fmt"
-
 type Queue[T any] struct {
 	head *node[T]
 	tail *node[T]
@@ -20,7 +18,7 @@ func (q *Queue[T]) IsEmpty() bool {
 	return q.head == nil && q.tail == nil
 }
 
-func (q *Queue[T]) Enqueue(values []T) {
+func (q *Queue[T]) Enqueue(values ...T) {
 	for _, value := range values {
 		q.enqueue(value)
 	}
@@ -38,9 +36,9 @@ func (q *Queue[T]) enqueue(value T) {
 	}
 }
 
-func (q *Queue[T]) Dequeue() (value T, err error) {
+func (q *Queue[T]) Dequeue() (value T) {
 	if q.IsEmpty() {
-		return value, fmt.Errorf("can not dequeue as queue is empty")
+		panic("can not dequeue as queue is empty")
 	}
 
 	value = q.head.value
@@ -50,5 +48,5 @@ func (q *Queue[T]) Dequeue() (value T, err error) {
 		q.tail = nil
 	}
 
-	return value, nil
+	return value
 }

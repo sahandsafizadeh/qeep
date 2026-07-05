@@ -3,11 +3,12 @@ package gradtrack
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/internal/queue"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func BackPropagate(t tensor.Tensor) error {
-	err := backward(startEdge(t))
+func BackPropagate(t tensor.Tensor) (err error) {
+	err = backpropagate(t)
 	if err != nil {
 		return fmt.Errorf("BackPropagate: %w", err)
 	}
@@ -15,39 +16,114 @@ func BackPropagate(t tensor.Tensor) error {
 	return nil
 }
 
-func startEdge(t tensor.Tensor) *backwardEdge {
-	return &backwardEdge{
-		target: t,
-		gradFn: func() (tensor.Tensor, error) {
-			// neutral tensor; same shape, all ones
-			return toOnes(t), nil
+func backpropagate(t tensor.Tensor) (err error) {
+	root := createBackpropRoot(t)
+	states := prepareBackpropStates(root)
+
+	err = backpropRTS(root, states)
+	if err != nil {
+		return err
+	}
+
+	err = accumulateGradSnapshots(states)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createBackpropRoot(t tensor.Tensor) *GradContext {
+	return &GradContext{
+		tracked: false,
+		backEdges: []*backwardEdge{
+			{
+				target: t,
+				gradFn: func() (tensor.Tensor, error) {
+					// neutral tensor; same shape, all ones
+					return toOnes(t), nil
+				},
+			},
 		},
 	}
 }
 
-func backward(edge *backwardEdge) error {
-	gctx := gradContextOf(edge.target)
+func prepareBackpropStates(root *GradContext) map[*GradContext]*backpropState {
+	states := map[*GradContext]*backpropState{}
 
-	if !gctx.tracked {
-		return nil
-	} else {
-		gctx.bpdirty = true
+	q := queue.NewQueue[*GradContext]()
+	q.Enqueue(root)
+
+	for !q.IsEmpty() {
+		src := q.Dequeue()
+		for _, edge := range src.backEdges {
+			dst := gradContextOf(edge.target)
+			if !dst.tracked {
+				continue
+			}
+
+			bpst, seen := states[dst]
+			if !seen {
+				bpst = &backpropState{
+					unconsumed: 0,
+					grsnapshot: dst.gradient,
+				}
+
+				states[dst] = bpst
+				dst.gradient = nil
+				q.Enqueue(dst)
+			}
+
+			bpst.unconsumed++
+		}
 	}
 
-	grad, err := edge.gradFn()
-	if err != nil {
-		return err
+	return states
+}
+
+func backpropRTS(root *GradContext, states map[*GradContext]*backpropState) (err error) {
+	q := queue.NewQueue[*GradContext]()
+	q.Enqueue(root)
+
+	for !q.IsEmpty() {
+		src := q.Dequeue()
+		for _, edge := range src.backEdges {
+			dst := gradContextOf(edge.target)
+			if !dst.tracked {
+				continue
+			}
+
+			// crucial for preventing memory leak
+			dst.bpdirty = true
+
+			grad, err := edge.gradFn()
+			if err != nil {
+				return err
+			}
+
+			err = accumulateGrad(dst, grad)
+			if err != nil {
+				return err
+			}
+
+			bpst := states[dst]
+			bpst.unconsumed--
+			if bpst.unconsumed == 0 {
+				q.Enqueue(dst)
+			}
+		}
 	}
 
-	err = accumulateGrad(gctx, grad)
-	if err != nil {
-		return err
-	}
+	return nil
+}
 
-	for _, e := range gctx.backEdges {
-		err = backward(e)
-		if err != nil {
-			return err
+func accumulateGradSnapshots(states map[*GradContext]*backpropState) (err error) {
+	for gctx, bpst := range states {
+		if bpst.grsnapshot != nil {
+			err = accumulateGrad(gctx, bpst.grsnapshot)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -55,6 +131,8 @@ func backward(edge *backwardEdge) error {
 }
 
 func accumulateGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
+	ensureGradSafeToAccumulate(grad)
+
 	if gctx.gradient == nil {
 		gctx.gradient = grad
 	} else {
@@ -67,4 +145,11 @@ func accumulateGrad(gctx *GradContext, grad tensor.Tensor) (err error) {
 	}
 
 	return nil
+}
+
+func ensureGradSafeToAccumulate(grad tensor.Tensor) {
+	gctx := gradContextOf(grad)
+	if !gctx.bpdirty || len(gctx.backEdges) > 0 {
+		panic("gradtrack: memory leak danger: gradient tensor must be dirty and untracked")
+	}
 }

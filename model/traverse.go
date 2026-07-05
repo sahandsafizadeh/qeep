@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/internal/queue"
 	"github.com/sahandsafizadeh/qeep/model/internal/node"
-	"github.com/sahandsafizadeh/qeep/model/internal/queue"
 )
 
 func (m *Model) forward() (err error) {
@@ -35,20 +35,17 @@ func (m *Model) enableGrad() (err error) {
 
 func traverseBFS(roots []*node.Node, applyFunc func(*node.Node) error) (err error) {
 	q := queue.NewQueue[*node.Node]()
-	q.Enqueue(roots)
+	q.Enqueue(roots...)
 
 	for !q.IsEmpty() {
-		cn, err := q.Dequeue()
-		if err != nil {
-			panic(fmt.Sprintf("traverseBFS: dequeue failed on non-empty queue: %v", err))
-		}
+		cn := q.Dequeue()
 
 		err = applyFunc(cn)
 		if err != nil {
 			return fmt.Errorf("(Layer %d): %w", cn.NLayer(), err)
 		}
 
-		q.Enqueue(cn.Children())
+		q.Enqueue(cn.Children()...)
 	}
 
 	return nil

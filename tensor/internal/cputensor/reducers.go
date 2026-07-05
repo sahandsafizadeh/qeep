@@ -3,58 +3,31 @@ package cputensor
 import (
 	"math"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 func (t *CPUTensor) sum() float64 {
-	return t.reduceByAssociativeFunc(func(a, b reducerPair) reducerPair {
-		return reducerPair{value: a.value + b.value}
-	}, unwrapValue, 0.)
+	return t.reduceAll(new(sumReducer))
 }
 
-func (t *CPUTensor) max(uf reducerUnwrapFunc) float64 {
-	return t.reduceByAssociativeFunc(func(a, b reducerPair) reducerPair {
-		if a.value >= b.value {
-			return a
-		} else {
-			return b
-		}
-	}, uf, math.Inf(-1))
+func (t *CPUTensor) max() float64 {
+	return t.reduceAll(new(maxReducer))
 }
 
-func (t *CPUTensor) min(uf reducerUnwrapFunc) float64 {
-	return t.reduceByAssociativeFunc(func(a, b reducerPair) reducerPair {
-		if a.value <= b.value {
-			return a
-		} else {
-			return b
-		}
-	}, uf, math.Inf(+1))
+func (t *CPUTensor) min() float64 {
+	return t.reduceAll(new(minReducer))
 }
 
 func (t *CPUTensor) avg() float64 {
-	return t.sum() / float64(t.numElems())
+	return t.reduceAll(new(avgReducer))
 }
 
 func (t *CPUTensor) _var() float64 {
-	xBar := t.mean()
-	sigma := t.reduceByAssociativeFunc(func(s, x reducerPair) reducerPair {
-		xdiff := x.value - xBar
-		xdiff2 := xdiff * xdiff
-		return reducerPair{value: s.value + xdiff2}
-	}, unwrapValue, 0.)
-
-	n := float64(t.numElems())
-	if n > 1 {
-		return sigma / (n - 1)
-	} else {
-		return 0.
-	}
+	return t.reduceAll(new(varReducer))
 }
 
 func (t *CPUTensor) std() float64 {
-	return math.Sqrt(t._var())
+	return t.reduceAll(new(stdReducer))
 }
 
 func (t *CPUTensor) mean() float64 {
@@ -62,120 +35,239 @@ func (t *CPUTensor) mean() float64 {
 }
 
 func (t *CPUTensor) argmax(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.max(unwrapIndex) })
+	return t.reduceDim(dim, new(argmaxReducer))
 }
 
 func (t *CPUTensor) argmin(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.min(unwrapIndex) })
+	return t.reduceDim(dim, new(argminReducer))
 }
 
 func (t *CPUTensor) sumAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.sum() })
+	return t.reduceDim(dim, new(sumReducer))
 }
 
 func (t *CPUTensor) maxAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.max(unwrapValue) })
+	return t.reduceDim(dim, new(maxReducer))
 }
 
 func (t *CPUTensor) minAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.min(unwrapValue) })
+	return t.reduceDim(dim, new(minReducer))
 }
 
 func (t *CPUTensor) avgAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.avg() })
+	return t.reduceDim(dim, new(avgReducer))
 }
 
 func (t *CPUTensor) varAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u._var() })
+	return t.reduceDim(dim, new(varReducer))
 }
 
 func (t *CPUTensor) stdAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.std() })
+	return t.reduceDim(dim, new(stdReducer))
 }
 
 func (t *CPUTensor) meanAlong(dim int) *CPUTensor {
-	return t.reduceDimUsingTensorFunc(dim, func(u *CPUTensor) float64 { return u.mean() })
+	return t.avgAlong(dim)
 }
 
 /* ----- helpers ----- */
 
-func (t *CPUTensor) reduceByAssociativeFunc(af reducerFunc, uf reducerUnwrapFunc, identityValue float64) float64 {
-	result := reducerPair{value: identityValue}
-	index := 0
+func (t *CPUTensor) reduceAll(r reducer) float64 {
+	index := make([]int, len(t.dims))
 
-	var trav func([]int, any)
-	trav = func(dims []int, data any) {
-		if len(dims) == 0 {
-			result = af(result, reducerPair{
-				index: index,
-				value: data.(float64),
-			})
-			index++
-			return
-		}
-
-		dims = dims[1:]
-		rows := data.([]any)
-		for i := range rows {
-			trav(dims, rows[i])
-		}
+	r.init()
+	for i := range t.numElems() {
+		r.feed(i, t.at(index))
+		updateElementWiseIndex(index, t.dims)
 	}
 
-	trav(t.dims, t.data)
-
-	return uf(result)
+	return r.result()
 }
 
-func (t *CPUTensor) reduceDimUsingTensorFunc(dim int, rtf reducerTensorFunc) *CPUTensor {
+func (t *CPUTensor) reduceDim(dim int, r reducer) *CPUTensor {
 	dims := util.SqueezeDims(dim, t.dims)
-	elemGen := t.linearElemGeneratorWithReducedDim(dim, rtf)
+	dstidx := make([]int, len(dims))
+	srcidx := make([]int, len(t.dims))
 
-	o := new(CPUTensor)
-	o.dims = dims
-	o.initWith(elemGen)
+	return newTensorWithElementWiseInit(dims, func() float64 {
+		defer updateElementWiseIndex(dstidx, dims)
 
-	return o
-}
-
-func (t *CPUTensor) linearElemGeneratorWithReducedDim(dim int, rtf reducerTensorFunc) initializerFunc {
-	state := make([]tensor.Range, len(t.dims))
-	for i := range state {
-		state[i].From = 0
-		state[i].To = 1
-	}
-	state[dim].To = t.dims[dim]
-
-	return func() any {
-		row := t.slice(state)
-
-		i := len(t.dims) - 1
-		for i >= 0 {
-			if i == dim {
-				i--
+		i := 0
+		for j := range srcidx {
+			if j == dim {
 				continue
 			}
 
-			if state[i].To < t.dims[i] {
-				state[i].From++
-				state[i].To++
-				break
-			} else {
-				state[i].From = 0
-				state[i].To = 1
-				i--
-			}
+			srcidx[j] = dstidx[i]
+			i++
 		}
 
-		return rtf(row)
+		r.init()
+		for i := range t.dims[dim] {
+			srcidx[dim] = i
+			r.feed(i, t.at(srcidx))
+		}
+
+		return r.result()
+	})
+}
+
+/* ---------- reducer implementations ---------- */
+
+// ----- sum -----
+type sumReducer struct {
+	value float64
+}
+
+func (r *sumReducer) init() {
+	r.value = 0
+}
+
+func (r *sumReducer) feed(_ int, value float64) {
+	r.value += value
+}
+
+func (r *sumReducer) result() float64 {
+	return r.value
+}
+
+// ----- max -----
+type maxReducer struct {
+	value float64
+}
+
+func (r *maxReducer) init() {
+	r.value = math.Inf(-1)
+}
+
+func (r *maxReducer) feed(_ int, value float64) {
+	if value > r.value {
+		r.value = value
 	}
 }
 
-/* ----- unwrappers ----- */
+func (r *maxReducer) result() float64 {
+	return r.value
+}
 
-func unwrapIndex(r reducerPair) float64 {
+// ----- min -----
+type minReducer struct {
+	value float64
+}
+
+func (r *minReducer) init() {
+	r.value = math.Inf(+1)
+}
+
+func (r *minReducer) feed(_ int, value float64) {
+	if value < r.value {
+		r.value = value
+	}
+}
+
+func (r *minReducer) result() float64 {
+	return r.value
+}
+
+// ----- argmax -----
+type argmaxReducer struct {
+	index int
+	value float64
+}
+
+func (r *argmaxReducer) init() {
+	r.index = -1
+	r.value = math.Inf(-1)
+}
+
+func (r *argmaxReducer) feed(index int, value float64) {
+	if value > r.value {
+		r.index = index
+		r.value = value
+	}
+}
+
+func (r *argmaxReducer) result() float64 {
 	return float64(r.index)
 }
 
-func unwrapValue(r reducerPair) float64 {
-	return r.value
+// ----- argmin -----
+type argminReducer struct {
+	index int
+	value float64
+}
+
+func (r *argminReducer) init() {
+	r.index = -1
+	r.value = math.Inf(+1)
+}
+
+func (r *argminReducer) feed(index int, value float64) {
+	if value < r.value {
+		r.index = index
+		r.value = value
+	}
+}
+
+func (r *argminReducer) result() float64 {
+	return float64(r.index)
+}
+
+// ----- avg (Welford) -----
+type avgReducer struct {
+	count int
+	mean  float64
+}
+
+func (r *avgReducer) init() {
+	r.count = 0
+	r.mean = 0.
+}
+
+func (r *avgReducer) feed(_ int, value float64) {
+	r.count++
+	delta := value - r.mean
+	r.mean += delta / float64(r.count)
+}
+
+func (r *avgReducer) result() float64 {
+	return r.mean
+}
+
+// ----- var (Welford) -----
+type varReducer struct {
+	count int
+	mean  float64
+	m2    float64
+}
+
+func (r *varReducer) init() {
+	r.count = 0
+	r.mean = 0
+	r.m2 = 0
+}
+
+func (r *varReducer) feed(_ int, value float64) {
+	r.count++
+	delta := value - r.mean
+	r.mean += delta / float64(r.count)
+	delta2 := value - r.mean
+	r.m2 += delta * delta2
+}
+
+func (r *varReducer) result() float64 {
+	if r.count <= 1 {
+		return 0.
+	}
+
+	return r.m2 / float64(r.count-1)
+}
+
+// ----- std (Welford) -----
+type stdReducer struct {
+	varReducer
+}
+
+func (r *stdReducer) result() float64 {
+	return math.Sqrt(r.varReducer.result())
 }

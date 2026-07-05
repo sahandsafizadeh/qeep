@@ -77,6 +77,16 @@ func TestBuiltInLayers(t *testing.T) {
 			}
 		})
 
+		t.Run("Concat(valid config) / applying to two streams / no error", func(t *testing.T) {
+			x := stream.Input()
+			y := stream.Input()
+			z := stream.Concat(&layers.ConcatConfig{Dim: 0})(x, y)
+
+			if err := z.Error(); err != nil {
+				t.Fatal(err)
+			}
+		})
+
 		t.Run("Dropout(nil) / applying to stream with nil config / no error", func(t *testing.T) {
 			x := stream.Input()
 			x = stream.Dropout(nil)(x)

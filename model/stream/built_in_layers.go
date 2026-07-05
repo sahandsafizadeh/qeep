@@ -62,6 +62,14 @@ func Add() StreamFunc {
 	return NewStreamFunc(initf)
 }
 
+func Concat(conf *layers.ConcatConfig) StreamFunc {
+	initf := func() (contract.Layer, error) {
+		return layers.NewConcat(conf)
+	}
+
+	return NewStreamFunc(initf)
+}
+
 func Dropout(conf *layers.DropoutConfig) StreamFunc {
 	initf := func() (contract.Layer, error) {
 		return layers.NewDropout(conf)

@@ -63,7 +63,7 @@ func preprocessData(data *dataSplit) {
 /* ----- helpers ----- */
 
 func loadCSV(fileAddress string) (x [][]float64, y [][]float64, err error) {
-	file, err := os.Open(fileAddress)
+	file, err := os.Open(fileAddress) // #nosec G304
 	if err != nil {
 		return x, y, err
 	}

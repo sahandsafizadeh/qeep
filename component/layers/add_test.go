@@ -202,7 +202,7 @@ func TestAdd(t *testing.T) {
 			}
 		})
 
-		// ============ validations ============
+		// ============================== validations ==============================
 
 		t.Run("one input tensor / Forward(x) / returns error: expected exactly two input tensors", func(t *testing.T) {
 			layer := layers.NewAdd()

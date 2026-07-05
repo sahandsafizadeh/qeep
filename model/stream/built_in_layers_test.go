@@ -67,6 +67,16 @@ func TestBuiltInLayers(t *testing.T) {
 			}
 		})
 
+		t.Run("Add() / applying to two streams / no error", func(t *testing.T) {
+			x := stream.Input()
+			y := stream.Input()
+			z := stream.Add()(x, y)
+
+			if err := z.Error(); err != nil {
+				t.Fatal(err)
+			}
+		})
+
 		t.Run("Dropout(nil) / applying to stream with nil config / no error", func(t *testing.T) {
 			x := stream.Input()
 			x = stream.Dropout(nil)(x)

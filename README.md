@@ -50,26 +50,22 @@ const dev = tensor.CPU
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Inputs: 4, Outputs: 16, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 16, Device: dev})(input)
 	x = stream.Relu()(x)
-	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
 
-	x = stream.FC(&layers.FCConfig{Inputs: 16, Outputs: 3, Device: dev})(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 12, Device: dev})(x)
+	x = stream.Relu()(x)
+
+	x = stream.FC(&layers.FCConfig{Outputs: 3, Device: dev})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
 
 	/* -------------------- */
 
 	loss := losses.NewCE()
 
-	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{
-		LearningRate: 1e-5,
-		WeightDecay:  optimizers.AdamWDefaultWeightDecay,
-		Beta1:        optimizers.AdamWDefaultBeta1,
-		Beta2:        optimizers.AdamWDefaultBeta2,
-		Eps:          optimizers.AdamWDefaultEps,
-	})
+	optimizer, err := optimizers.NewAdam(nil)
 	if err != nil {
-		return
+		return m, err
 	}
 
 	m, err = model.NewModel(input, output, &model.ModelConfig{
@@ -77,11 +73,10 @@ func prepareModel() (m *model.Model, err error) {
 		Optimizer: optimizer,
 	})
 	if err != nil {
-		return
+		return m, err
 	}
 
 	return m, nil
-}
 ```
 
 📂 More working [examples](./examples) are provided. You can download their dataset and run them like the following for _Iris Classification_:

@@ -138,6 +138,22 @@ func (t *CPUTensor) div(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return a / b })
 }
 
+func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTensor {
+	index := make([]int, len(t.dims))
+	return newTensorWithElementWiseInit(t.dims, func() float64 {
+		defer updateElementWiseIndex(index, t.dims)
+		return suf(t.at(index))
+	})
+}
+
+func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
+	index := make([]int, len(t1.dims))
+	return newTensorWithElementWiseInit(t1.dims, func() float64 {
+		defer updateElementWiseIndex(index, t1.dims)
+		return sbf(t1.at(index), t2.at(index))
+	})
+}
+
 func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
 	dims := util.DotDims(t1.dims)
@@ -186,77 +202,35 @@ func (t *CPUTensor) matMul(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
 	dims := util.MatMulDims(t1.dims, t2.dims)
 
-	o := new(CPUTensor)
-	o.dims = dims
-	o.strd = util.DimsToStrides(dims)
-	o.data = make([]float64, util.DimsToNumElems(dims))
+	nd := len(dims)
+	n := t1.dims[nd-1] // shared dim (m×n × n×k = m×k)
 
-	nd := len(t1.dims)
-	m := t1.dims[nd-2]
-	n := t1.dims[nd-1]
-	k := t2.dims[nd-1]
-	t1rs := t1.strd[nd-2]
-	t1cs := t1.strd[nd-1]
-	t2rs := t2.strd[nd-2]
-	t2cs := t2.strd[nd-1]
-	ors := o.strd[nd-2]
+	oidx := make([]int, nd)
+	t1idx := make([]int, nd)
+	t2idx := make([]int, nd)
 
-	kernel := func(t1ofst, t2ofst, oofst int) {
-		for i := range m {
-			orow := oofst + i*ors
-			t1row := t1ofst + i*t1rs
-			for p := range n {
-				t2row := t2ofst + p*t2rs
-				a := t1.data[t1row+p*t1cs]
-				for j := range k {
-					b := t2.data[t2row+j*t2cs]
-					o.data[orow+j] += a * b
-				}
-			}
-		}
-	}
+	return newTensorWithElementWiseInit(dims, func() float64 {
+		defer updateElementWiseIndex(oidx, dims)
 
-	bdims := dims[:nd-2]
-	bidx := make([]int, len(bdims))
-	nb := util.DimsToNumElems(bdims)
+		copy(t1idx, oidx)
+		copy(t2idx, oidx)
 
-	for range nb {
-		var (
-			t1ofst = 0
-			t2ofst = 0
-			oofst  = 0
-		)
-		for d := range bdims {
-			t1ofst += bidx[d] * t1.strd[d]
-			t2ofst += bidx[d] * t2.strd[d]
-			oofst += bidx[d] * o.strd[d]
+		res := 0.
+		for p := range n {
+			t1idx[nd-2] = oidx[nd-2]
+			t1idx[nd-1] = p
+			t2idx[nd-2] = p
+			t2idx[nd-1] = oidx[nd-1]
+
+			res += t1.at(t1idx) * t2.at(t2idx)
 		}
 
-		kernel(t1ofst, t2ofst, oofst)
-		updateElementWiseIndex(bidx, bdims)
-	}
-
-	return o
+		return res
+	})
 }
 
 func (t *CPUTensor) equals(u *CPUTensor) bool {
 	o := t.eq(u)
 	n := o.numElems()
 	return o.sum() >= float64(n)
-}
-
-func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTensor {
-	index := make([]int, len(t.dims))
-	return newTensorWithElementWiseInit(t.dims, func() float64 {
-		defer updateElementWiseIndex(index, t.dims)
-		return suf(t.at(index))
-	})
-}
-
-func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
-	index := make([]int, len(t1.dims))
-	return newTensorWithElementWiseInit(t1.dims, func() float64 {
-		defer updateElementWiseIndex(index, t1.dims)
-		return sbf(t1.at(index), t2.at(index))
-	})
 }

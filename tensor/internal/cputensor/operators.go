@@ -158,44 +158,29 @@ func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
 	dims := util.DotDims(t1.dims)
 
-	o := new(CPUTensor)
-	o.dims = dims
-	o.strd = util.DimsToStrides(dims)
-	o.data = make([]float64, util.DimsToNumElems(dims))
-
 	nd := len(t1.dims)
 	n := t1.dims[nd-1]
-	t1s := t1.strd[nd-1]
-	t2s := t2.strd[nd-1]
 
-	kernel := func(t1ofst, t2ofsst, oofst int) {
+	oidx := make([]int, len(dims))
+	t1idx := make([]int, nd)
+	t2idx := make([]int, nd)
+
+	return newTensorWithElementWiseInit(dims, func() float64 {
+		defer updateElementWiseIndex(oidx, dims)
+
+		copy(t1idx, oidx)
+		copy(t2idx, oidx)
+
+		res := 0.
 		for k := range n {
-			a := t1.data[t1ofst+k*t1s]
-			b := t2.data[t2ofsst+k*t2s]
-			o.data[oofst] += a * b
-		}
-	}
+			t1idx[nd-1] = k
+			t2idx[nd-1] = k
 
-	bidx := make([]int, len(dims))
-	nb := util.DimsToNumElems(dims)
-
-	for range nb {
-		var (
-			t1ofst = 0
-			t2ofst = 0
-			oofst  = 0
-		)
-		for d := range dims {
-			t1ofst += bidx[d] * t1.strd[d]
-			t2ofst += bidx[d] * t2.strd[d]
-			oofst += bidx[d] * o.strd[d]
+			res += t1.at(t1idx) * t2.at(t2idx)
 		}
 
-		kernel(t1ofst, t2ofst, oofst)
-		updateElementWiseIndex(bidx, dims)
-	}
-
-	return o
+		return res
+	})
 }
 
 func (t *CPUTensor) matMul(u *CPUTensor) *CPUTensor {

@@ -8,7 +8,7 @@ Welcome to **qeep** (pronounced /kēp/)! This project implements a **_deep learn
 - 🔁 _Automatic differentiation_ (**AutoGrad**) for tensors.
 - ⚡ _GPU acceleration_ via **CUDA** for high-performance large tensor computations.
 - 🧱 A variety of neural network _components_, such as fully connected (`FC`) layer.
-- 📝A _declarative API_ for defining neural networks using `stream` package.
+- 📝 A _declarative API_ for defining neural networks using `stream` package.
 
 ## Installation
 

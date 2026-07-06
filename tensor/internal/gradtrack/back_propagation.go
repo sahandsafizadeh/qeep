@@ -49,7 +49,7 @@ func createBackpropRoot(t tensor.Tensor) *GradContext {
 }
 
 func prepareBackpropStates(root *GradContext) map[*GradContext]*backpropState {
-	states := map[*GradContext]*backpropState{}
+	states := make(map[*GradContext]*backpropState)
 
 	q := queue.NewQueue[*GradContext]()
 	q.Enqueue(root)

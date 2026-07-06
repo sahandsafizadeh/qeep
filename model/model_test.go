@@ -18,6 +18,355 @@ import (
 func TestModel(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
+		// ============================== forward pass ==============================
+
+		t.Run("simple chain / Predict / returns input unchanged", func(t *testing.T) {
+			// ----- given -----
+			input := stream.Input()
+			p := stream.Relu()(input)
+			p = stream.Relu()(p)
+			output := stream.Relu()(p)
+
+			m, err := model.NewModel(input, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("symmetric diamond: equal-depth branches merged with Add / Predict / returns 2x", func(t *testing.T) {
+			// ----- given -----
+			input := stream.Input()
+			p1 := stream.Relu()(input)
+			p2 := stream.Relu()(input)
+			output := stream.Add()(p1, p2)
+
+			m, err := model.NewModel(input, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{{2.}, {4.}, {6.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("asymmetric diamond: unequal-depth branches merged with Add / Predict / returns 2x", func(t *testing.T) {
+			// ----- given -----
+			input := stream.Input()
+			p1 := stream.Relu()(input)
+			p2 := stream.Relu()(input)
+			p2 = stream.Relu()(p2)
+			output := stream.Add()(p1, p2)
+
+			m, err := model.NewModel(input, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{{2.}, {4.}, {6.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("residual/skip connection over a non-leaf / Predict / returns 2x", func(t *testing.T) {
+			// ----- given -----
+			input := stream.Input()
+			p := stream.Relu()(input)
+			f := stream.Relu()(p)
+			f = stream.Relu()(f)
+			output := stream.Add()(f, p)
+
+			m, err := model.NewModel(input, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{{2.}, {4.}, {6.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("3-way merge with unequal depths via Concat / Predict / returns x repeated across columns", func(t *testing.T) {
+			// ----- given -----
+			input := stream.Input()
+			p1 := stream.Relu()(input)
+			p2 := stream.Relu()(input)
+			p3 := stream.Relu()(input)
+			p2 = stream.Relu()(p2)
+			p3 = stream.Relu()(p3)
+			p3 = stream.Relu()(p3)
+			output := stream.Concat(&layers.ConcatConfig{Dim: 1})(p1, p2, p3)
+
+			m, err := model.NewModel(input, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{
+				{1., 1., 1.},
+				{2., 2., 2.},
+				{3., 3., 3.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("nested merges at two depths / Predict / returns 3x", func(t *testing.T) {
+			// ----- given -----
+			input := stream.Input()
+			p1 := stream.Relu()(input)
+			p2 := stream.Relu()(p1)
+			p3 := stream.Relu()(p2)
+			p4 := stream.Add()(p3, p1)
+			output := stream.Add()(p4, p2)
+
+			m, err := model.NewModel(input, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{{3.}, {6.}, {9.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("long pending chain before a shared merge / Predict / returns 2x", func(t *testing.T) {
+			// ----- given -----
+			input := stream.Input()
+			p1 := stream.Relu()(input)
+			p2 := stream.Relu()(p1)
+			p2 = stream.Relu()(p2)
+			p2 = stream.Relu()(p2)
+			p2 = stream.Relu()(p2)
+			output := stream.Add()(p2, p1)
+
+			m, err := model.NewModel(input, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{{2.}, {4.}, {6.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("multi-input model merge with unequal branches / Predict / returns x1+x2", func(t *testing.T) {
+			// ----- given -----
+			input1 := stream.Input()
+			input2 := stream.Input()
+			p1 := stream.Relu()(input1)
+			p2 := stream.Relu()(input2)
+			p2 = stream.Relu()(p2)
+			output := stream.Add()(p1, p2)
+
+			m, err := model.NewMultiInputModel([]*stream.Stream{input1, input2}, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x1, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Of([][]float64{{4.}, {5.}, {6.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x1, x2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{{5.}, {7.}, {9.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("output past an asymmetric merge / Predict / returns 2x", func(t *testing.T) {
+			// ----- given -----
+			input := stream.Input()
+			p1 := stream.Relu()(input)
+			p2 := stream.Relu()(input)
+			p2 = stream.Relu()(p2)
+			p3 := stream.Add()(p1, p2)
+			output := stream.Relu()(p3)
+
+			m, err := model.NewModel(input, output, &model.ModelConfig{})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- when -----
+			x, err := tensor.Of([][]float64{{1.}, {2.}, {3.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := m.Predict([]tensor.Tensor{x})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			// ----- then -----
+			exp, err := tensor.Of([][]float64{{2.}, {4.}, {6.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		// ============================== main paths ==============================
 
 		t.Run("ReLU model with W=-2 B=-1 / Predict before Fit / returns [3, 1, 0, 0]", func(t *testing.T) {

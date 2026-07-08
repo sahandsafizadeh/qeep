@@ -3,8 +3,9 @@ package cputensor
 import "github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 
 type CPUTensor struct {
-	dims []int
+	ofst int
 	strd []int
+	dims []int
 	data []float64
 	gctx *gradtrack.GradContext
 }

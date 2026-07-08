@@ -7,9 +7,10 @@ import (
 
 func newTensorWithElementWiseInit(dims []int, fn elemInitFunc) *CPUTensor {
 	t := new(CPUTensor)
+	t.ofst = 0
+	t.strd = util.DimsToStrides(dims)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
-	t.strd = util.DimsToStrides(dims)
 
 	t.data = make([]float64, util.DimsToNumElems(dims))
 	for i := range t.data {
@@ -105,8 +106,9 @@ func tensorFromData(idata any) *CPUTensor {
 	}
 
 	return &CPUTensor{
-		dims: dims,
+		ofst: 0,
 		strd: strd,
+		dims: dims,
 		data: data,
 	}
 }

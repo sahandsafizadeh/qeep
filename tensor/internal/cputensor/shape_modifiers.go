@@ -10,10 +10,11 @@ func (t *CPUTensor) transpose() *CPUTensor {
 	n := len(t.dims)
 
 	o := new(CPUTensor)
-	o.dims = util.TransposeDims(t.dims)
+	o.ofst = t.ofst
 	o.strd = make([]int, n)
 	copy(o.strd, t.strd)
 	o.strd[n-2], o.strd[n-1] = o.strd[n-1], o.strd[n-2]
+	o.dims = util.TransposeDims(t.dims)
 
 	o.data = t.data // reuse data
 
@@ -21,10 +22,22 @@ func (t *CPUTensor) transpose() *CPUTensor {
 }
 
 func (t *CPUTensor) reshape(shape []int) *CPUTensor {
+	fofst := 0
+	fstrd := util.DimsToStrides(t.dims)
+
+	if t.ofst != fofst || !slices.Equal(t.strd, fstrd) { // impossible to reuse data; copy
+		index := make([]int, len(t.dims))
+		return newTensorWithElementWiseInit(shape, func() float64 {
+			defer updateElementWiseIndex(index, t.dims)
+			return t.at(index)
+		})
+	}
+
 	o := new(CPUTensor)
+	o.ofst = 0
+	o.strd = util.DimsToStrides(shape)
 	o.dims = make([]int, len(shape))
 	copy(o.dims, shape)
-	o.strd = util.DimsToStrides(shape)
 
 	o.data = t.data // reuse data
 
@@ -32,35 +45,26 @@ func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 }
 
 func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
-	if slices.Equal(shape, t.dims) {
-		o := new(CPUTensor)
-		o.dims = make([]int, len(t.dims))
-		copy(o.dims, t.dims)
-		o.strd = make([]int, len(t.strd))
-		copy(o.strd, t.strd)
+	o := new(CPUTensor)
+	o.ofst = t.ofst
+	o.strd = make([]int, len(shape))
+	o.dims = make([]int, len(shape))
+	copy(o.dims, shape)
 
-		o.data = t.data // reuse data
-
-		return o
+	offset := len(shape) - len(t.dims)
+	for i := range o.strd {
+		if i < offset {
+			o.strd[i] = 0
+		} else if j := i - offset; t.dims[j] == 1 && shape[i] != 1 {
+			o.strd[i] = 0
+		} else {
+			o.strd[i] = t.strd[j]
+		}
 	}
 
-	ofst := len(shape) - len(t.dims)
-	dstidx := make([]int, len(shape))
-	srcidx := make([]int, len(t.dims))
+	o.data = t.data // reuse data
 
-	return newTensorWithElementWiseInit(shape, func() float64 {
-		defer updateElementWiseIndex(dstidx, shape)
-
-		for i := range srcidx {
-			if t.dims[i] == 1 {
-				srcidx[i] = 0
-			} else {
-				srcidx[i] = dstidx[i+ofst]
-			}
-		}
-
-		return t.at(srcidx)
-	})
+	return o
 }
 
 func (t *CPUTensor) unsqueeze(dim int) *CPUTensor {

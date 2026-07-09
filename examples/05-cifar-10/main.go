@@ -84,7 +84,21 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Outputs: 256, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 512, Device: dev})(input)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
+	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
+
+	for range 4 {
+		res := x
+		x = stream.FC(&layers.FCConfig{Outputs: 512, Device: dev})(x)
+		x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
+		x = stream.Relu()(x)
+		x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
+		x = stream.Add()(x, res) // skip-connection
+	}
+
+	x = stream.FC(&layers.FCConfig{Outputs: 256, Device: dev})(x)
 	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Relu()(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)

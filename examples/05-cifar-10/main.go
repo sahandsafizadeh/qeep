@@ -26,8 +26,8 @@ const (
 )
 
 const (
-	batchSize = 64
-	epochs    = 5
+	batchSize = 128
+	epochs    = 150
 	dev       = tensor.CPU
 )
 
@@ -41,7 +41,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: unknown
+	// Best Accuracy: expected to be 0.85
 }
 
 func run() (result map[string]float64, err error) {
@@ -101,7 +101,7 @@ func prepareModel() (m *model.Model, err error) {
 
 	loss := losses.NewCE()
 
-	optimizer, err := optimizers.NewAdam(nil)
+	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{WeightDecay: 1e-4})
 	if err != nil {
 		return m, err
 	}

@@ -15,7 +15,8 @@ import (
 )
 
 type CUDATensor struct {
-	n    int
+	ofst int
+	strd []int
 	dims []int
 	data unsafe.Pointer
 	gctx *gradtrack.GradContext

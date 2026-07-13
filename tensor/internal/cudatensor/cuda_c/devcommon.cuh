@@ -29,12 +29,12 @@ __device__ inline unsigned int threadPosition()
     return threadIdx.x + blockIdx.x * blockDim.x;
 }
 
-__host__ __device__ inline int encode(DimArr index, DimArr rcp)
+__host__ __device__ inline int index2lnpos(DimArr index, CUDAView view)
 {
-    int lnpos = 0;
-    for (size_t i = 0; i < rcp.size; i++)
+    int lnpos = view.ofst;
+    for (size_t i = 0; i < index.size; i++)
     {
-        lnpos += index.arr[i] * rcp.arr[i];
+        lnpos += view.strd.arr[i] * index.arr[i];
     }
     return lnpos;
 }

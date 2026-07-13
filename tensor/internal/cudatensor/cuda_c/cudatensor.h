@@ -14,9 +14,8 @@ double *Of(size_t n, double *input_data);
 double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr dims_dst);
 
 /*--------------- accessors ---------------*/
-double At(CudaData src, DimArr dims, DimArr index);
-double *Slice(CudaData src, DimArr dims, RangeArr index);
-double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index);
+double At(CUDATensor t, DimArr index);
+double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view);
 
 /*------------ shape modifiers ------------*/
 double *Reshape(CudaData src);

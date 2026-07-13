@@ -4,41 +4,56 @@
 
 /* ----- device functions ----- */
 
-__device__ int toPatchPosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, RangeArr ranges)
+__device__ bool fallsin(DimArr index, RangeArr ranges)
 {
-    int lnpos_dst;
-    DimArr index_src;
-    DimArr index_dst;
-
-    index_src = decode(lnpos_src, rcp_src);
-
-    index_dst.size = index_src.size;
-    for (size_t i = 0; i < index_dst.size; i++)
+    for (size_t i = 0; i < index.size; i++)
     {
-        index_dst.arr[i] = index_src.arr[i] + ranges.arr[i].from;
+        Range range = ranges.arr[i];
+        int idx = index.arr[i];
+        int from = range.from;
+        int to = range.to;
+
+        if (idx < from || idx >= to)
+        {
+            return false;
+        }
     }
 
-    lnpos_dst = encode(index_dst, rcp_dst);
-
-    return lnpos_dst;
+    return true;
 }
 
-__global__ void applyPatch(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    RangeArr ranges)
+__device__ int toPatchPosition(DimArr index, RangeArr ranges, CUDAView view)
+{
+    for (size_t i = 0; i < index.size; i++)
+    {
+        index.arr[i] -= ranges.arr[i].from;
+    }
+
+    return index2lnpos(index, view);
+}
+
+__global__ void applyPatch(CUDATensor o, CUDATensor t, CUDATensor u, RangeArr ranges)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < src.size; i += stride)
+    for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        int lnpos_src = i;
-        int lnpos_dst = toPatchPosition(lnpos_src, rcp_src, rcp_dst, ranges);
+        double value;
 
-        dst.arr[lnpos_dst] = src.arr[lnpos_src];
+        DimArr oidx = lnpos2index(i, o.view);
+        if (!fallsin(oidx, ranges))
+        {
+            int lnpos_src = index2lnpos(oidx, t.view);
+            value = t.data.arr[lnpos_src];
+        }
+        else
+        {
+            int lnpos_src = toPatchPosition(oidx, ranges, u.view);
+            value = u.data.arr[lnpos_src];
+        }
+
+        o.data.arr[i] = value;
     }
 }
 
@@ -47,7 +62,7 @@ __global__ void applyPatch(
 extern "C"
 {
     double At(CUDATensor t, DimArr index);
-    double *Patch(CUDATensor t, CUDATensor u, RangeArr index);
+    double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view);
 }
 
 double At(CUDATensor t, DimArr index)
@@ -65,26 +80,18 @@ double At(CUDATensor t, DimArr index)
     return elem;
 }
 
-double *Patch(CUDATensor t, CUDATensor u, RangeArr index)
+double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view)
 {
-    CudaData dst = (CudaData){NULL, n};
+    CUDAData data = (CUDAData){NULL, t.data.size};
     handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
-    handleCudaError(
-        cudaMemcpy(
-            dst.arr,
-            bas.arr,
-            bas.size * sizeof(double),
-            cudaMemcpyDeviceToDevice));
+        cudaMalloc(&data.arr, data.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(src.size);
+    CUDATensor o = (CUDATensor){view, data};
 
-    applyPatch<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, index);
-
+    LaunchParams lps = launchParams(o.data.size);
+    applyPatch<<<lps.blockSize, lps.threadSize>>>(o, t, u, ranges);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return dst.arr;
+    return o.data.arr;
 }

@@ -296,7 +296,9 @@ func (t *CUDATensor) Argmax(dim int) (o tensor.Tensor, err error) {
 		return o, fmt.Errorf("Argmax input dimension validation failed: %w", err)
 	}
 
-	return t.argmax(dim), nil
+	o = t.argmax(dim)
+
+	return o, nil
 }
 
 func (t *CUDATensor) Argmin(dim int) (o tensor.Tensor, err error) {
@@ -305,7 +307,9 @@ func (t *CUDATensor) Argmin(dim int) (o tensor.Tensor, err error) {
 		return o, fmt.Errorf("Argmin input dimension validation failed: %w", err)
 	}
 
-	return t.argmin(dim), nil
+	o = t.argmin(dim)
+
+	return o, nil
 }
 
 func (t *CUDATensor) SumAlong(dim int) (o tensor.Tensor, err error) {
@@ -729,7 +733,9 @@ func (t *CUDATensor) Equals(u tensor.Tensor) (are bool, err error) {
 		return are, fmt.Errorf("Equals tensors' dimension validation failed: %w", err)
 	}
 
-	return t.equals(_u), nil
+	are = t.equals(_u)
+
+	return are, nil
 }
 
 func (t *CUDATensor) Gradient() tensor.Tensor {

@@ -17,11 +17,6 @@ double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr
 double At(CUDATensor t, DimArr index);
 double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view);
 
-/*------------ shape modifiers ------------*/
-double *Reshape(CudaData src);
-double *Transpose(CudaData src, DimArr dims_src, DimArr dims_dst);
-double *Broadcast(CudaData src, DimArr dims_src, DimArr dims_dst);
-
 /*--------------- reducers ----------------*/
 double Sum(CudaData src);
 double Max(CudaData src);

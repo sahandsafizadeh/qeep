@@ -14,26 +14,31 @@ import (
 )
 
 func (t *CUDATensor) at(index []int) float64 {
-	data_c := getCudaDataOf(t)
-	dims_c := getDimArrOf(t.dims)
-	index_c := getDimArrOf(index)
+	t_c := toCUDATensor_C(t)
+	index_c := toDimArr_C(index)
 
-	elem_c := C.At(data_c, dims_c, index_c)
+	elem_c := C.At(t_c, index_c)
 
 	return float64(elem_c)
 }
 
 func (t *CUDATensor) slice(index []tensor.Range) *CUDATensor {
-	index = util.CompleteIndex(index, t.dims)
-	dims := util.IndexToDims(index)
+	cidx := util.CompleteIndex(index, t.dims)
 
-	src_c := getCudaDataOf(t)
-	dims_c := getDimArrOf(t.dims)
-	index_c := getRangeArrOf(index)
+	o := new(CUDATensor)
+	o.ofst = t.ofst
+	o.strd = make([]int, len(t.strd))
+	copy(o.strd, t.strd)
+	o.dims = util.IndexToDims(cidx)
 
-	data_c := C.Slice(src_c, dims_c, index_c)
+	for i, r := range cidx {
+		o.ofst += t.strd[i] * r.From
+	}
 
-	return newCUDATensor(dims, data_c)
+	// TODO: Add thread-safety
+	o.data = t.data // reuse data
+
+	return o
 }
 
 func (t *CUDATensor) patch(index []tensor.Range, u *CUDATensor) *CUDATensor {

@@ -6,16 +6,17 @@
 #include "types.h"
 
 /*------------- initializers --------------*/
-double *Full(size_t n, double value);
-double *Eye(size_t n, size_t d);
-double *RandU(size_t n, double l, double u);
-double *RandN(size_t n, double u, double s);
-double *Of(size_t n, double *input_data);
-double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr dims_dst);
+double *Full(double value, CUDAView view_o);
+double *Eye(CUDAView view_o);
+double *RandU(double l, double u, CUDAView view_o);
+double *RandN(double u, double s, CUDAView view_o);
+double *Of(double *input_data, CUDAView view_o);
+double *From(CUDATensor t, CUDAView view_o);
+double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o);
 
 /*--------------- accessors ---------------*/
 double At(CUDATensor t, DimArr index);
-double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view);
+double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view_o);
 
 /*--------------- reducers ----------------*/
 double Sum(CudaData src);

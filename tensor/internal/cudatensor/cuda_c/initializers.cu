@@ -14,45 +14,29 @@ inline unsigned long long timeSeed()
 
 /* ----- device functions ----- */
 
-__device__ int toConcatenatedPosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, int dim, int mrg)
-{
-    int lnpos_dst;
-    DimArr index_src;
-    DimArr index_dst;
-
-    index_src = decode(lnpos_src, rcp_src);
-
-    index_dst = index_src;
-    index_dst.arr[dim] += mrg;
-
-    lnpos_dst = encode(index_dst, rcp_dst);
-
-    return lnpos_dst;
-}
-
-__global__ void fillConst(CudaData dst, double value)
+__global__ void fillConst(CUDATensor o, double value)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        dst.arr[i] = value;
+        o.data.arr[i] = value;
     }
 }
 
-__global__ void fillEye(CudaData dst, size_t d)
+__global__ void fillEye(CUDATensor o, int d)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        dst.arr[i] = i % (d + 1) == 0 ? 1. : 0.;
+        o.data.arr[i] = i % (d + 1) == 0 ? 1. : 0.;
     }
 }
 
-__global__ void fillRandU(CudaData dst, double l, double u, unsigned long long seed)
+__global__ void fillRandU(CUDATensor o, double l, double u, unsigned long long seed)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -60,14 +44,14 @@ __global__ void fillRandU(CudaData dst, double l, double u, unsigned long long s
     curandStatePhilox4_32_10_t state;
     curand_init(seed, tpos, 0, &state);
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < o.data.size; i += stride)
     {
         double randu_0_1 = curand_uniform_double(&state);
-        dst.arr[i] = l + (u - l) * randu_0_1;
+        o.data.arr[i] = l + (u - l) * randu_0_1;
     }
 }
 
-__global__ void fillRandN(CudaData dst, double u, double s, unsigned long long seed)
+__global__ void fillRandN(CUDATensor o, double u, double s, unsigned long long seed)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -75,24 +59,47 @@ __global__ void fillRandN(CudaData dst, double u, double s, unsigned long long s
     curandStatePhilox4_32_10_t state;
     curand_init(seed, tpos, 0, &state);
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < o.data.size; i += stride)
     {
         double randn_0_1 = curand_normal_double(&state);
-        dst.arr[i] = u + s * randn_0_1;
+        o.data.arr[i] = u + s * randn_0_1;
     }
 }
 
-__global__ void fillConcat(CudaData dst, CudaData src, DimArr rcp_dst, DimArr rcp_src, int dim, int mrg)
+__global__ void fillCopy(CUDATensor o, CUDATensor t)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < src.size; i += stride)
+    for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        int lnpos_src = i;
-        int lnpos_dst = toConcatenatedPosition(lnpos_src, rcp_src, rcp_dst, dim, mrg);
+        DimArr index_dst = lnpos2index(i, o.view);
+        int lnpos_src = index2lnpos(index_dst, t.view);
 
-        dst.arr[lnpos_dst] = src.arr[lnpos_src];
+        o.data.arr[i] = t.data.arr[lnpos_src];
+    }
+}
+
+__global__ void fillConcat(CUDATensor o, CUDATensor *ts, int *offsets, size_t size, int dim)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < o.data.size; i += stride)
+    {
+        DimArr index_dst = lnpos2index(i, o.view);
+
+        size_t s = 0;
+        while (s < size - 1 && index_dst.arr[dim] >= offsets[s + 1])
+        {
+            s++;
+        }
+
+        DimArr index_src = index_dst;
+        index_src.arr[dim] -= offsets[s];
+        int lnpos_src = index2lnpos(index_src, ts[s].view);
+
+        o.data.arr[i] = ts[s].data.arr[lnpos_src];
     }
 }
 
@@ -100,116 +107,139 @@ __global__ void fillConcat(CudaData dst, CudaData src, DimArr rcp_dst, DimArr rc
 
 extern "C"
 {
-    double *Full(size_t n, double value);
-    double *Eye(size_t n, size_t d);
-    double *RandU(size_t n, double l, double u);
-    double *RandN(size_t n, double u, double s);
-    double *Of(size_t n, double *input_data);
-    double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr dims_dst);
+    double *Full(double value, CUDAView view_o);
+    double *Eye(CUDAView view_o);
+    double *RandU(double l, double u, CUDAView view_o);
+    double *RandN(double u, double s, CUDAView view_o);
+    double *Of(double *input_data, CUDAView view_o);
+    double *From(CUDATensor t, CUDAView view_o);
+    double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o);
 }
 
-double *Full(size_t n, double value)
+double *Full(double value, CUDAView view_o)
 {
-    CudaData dst = (CudaData){NULL, n};
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(dst.size);
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
-    fillConst<<<lps.blockSize, lps.threadSize>>>(dst, value);
-
+    LaunchParams lps = launchParams(o.data.size);
+    fillConst<<<lps.blockSize, lps.threadSize>>>(o, value);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return dst.arr;
+    return o.data.arr;
 }
 
-double *Eye(size_t n, size_t d)
+double *Eye(CUDAView view_o)
 {
-    CudaData dst = (CudaData){NULL, n};
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(dst.size);
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
-    fillEye<<<lps.blockSize, lps.threadSize>>>(dst, d);
-
+    LaunchParams lps = launchParams(o.data.size);
+    fillEye<<<lps.blockSize, lps.threadSize>>>(o, d);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return dst.arr;
+    return o.data.arr;
 }
 
-double *RandU(size_t n, double l, double u)
+double *RandU(double l, double u, CUDAView view_o)
 {
-    CudaData dst = (CudaData){NULL, n};
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
+
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
     unsigned long long seed = timeSeed();
 
-    LaunchParams lps = launchParams(dst.size);
-
-    fillRandU<<<lps.blockSize, lps.threadSize>>>(dst, l, u, seed);
-
+    LaunchParams lps = launchParams(o.data.size);
+    fillRandU<<<lps.blockSize, lps.threadSize>>>(o, l, u, seed);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return dst.arr;
+    return o.data.arr;
 }
 
-double *RandN(size_t n, double u, double s)
+double *RandN(double u, double s, CUDAView view_o)
 {
-    CudaData dst = (CudaData){NULL, n};
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
+
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
     unsigned long long seed = timeSeed();
 
-    LaunchParams lps = launchParams(dst.size);
-
-    fillRandN<<<lps.blockSize, lps.threadSize>>>(dst, u, s, seed);
-
+    LaunchParams lps = launchParams(o.data.size);
+    fillRandN<<<lps.blockSize, lps.threadSize>>>(o, u, s, seed);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return dst.arr;
+    return o.data.arr;
 }
 
-double *Of(size_t n, double *input_data)
+double *Of(double *input_data, CUDAView view_o)
 {
-    double *dst;
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&dst, n * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
     handleCudaError(
         cudaMemcpy(
-            dst,
+            data_o.arr,
             input_data,
-            n * sizeof(double),
+            data_o.size * sizeof(double),
             cudaMemcpyHostToDevice));
 
-    return dst;
+    return data.arr;
 }
 
-double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr dims_dst)
+double *From(CUDATensor t, CUDAView view_o)
 {
-    size_t n = elemcnt(dims_dst);
-    DimArr rcp_dst = rcumprod(dims_dst);
+    size_t n = elemcnt(view_o.dims);
 
-    CudaData dst = (CudaData){NULL, n};
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    int mrg = 0;
+    CUDATensor o = (CUDATensor){view_o, data_o};
+
+    LaunchParams lps = launchParams(o.data.size);
+    fillCopy<<<lps.blockSize, lps.threadSize>>>(o, t);
+    handleCudaError(
+        cudaGetLastError());
+
+    return o.data.arr;
+}
+
+double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o)
+{
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
+    handleCudaError(
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
+
+    CUDATensor o = (CUDATensor){view_o, data_o};
+
+    int *offsets = (int *)malloc(size * sizeof(int));
+    offsets[0] = 0;
     for (size_t i = 0; i < size; i++)
     {
         CudaData src = srcs[i];
@@ -228,5 +258,5 @@ double *Concat(CudaData srcs[], DimArr dims_srcs[], size_t size, int dim, DimArr
         mrg += dims_src.arr[dim];
     }
 
-    return dst.arr;
+    return o.data.arr;
 }

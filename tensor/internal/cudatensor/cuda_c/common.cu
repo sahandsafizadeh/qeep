@@ -29,7 +29,6 @@ void handleCudaError(cudaError_t err)
 }
 
 /* ----- indexing ----- */
-
 int elemcnt(DimArr dims)
 {
     int count = 1;

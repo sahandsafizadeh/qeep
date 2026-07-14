@@ -36,20 +36,23 @@ __host__ __device__ inline int index2lnpos(DimArr index, CUDAView view)
     {
         lnpos += view.strd.arr[i] * index.arr[i];
     }
+
     return lnpos;
 }
 
 __host__ __device__ inline DimArr lnpos2index(int lnpos, CUDAView view)
 {
     DimArr index;
+    index.size = view.dims.size;
+
     int rem = lnpos - view.ofst;
-    for (size_t i = 0; i < view.dims.size; i++)
+    for (size_t i = 0; i < view.strd.size; i++)
     {
         int count = view.strd.arr[i];
         index.arr[i] = rem / count;
         rem = rem % count;
     }
-    index.size = view.dims.size;
+
     return index;
 }
 

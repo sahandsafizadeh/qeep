@@ -22,8 +22,5 @@ void handleCudaError(cudaError_t err);
 
 /* ------------ indexing ------------- */
 int elemcnt(DimArr dims);
-int elemcnt(RangeArr ranges);
-DimArr rcumprod(DimArr dims);
-DimArr rcumprod(RangeArr ranges);
 
 #endif // COMMON_H

@@ -21,6 +21,6 @@ LaunchParams launchParams(size_t n);
 void handleCudaError(cudaError_t err);
 
 /* ------------ indexing ------------- */
-int elemcnt(DimArr dims);
+size_t elemcnt(DimArr dims);
 
 #endif // COMMON_H

@@ -32,7 +32,7 @@ __device__ int toPatchPosition(DimArr index, RangeArr ranges, CUDAView view)
     return index2lnpos(index, view);
 }
 
-__global__ void applyPatch(CUDATensor o, CUDATensor t, CUDATensor u, RangeArr ranges)
+__global__ void applyPatch(CUDATensor o, CUDATensor t, RangeArr ranges, CUDATensor u)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -91,7 +91,7 @@ double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o)
     CUDATensor o = (CUDATensor){view_o, data_o};
 
     LaunchParams lps = launchParams(o.data.size);
-    applyPatch<<<lps.blockSize, lps.threadSize>>>(o, t, u, ranges);
+    applyPatch<<<lps.blockSize, lps.threadSize>>>(o, t, ranges, u);
     handleCudaError(
         cudaGetLastError());
 

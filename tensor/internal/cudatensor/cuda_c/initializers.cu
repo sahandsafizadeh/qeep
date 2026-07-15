@@ -80,7 +80,7 @@ __global__ void fillCopy(CUDATensor o, CUDATensor t)
     }
 }
 
-__global__ void fillConcat(CUDATensor o, CUDATensor *ts, int *offsets, size_t size, int dim)
+__global__ void fillConcat(CUDATensor o, CUDATensor *ts, int *ofsts, size_t size, int dim)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -90,13 +90,13 @@ __global__ void fillConcat(CUDATensor o, CUDATensor *ts, int *offsets, size_t si
         DimArr index_dst = lnpos2index(i, o.view);
 
         size_t s = 0;
-        while (s < size - 1 && index_dst.arr[dim] >= offsets[s + 1])
+        while (s < size - 1 && index_dst.arr[dim] >= ofsts[s + 1])
         {
             s++;
         }
 
         DimArr index_src = index_dst;
-        index_src.arr[dim] -= offsets[s];
+        index_src.arr[dim] -= ofsts[s];
         int lnpos_src = index2lnpos(index_src, ts[s].view);
 
         o.data.arr[i] = ts[s].data.arr[lnpos_src];
@@ -236,27 +236,44 @@ double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o)
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    CUDATensor o = (CUDATensor){view_o, data_o};
+    CUDATensor *_ts;
+    handleCudaError(
+        cudaMalloc(&_ts, size * sizeof(CUDATensor)));
+    handleCudaError(
+        cudaMemcpy(
+            _ts,
+            ts,
+            size * sizeof(CUDATensor),
+            cudaMemcpyHostToDevice));
 
-    int *offsets = (int *)malloc(size * sizeof(int));
-    offsets[0] = 0;
+    int *ofsts = (int *)malloc((size + 1) * sizeof(int));
+    ofsts[0] = 0;
     for (size_t i = 0; i < size; i++)
     {
-        CudaData src = srcs[i];
-        DimArr dims_src = dims_srcs[i];
-        DimArr rcp_src = rcumprod(dims_src);
-
-        LaunchParams lps = launchParams(src.size);
-
-        fillConcat<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dim, mrg);
-
-        handleCudaError(
-            cudaGetLastError());
-        handleCudaError(
-            cudaDeviceSynchronize());
-
-        mrg += dims_src.arr[dim];
+        DimArr tdims = ts[i].view.dims;
+        ofsts[i + 1] = ofsts[i] + tdims.arr[dim];
     }
+
+    int *_ofsts;
+    handleCudaError(
+        cudaMalloc(&_ofsts, size * sizeof(int)));
+    handleCudaError(
+        cudaMemcpy(
+            _ofsts,
+            ofsts,
+            size * sizeof(int),
+            cudaMemcpyHostToDevice));
+    free(ofsts);
+
+    CUDATensor o = (CUDATensor){view_o, data_o};
+
+    LaunchParams lps = launchParams(o.data.size);
+    fillConcat<<<lps.blockSize, lps.threadSize>>>(o, _ts, _ofsts, size, dim);
+    handleCudaError(
+        cudaGetLastError());
+
+    cudaFree(_ts);
+    cudaFree(_ofsts);
 
     return o.data.arr;
 }

@@ -16,7 +16,7 @@ double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o);
 
 /*--------------- accessors ---------------*/
 double At(CUDATensor t, DimArr index);
-double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view_o);
+double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o);
 
 /*--------------- reducers ----------------*/
 double Sum(CudaData src);

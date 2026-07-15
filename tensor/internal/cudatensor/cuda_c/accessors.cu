@@ -62,7 +62,7 @@ __global__ void applyPatch(CUDATensor o, CUDATensor t, CUDATensor u, RangeArr ra
 extern "C"
 {
     double At(CUDATensor t, DimArr index);
-    double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view);
+    double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o);
 }
 
 double At(CUDATensor t, DimArr index)
@@ -73,20 +73,22 @@ double At(CUDATensor t, DimArr index)
     handleCudaError(
         cudaMemcpy(
             &elem,
-            &src.arr[lnpos],
+            &t.data.arr[lnpos],
             sizeof(double),
             cudaMemcpyDeviceToHost));
 
     return elem;
 }
 
-double *Patch(CUDATensor t, CUDATensor u, RangeArr ranges, CUDAView view)
+double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o)
 {
-    CUDAData data = (CUDAData){NULL, t.data.size};
-    handleCudaError(
-        cudaMalloc(&data.arr, data.size * sizeof(double)));
+    size_t n = elemcnt(view_o.dims);
 
-    CUDATensor o = (CUDATensor){view, data};
+    CUDAData data_o = (CUDAData){NULL, n};
+    handleCudaError(
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
+
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
     LaunchParams lps = launchParams(o.data.size);
     applyPatch<<<lps.blockSize, lps.threadSize>>>(o, t, u, ranges);

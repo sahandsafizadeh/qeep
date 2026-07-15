@@ -767,76 +767,76 @@ double *runDimReducer(
 
 extern "C"
 {
-    double Sum(CudaData src);
-    double Max(CudaData src);
-    double Min(CudaData src);
-    double Var(CudaData src);
-    double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *MaxAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *MinAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *AvgAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *VarAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-    double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+    double Sum(CUDATensor t);
+    double Max(CUDATensor t);
+    double Min(CUDATensor t);
+    double Var(CUDATensor t);
+    double *Argmax(CUDATensor t, int dim, CUDAView view_o);
+    double *Argmin(CUDATensor t, int dim, CUDAView view_o);
+    double *SumAlong(CUDATensor t, int dim, CUDAView view_o);
+    double *MaxAlong(CUDATensor t, int dim, CUDAView view_o);
+    double *MinAlong(CUDATensor t, int dim, CUDAView view_o);
+    double *AvgAlong(CUDATensor t, int dim, CUDAView view_o);
+    double *VarAlong(CUDATensor t, int dim, CUDAView view_o);
+    double *StdAlong(CUDATensor t, int dim, CUDAView view_o);
 }
 
-double Sum(CudaData src)
+double Sum(CUDATensor t)
 {
     return runSumReducer(src);
 }
 
-double Max(CudaData src)
+double Max(CUDATensor t)
 {
     return runMaxReducer(src);
 }
 
-double Min(CudaData src)
+double Min(CUDATensor t)
 {
     return runMinReducer(src);
 }
 
-double Var(CudaData src)
+double Var(CUDATensor t)
 {
     return runVarReducer(src);
 }
 
-double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+double *Argmax(CUDATensor t, int dim, CUDAView view_o)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMAX);
 }
 
-double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+double *Argmin(CUDATensor t, int dim, CUDAView view_o)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMIN);
 }
 
-double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+double *SumAlong(CUDATensor t, int dim, CUDAView view_o)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_SUM);
 }
 
-double *MaxAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+double *MaxAlong(CUDATensor t, int dim, CUDAView view_o)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_MAX);
 }
 
-double *MinAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+double *MinAlong(CUDATensor t, int dim, CUDAView view_o)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_MIN);
 }
 
-double *AvgAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+double *AvgAlong(CUDATensor t, int dim, CUDAView view_o)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_AVG);
 }
 
-double *VarAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+double *VarAlong(CUDATensor t, int dim, CUDAView view_o)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_VAR);
 }
 
-double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst)
+double *StdAlong(CUDATensor t, int dim, CUDAView view_o)
 {
     return runDimReducer(src, dim, dims_src, dims_dst, RED_STD);
 }

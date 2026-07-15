@@ -136,6 +136,7 @@ double *Full(double value, CUDAView view_o)
 
 double *Eye(CUDAView view_o)
 {
+    int d = view_o.dims.arr[0];
     size_t n = elemcnt(view_o.dims);
 
     CUDAData data_o = (CUDAData){NULL, n};
@@ -207,7 +208,7 @@ double *Of(double *input_data, CUDAView view_o)
             data_o.size * sizeof(double),
             cudaMemcpyHostToDevice));
 
-    return data.arr;
+    return data_o.arr;
 }
 
 double *From(CUDATensor t, CUDAView view_o)

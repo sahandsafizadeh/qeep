@@ -105,373 +105,343 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
     return NAN;
 }
 
-__global__ void applyHalfBinaryFuncElemWise(CudaData dst, CudaData src1, double srcc, OperationType opt)
+__global__ void applyHalfBinaryFuncElemWise(CUDATensor y, CUDATensor x, double a, OperationType opt)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < y.data.size; i += stride)
     {
-        dst.arr[i] = halfBinaryOp(src1.arr[i], srcc, opt);
+        DimArr index = lnpos2index(i, y.view);
+        int lnpos_x = index2lnpos(index, x.view);
+
+        y.data.arr[i] = halfBinaryOp(x.data.arr[lnpos_x], a, opt);
     }
 }
 
-__global__ void applyUnaryFuncElemWise(CudaData dst, CudaData src, OperationType opt)
+__global__ void applyUnaryFuncElemWise(CUDATensor y, CUDATensor x, OperationType opt)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < y.data.size; i += stride)
     {
-        dst.arr[i] = unaryOp(src.arr[i], opt);
+        DimArr index = lnpos2index(i, y.view);
+        int lnpos_x = index2lnpos(index, x.view);
+
+        y.data.arr[i] = unaryOp(x.data.arr[lnpos_x], opt);
     }
 }
 
-__global__ void applyBinaryFuncElemWise(CudaData dst, CudaData src1, CudaData src2, OperationType opt)
+__global__ void applyBinaryFuncElemWise(CUDATensor y, CUDATensor a, CUDATensor b, OperationType opt)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < y.data.size; i += stride)
     {
-        dst.arr[i] = binaryOp(src1.arr[i], src2.arr[i], opt);
+        DimArr index = lnpos2index(i, y.view);
+        int lnpos_a = index2lnpos(index, a.view);
+        int lnpos_b = index2lnpos(index, b.view);
+
+        y.data.arr[i] = binaryOp(a.data.arr[lnpos_a], b.data.arr[lnpos_b], opt);
     }
 }
 
-__global__ void applyDot(
-    CudaData dst,
-    CudaData src1,
-    CudaData src2,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    int cdim)
+__global__ void applyDot(CUDATensor y, CUDATensor a, CUDATensor b)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < y.data.size; i += stride)
     {
-        size_t n;
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
+        DimArr index_y = lnpos2index(i, y.view);
+        DimArr index_src = index_y;
+        index_src.size = index_y.size + 1;
 
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = index_dst;
-
-        n = index_dst.size + 1;
-        index_src.size = n;
+        size_t n = index_src.size;
+        size_t cdim = a.view.dims.arr[n - 1];
 
         double temp = 0.;
         for (size_t j = 0; j < cdim; j++)
         {
             index_src.arr[n - 1] = j;
-            lnpos_src = encode(index_src, rcp_src);
+            int lnpos_a = index2lnpos(index_src, a.view);
+            int lnpos_b = index2lnpos(index_src, b.view);
 
-            temp += src1.arr[lnpos_src] * src2.arr[lnpos_src];
+            temp += a.data.arr[lnpos_a] * b.data.arr[lnpos_b];
         }
 
-        dst.arr[lnpos_dst] = temp;
+        y.data.arr[i] = temp;
     }
 }
 
-__global__ void applyMatMul(
-    CudaData dst,
-    CudaData src1,
-    CudaData src2,
-    DimArr rcp_dst,
-    DimArr rcp_src1,
-    DimArr rcp_src2,
-    int cdim)
+__global__ void applyMatMul(CUDATensor y, CUDATensor a, CUDATensor b)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    for (size_t i = tpos; i < y.data.size; i += stride)
     {
-        size_t n;
-        int lnpos_dst;
-        int lnpos_src1;
-        int lnpos_src2;
-        DimArr index_dst;
-        DimArr index_src1;
-        DimArr index_src2;
+        DimArr index_a = lnpos2index(i, y.view);
+        DimArr index_b = index_a;
 
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src1 = index_dst;
-        index_src2 = index_dst;
-
-        n = index_dst.size;
-        index_src1.arr[n - 2] = index_dst.arr[n - 2];
-        index_src2.arr[n - 1] = index_dst.arr[n - 1];
+        size_t n = index_a.size;
+        size_t cdim = a.view.dims.arr[n - 1];
 
         double temp = 0.;
         for (size_t j = 0; j < cdim; j++)
         {
-            index_src1.arr[n - 1] = j;
-            index_src2.arr[n - 2] = j;
-            lnpos_src1 = encode(index_src1, rcp_src1);
-            lnpos_src2 = encode(index_src2, rcp_src2);
+            index_a.arr[n - 1] = j;
+            index_b.arr[n - 2] = j;
+            int lnpos_a = index2lnpos(index_a, a.view);
+            int lnpos_b = index2lnpos(index_b, b.view);
 
-            temp += src1.arr[lnpos_src1] * src2.arr[lnpos_src2];
+            temp += a.data.arr[lnpos_a] * b.data.arr[lnpos_b];
         }
 
-        dst.arr[lnpos_dst] = temp;
+        y.data.arr[i] = temp;
     }
 }
 
 /* ----- API helper functions ----- */
 
-double *runHalfBinaryOp(CudaData x, double a, OperationType opt)
+double *runHalfBinaryOp(CUDATensor x, double a, OperationType opt, CUDAView view_o)
 {
-    CudaData y = (CudaData){NULL, x.size};
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&y.arr, y.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(y.size);
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
-    applyHalfBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, a, opt);
-
+    LaunchParams lps = launchParams(o.data.size);
+    applyHalfBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(o, x, a, opt);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return y.arr;
+    return o.data.arr;
 }
 
-double *runUnaryOp(CudaData x, OperationType opt)
+double *runUnaryOp(CUDATensor x, OperationType opt, CUDAView view_o)
 {
-    CudaData y = (CudaData){NULL, x.size};
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&y.arr, y.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(y.size);
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
-    applyUnaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(y, x, opt);
-
+    LaunchParams lps = launchParams(o.data.size);
+    applyUnaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(o, x, opt);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return y.arr;
+    return o.data.arr;
 }
 
-double *runBinaryOp(CudaData a, CudaData b, OperationType opt)
+double *runBinaryOp(CUDATensor a, CUDATensor b, OperationType opt, CUDAView view_o)
 {
-    CudaData c = (CudaData){NULL, a.size};
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&c.arr, c.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(c.size);
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
-    applyBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(c, a, b, opt);
-
+    LaunchParams lps = launchParams(o.data.size);
+    applyBinaryFuncElemWise<<<lps.blockSize, lps.threadSize>>>(o, a, b, opt);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return c.arr;
+    return o.data.arr;
 }
 
-double *runDot(CudaData a, CudaData b, DimArr dims_src, DimArr dims_dst)
+double *runDot(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    size_t n = elemcnt(dims_dst);
-    DimArr rcp_dst = rcumprod(dims_dst);
-    DimArr rcp_src = rcumprod(dims_src);
-    size_t cdim = dims_src.arr[dims_src.size - 1];
+    size_t n = elemcnt(view_o.dims);
 
-    CudaData c = (CudaData){NULL, n};
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&c.arr, c.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(c.size);
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
-    applyDot<<<lps.blockSize, lps.threadSize>>>(c, a, b, rcp_dst, rcp_src, cdim);
-
+    LaunchParams lps = launchParams(o.data.size);
+    applyDot<<<lps.blockSize, lps.threadSize>>>(o, a, b);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return c.arr;
+    return o.data.arr;
 }
 
-double *runMatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
+double *runMatMul(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    size_t n = elemcnt(dims_c);
-    DimArr rcp_c = rcumprod(dims_c);
-    DimArr rcp_a = rcumprod(dims_a);
-    DimArr rcp_b = rcumprod(dims_b);
-    size_t cdim = dims_a.arr[dims_a.size - 1];
+    size_t n = elemcnt(view_o.dims);
 
-    CudaData c = (CudaData){NULL, n};
+    CUDAData data_o = (CUDAData){NULL, n};
     handleCudaError(
-        cudaMalloc(&c.arr, c.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(c.size);
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
-    applyMatMul<<<lps.blockSize, lps.threadSize>>>(c, a, b, rcp_c, rcp_a, rcp_b, cdim);
-
+    LaunchParams lps = launchParams(o.data.size);
+    applyMatMul<<<lps.blockSize, lps.threadSize>>>(o, a, b);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return c.arr;
+    return o.data.arr;
 }
 
 /* ----- API functions ----- */
 
 extern "C"
 {
-    double *Scale(CudaData x, double a);
-    double *Pow(CudaData x, double a);
-    double *Exp(CudaData x);
-    double *Log(CudaData x);
-    double *Sin(CudaData x);
-    double *Cos(CudaData x);
-    double *Tan(CudaData x);
-    double *Sinh(CudaData x);
-    double *Cosh(CudaData x);
-    double *Tanh(CudaData x);
-    double *Eq(CudaData a, CudaData b);
-    double *Ne(CudaData a, CudaData b);
-    double *Gt(CudaData a, CudaData b);
-    double *Ge(CudaData a, CudaData b);
-    double *Lt(CudaData a, CudaData b);
-    double *Le(CudaData a, CudaData b);
-    double *ElMax(CudaData a, CudaData b);
-    double *ElMin(CudaData a, CudaData b);
-    double *Add(CudaData a, CudaData b);
-    double *Sub(CudaData a, CudaData b);
-    double *Mul(CudaData a, CudaData b);
-    double *Div(CudaData a, CudaData b);
-    double *Dot(CudaData a, CudaData b, DimArr dims_src, DimArr dims_dst);
-    double *MatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c);
+    double *Scale(CUDATensor x, double a, CUDAView view_o);
+    double *Pow(CUDATensor x, double a, CUDAView view_o);
+    double *Exp(CUDATensor x, CUDAView view_o);
+    double *Log(CUDATensor x, CUDAView view_o);
+    double *Sin(CUDATensor x, CUDAView view_o);
+    double *Cos(CUDATensor x, CUDAView view_o);
+    double *Tan(CUDATensor x, CUDAView view_o);
+    double *Sinh(CUDATensor x, CUDAView view_o);
+    double *Cosh(CUDATensor x, CUDAView view_o);
+    double *Tanh(CUDATensor x, CUDAView view_o);
+    double *Eq(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Ne(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Gt(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Ge(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Lt(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Le(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *ElMax(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *ElMin(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Add(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Sub(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Mul(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Div(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Dot(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *MatMul(CUDATensor a, CUDATensor b, CUDAView view_o);
 }
 
-double *Scale(CudaData x, double a)
+double *Scale(CUDATensor x, double a, CUDAView view_o)
 {
-    return runHalfBinaryOp(x, a, OP_SCALE);
+    return runHalfBinaryOp(x, a, OP_SCALE, view_o);
 }
 
-double *Pow(CudaData x, double a)
+double *Pow(CUDATensor x, double a, CUDAView view_o)
 {
-    return runHalfBinaryOp(x, a, OP_POW);
+    return runHalfBinaryOp(x, a, OP_POW, view_o);
 }
 
-double *Exp(CudaData x)
+double *Exp(CUDATensor x, CUDAView view_o)
 {
-    return runUnaryOp(x, OP_EXP);
+    return runUnaryOp(x, OP_EXP, view_o);
 }
 
-double *Log(CudaData x)
+double *Log(CUDATensor x, CUDAView view_o)
 {
-    return runUnaryOp(x, OP_LOG);
+    return runUnaryOp(x, OP_LOG, view_o);
 }
 
-double *Sin(CudaData x)
+double *Sin(CUDATensor x, CUDAView view_o)
 {
-    return runUnaryOp(x, OP_SIN);
+    return runUnaryOp(x, OP_SIN, view_o);
 }
 
-double *Cos(CudaData x)
+double *Cos(CUDATensor x, CUDAView view_o)
 {
-    return runUnaryOp(x, OP_COS);
+    return runUnaryOp(x, OP_COS, view_o);
 }
 
-double *Tan(CudaData x)
+double *Tan(CUDATensor x, CUDAView view_o)
 {
-    return runUnaryOp(x, OP_TAN);
+    return runUnaryOp(x, OP_TAN, view_o);
 }
 
-double *Sinh(CudaData x)
+double *Sinh(CUDATensor x, CUDAView view_o)
 {
-    return runUnaryOp(x, OP_SINH);
+    return runUnaryOp(x, OP_SINH, view_o);
 }
 
-double *Cosh(CudaData x)
+double *Cosh(CUDATensor x, CUDAView view_o)
 {
-    return runUnaryOp(x, OP_COSH);
+    return runUnaryOp(x, OP_COSH, view_o);
 }
 
-double *Tanh(CudaData x)
+double *Tanh(CUDATensor x, CUDAView view_o)
 {
-    return runUnaryOp(x, OP_TANH);
+    return runUnaryOp(x, OP_TANH, view_o);
 }
 
-double *Eq(CudaData a, CudaData b)
+double *Eq(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_EQ);
+    return runBinaryOp(a, b, OP_EQ, view_o);
 }
 
-double *Ne(CudaData a, CudaData b)
+double *Ne(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_NE);
+    return runBinaryOp(a, b, OP_NE, view_o);
 }
 
-double *Gt(CudaData a, CudaData b)
+double *Gt(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_GT);
+    return runBinaryOp(a, b, OP_GT, view_o);
 }
 
-double *Ge(CudaData a, CudaData b)
+double *Ge(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_GE);
+    return runBinaryOp(a, b, OP_GE, view_o);
 }
 
-double *Lt(CudaData a, CudaData b)
+double *Lt(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_LT);
+    return runBinaryOp(a, b, OP_LT, view_o);
 }
 
-double *Le(CudaData a, CudaData b)
+double *Le(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_LE);
+    return runBinaryOp(a, b, OP_LE, view_o);
 }
 
-double *ElMax(CudaData a, CudaData b)
+double *ElMax(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_ELMAX);
+    return runBinaryOp(a, b, OP_ELMAX, view_o);
 }
 
-double *ElMin(CudaData a, CudaData b)
+double *ElMin(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_ELMIN);
+    return runBinaryOp(a, b, OP_ELMIN, view_o);
 }
 
-double *Add(CudaData a, CudaData b)
+double *Add(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_ADD);
+    return runBinaryOp(a, b, OP_ADD, view_o);
 }
 
-double *Sub(CudaData a, CudaData b)
+double *Sub(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_SUB);
+    return runBinaryOp(a, b, OP_SUB, view_o);
 }
 
-double *Mul(CudaData a, CudaData b)
+double *Mul(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_MUL);
+    return runBinaryOp(a, b, OP_MUL, view_o);
 }
 
-double *Div(CudaData a, CudaData b)
+double *Div(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runBinaryOp(a, b, OP_DIV);
+    return runBinaryOp(a, b, OP_DIV, view_o);
 }
 
-double *Dot(CudaData a, CudaData b, DimArr dims_src, DimArr dims_dst)
+double *Dot(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runDot(a, b, dims_src, dims_dst);
+    return runDot(a, b, view_o);
 }
 
-double *MatMul(CudaData a, CudaData b, DimArr dims_a, DimArr dims_b, DimArr dims_c)
+double *MatMul(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
-    return runMatMul(a, b, dims_a, dims_b, dims_c);
+    return runMatMul(a, b, view_o);
 }

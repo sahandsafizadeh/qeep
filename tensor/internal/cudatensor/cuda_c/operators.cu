@@ -77,9 +77,9 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
     switch (opt)
     {
     case OP_EQ:
-        return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 1. : 0.;
+        return fabs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 1. : 0.;
     case OP_NE:
-        return abs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 0. : 1.;
+        return fabs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 0. : 1.;
     case OP_GT:
         return a > b ? 1. : 0.;
     case OP_GE:

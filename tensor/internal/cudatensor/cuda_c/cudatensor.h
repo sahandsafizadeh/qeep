@@ -19,18 +19,18 @@ double At(CUDATensor t, DimArr index);
 double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o);
 
 /*--------------- reducers ----------------*/
-double Sum(CudaData src);
-double Max(CudaData src);
-double Min(CudaData src);
-double Var(CudaData src);
-double *Argmax(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *Argmin(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *SumAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *MaxAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *MinAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *AvgAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *VarAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
-double *StdAlong(CudaData src, int dim, DimArr dims_src, DimArr dims_dst);
+double Sum(CUDATensor t);
+double Max(CUDATensor t);
+double Min(CUDATensor t);
+double Var(CUDATensor t);
+double *Argmax(CUDATensor t, int dim, CUDAView view_o);
+double *Argmin(CUDATensor t, int dim, CUDAView view_o);
+double *SumAlong(CUDATensor t, int dim, CUDAView view_o);
+double *MaxAlong(CUDATensor t, int dim, CUDAView view_o);
+double *MinAlong(CUDATensor t, int dim, CUDAView view_o);
+double *AvgAlong(CUDATensor t, int dim, CUDAView view_o);
+double *VarAlong(CUDATensor t, int dim, CUDAView view_o);
+double *StdAlong(CUDATensor t, int dim, CUDAView view_o);
 
 /*--------------- operators ---------------*/
 double *Scale(CUDATensor x, double a, CUDAView view_o);

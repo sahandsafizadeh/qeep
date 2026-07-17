@@ -6,18 +6,6 @@
 
 /* ----- device functions ----- */
 
-enum ReduceType
-{
-    RED_SUM,
-    RED_MAX,
-    RED_MIN,
-    RED_AVG,
-    RED_VAR,
-    RED_STD,
-    RED_ARGMAX,
-    RED_ARGMIN,
-};
-
 __device__ DimArr unsqueezeidx(DimArr index_dst, int dim)
 {
     DimArr index_src;
@@ -42,413 +30,242 @@ __device__ DimArr unsqueezeidx(DimArr index_dst, int dim)
     return index_src;
 }
 
-__global__ void reduceDimByArgmax(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
+/* ----- reducer implementations ----- */
+
+struct sumReducer
 {
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
+    double value;
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    __host__ __device__ void init()
     {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double tempidx = -1;
-        double tempval = -INFINITY;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            if (src.arr[lnpos_src] > tempval)
-            {
-                tempidx = i;
-                tempval = src.arr[lnpos_src];
-            }
-        }
-
-        dst.arr[lnpos_dst] = tempidx;
+        value = 0.;
     }
-}
+    __host__ __device__ void feed(int _, double v)
+    {
+        value += v;
+    }
+    __host__ __device__ void merge(const sumReducer o)
+    {
+        value += o.value;
+    }
+    __host__ __device__ double result()
+    {
+        return value;
+    }
+};
 
-__global__ void reduceDimByArgmin(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
+struct maxReducer
 {
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
+    double value;
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    __host__ __device__ void init()
     {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double tempidx = -1;
-        double tempval = INFINITY;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            if (src.arr[lnpos_src] < tempval)
-            {
-                tempidx = i;
-                tempval = src.arr[lnpos_src];
-            }
-        }
-
-        dst.arr[lnpos_dst] = tempidx;
+        value = -INFINITY;
     }
-}
+    __host__ __device__ void feed(int _, double v)
+    {
+        if (v > value)
+        {
+            value = v;
+        }
+    }
+    __host__ __device__ void merge(const maxReducer o)
+    {
+        if (o.value > value)
+        {
+            value = o.value;
+        }
+    }
+    __host__ __device__ double result()
+    {
+        return value;
+    }
+};
 
-__global__ void reduceDimBySum(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
+struct minReducer
 {
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
+    double value;
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    __host__ __device__ void init()
     {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double temp = 0.;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            temp = temp + src.arr[lnpos_src];
-        }
-
-        dst.arr[lnpos_dst] = temp;
+        value = INFINITY;
     }
-}
+    __host__ __device__ void feed(int _, double v)
+    {
+        if (v < value)
+        {
+            value = v;
+        }
+    }
+    __host__ __device__ void merge(const minReducer o)
+    {
+        if (o.value < value)
+        {
+            value = o.value;
+        }
+    }
+    __host__ __device__ double result()
+    {
+        return value;
+    }
+};
 
-__global__ void reduceDimByMax(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
+struct argmaxReducer
 {
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
+    int index;
+    double value;
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    __host__ __device__ void init()
     {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double temp = -INFINITY;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            if (src.arr[lnpos_src] > temp)
-            {
-                temp = src.arr[lnpos_src];
-            }
-        }
-
-        dst.arr[lnpos_dst] = temp;
+        index = -1;
+        value = -INFINITY;
     }
-}
+    __host__ __device__ void feed(int i, double v)
+    {
+        if (v > value)
+        {
+            index = i;
+            value = v;
+        }
+    }
+    __host__ __device__ void merge(const argmaxReducer o)
+    {
+        if (o.value > value)
+        {
+            index = o.index;
+            value = o.value;
+        }
+    }
+    __host__ __device__ double result()
+    {
+        return index;
+    }
+};
 
-__global__ void reduceDimByMin(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
+struct argminReducer
 {
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
+    int index;
+    double value;
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    __host__ __device__ void init()
     {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double temp = INFINITY;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            if (src.arr[lnpos_src] < temp)
-            {
-                temp = src.arr[lnpos_src];
-            }
-        }
-
-        dst.arr[lnpos_dst] = temp;
+        index = -1;
+        value = INFINITY;
     }
-}
+    __host__ __device__ void feed(int i, double v)
+    {
+        if (v < value)
+        {
+            index = i;
+            value = v;
+        }
+    }
+    __host__ __device__ void merge(const argminReducer o)
+    {
+        if (o.value < value)
+        {
+            index = o.index;
+            value = o.value;
+        }
+    }
+    __host__ __device__ double result()
+    {
+        return index;
+    }
+};
 
-__global__ void reduceDimByAvg(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
+struct avgReducer // Welford
 {
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
+    int count;
+    double mean;
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    __host__ __device__ void init()
     {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double temp = 0.;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
+        count = 0;
+        mean = 0.;
+    }
+    __host__ __device__ void feed(int _, double v)
+    {
+        count++;
+        double delta = v - mean;
+        mean += delta / count;
+    }
+    __host__ __device__ void merge(const avgReducer o)
+    {
+        int na = count;
+        int nb = o.count;
+        int n = na + nb;
+        if (n == 0)
         {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            temp = temp + src.arr[lnpos_src];
+            return;
         }
 
-        dst.arr[lnpos_dst] = temp / diml;
-    }
-}
+        double delta = o.mean - mean;
 
-__global__ void reduceDimByVar(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
+        count += nb;
+        mean += delta * nb / n;
+    }
+    __host__ __device__ double result()
+    {
+        return mean;
+    }
+};
+
+struct varReducer // Welford
 {
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
+    int count;
+    double mean;
+    double m2;
 
-    for (size_t i = tpos; i < dst.size; i += stride)
+    __host__ __device__ void init()
     {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double average = 0.;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            average = average + src.arr[lnpos_src];
-        }
-
-        average /= diml;
-
-        double temp = 0.;
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            temp = temp + pow(src.arr[lnpos_src] - average, 2);
-        }
-
-        if (diml > 1)
-        {
-            dst.arr[lnpos_dst] = temp / (diml - 1);
-        }
-        else
-        {
-            dst.arr[lnpos_dst] = 0.;
-        }
+        count = 0;
+        mean = 0;
+        m2 = 0;
     }
-}
+    __host__ __device__ void feed(int _, double v)
+    {
+        count++;
+        double delta = v - mean;
+        mean += delta / count;
+        double delta2 = v - mean;
+        m2 += delta * delta2;
+    }
+    __host__ __device__ void merge(const varReducer o)
+    {
+        int na = count;
+        int nb = o.count;
+        int n = na + nb;
+        if (n == 0)
+        {
+            return;
+        }
 
-__global__ void reduceDimByStd(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    DimArr dims,
-    int dim)
+        double delta = o.mean - mean;
+        double delta2 = delta * delta;
+
+        count += nb;
+        mean += delta * nb / n;
+        m2 += o.m2 + (delta2 * na * nb / n);
+    }
+    __host__ __device__ double result()
+    {
+        return count <= 1 ? 0. : m2 / (count - 1);
+    }
+};
+
+struct stdReducer : varReducer
 {
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    for (size_t i = tpos; i < dst.size; i += stride)
+    __host__ __device__ double result()
     {
-        int lnpos_dst;
-        int lnpos_src;
-        DimArr index_dst;
-        DimArr index_src;
-
-        lnpos_dst = i;
-        index_dst = decode(lnpos_dst, rcp_dst);
-        index_src = unsqueezeidx(index_dst, dim);
-
-        double average = 0.;
-        double diml = dims.arr[dim];
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            average = average + src.arr[lnpos_src];
-        }
-
-        average /= diml;
-
-        double temp = 0.;
-        for (size_t i = 0; i < diml; i++)
-        {
-            index_src.arr[dim] = i;
-            lnpos_src = encode(index_src, rcp_src);
-            temp = temp + pow(src.arr[lnpos_src] - average, 2);
-        }
-
-        if (diml > 1)
-        {
-            dst.arr[lnpos_dst] = sqrt(temp / (diml - 1));
-        }
-        else
-        {
-            dst.arr[lnpos_dst] = 0.;
-        }
+        return sqrt(varReducer::result());
     }
-}
+};
 
-__global__ void reduceBySum(CudaData dst, CudaData src)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
+/* ----- device functions ----- */
 
-    double temp = 0.;
-    for (size_t i = tpos; i < src.size; i += stride)
-    {
-        temp = temp + src.arr[i];
-    }
-
-    const unsigned int cacheidx = threadIndex();
-    const unsigned int cachelen = blockSize();
-    const unsigned int blockidx = blockIndex();
-
-    __shared__ double cache[MAX_THREADS_PER_BLOCK_X];
-
-    cache[cacheidx] = temp;
-    __syncthreads();
-
-    for (size_t i = cachelen / 2; i != 0; i /= 2)
-    {
-        if (cacheidx < i)
-        {
-            cache[cacheidx] = cache[cacheidx] + cache[cacheidx + i];
-        }
-        __syncthreads();
-    }
-
-    if (cacheidx == 0)
-    {
-        dst.arr[blockidx] = cache[0];
-    }
-}
-
-__global__ void reduceByMax(CudaData dst, CudaData src)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    double temp = -INFINITY;
-    for (size_t i = tpos; i < src.size; i += stride)
-    {
-        if (src.arr[i] > temp)
-        {
-            temp = src.arr[i];
-        }
-    }
-
-    const unsigned int cacheidx = threadIndex();
-    const unsigned int cachelen = blockSize();
-    const unsigned int blockidx = blockIndex();
-
-    __shared__ double cache[MAX_THREADS_PER_BLOCK_X];
-
-    cache[cacheidx] = temp;
-    __syncthreads();
-
-    for (size_t i = cachelen / 2; i != 0; i /= 2)
-    {
-        if (cacheidx < i)
-        {
-            if (cache[cacheidx + i] > cache[cacheidx])
-            {
-                cache[cacheidx] = cache[cacheidx + i];
-            }
-        }
-        __syncthreads();
-    }
-
-    if (cacheidx == 0)
-    {
-        dst.arr[blockidx] = cache[0];
-    }
-}
-
-__global__ void reduceByMin(CudaData dst, CudaData src)
+template <typename Reducer>
+__global__ void reduceAll(Reducer *o, CUDATensor t)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -727,33 +544,7 @@ double *runDimReducer(
 
     LaunchParams lps = launchParams(dst.size);
 
-    switch (rdt)
-    {
-    case RED_SUM:
-        reduceDimBySum<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
-        break;
-    case RED_MAX:
-        reduceDimByMax<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
-        break;
-    case RED_MIN:
-        reduceDimByMin<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
-        break;
-    case RED_AVG:
-        reduceDimByAvg<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
-        break;
-    case RED_VAR:
-        reduceDimByVar<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
-        break;
-    case RED_STD:
-        reduceDimByStd<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
-        break;
-    case RED_ARGMAX:
-        reduceDimByArgmax<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
-        break;
-    case RED_ARGMIN:
-        reduceDimByArgmin<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, dims_src, dim);
-        break;
-    }
+    reduceDim<Reducer><<<lps.blockSize, lps.threadSize>>>(dst, t, view_o, dim);
 
     handleCudaError(
         cudaGetLastError());
@@ -783,60 +574,60 @@ extern "C"
 
 double Sum(CUDATensor t)
 {
-    return runSumReducer(src);
+    return runAllReducer<sumReducer>(t);
 }
 
 double Max(CUDATensor t)
 {
-    return runMaxReducer(src);
+    return runAllReducer<maxReducer>(t);
 }
 
 double Min(CUDATensor t)
 {
-    return runMinReducer(src);
+    return runAllReducer<minReducer>(t);
 }
 
 double Var(CUDATensor t)
 {
-    return runVarReducer(src);
+    return runAllReducer<varReducer>(t);
 }
 
 double *Argmax(CUDATensor t, int dim, CUDAView view_o)
 {
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMAX);
+    return runDimReducer<argmaxReducer>(t, dim, view_o);
 }
 
 double *Argmin(CUDATensor t, int dim, CUDAView view_o)
 {
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_ARGMIN);
+    return runDimReducer<argminReducer>(t, dim, view_o);
 }
 
 double *SumAlong(CUDATensor t, int dim, CUDAView view_o)
 {
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_SUM);
+    return runDimReducer<sumReducer>(t, dim, view_o);
 }
 
 double *MaxAlong(CUDATensor t, int dim, CUDAView view_o)
 {
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_MAX);
+    return runDimReducer<maxReducer>(t, dim, view_o);
 }
 
 double *MinAlong(CUDATensor t, int dim, CUDAView view_o)
 {
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_MIN);
+    return runDimReducer<minReducer>(t, dim, view_o);
 }
 
 double *AvgAlong(CUDATensor t, int dim, CUDAView view_o)
 {
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_AVG);
+    return runDimReducer<avgReducer>(t, dim, view_o);
 }
 
 double *VarAlong(CUDATensor t, int dim, CUDAView view_o)
 {
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_VAR);
+    return runDimReducer<varReducer>(t, dim, view_o);
 }
 
 double *StdAlong(CUDATensor t, int dim, CUDAView view_o)
 {
-    return runDimReducer(src, dim, dims_src, dims_dst, RED_STD);
+    return runDimReducer<stdReducer>(t, dim, view_o);
 }

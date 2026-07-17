@@ -13,6 +13,10 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
+func (t *CUDATensor) numElems() int {
+	return util.DimsToNumElems(t.dims)
+}
+
 func (t *CUDATensor) at(index []int) float64 {
 	t_c := toCUDATensor_C(t)
 	index_c := toDimArr_C(index)

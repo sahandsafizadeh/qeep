@@ -89,9 +89,9 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
     case OP_LE:
         return a <= b ? 1. : 0.;
     case OP_ELMAX:
-        return max(a, b);
+        return fmax(a, b);
     case OP_ELMIN:
-        return min(a, b);
+        return fmin(a, b);
     case OP_ADD:
         return a + b;
     case OP_SUB:

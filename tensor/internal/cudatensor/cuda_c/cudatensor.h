@@ -12,7 +12,7 @@ double *RandU(double l, double u, CUDAView view_o);
 double *RandN(double u, double s, CUDAView view_o);
 double *Of(double *input_data, CUDAView view_o);
 double *From(CUDATensor t, CUDAView view_o);
-double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o);
+double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o);
 
 /*--------------- accessors ---------------*/
 double At(CUDATensor t, DimArr index);

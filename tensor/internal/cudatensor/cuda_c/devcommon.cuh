@@ -29,10 +29,10 @@ __device__ inline unsigned int threadPosition()
     return threadIdx.x + blockIdx.x * blockDim.x;
 }
 
-__host__ __device__ inline int index2lnpos(DimArr index, CUDAView view)
+__host__ __device__ inline size_t index2lnpos(DimArr index, CUDAView view)
 {
-    int lnpos = view.ofst;
-    for (size_t i = 0; i < index.size; i++)
+    size_t lnpos = view.ofst;
+    for (int i = 0; i < index.size; i++)
     {
         lnpos += view.strd.arr[i] * index.arr[i];
     }
@@ -40,15 +40,15 @@ __host__ __device__ inline int index2lnpos(DimArr index, CUDAView view)
     return lnpos;
 }
 
-__host__ __device__ inline DimArr lnpos2index(int lnpos, CUDAView view)
+__host__ __device__ inline DimArr lnpos2index(size_t lnpos, CUDAView view)
 {
     DimArr index;
     index.size = view.dims.size;
 
-    int rem = lnpos - view.ofst;
-    for (size_t i = 0; i < view.strd.size; i++)
+    size_t rem = lnpos - view.ofst;
+    for (int i = 0; i < view.strd.size; i++)
     {
-        int count = view.strd.arr[i];
+        size_t count = view.strd.arr[i];
         index.arr[i] = rem / count;
         rem = rem % count;
     }

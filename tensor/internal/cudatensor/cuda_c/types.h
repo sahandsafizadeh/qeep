@@ -7,13 +7,13 @@
 
 typedef struct DimArr
 {
-    int arr[MAX_DIMS];
+    size_t arr[MAX_DIMS];
     size_t size;
 } DimArr;
 
 typedef struct CUDAView
 {
-    int ofst;
+    size_t ofst;
     DimArr strd;
     DimArr dims;
 } CUDAView;
@@ -34,8 +34,8 @@ typedef struct CUDATensor
 
 typedef struct Range
 {
-    int from;
-    int to;
+    size_t from;
+    size_t to;
 } Range;
 
 typedef struct RangeArr

@@ -36,11 +36,11 @@ func assertCUDATensors(ts []tensor.Tensor) (cts []*CUDATensor, err error) {
 }
 
 func toCUDATensor_C(t *CUDATensor) C.CUDATensor {
-	ofst_c := (C.int)(t.ofst)
+	ofst_c := (C.size_t)(t.ofst)
 	strd_c := toDimArr_C(t.strd)
 	dims_c := toDimArr_C(t.dims)
-	arr_c := (*C.double)(t.data)
 	size_c := (C.size_t)(t.numElems())
+	arr_c := (*C.double)(t.data)
 
 	return C.CUDATensor{
 		view: C.CUDAView{
@@ -49,42 +49,39 @@ func toCUDATensor_C(t *CUDATensor) C.CUDATensor {
 			dims: dims_c,
 		},
 		data: C.CUDAData{
-			arr:  arr_c,
 			size: size_c,
+			arr:  arr_c,
 		},
 	}
 }
 
 func toDimArr_C(dims []int) C.DimArr {
-	var arr_c [C.MAX_DIMS]C.int
+	size_c := (C.int)(len(dims))
+
+	var arr_c [C.MAX_DIMS]C.size_t
 	for i, d := range dims {
-		arr_c[i] = (C.int)(d)
+		arr_c[i] = (C.size_t)(d)
 	}
 
-	size_c := (C.size_t)(len(dims))
-
 	return C.DimArr{
-		arr:  arr_c,
 		size: size_c,
+		arr:  arr_c,
 	}
 }
 
 func toRangeArr_C(index []tensor.Range) C.RangeArr {
+	size_c := (C.int)(len(index))
+
 	var arr_c [C.MAX_DIMS]C.Range
 	for i, r := range index {
-		from_c := (C.int)(r.From)
-		to_c := (C.int)(r.To)
-
 		arr_c[i] = C.Range{
-			from: from_c,
-			to:   to_c,
+			from: (C.size_t)(r.From),
+			to:   (C.size_t)(r.To),
 		}
 	}
 
-	size_c := (C.size_t)(len(index))
-
 	return C.RangeArr{
-		arr:  arr_c,
 		size: size_c,
+		arr:  arr_c,
 	}
 }

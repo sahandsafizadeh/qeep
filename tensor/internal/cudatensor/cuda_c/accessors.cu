@@ -6,12 +6,12 @@
 
 __device__ bool fallsin(DimArr index, RangeArr ranges)
 {
-    for (size_t i = 0; i < index.size; i++)
+    for (int i = 0; i < index.size; i++)
     {
         Range range = ranges.arr[i];
-        int idx = index.arr[i];
-        int from = range.from;
-        int to = range.to;
+        size_t idx = index.arr[i];
+        size_t from = range.from;
+        size_t to = range.to;
 
         if (idx < from || idx >= to)
         {
@@ -22,9 +22,9 @@ __device__ bool fallsin(DimArr index, RangeArr ranges)
     return true;
 }
 
-__device__ int toPatchPosition(DimArr index, RangeArr ranges, CUDAView view)
+__device__ size_t patchpos(DimArr index, RangeArr ranges, CUDAView view)
 {
-    for (size_t i = 0; i < index.size; i++)
+    for (int i = 0; i < index.size; i++)
     {
         index.arr[i] -= ranges.arr[i].from;
     }
@@ -41,16 +41,16 @@ __global__ void applyPatch(CUDATensor o, CUDATensor t, RangeArr ranges, CUDATens
     {
         double value;
 
-        DimArr oidx = lnpos2index(i, o.view);
-        if (!fallsin(oidx, ranges))
+        DimArr index_o = lnpos2index(i, o.view);
+        if (!fallsin(index_o, ranges))
         {
-            int lnpos_src = index2lnpos(oidx, t.view);
-            value = t.data.arr[lnpos_src];
+            size_t lnpos_t = index2lnpos(index_o, t.view);
+            value = t.data.arr[lnpos_t];
         }
         else
         {
-            int lnpos_src = toPatchPosition(oidx, ranges, u.view);
-            value = u.data.arr[lnpos_src];
+            size_t lnpos_t = patchpos(index_o, ranges, u.view);
+            value = u.data.arr[lnpos_t];
         }
 
         o.data.arr[i] = value;
@@ -67,7 +67,7 @@ extern "C"
 
 double At(CUDATensor t, DimArr index)
 {
-    int lnpos = index2lnpos(index, t.view);
+    size_t lnpos = index2lnpos(index, t.view);
 
     double elem;
     handleCudaError(

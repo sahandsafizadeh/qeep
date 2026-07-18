@@ -8,11 +8,7 @@ package cudatensor
 */
 import "C"
 
-import (
-	"math"
-
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
-)
+import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
 
 func (t *CUDATensor) sum() float64 {
 	return applyReduction(t, func(src C.CudaData) C.double {
@@ -39,11 +35,15 @@ func (t *CUDATensor) _var() float64 {
 }
 
 func (t *CUDATensor) avg() float64 {
-	return t.sum() / float64(t.n)
+	return applyReduction(t, func(src C.CudaData) C.double {
+		return C.Avg(src)
+	})
 }
 
 func (t *CUDATensor) std() float64 {
-	return math.Sqrt(t._var())
+	return applyReduction(t, func(src C.CudaData) C.double {
+		return C.Std(src)
+	})
 }
 
 func (t *CUDATensor) mean() float64 {

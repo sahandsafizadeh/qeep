@@ -251,7 +251,7 @@ __device__ size_t flatpos(size_t i, CUDAView view)
         rem /= dim;
     }
 
-    return index2lnpos(index, t.view);
+    return index2lnpos(index, view);
 }
 
 template <typename Reducer>
@@ -329,43 +329,42 @@ __global__ void reduceDim(CUDATensor o, CUDATensor t, int dim)
 
 const unsigned int MAX_BLOCKS = 512;
 
-double runSumReducer(CudaData src)
+template <typename Reducer>
+double runAllReducer(CUDATensor t)
 {
-    size_t n;
-    CudaData dev_dst;
-    double *host_dst;
+    size_t n = elemcnt(t.view.dims);
+    LaunchParams lps = launchParams(n);
 
-    LaunchParams lps = launchParams(src.size);
     n = min(lps.blockSize, MAX_BLOCKS);
     lps.blockSize = n;
 
-    dev_dst = (CudaData){NULL, n};
-    host_dst = (double *)(malloc(n * sizeof(double)));
+    Reducer *dev_o;
     handleCudaError(
-        cudaMalloc(&dev_dst.arr, dev_dst.size * sizeof(double)));
+        cudaMalloc(&dev_o, n * sizeof(Reducer)));
 
-    reduceBySum<<<lps.blockSize, lps.threadSize>>>(dev_dst, src);
-
+    reduceAll<Reducer><<<lps.blockSize, lps.threadSize>>>(dev_o, t);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
+
+    Reducer *hst_o = (Reducer *)(malloc(n * sizeof(Reducer)));
     handleCudaError(
         cudaMemcpy(
-            host_dst,
-            dev_dst.arr,
-            dev_dst.size * sizeof(double),
+            hst_o,
+            dev_o,
+            n * sizeof(Reducer),
             cudaMemcpyDeviceToHost));
+    handleCudaError(
+        cudaFree(dev_o));
 
-    double res = 0.;
+    Reducer acc;
+    acc.init();
     for (size_t i = 0; i < n; i++)
     {
-        res = res + host_dst[i];
+        acc.merge(hst_o[i]);
     }
 
-    free(host_dst);
-    handleCudaError(
-        cudaFree(dev_dst.arr));
+    double res = acc.result();
+    free(hst_o);
 
     return res;
 }

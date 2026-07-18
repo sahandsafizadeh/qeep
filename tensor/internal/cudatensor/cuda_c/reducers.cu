@@ -374,7 +374,7 @@ double *runDimReducer(CUDATensor t, int dim, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 
-    CUDAData data_o = (CUDAData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 

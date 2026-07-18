@@ -122,7 +122,7 @@ double *Full(double value, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 
-    CUDAData data_o = (CUDAData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
@@ -141,7 +141,7 @@ double *Eye(CUDAView view_o)
     size_t d = view_o.dims.arr[0];
     size_t n = elemcnt(view_o.dims);
 
-    CUDAData data_o = (CUDAData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
@@ -159,7 +159,7 @@ double *RandU(double l, double u, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 
-    CUDAData data_o = (CUDAData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
@@ -179,7 +179,7 @@ double *RandN(double u, double s, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 
-    CUDAData data_o = (CUDAData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
@@ -199,7 +199,7 @@ double *Of(double *input_data, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 
-    CUDAData data_o = (CUDAData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
@@ -217,7 +217,7 @@ double *From(CUDATensor t, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 
-    CUDAData data_o = (CUDAData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
@@ -235,7 +235,7 @@ double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 
-    CUDAData data_o = (CUDAData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
         cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 

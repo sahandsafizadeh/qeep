@@ -14,7 +14,7 @@ struct sumReducer
     {
         value = 0.;
     }
-    __host__ __device__ void feed(int _, double v)
+    __host__ __device__ void feed(size_t _, double v)
     {
         value += v;
     }
@@ -36,7 +36,7 @@ struct maxReducer
     {
         value = -INFINITY;
     }
-    __host__ __device__ void feed(int _, double v)
+    __host__ __device__ void feed(size_t _, double v)
     {
         if (v > value)
         {
@@ -64,7 +64,7 @@ struct minReducer
     {
         value = INFINITY;
     }
-    __host__ __device__ void feed(int _, double v)
+    __host__ __device__ void feed(size_t _, double v)
     {
         if (v < value)
         {
@@ -86,15 +86,15 @@ struct minReducer
 
 struct argmaxReducer
 {
-    int index;
+    size_t index;
     double value;
 
     __host__ __device__ void init()
     {
-        index = -1;
+        index = 0;
         value = -INFINITY;
     }
-    __host__ __device__ void feed(int i, double v)
+    __host__ __device__ void feed(size_t i, double v)
     {
         if (v > value)
         {
@@ -118,15 +118,15 @@ struct argmaxReducer
 
 struct argminReducer
 {
-    int index;
+    size_t index;
     double value;
 
     __host__ __device__ void init()
     {
-        index = -1;
+        index = 0;
         value = INFINITY;
     }
-    __host__ __device__ void feed(int i, double v)
+    __host__ __device__ void feed(size_t i, double v)
     {
         if (v < value)
         {
@@ -150,7 +150,7 @@ struct argminReducer
 
 struct avgReducer // Welford
 {
-    int count;
+    size_t count;
     double mean;
 
     __host__ __device__ void init()
@@ -158,7 +158,7 @@ struct avgReducer // Welford
         count = 0;
         mean = 0.;
     }
-    __host__ __device__ void feed(int _, double v)
+    __host__ __device__ void feed(size_t _, double v)
     {
         count++;
         double delta = v - mean;
@@ -166,9 +166,9 @@ struct avgReducer // Welford
     }
     __host__ __device__ void merge(const avgReducer o)
     {
-        int na = count;
-        int nb = o.count;
-        int n = na + nb;
+        size_t na = count;
+        size_t nb = o.count;
+        size_t n = na + nb;
         if (n == 0)
         {
             return;
@@ -187,7 +187,7 @@ struct avgReducer // Welford
 
 struct varReducer // Welford
 {
-    int count;
+    size_t count;
     double mean;
     double m2;
 
@@ -197,7 +197,7 @@ struct varReducer // Welford
         mean = 0;
         m2 = 0;
     }
-    __host__ __device__ void feed(int _, double v)
+    __host__ __device__ void feed(size_t _, double v)
     {
         count++;
         double delta = v - mean;
@@ -207,9 +207,9 @@ struct varReducer // Welford
     }
     __host__ __device__ void merge(const varReducer o)
     {
-        int na = count;
-        int nb = o.count;
-        int n = na + nb;
+        size_t na = count;
+        size_t nb = o.count;
+        size_t n = na + nb;
         if (n == 0)
         {
             return;
@@ -235,6 +235,8 @@ struct stdReducer : varReducer
         return sqrt(varReducer::result());
     }
 };
+
+/* ----- device functions ----- */
 
 template <typename Reducer>
 __global__ void reduceAll(Reducer *o, CUDATensor t)
@@ -381,7 +383,9 @@ extern "C"
     double Sum(CUDATensor t);
     double Max(CUDATensor t);
     double Min(CUDATensor t);
+    double Avg(CUDATensor t);
     double Var(CUDATensor t);
+    double Std(CUDATensor t);
     double *Argmax(CUDATensor t, int dim, CUDAView view_o);
     double *Argmin(CUDATensor t, int dim, CUDAView view_o);
     double *SumAlong(CUDATensor t, int dim, CUDAView view_o);
@@ -407,9 +411,19 @@ double Min(CUDATensor t)
     return runAllReducer<minReducer>(t);
 }
 
+double Avg(CUDATensor t)
+{
+    return runAllReducer<avgReducer>(t);
+}
+
 double Var(CUDATensor t)
 {
     return runAllReducer<varReducer>(t);
+}
+
+double Std(CUDATensor t)
+{
+    return runAllReducer<stdReducer>(t);
 }
 
 double *Argmax(CUDATensor t, int dim, CUDAView view_o)

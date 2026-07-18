@@ -7,8 +7,8 @@
 
 typedef struct DimArr
 {
+    int size;
     size_t arr[MAX_DIMS];
-    size_t size;
 } DimArr;
 
 typedef struct CUDAView
@@ -20,8 +20,8 @@ typedef struct CUDAView
 
 typedef struct CUDAData
 {
-    double *arr;
     size_t size;
+    double *arr;
 } CUDAData;
 
 typedef struct CUDATensor
@@ -40,8 +40,8 @@ typedef struct Range
 
 typedef struct RangeArr
 {
+    int size;
     Range arr[MAX_DIMS];
-    size_t size;
 } RangeArr;
 
 #endif // TYPES

@@ -112,8 +112,8 @@ __global__ void applyHalfBinaryFuncElemWise(CUDATensor y, CUDATensor x, double a
 
     for (size_t i = tpos; i < y.data.size; i += stride)
     {
-        DimArr index = lnpos2index(i, y.view);
-        int lnpos_x = index2lnpos(index, x.view);
+        DimArr index_y = lnpos2index(i, y.view);
+        size_t lnpos_x = index2lnpos(index_y, x.view);
 
         y.data.arr[i] = halfBinaryOp(x.data.arr[lnpos_x], a, opt);
     }
@@ -126,8 +126,8 @@ __global__ void applyUnaryFuncElemWise(CUDATensor y, CUDATensor x, OperationType
 
     for (size_t i = tpos; i < y.data.size; i += stride)
     {
-        DimArr index = lnpos2index(i, y.view);
-        int lnpos_x = index2lnpos(index, x.view);
+        DimArr index_y = lnpos2index(i, y.view);
+        size_t lnpos_x = index2lnpos(index_y, x.view);
 
         y.data.arr[i] = unaryOp(x.data.arr[lnpos_x], opt);
     }
@@ -140,9 +140,9 @@ __global__ void applyBinaryFuncElemWise(CUDATensor y, CUDATensor a, CUDATensor b
 
     for (size_t i = tpos; i < y.data.size; i += stride)
     {
-        DimArr index = lnpos2index(i, y.view);
-        int lnpos_a = index2lnpos(index, a.view);
-        int lnpos_b = index2lnpos(index, b.view);
+        DimArr index_y = lnpos2index(i, y.view);
+        size_t lnpos_a = index2lnpos(index_y, a.view);
+        size_t lnpos_b = index2lnpos(index_y, b.view);
 
         y.data.arr[i] = binaryOp(a.data.arr[lnpos_a], b.data.arr[lnpos_b], opt);
     }
@@ -159,15 +159,15 @@ __global__ void applyDot(CUDATensor y, CUDATensor a, CUDATensor b)
         DimArr index_src = index_y;
         index_src.size = index_y.size + 1;
 
-        size_t n = index_src.size;
+        int n = index_src.size;
         size_t cdim = a.view.dims.arr[n - 1];
 
         double temp = 0.;
         for (size_t j = 0; j < cdim; j++)
         {
             index_src.arr[n - 1] = j;
-            int lnpos_a = index2lnpos(index_src, a.view);
-            int lnpos_b = index2lnpos(index_src, b.view);
+            size_t lnpos_a = index2lnpos(index_src, a.view);
+            size_t lnpos_b = index2lnpos(index_src, b.view);
 
             temp += a.data.arr[lnpos_a] * b.data.arr[lnpos_b];
         }
@@ -186,7 +186,7 @@ __global__ void applyMatMul(CUDATensor y, CUDATensor a, CUDATensor b)
         DimArr index_a = lnpos2index(i, y.view);
         DimArr index_b = index_a;
 
-        size_t n = index_a.size;
+        int n = index_a.size;
         size_t cdim = a.view.dims.arr[n - 1];
 
         double temp = 0.;
@@ -194,8 +194,8 @@ __global__ void applyMatMul(CUDATensor y, CUDATensor a, CUDATensor b)
         {
             index_a.arr[n - 1] = j;
             index_b.arr[n - 2] = j;
-            int lnpos_a = index2lnpos(index_a, a.view);
-            int lnpos_b = index2lnpos(index_b, b.view);
+            size_t lnpos_a = index2lnpos(index_a, a.view);
+            size_t lnpos_b = index2lnpos(index_b, b.view);
 
             temp += a.data.arr[lnpos_a] * b.data.arr[lnpos_b];
         }

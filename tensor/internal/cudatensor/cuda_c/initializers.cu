@@ -9,7 +9,9 @@
 
 inline unsigned long long timeSeed()
 {
-    return (unsigned long long)time(NULL);
+    timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (unsigned long long)ts.tv_sec * 1000000000ULL + ts.tv_nsec;
 }
 
 /* ----- device functions ----- */
@@ -25,7 +27,7 @@ __global__ void fillConst(CUDATensor o, double value)
     }
 }
 
-__global__ void fillEye(CUDATensor o, int d)
+__global__ void fillEye(CUDATensor o, size_t d)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
@@ -73,33 +75,33 @@ __global__ void fillCopy(CUDATensor o, CUDATensor t)
 
     for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        DimArr index_dst = lnpos2index(i, o.view);
-        int lnpos_src = index2lnpos(index_dst, t.view);
+        DimArr index_o = lnpos2index(i, o.view);
+        int lnpos_t = index2lnpos(index_o, t.view);
 
-        o.data.arr[i] = t.data.arr[lnpos_src];
+        o.data.arr[i] = t.data.arr[lnpos_t];
     }
 }
 
-__global__ void fillConcat(CUDATensor o, CUDATensor *ts, int *ofsts, size_t size, int dim)
+__global__ void fillConcat(CUDATensor o, CUDATensor *ts, size_t *ofsts, int size, int dim)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
     for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        DimArr index_dst = lnpos2index(i, o.view);
+        DimArr index_o = lnpos2index(i, o.view);
 
-        size_t s = 0;
-        while (s < size - 1 && index_dst.arr[dim] >= ofsts[s + 1])
+        int s = 0;
+        while (s < size - 1 && index_o.arr[dim] >= ofsts[s + 1])
         {
             s++;
         }
 
-        DimArr index_src = index_dst;
-        index_src.arr[dim] -= ofsts[s];
-        int lnpos_src = index2lnpos(index_src, ts[s].view);
+        DimArr index_t = index_o;
+        index_t.arr[dim] -= ofsts[s];
+        size_t lnpos_t = index2lnpos(index_t, ts[s].view);
 
-        o.data.arr[i] = ts[s].data.arr[lnpos_src];
+        o.data.arr[i] = ts[s].data.arr[lnpos_t];
     }
 }
 
@@ -113,7 +115,7 @@ extern "C"
     double *RandN(double u, double s, CUDAView view_o);
     double *Of(double *input_data, CUDAView view_o);
     double *From(CUDATensor t, CUDAView view_o);
-    double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o);
+    double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o);
 }
 
 double *Full(double value, CUDAView view_o)
@@ -136,7 +138,7 @@ double *Full(double value, CUDAView view_o)
 
 double *Eye(CUDAView view_o)
 {
-    int d = view_o.dims.arr[0];
+    size_t d = view_o.dims.arr[0];
     size_t n = elemcnt(view_o.dims);
 
     CUDAData data_o = (CUDAData){NULL, n};
@@ -229,7 +231,7 @@ double *From(CUDATensor t, CUDAView view_o)
     return o.data.arr;
 }
 
-double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o)
+double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 
@@ -247,22 +249,21 @@ double *Concat(CUDATensor ts[], size_t size, int dim, CUDAView view_o)
             size * sizeof(CUDATensor),
             cudaMemcpyHostToDevice));
 
-    int *ofsts = (int *)malloc((size + 1) * sizeof(int));
+    size_t *ofsts = (size_t *)malloc((size + 1) * sizeof(size_t));
     ofsts[0] = 0;
-    for (size_t i = 0; i < size; i++)
+    for (int i = 0; i < size; i++)
     {
-        DimArr tdims = ts[i].view.dims;
-        ofsts[i + 1] = ofsts[i] + tdims.arr[dim];
+        ofsts[i + 1] = ofsts[i] + ts[i].view.dims.arr[dim];
     }
 
-    int *_ofsts;
+    size_t *_ofsts;
     handleCudaError(
-        cudaMalloc(&_ofsts, size * sizeof(int)));
+        cudaMalloc(&_ofsts, size * sizeof(size_t)));
     handleCudaError(
         cudaMemcpy(
             _ofsts,
             ofsts,
-            size * sizeof(int),
+            size * sizeof(size_t),
             cudaMemcpyHostToDevice));
     free(ofsts);
 

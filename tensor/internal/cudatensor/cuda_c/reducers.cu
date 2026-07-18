@@ -238,45 +238,58 @@ struct stdReducer : varReducer
 
 /* ----- device functions ----- */
 
+__device__ size_t flatpos(size_t i, CUDAView view)
+{
+    DimArr index;
+    index.size = view.dims.size;
+
+    size_t rem = i;
+    for (int j = index.size - 1; j >= 0; j--)
+    {
+        size_t dim = view.dims.arr[j];
+        index.arr[j] = rem % dim;
+        rem /= dim;
+    }
+
+    return index2lnpos(index, t.view);
+}
+
 template <typename Reducer>
 __global__ void reduceAll(Reducer *o, CUDATensor t)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    double temp = INFINITY;
-    for (size_t i = tpos; i < src.size; i += stride)
+    Reducer r;
+
+    r.init();
+    for (size_t i = tpos; i < t.data.size; i += stride)
     {
-        if (src.arr[i] < temp)
-        {
-            temp = src.arr[i];
-        }
+        size_t lnpos_t = flatpos(i, t.view);
+        r.feed(i, t.data.arr[lnpos_t]);
     }
 
     const unsigned int cacheidx = threadIndex();
     const unsigned int cachelen = blockSize();
     const unsigned int blockidx = blockIndex();
 
-    __shared__ double cache[MAX_THREADS_PER_BLOCK_X];
+    __shared__ Reducer cache[MAX_THREADS_PER_BLOCK_X];
 
-    cache[cacheidx] = temp;
+    cache[cacheidx] = r;
     __syncthreads();
 
     for (size_t i = cachelen / 2; i != 0; i /= 2)
     {
         if (cacheidx < i)
         {
-            if (cache[cacheidx + i] < cache[cacheidx])
-            {
-                cache[cacheidx] = cache[cacheidx + i];
-            }
+            cache[cacheidx].merge(cache[cacheidx + i]);
         }
         __syncthreads();
     }
 
     if (cacheidx == 0)
     {
-        dst.arr[blockidx] = cache[0];
+        o[blockidx] = cache[0];
     }
 }
 
@@ -288,24 +301,24 @@ __global__ void reduceDim(CUDATensor o, CUDATensor t, int dim)
 
     for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        DimArr index_dst = lnpos2index(i, o.view);
-        DimArr index_src = index_dst;
-        index_src.size = index_dst.size + 1;
-        for (int d = index_dst.size; d > dim; d--)
+        DimArr index_o = lnpos2index(i, o.view);
+        DimArr index_t = index_o;
+        index_t.size = index_o.size + 1;
+        for (int d = index_o.size; d > dim; d--)
         {
-            index_src.arr[d] = index_src.arr[d - 1];
+            index_t.arr[d] = index_t.arr[d - 1];
         }
 
         Reducer r;
-        int cdim = t.view.dims.arr[dim];
+        size_t cdim = t.view.dims.arr[dim];
 
         r.init();
-        for (int j = 0; j < cdim; j++)
+        for (size_t j = 0; j < cdim; j++)
         {
-            index_src.arr[dim] = j;
-            int lnpos_src = index2lnpos(index_src, t.view);
+            index_t.arr[dim] = j;
+            size_t lnpos_t = index2lnpos(index_t, t.view);
 
-            r.feed(j, t.data.arr[lnpos_src]);
+            r.feed(j, t.data.arr[lnpos_t]);
         }
 
         o.data.arr[i] = r.result();

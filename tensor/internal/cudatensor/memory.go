@@ -27,6 +27,13 @@ var (
 	cudaAllocMem int64 = 0
 )
 
+/*
+1- when creating new cuda tensor
+2- when reusing the memory of cuda tensor
+3- when freeing cuda tensor
+4- when updating memory scheme of cuda
+*/
+
 func newCUDATensor(dims []int, data *C.double) *CUDATensor {
 	tn := util.DimsToNumElems(dims)
 	tdims := make([]int, len(dims))

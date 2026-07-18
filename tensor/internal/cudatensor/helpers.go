@@ -12,6 +12,7 @@ import (
 	"fmt"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 func assertCUDATensor(t tensor.Tensor) (ct *CUDATensor, err error) {
@@ -52,6 +53,20 @@ func toCUDATensor_C(t *CUDATensor) C.CUDATensor {
 			size: size_c,
 			arr:  arr_c,
 		},
+	}
+}
+
+func toCUDAView_C(dims []int) C.CUDAView {
+	strd := util.DimsToStrides(dims)
+
+	ofst_c := (C.size_t)(0)
+	strd_c := toDimArr_C(strd)
+	dims_c := toDimArr_C(dims)
+
+	return C.CUDAView{
+		ofst: ofst_c,
+		strd: strd_c,
+		dims: dims_c,
 	}
 }
 

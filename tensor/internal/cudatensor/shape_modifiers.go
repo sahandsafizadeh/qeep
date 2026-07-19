@@ -24,8 +24,7 @@ func (t *CUDATensor) transpose() *CUDATensor {
 	o.strd[n-2], o.strd[n-1] = o.strd[n-1], o.strd[n-2]
 	o.dims = util.TransposeDims(t.dims)
 
-	// TODO: use memory.go thread-safe function
-	o.data = t.data // reuse data
+	shareCUDAData(o, t) // reuse data
 
 	return o
 }
@@ -48,8 +47,7 @@ func (t *CUDATensor) broadcast(shape []int) *CUDATensor {
 		}
 	}
 
-	// TODO: use memory.go thread-safe function
-	o.data = t.data // reuse data
+	shareCUDAData(o, t) // reuse data
 
 	return o
 }
@@ -64,7 +62,6 @@ func (t *CUDATensor) reshape(shape []int) *CUDATensor {
 
 		data_c := C.From(t_c, view_o_c)
 
-		// TODO: use memory.go thread-safe function
 		return newCUDATensor(shape, data_c)
 	}
 
@@ -74,8 +71,7 @@ func (t *CUDATensor) reshape(shape []int) *CUDATensor {
 	o.dims = make([]int, len(shape))
 	copy(o.dims, shape)
 
-	// TODO: use memory.go thread-safe function
-	o.data = t.data // reuse data
+	shareCUDAData(o, t) // reuse data
 
 	return o
 }

@@ -11,7 +11,7 @@ inline unsigned long long timeSeed()
 {
     timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (unsigned long long)ts.tv_sec * 1000000000ULL + ts.tv_nsec;
+    return (unsigned long long)ts.tv_sec * 1e9ULL + ts.tv_nsec;
 }
 
 /* ----- device functions ----- */

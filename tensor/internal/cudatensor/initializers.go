@@ -15,48 +15,40 @@ import (
 )
 
 func constTensor(dims []int, value float64) *CUDATensor {
-	n := util.DimsToNumElems(dims)
-
-	n_c := (C.size_t)(n)
 	value_c := (C.double)(value)
+	view_o_c := toCUDAView_C(dims)
 
-	data_c := C.Full(n_c, value_c)
+	data_c := C.Full(value_c, view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }
 
 func eyeMatrix(d int) *CUDATensor {
 	dims := []int{d, d}
-	n := util.DimsToNumElems(dims)
 
-	n_c := (C.size_t)(n)
-	d_c := (C.size_t)(d)
+	view_o_c := toCUDAView_C(dims)
 
-	data_c := C.Eye(n_c, d_c)
+	data_c := C.Eye(view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }
 
 func uniformRandomTensor(dims []int, l, u float64) *CUDATensor {
-	n := util.DimsToNumElems(dims)
-
-	n_c := (C.size_t)(n)
 	l_c := (C.double)(l)
 	u_c := (C.double)(u)
+	view_o_c := toCUDAView_C(dims)
 
-	data_c := C.RandU(n_c, l_c, u_c)
+	data_c := C.RandU(l_c, u_c, view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }
 
 func normalRandomTensor(dims []int, u, s float64) *CUDATensor {
-	n := util.DimsToNumElems(dims)
-
-	n_c := (C.size_t)(n)
 	u_c := (C.double)(u)
 	s_c := (C.double)(s)
+	view_o_c := toCUDAView_C(dims)
 
-	data_c := C.RandN(n_c, u_c, s_c)
+	data_c := C.RandN(u_c, s_c, view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }
@@ -71,16 +63,13 @@ func tensorFromData(data any) *CUDATensor {
 		inputData = append(inputData, (C.double)(v))
 
 	case []float64:
-		d0 := len(v)
-		dims = []int{d0}
+		dims = []int{len(v)}
 		for _, v0 := range v {
 			inputData = append(inputData, (C.double)(v0))
 		}
 
 	case [][]float64:
-		d0 := len(v)
-		d1 := len(v[0])
-		dims = []int{d0, d1}
+		dims = []int{len(v), len(v[0])}
 		for _, v0 := range v {
 			for _, v1 := range v0 {
 				inputData = append(inputData, (C.double)(v1))
@@ -88,10 +77,7 @@ func tensorFromData(data any) *CUDATensor {
 		}
 
 	case [][][]float64:
-		d0 := len(v)
-		d1 := len(v[0])
-		d2 := len(v[0][0])
-		dims = []int{d0, d1, d2}
+		dims = []int{len(v), len(v[0]), len(v[0][0])}
 		for _, v0 := range v {
 			for _, v1 := range v0 {
 				for _, v2 := range v1 {
@@ -101,11 +87,7 @@ func tensorFromData(data any) *CUDATensor {
 		}
 
 	case [][][][]float64:
-		d0 := len(v)
-		d1 := len(v[0])
-		d2 := len(v[0][0])
-		d3 := len(v[0][0][0])
-		dims = []int{d0, d1, d2, d3}
+		dims = []int{len(v), len(v[0]), len(v[0][0]), len(v[0][0][0])}
 		for _, v0 := range v {
 			for _, v1 := range v0 {
 				for _, v2 := range v1 {
@@ -120,39 +102,33 @@ func tensorFromData(data any) *CUDATensor {
 		panic("invalid input data type: data must have been based on float64 slices")
 	}
 
-	n := util.DimsToNumElems(dims)
 	dataptr := unsafe.Pointer(&inputData[0])
 
-	n_c := (C.size_t)(n)
 	input_data_c := (*C.double)(dataptr)
+	view_o_c := toCUDAView_C(dims)
 
-	data_c := C.Of(n_c, input_data_c)
+	data_c := C.Of(input_data_c, view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }
 
 func tensorFromConcat(ts []*CUDATensor, dim int) *CUDATensor {
 	dims := util.ConcatDims(ts, dim)
-
 	size := len(ts)
-	tsSrcs := make([]C.CudaData, size)
-	tsDims := make([]C.DimArr, size)
 
+	tsrcs := make([]C.CUDATensor, size)
 	for i, t := range ts {
-		tsSrcs[i] = getCudaDataOf(t)
-		tsDims[i] = getDimArrOf(t.dims)
+		tsrcs[i] = toCUDATensor_C(t)
 	}
 
-	srcsptr := unsafe.Pointer(&tsSrcs[0])
-	dimsptr := unsafe.Pointer(&tsDims[0])
+	tsptr := unsafe.Pointer(&tsrcs[0])
 
-	srcs_c := (*C.CudaData)(srcsptr)
-	dims_src_c := (*C.DimArr)(dimsptr)
-	size_c := (C.size_t)(size)
+	ts_c := (*C.CudaData)(tsptr)
+	size_c := (C.int)(size)
 	dim_c := (C.int)(dim)
-	dims_dst_c := getDimArrOf(dims)
+	view_o_c := toCUDAView_C(dims)
 
-	data_c := C.Concat(srcs_c, dims_src_c, size_c, dim_c, dims_dst_c)
+	data_c := C.Concat(ts_c, size_c, dim_c, view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }

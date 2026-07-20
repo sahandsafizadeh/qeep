@@ -27,28 +27,33 @@ var (
 	cudaAllocMem int64 = 0
 )
 
-/*
-1- when creating new cuda tensor
-2- when reusing the memory of cuda tensor
-3- when freeing cuda tensor
-4- when updating memory scheme of cuda
-*/
+type cudaBufferInfo struct {
+	size int
+	arr  *C.double
+}
+
+var cudaBuffers = map[*int]*cudaBufferInfo{}
 
 func newCUDATensor(dims []int, data *C.double) *CUDATensor {
-	tn := util.DimsToNumElems(dims)
+	trefc := 1
+	tofst := 0
+	tstrd := util.DimsToStrides(dims)
 	tdims := make([]int, len(dims))
-	tdata := unsafe.Pointer(data)
 	copy(tdims, dims)
+	tdata := unsafe.Pointer(data)
 
 	t := &CUDATensor{
-		n:    tn,
+		refc: &trefc,
+		ofst: tofst,
+		strd: tstrd,
 		dims: tdims,
 		data: tdata,
 	}
 
-	arg := getCudaDataOf(t)
-	updateCudaAllocMem(t.n, +1)
-	runtime.AddCleanup(t, freeCUDATensorData, arg)
+	size := t.numElems()
+	cudaBuffers[t.refc] = &cudaBufferInfo{size: size, arr: data}
+	updateCudaAllocMem(size, +1)
+	runtime.AddCleanup(t, freeCUDATensorData, t.refc)
 
 	if enforceCleanup() {
 		runtime.GC()
@@ -57,9 +62,22 @@ func newCUDATensor(dims []int, data *C.double) *CUDATensor {
 	return t
 }
 
-func freeCUDATensorData(cd C.CudaData) {
-	C.FreeCudaMem(cd.arr)
-	updateCudaAllocMem(int(cd.size), -1)
+func shareCUDAData(dst *CUDATensor, src *CUDATensor) {
+	dst.refc = src.refc // refc must be a shared resource
+	*dst.refc++
+	dst.data = src.data
+
+	runtime.AddCleanup(dst, freeCUDATensorData, dst.refc)
+}
+
+func freeCUDATensorData(refc *int) {
+	*refc--
+	if *refc == 0 {
+		info := cudaBuffers[refc]
+		delete(cudaBuffers, refc)
+		C.FreeCudaMem(info.arr)
+		updateCudaAllocMem(info.size, -1)
+	}
 }
 
 func updateCudaAllocMem(n int, dir int) {

@@ -20,6 +20,8 @@ type CUDATensor struct {
 	dims []int
 	data unsafe.Pointer
 	gctx *gradtrack.GradContext
+
+	refc *int
 }
 
 type unaryOperatorFunc_C func(C.CUDATensor, C.CUDAView) *C.double

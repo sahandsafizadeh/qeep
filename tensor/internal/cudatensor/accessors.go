@@ -39,7 +39,7 @@ func (t *CUDATensor) slice(index []tensor.Range) *CUDATensor {
 		o.ofst += t.strd[i] * r.From
 	}
 
-	shareCUDAData(o, t) // reuse data
+	shareCUDATensorData(o, t) // reuse data
 
 	return o
 }

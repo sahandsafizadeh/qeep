@@ -24,7 +24,7 @@ func (t *CUDATensor) transpose() *CUDATensor {
 	o.strd[n-2], o.strd[n-1] = o.strd[n-1], o.strd[n-2]
 	o.dims = util.TransposeDims(t.dims)
 
-	shareCUDAData(o, t) // reuse data
+	shareCUDATensorData(o, t) // reuse data
 
 	return o
 }
@@ -47,7 +47,7 @@ func (t *CUDATensor) broadcast(shape []int) *CUDATensor {
 		}
 	}
 
-	shareCUDAData(o, t) // reuse data
+	shareCUDATensorData(o, t) // reuse data
 
 	return o
 }
@@ -71,7 +71,7 @@ func (t *CUDATensor) reshape(shape []int) *CUDATensor {
 	o.dims = make([]int, len(shape))
 	copy(o.dims, shape)
 
-	shareCUDAData(o, t) // reuse data
+	shareCUDATensorData(o, t) // reuse data
 
 	return o
 }

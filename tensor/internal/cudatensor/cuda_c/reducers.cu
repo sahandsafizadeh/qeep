@@ -238,22 +238,6 @@ struct stdReducer : varReducer
 
 /* ----- device functions ----- */
 
-__device__ size_t flatpos(size_t i, CUDAView view)
-{
-    DimArr index;
-    index.size = view.dims.size;
-
-    size_t rem = i;
-    for (int j = index.size - 1; j >= 0; j--)
-    {
-        size_t dim = view.dims.arr[j];
-        index.arr[j] = rem % dim;
-        rem /= dim;
-    }
-
-    return index2lnpos(index, view);
-}
-
 template <typename Reducer>
 __global__ void reduceAll(Reducer *o, CUDATensor t)
 {

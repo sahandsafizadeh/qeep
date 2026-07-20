@@ -75,9 +75,7 @@ __global__ void fillCopy(CUDATensor o, CUDATensor t)
 
     for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        DimArr index_o = lnpos2index(i, o.view);
-        int lnpos_t = index2lnpos(index_o, t.view);
-
+        size_t lnpos_t = flatpos(i, t.view);
         o.data.arr[i] = t.data.arr[lnpos_t];
     }
 }

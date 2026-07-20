@@ -56,4 +56,20 @@ __host__ __device__ inline DimArr lnpos2index(size_t lnpos, CUDAView view)
     return index;
 }
 
+__host__ __device__ inline size_t flatpos(size_t i, CUDAView view)
+{
+    DimArr index;
+    index.size = view.dims.size;
+
+    size_t rem = i;
+    for (int j = index.size - 1; j >= 0; j--)
+    {
+        size_t dim = view.dims.arr[j];
+        index.arr[j] = rem % dim;
+        rem /= dim;
+    }
+
+    return index2lnpos(index, view);
+}
+
 #endif // DEVCOMMON_H

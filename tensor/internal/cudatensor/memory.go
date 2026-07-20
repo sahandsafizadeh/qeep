@@ -11,6 +11,7 @@ import "C"
 import (
 	"math/rand/v2"
 	"runtime"
+	"sync"
 	"unsafe"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
@@ -25,6 +26,7 @@ const (
 var (
 	cudaTotalMem int64 = 0
 	cudaAllocMem int64 = 0
+	cudaMemMutx  sync.Mutex
 )
 
 func newCUDATensor(dims []int, data *C.double) *CUDATensor {
@@ -75,6 +77,9 @@ func freeCUDATensorData(sbuf *sharedBuffer) {
 }
 
 func updateCudaAllocMem(n int, dir int) {
+	cudaMemMutx.Lock()
+	defer cudaMemMutx.Unlock()
+
 	updatedBytes := int64(n) * doubleSizeBytes
 	if dir > 0 {
 		cudaAllocMem += updatedBytes
@@ -88,6 +93,9 @@ func updateCudaAllocMem(n int, dir int) {
 }
 
 func enforceCleanup() bool {
+	cudaMemMutx.Lock()
+	defer cudaMemMutx.Unlock()
+
 	reloadCudaMemInfo()
 	allocMem := float64(cudaAllocMem)
 	totalMem := float64(cudaTotalMem)

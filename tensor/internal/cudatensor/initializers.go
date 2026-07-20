@@ -123,7 +123,7 @@ func tensorFromConcat(ts []*CUDATensor, dim int) *CUDATensor {
 
 	tsptr := unsafe.Pointer(&tsrcs[0])
 
-	ts_c := (*C.CudaData)(tsptr)
+	ts_c := (*C.CUDATensor)(tsptr)
 	size_c := (C.int)(size)
 	dim_c := (C.int)(dim)
 	view_o_c := toCUDAView_C(dims)

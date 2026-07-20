@@ -27,34 +27,22 @@ var (
 	cudaAllocMem int64 = 0
 )
 
-type cudaBufferInfo struct {
-	size int
-	arr  *C.double
-}
-
-var cudaBuffers = map[*int]*cudaBufferInfo{}
-
 func newCUDATensor(dims []int, data *C.double) *CUDATensor {
-	trefc := 1
-	tofst := 0
-	tstrd := util.DimsToStrides(dims)
-	tdims := make([]int, len(dims))
-	copy(tdims, dims)
-	tdata := unsafe.Pointer(data)
+	t := new(CUDATensor)
+	t.ofst = 0
+	t.strd = util.DimsToStrides(dims)
+	t.dims = make([]int, len(dims))
+	copy(t.dims, dims)
 
-	t := &CUDATensor{
-		refc: &trefc,
-		ofst: tofst,
-		strd: tstrd,
-		dims: tdims,
-		data: tdata,
-	}
+	sbuf := new(sharedBuffer)
+	sbuf.data = unsafe.Pointer(data)
+	sbuf.size = util.DimsToNumElems(dims)
+	sbuf.rcnt = 1
 
-	size := t.numElems()
-	cudaBuffers[t.refc] = &cudaBufferInfo{size: size, arr: data}
-	updateCudaAllocMem(size, +1)
-	runtime.AddCleanup(t, freeCUDATensorData, t.refc)
+	t.sbuf = sbuf
+	runtime.AddCleanup(t, freeCUDATensorData, sbuf)
 
+	updateCudaAllocMem(sbuf.size, +1)
 	if enforceCleanup() {
 		runtime.GC()
 	}
@@ -62,21 +50,27 @@ func newCUDATensor(dims []int, data *C.double) *CUDATensor {
 	return t
 }
 
-func shareCUDAData(dst *CUDATensor, src *CUDATensor) {
-	dst.refc = src.refc // refc must be a shared resource
-	*dst.refc++
-	dst.data = src.data
+func shareCUDATensorData(dst *CUDATensor, src *CUDATensor) {
+	src.sbuf.mutx.Lock()
+	src.sbuf.rcnt++
+	src.sbuf.mutx.Unlock()
 
-	runtime.AddCleanup(dst, freeCUDATensorData, dst.refc)
+	sbuf := src.sbuf
+	// keep src reachable until after increment
+
+	dst.sbuf = sbuf
+	runtime.AddCleanup(dst, freeCUDATensorData, sbuf)
 }
 
-func freeCUDATensorData(refc *int) {
-	*refc--
-	if *refc == 0 {
-		info := cudaBuffers[refc]
-		delete(cudaBuffers, refc)
-		C.FreeCudaMem(info.arr)
-		updateCudaAllocMem(info.size, -1)
+func freeCUDATensorData(sbuf *sharedBuffer) {
+	sbuf.mutx.Lock()
+	sbuf.rcnt--
+	release := sbuf.rcnt == 0
+	sbuf.mutx.Unlock()
+
+	if release {
+		C.FreeCudaMem((*C.double)(sbuf.data))
+		updateCudaAllocMem(sbuf.size, -1)
 	}
 }
 

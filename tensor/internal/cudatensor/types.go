@@ -9,6 +9,7 @@ package cudatensor
 import "C"
 
 import (
+	"sync"
 	"unsafe"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
@@ -18,10 +19,15 @@ type CUDATensor struct {
 	ofst int
 	strd []int
 	dims []int
-	data unsafe.Pointer
+	sbuf *sharedBuffer
 	gctx *gradtrack.GradContext
+}
 
-	refc *int
+type sharedBuffer struct {
+	data unsafe.Pointer
+	size int
+	rcnt int
+	mutx sync.Mutex
 }
 
 type unaryOperatorFunc_C func(C.CUDATensor, C.CUDAView) *C.double

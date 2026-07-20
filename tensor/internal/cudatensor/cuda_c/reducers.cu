@@ -177,7 +177,7 @@ struct avgReducer // Welford
         double delta = o.mean - mean;
 
         count += nb;
-        mean += delta * nb / n;
+        mean += delta * ((double)nb / n);
     }
     __host__ __device__ double result()
     {
@@ -219,7 +219,7 @@ struct varReducer // Welford
         double delta2 = delta * delta;
 
         count += nb;
-        mean += delta * nb / n;
+        mean += delta * ((double)nb / n);
         m2 += o.m2 + (delta2 * na * nb / n);
     }
     __host__ __device__ double result()

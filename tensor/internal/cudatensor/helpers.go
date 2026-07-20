@@ -41,7 +41,7 @@ func toCUDATensor_C(t *CUDATensor) C.CUDATensor {
 	strd_c := toDimArr_C(t.strd)
 	dims_c := toDimArr_C(t.dims)
 	size_c := (C.size_t)(t.numElems())
-	arr_c := (*C.double)(t.data)
+	arr_c := (*C.double)(t.sbuf.data)
 
 	return C.CUDATensor{
 		view: C.CUDAView{

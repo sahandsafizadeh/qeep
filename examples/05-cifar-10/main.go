@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
+	"github.com/sahandsafizadeh/qeep/component/layers/activations"
 	"github.com/sahandsafizadeh/qeep/component/losses"
 	"github.com/sahandsafizadeh/qeep/component/metrics"
 	"github.com/sahandsafizadeh/qeep/component/optimizers"
@@ -14,16 +15,20 @@ import (
 )
 
 const (
-	// https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data
-	dataFileAddress = "data.csv"
-	validDataRatio  = 0.1
-	testDataRatio   = 0.2
+	/*
+		Download CIFAR-10 dataset in CSV format from Kaggle: https://www.kaggle.com/datasets/fedesoriano/cifar10-python-in-csv
+		unzip train.csv.zip
+		unzip test.csv.zip
+	*/
+	trainFileAddress = "train.csv"
+	testFileAddress  = "test.csv"
+	validDataRatio   = 0.1
 )
 
 const (
-	batchSize = 32
-	epochs    = 500
-	dev       = tensor.CPU
+	batchSize = 128
+	epochs    = 10
+	dev       = tensor.CUDA
 )
 
 func main() {
@@ -36,32 +41,36 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Mean Squared Error (MSE): 6.98
+	// Best Accuracy: expected to be 0.50
 }
 
 func run() (result map[string]float64, err error) {
-	trainBatchGen, validBatchGen, testBatchGen, err := prepareData()
+	trainBatchGen, validBatchGen, testBatchGen, err := prepareDataBatches()
 	if err != nil {
 		return result, err
 	}
 
-	bhmodel, err := prepareModel()
+	cifarModel, err := prepareModel()
 	if err != nil {
 		return result, err
 	}
 
-	err = bhmodel.Fit(trainBatchGen, validBatchGen, &model.FitConfig{
+	err = cifarModel.Fit(trainBatchGen, validBatchGen, &model.FitConfig{
 		Epochs: epochs,
 		Metrics: map[string]model.Metric{
-			"MSE": metrics.NewMSE(),
+			"Accuracy": metrics.NewAccuracy(&metrics.AccuracyConfig{
+				OneHotMode: true,
+			}),
 		},
 	})
 	if err != nil {
 		return result, err
 	}
 
-	result, err = bhmodel.Eval(testBatchGen, map[string]model.Metric{
-		"Mean Squared Error (MSE)": metrics.NewMSE(),
+	result, err = cifarModel.Eval(testBatchGen, map[string]model.Metric{
+		"Accuracy": metrics.NewAccuracy(&metrics.AccuracyConfig{
+			OneHotMode: true,
+		}),
 	})
 	if err != nil {
 		return result, err
@@ -75,21 +84,38 @@ func run() (result map[string]float64, err error) {
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Outputs: 64, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 512, Device: dev})(input)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
+	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
+
+	for range 4 {
+		res := x
+		x = stream.FC(&layers.FCConfig{Outputs: 512, Device: dev})(x)
+		x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
+		x = stream.Relu()(x)
+		x = stream.Dropout(&layers.DropoutConfig{Rate: 0.3})(x)
+		x = stream.Add()(x, res) // skip-connection
+	}
+
+	x = stream.FC(&layers.FCConfig{Outputs: 256, Device: dev})(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Relu()(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
-	x = stream.FC(&layers.FCConfig{Outputs: 32, Device: dev})(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 128, Device: dev})(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Relu()(x)
 	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
-	output := stream.FC(&layers.FCConfig{Outputs: 1, Device: dev})(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 10, Device: dev})(x)
+	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
 
 	/* -------------------- */
 
-	loss := losses.NewMSE()
+	loss := losses.NewCE()
 
-	optimizer, err := optimizers.NewAdamW(nil)
+	optimizer, err := optimizers.NewAdamW(&optimizers.AdamWConfig{WeightDecay: 1e-4})
 	if err != nil {
 		return m, err
 	}
@@ -107,13 +133,11 @@ func prepareModel() (m *model.Model, err error) {
 
 /* ----- data preparation ----- */
 
-func prepareData() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenerator, err error) {
-	x, y, err := loadData()
+func prepareDataBatches() (trainBatchGen, validBatchGen, testBatchGen model.BatchGenerator, err error) {
+	data, err := prepareData()
 	if err != nil {
 		return trainBatchGen, validBatchGen, testBatchGen, err
 	}
-
-	data := splitData(x, y)
 
 	preprocessData(data)
 

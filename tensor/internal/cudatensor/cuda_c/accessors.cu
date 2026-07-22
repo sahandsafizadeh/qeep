@@ -6,14 +6,14 @@
 
 __device__ bool fallsin(DimArr index, RangeArr ranges)
 {
-    for (size_t i = 0; i < index.size; i++)
+    for (int i = 0; i < index.size; i++)
     {
         Range range = ranges.arr[i];
-        int idx = index.arr[i];
-        int from = range.from;
-        int to = range.to;
+        size_t idx = index.arr[i];
+        size_t from = range.from;
+        size_t to = range.to;
 
-        if (!(from <= idx && idx < to))
+        if (idx < from || idx >= to)
         {
             return false;
         }
@@ -22,87 +22,38 @@ __device__ bool fallsin(DimArr index, RangeArr ranges)
     return true;
 }
 
-__device__ int toSlicePosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, RangeArr ranges)
+__device__ size_t patchpos(DimArr index, RangeArr ranges, CUDAView view)
 {
-    int lnpos_dst;
-    DimArr index_src;
-    DimArr index_dst;
-
-    index_src = decode(lnpos_src, rcp_src);
-
-    if (!fallsin(index_src, ranges))
+    for (int i = 0; i < index.size; i++)
     {
-        return -1;
+        index.arr[i] -= ranges.arr[i].from;
     }
 
-    index_dst.size = index_src.size;
-    for (size_t i = 0; i < index_dst.size; i++)
-    {
-        index_dst.arr[i] = index_src.arr[i] - ranges.arr[i].from;
-    }
-
-    lnpos_dst = encode(index_dst, rcp_dst);
-
-    return lnpos_dst;
+    return index2lnpos(index, view);
 }
 
-__device__ int toPatchPosition(int lnpos_src, DimArr rcp_src, DimArr rcp_dst, RangeArr ranges)
-{
-    int lnpos_dst;
-    DimArr index_src;
-    DimArr index_dst;
-
-    index_src = decode(lnpos_src, rcp_src);
-
-    index_dst.size = index_src.size;
-    for (size_t i = 0; i < index_dst.size; i++)
-    {
-        index_dst.arr[i] = index_src.arr[i] + ranges.arr[i].from;
-    }
-
-    lnpos_dst = encode(index_dst, rcp_dst);
-
-    return lnpos_dst;
-}
-
-__global__ void copySlice(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    RangeArr ranges)
+__global__ void applyPatch(CUDATensor o, CUDATensor t, RangeArr ranges, CUDATensor u)
 {
     const unsigned int tpos = threadPosition();
     const unsigned int stride = totalThreads();
 
-    for (size_t i = tpos; i < src.size; i += stride)
+    for (size_t i = tpos; i < o.data.size; i += stride)
     {
-        int lnpos_src = i;
-        int lnpos_dst = toSlicePosition(lnpos_src, rcp_src, rcp_dst, ranges);
+        double value;
 
-        if (lnpos_dst >= 0)
+        DimArr index_o = lnpos2index(i, o.view);
+        if (!fallsin(index_o, ranges))
         {
-            dst.arr[lnpos_dst] = src.arr[lnpos_src];
+            size_t lnpos_t = index2lnpos(index_o, t.view);
+            value = t.data.arr[lnpos_t];
         }
-    }
-}
+        else
+        {
+            size_t lnpos_t = patchpos(index_o, ranges, u.view);
+            value = u.data.arr[lnpos_t];
+        }
 
-__global__ void copyPatch(
-    CudaData dst,
-    CudaData src,
-    DimArr rcp_dst,
-    DimArr rcp_src,
-    RangeArr ranges)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    for (size_t i = tpos; i < src.size; i += stride)
-    {
-        int lnpos_src = i;
-        int lnpos_dst = toPatchPosition(lnpos_src, rcp_src, rcp_dst, ranges);
-
-        dst.arr[lnpos_dst] = src.arr[lnpos_src];
+        o.data.arr[i] = value;
     }
 }
 
@@ -110,73 +61,39 @@ __global__ void copyPatch(
 
 extern "C"
 {
-    double At(CudaData src, DimArr dims, DimArr index);
-    double *Slice(CudaData src, DimArr dims, RangeArr index);
-    double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index);
+    double At(CUDATensor t, DimArr index);
+    double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o);
 }
 
-double At(CudaData src, DimArr dims, DimArr index)
+double At(CUDATensor t, DimArr index)
 {
-    DimArr rcp = rcumprod(dims);
-    int lnpos = encode(index, rcp);
+    size_t lnpos = index2lnpos(index, t.view);
 
     double elem;
     handleCudaError(
         cudaMemcpy(
             &elem,
-            &src.arr[lnpos],
+            &t.data.arr[lnpos],
             sizeof(double),
             cudaMemcpyDeviceToHost));
 
     return elem;
 }
 
-double *Slice(CudaData src, DimArr dims, RangeArr index)
+double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o)
 {
-    size_t n = elemcnt(index);
-    DimArr rcp_dst = rcumprod(index);
-    DimArr rcp_src = rcumprod(dims);
+    size_t n = elemcnt(view_o.dims);
 
-    CudaData dst = (CudaData){NULL, n};
+    CUDAData data_o = (CUDAData){n, NULL};
     handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
 
-    LaunchParams lps = launchParams(src.size);
+    CUDATensor o = (CUDATensor){view_o, data_o};
 
-    copySlice<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, index);
-
+    LaunchParams lps = launchParams(o.data.size);
+    applyPatch<<<lps.blockSize, lps.threadSize>>>(o, t, ranges, u);
     handleCudaError(
         cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
 
-    return dst.arr;
-}
-
-double *Patch(CudaData bas, DimArr dims, CudaData src, RangeArr index)
-{
-    size_t n = elemcnt(dims);
-    DimArr rcp_dst = rcumprod(dims);
-    DimArr rcp_src = rcumprod(index);
-
-    CudaData dst = (CudaData){NULL, n};
-    handleCudaError(
-        cudaMalloc(&dst.arr, dst.size * sizeof(double)));
-    handleCudaError(
-        cudaMemcpy(
-            dst.arr,
-            bas.arr,
-            bas.size * sizeof(double),
-            cudaMemcpyDeviceToDevice));
-
-    LaunchParams lps = launchParams(src.size);
-
-    copyPatch<<<lps.blockSize, lps.threadSize>>>(dst, src, rcp_dst, rcp_src, index);
-
-    handleCudaError(
-        cudaGetLastError());
-    handleCudaError(
-        cudaDeviceSynchronize());
-
-    return dst.arr;
+    return o.data.arr;
 }

@@ -21,29 +21,6 @@ func (t *CPUTensor) transpose() *CPUTensor {
 	return o
 }
 
-func (t *CPUTensor) reshape(shape []int) *CPUTensor {
-	fofst := 0
-	fstrd := util.DimsToStrides(t.dims)
-
-	if t.ofst != fofst || !slices.Equal(t.strd, fstrd) { // impossible to reuse data; copy
-		index := make([]int, len(t.dims))
-		return newTensorWithElementWiseInit(shape, func() float64 {
-			defer updateElementWiseIndex(index, t.dims)
-			return t.at(index)
-		})
-	}
-
-	o := new(CPUTensor)
-	o.ofst = 0
-	o.strd = util.DimsToStrides(shape)
-	o.dims = make([]int, len(shape))
-	copy(o.dims, shape)
-
-	o.data = t.data // reuse data
-
-	return o
-}
-
 func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
 	o := new(CPUTensor)
 	o.ofst = t.ofst
@@ -61,6 +38,29 @@ func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
 			o.strd[i] = t.strd[j]
 		}
 	}
+
+	o.data = t.data // reuse data
+
+	return o
+}
+
+func (t *CPUTensor) reshape(shape []int) *CPUTensor {
+	fofst := 0
+	fstrd := util.DimsToStrides(t.dims)
+
+	if t.ofst != fofst || !slices.Equal(t.strd, fstrd) { // impossible to reuse data; copy
+		index := make([]int, len(t.dims))
+		return newTensorWithElementWiseInit(shape, func() float64 {
+			defer updateElementWiseIndex(index, t.dims)
+			return t.at(index)
+		})
+	}
+
+	o := new(CPUTensor)
+	o.ofst = 0
+	o.strd = util.DimsToStrides(shape)
+	o.dims = make([]int, len(shape))
+	copy(o.dims, shape)
 
 	o.data = t.data // reuse data
 

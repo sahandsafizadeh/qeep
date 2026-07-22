@@ -9,20 +9,29 @@ package cudatensor
 import "C"
 
 import (
+	"sync"
 	"unsafe"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 )
 
 type CUDATensor struct {
-	n    int
+	ofst int
+	strd []int
 	dims []int
-	data unsafe.Pointer
+	sbuf *sharedBuffer
 	gctx *gradtrack.GradContext
 }
 
-type cudacUnaryFunc func(C.CudaData) *C.double
-type cudacBinaryFunc func(C.CudaData, C.CudaData) *C.double
-type cudacHalfBinaryFunc func(C.CudaData, C.double) *C.double
-type cudacReducerFunc func(C.CudaData) C.double
-type cudacDimReducerFunc func(C.CudaData, C.int, C.DimArr, C.DimArr) *C.double
+type sharedBuffer struct {
+	data unsafe.Pointer
+	size int
+	rcnt int
+	mutx sync.Mutex
+}
+
+type unaryOperatorFunc_C func(C.CUDATensor, C.CUDAView) *C.double
+type binaryOperatorFunc_C func(C.CUDATensor, C.CUDATensor, C.CUDAView) *C.double
+type halfBinaryOperatorFunc_C func(C.CUDATensor, C.double, C.CUDAView) *C.double
+type reducerFunc_C func(C.CUDATensor) C.double
+type dimReducerFunc_C func(C.CUDATensor, C.int, C.CUDAView) *C.double

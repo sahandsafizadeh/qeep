@@ -11,6 +11,7 @@ import "C"
 import (
 	"math/rand/v2"
 	"runtime"
+	"sync"
 	"unsafe"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
@@ -25,24 +26,25 @@ const (
 var (
 	cudaTotalMem int64 = 0
 	cudaAllocMem int64 = 0
+	cudaMemMutx  sync.Mutex
 )
 
 func newCUDATensor(dims []int, data *C.double) *CUDATensor {
-	tn := util.DimsToNumElems(dims)
-	tdims := make([]int, len(dims))
-	tdata := unsafe.Pointer(data)
-	copy(tdims, dims)
+	t := new(CUDATensor)
+	t.ofst = 0
+	t.strd = util.DimsToStrides(dims)
+	t.dims = make([]int, len(dims))
+	copy(t.dims, dims)
 
-	t := &CUDATensor{
-		n:    tn,
-		dims: tdims,
-		data: tdata,
-	}
+	sbuf := new(sharedBuffer)
+	sbuf.data = unsafe.Pointer(data)
+	sbuf.size = util.DimsToNumElems(dims)
+	sbuf.rcnt = 1
 
-	arg := getCudaDataOf(t)
-	updateCudaAllocMem(t.n, +1)
-	runtime.AddCleanup(t, freeCUDATensorData, arg)
+	t.sbuf = sbuf
+	runtime.AddCleanup(t, freeCUDATensorData, sbuf)
 
+	updateCudaAllocMem(sbuf.size, +1)
 	if enforceCleanup() {
 		runtime.GC()
 	}
@@ -50,12 +52,34 @@ func newCUDATensor(dims []int, data *C.double) *CUDATensor {
 	return t
 }
 
-func freeCUDATensorData(cd C.CudaData) {
-	C.FreeCudaMem(cd.arr)
-	updateCudaAllocMem(int(cd.size), -1)
+func shareCUDATensorData(dst *CUDATensor, src *CUDATensor) {
+	src.sbuf.mutx.Lock()
+	src.sbuf.rcnt++
+	src.sbuf.mutx.Unlock()
+
+	sbuf := src.sbuf
+	// keep src reachable until after increment
+
+	dst.sbuf = sbuf
+	runtime.AddCleanup(dst, freeCUDATensorData, sbuf)
+}
+
+func freeCUDATensorData(sbuf *sharedBuffer) {
+	sbuf.mutx.Lock()
+	sbuf.rcnt--
+	release := sbuf.rcnt == 0
+	sbuf.mutx.Unlock()
+
+	if release {
+		C.FreeCudaMem((*C.double)(sbuf.data))
+		updateCudaAllocMem(sbuf.size, -1)
+	}
 }
 
 func updateCudaAllocMem(n int, dir int) {
+	cudaMemMutx.Lock()
+	defer cudaMemMutx.Unlock()
+
 	updatedBytes := int64(n) * doubleSizeBytes
 	if dir > 0 {
 		cudaAllocMem += updatedBytes
@@ -69,6 +93,9 @@ func updateCudaAllocMem(n int, dir int) {
 }
 
 func enforceCleanup() bool {
+	cudaMemMutx.Lock()
+	defer cudaMemMutx.Unlock()
+
 	reloadCudaMemInfo()
 	allocMem := float64(cudaAllocMem)
 	totalMem := float64(cudaTotalMem)
@@ -93,8 +120,6 @@ func reloadCudaMemInfo() {
 		cudaAllocMem = cudaTotalMem - cudaFreeMem
 	}
 }
-
-/* ----- helpers ----- */
 
 func memInfoInitialized() bool {
 	return cudaTotalMem > 0

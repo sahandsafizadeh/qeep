@@ -12,6 +12,7 @@ import (
 	"fmt"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 func assertCUDATensor(t tensor.Tensor) (ct *CUDATensor, err error) {
@@ -35,43 +36,67 @@ func assertCUDATensors(ts []tensor.Tensor) (cts []*CUDATensor, err error) {
 	return cts, nil
 }
 
-func getCudaDataOf(t *CUDATensor) C.CudaData {
-	arr := (*C.double)(t.data)
-	size := (C.size_t)(t.n)
+func toCUDATensor_C(t *CUDATensor) C.CUDATensor {
+	ofst_c := (C.size_t)(t.ofst)
+	strd_c := toDimArr_C(t.strd)
+	dims_c := toDimArr_C(t.dims)
+	size_c := (C.size_t)(t.numElems())
+	arr_c := (*C.double)(t.sbuf.data)
 
-	return C.CudaData{
-		arr:  arr,
-		size: size,
+	return C.CUDATensor{
+		view: C.CUDAView{
+			ofst: ofst_c,
+			strd: strd_c,
+			dims: dims_c,
+		},
+		data: C.CUDAData{
+			size: size_c,
+			arr:  arr_c,
+		},
 	}
 }
 
-func getDimArrOf(dims []int) C.DimArr {
-	var arr [C.MAX_DIMS]C.int
-	for i, d := range dims {
-		arr[i] = (C.int)(d)
-	}
+func toCUDAView_C(dims []int) C.CUDAView {
+	strd := util.DimsToStrides(dims)
 
-	size := (C.size_t)(len(dims))
+	ofst_c := (C.size_t)(0)
+	strd_c := toDimArr_C(strd)
+	dims_c := toDimArr_C(dims)
+
+	return C.CUDAView{
+		ofst: ofst_c,
+		strd: strd_c,
+		dims: dims_c,
+	}
+}
+
+func toDimArr_C(dims []int) C.DimArr {
+	size_c := (C.int)(len(dims))
+
+	var arr_c [C.MAX_DIMS]C.size_t
+	for i, d := range dims {
+		arr_c[i] = (C.size_t)(d)
+	}
 
 	return C.DimArr{
-		arr:  arr,
-		size: size,
+		size: size_c,
+		arr:  arr_c,
 	}
 }
 
-func getRangeArrOf(index []tensor.Range) C.RangeArr {
-	var arr [C.MAX_DIMS]C.Range
+func toRangeArr_C(index []tensor.Range) C.RangeArr {
+	size_c := (C.int)(len(index))
+
+	var arr_c [C.MAX_DIMS]C.Range
 	for i, r := range index {
-		arr[i] = C.Range{
-			from: (C.int)(r.From),
-			to:   (C.int)(r.To),
+		arr_c[i] = C.Range{
+			from: (C.size_t)(r.From),
+			to:   (C.size_t)(r.To),
 		}
 	}
 
-	size := (C.size_t)(len(index))
-
 	return C.RangeArr{
-		arr:  arr,
-		size: size,
+		size: size_c,
+		arr:  arr_c,
 	}
 }

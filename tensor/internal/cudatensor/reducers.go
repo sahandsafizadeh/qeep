@@ -8,42 +8,42 @@ package cudatensor
 */
 import "C"
 
-import (
-	"math"
-
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
-)
+import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
 
 func (t *CUDATensor) sum() float64 {
-	return applyReduction(t, func(src C.CudaData) C.double {
-		return C.Sum(src)
+	return applyReduction(t, func(x C.CUDATensor) C.double {
+		return C.Sum(x)
 	})
 }
 
 func (t *CUDATensor) max() float64 {
-	return applyReduction(t, func(src C.CudaData) C.double {
-		return C.Max(src)
+	return applyReduction(t, func(x C.CUDATensor) C.double {
+		return C.Max(x)
 	})
 }
 
 func (t *CUDATensor) min() float64 {
-	return applyReduction(t, func(src C.CudaData) C.double {
-		return C.Min(src)
-	})
-}
-
-func (t *CUDATensor) _var() float64 {
-	return applyReduction(t, func(src C.CudaData) C.double {
-		return C.Var(src)
+	return applyReduction(t, func(x C.CUDATensor) C.double {
+		return C.Min(x)
 	})
 }
 
 func (t *CUDATensor) avg() float64 {
-	return t.sum() / float64(t.n)
+	return applyReduction(t, func(x C.CUDATensor) C.double {
+		return C.Avg(x)
+	})
+}
+
+func (t *CUDATensor) _var() float64 {
+	return applyReduction(t, func(x C.CUDATensor) C.double {
+		return C.Var(x)
+	})
 }
 
 func (t *CUDATensor) std() float64 {
-	return math.Sqrt(t._var())
+	return applyReduction(t, func(x C.CUDATensor) C.double {
+		return C.Std(x)
+	})
 }
 
 func (t *CUDATensor) mean() float64 {
@@ -51,85 +51,73 @@ func (t *CUDATensor) mean() float64 {
 }
 
 func (t *CUDATensor) argmax(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.Argmax(src, dim, dims_src, dims_dst)
-		})
+	return applyDimReduction(t, dim, func(x C.CUDATensor, dim C.int, view_o C.CUDAView) *C.double {
+		return C.Argmax(x, dim, view_o)
+	})
 }
 
 func (t *CUDATensor) argmin(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.Argmin(src, dim, dims_src, dims_dst)
-		})
+	return applyDimReduction(t, dim, func(x C.CUDATensor, dim C.int, view_o C.CUDAView) *C.double {
+		return C.Argmin(x, dim, view_o)
+	})
 }
 
 func (t *CUDATensor) sumAlong(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.SumAlong(src, dim, dims_src, dims_dst)
-		})
+	return applyDimReduction(t, dim, func(x C.CUDATensor, dim C.int, view_o C.CUDAView) *C.double {
+		return C.SumAlong(x, dim, view_o)
+	})
 }
 
 func (t *CUDATensor) maxAlong(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.MaxAlong(src, dim, dims_src, dims_dst)
-		})
+	return applyDimReduction(t, dim, func(x C.CUDATensor, dim C.int, view_o C.CUDAView) *C.double {
+		return C.MaxAlong(x, dim, view_o)
+	})
 }
 
 func (t *CUDATensor) minAlong(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.MinAlong(src, dim, dims_src, dims_dst)
-		})
+	return applyDimReduction(t, dim, func(x C.CUDATensor, dim C.int, view_o C.CUDAView) *C.double {
+		return C.MinAlong(x, dim, view_o)
+	})
 }
 
 func (t *CUDATensor) avgAlong(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.AvgAlong(src, dim, dims_src, dims_dst)
-		})
+	return applyDimReduction(t, dim, func(x C.CUDATensor, dim C.int, view_o C.CUDAView) *C.double {
+		return C.AvgAlong(x, dim, view_o)
+	})
 }
 
 func (t *CUDATensor) varAlong(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.VarAlong(src, dim, dims_src, dims_dst)
-		})
+	return applyDimReduction(t, dim, func(x C.CUDATensor, dim C.int, view_o C.CUDAView) *C.double {
+		return C.VarAlong(x, dim, view_o)
+	})
 }
 
 func (t *CUDATensor) stdAlong(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.StdAlong(src, dim, dims_src, dims_dst)
-		})
+	return applyDimReduction(t, dim, func(x C.CUDATensor, dim C.int, view_o C.CUDAView) *C.double {
+		return C.StdAlong(x, dim, view_o)
+	})
 }
 
 func (t *CUDATensor) meanAlong(dim int) *CUDATensor {
-	return applyDimReduction(t, dim,
-		func(src C.CudaData, dim C.int, dims_src C.DimArr, dims_dst C.DimArr) *C.double {
-			return C.AvgAlong(src, dim, dims_src, dims_dst)
-		})
+	return t.avgAlong(dim)
 }
 
-func applyReduction(t *CUDATensor, crf cudacReducerFunc) float64 {
-	src_c := getCudaDataOf(t)
+func applyReduction(x *CUDATensor, rf_c reducerFunc_C) float64 {
+	x_c := toCUDATensor_C(x)
 
-	data_c := crf(src_c)
+	data_c := rf_c(x_c)
 
 	return float64(data_c)
 }
 
-func applyDimReduction(t *CUDATensor, dim int, cdrf cudacDimReducerFunc) *CUDATensor {
-	dims := util.SqueezeDims(dim, t.dims)
+func applyDimReduction(x *CUDATensor, dim int, drf_c dimReducerFunc_C) *CUDATensor {
+	dims := util.SqueezeDims(dim, x.dims)
 
-	src_c := getCudaDataOf(t)
+	x_c := toCUDATensor_C(x)
 	dim_c := (C.int)(dim)
-	dims_src_c := getDimArrOf(t.dims)
-	dims_dst_c := getDimArrOf(dims)
+	view_o_c := toCUDAView_C(dims)
 
-	data_c := cdrf(src_c, dim_c, dims_src_c, dims_dst_c)
+	data_c := drf_c(x_c, dim_c, view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }

@@ -30,7 +30,7 @@ enum OperationType
     OP_DIV,
 };
 
-const double DOUBLE_EQUALITY_THRESHOLD = 1e-240;
+const double DOUBLE_EQUALITY_THRESHOLD = 1e-12;
 
 /* ----- device functions ----- */
 

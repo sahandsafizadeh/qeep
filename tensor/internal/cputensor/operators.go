@@ -6,7 +6,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
-const float64EqualityThreshold = 1e-240
+const float64EqualityThreshold = 1e-12
 
 func (t *CPUTensor) scale(u float64) *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return u * a })

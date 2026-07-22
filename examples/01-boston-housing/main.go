@@ -36,7 +36,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Mean Squared Error (MSE): 7.58
+	// Best Mean Squared Error (MSE): 6.98
 }
 
 func run() (result map[string]float64, err error) {

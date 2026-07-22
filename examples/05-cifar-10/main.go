@@ -27,8 +27,8 @@ const (
 
 const (
 	batchSize = 128
-	epochs    = 150
-	dev       = tensor.CPU
+	epochs    = 10
+	dev       = tensor.CUDA
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 		fmt.Printf("%s: %.2f\n", m, r)
 	}
 
-	// Best Accuracy: expected to be 0.85
+	// Best Accuracy: expected to be 0.50
 }
 
 func run() (result map[string]float64, err error) {

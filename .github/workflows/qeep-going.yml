@@ -44,7 +44,7 @@ jobs:
           version: v2.9
 
       - name: Security
-        uses: securego/gosec@v2.27.1
+        uses: securego/gosec@v2.28.0
         env:
           GOTOOLCHAIN: go${{ env.GO_VERSION }}
         with:

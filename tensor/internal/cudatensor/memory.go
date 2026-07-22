@@ -121,8 +121,6 @@ func reloadCudaMemInfo() {
 	}
 }
 
-/* ----- helpers ----- */
-
 func memInfoInitialized() bool {
 	return cudaTotalMem > 0
 }

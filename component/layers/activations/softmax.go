@@ -40,6 +40,12 @@ func (c *Softmax) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 }
 
 func (c *Softmax) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
+	/*
+		For numerical stability:
+		softmax(x)_i = exp(x_i) / sum_j exp(x_j)
+			= exp(x_i - m) / sum_j exp(x_j - m),  where m = max(x)
+	*/
+
 	m, err := x.MaxAlong(c.dim)
 	if err != nil {
 		return y, err

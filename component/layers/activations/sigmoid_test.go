@@ -117,6 +117,40 @@ func TestSigmoid(t *testing.T) {
 			}
 		})
 
+		t.Run("scalar -720 input / Forward() / output is a small positive value, not exactly 0, despite overflow in naive exp(-x)", func(t *testing.T) {
+			activation := activations.NewSigmoid()
+
+			x, err := tensor.Of(-720., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := activation.Forward(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			expl, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expu, err := tensor.Of(1e-240, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if p, err := act.Gt(expl); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be strictly positive, not underflowed to exactly 0")
+			}
+			if p, err := act.Lt(expu); err != nil {
+				t.Fatal(err)
+			} else if p.Sum() < float64(p.NElems()) {
+				t.Fatal("expected output to be in range")
+			}
+		})
+
 		t.Run("[2,3] zeros input / Forward() / output equals [2,3] tensor of 0.5", func(t *testing.T) {
 			activation := activations.NewSigmoid()
 

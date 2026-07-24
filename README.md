@@ -1,13 +1,13 @@
 # qeep
 
-Welcome to **qeep** (pronounced /kēp/)! This project implements a **_deep learning framework_** in **_Go_**. It allows you to define neural networks in a declarative way while being able to control operations at _tensor level_.
+Welcome to **qeep** (pronounced /kēp/)! This project implements a **deep learning framework** in **_Go_**. It allows you to define neural networks in a declarative way while being able to control operations at tensor level.
 
 ## Features
 
 - 📐 _Multi-Dimensional_ **Tensors** with a wide range of linear algebra and statistical operations.
 - 🔁 _Automatic differentiation_ (**AutoGrad**) for tensors.
-- ⚡ _GPU acceleration_ via **CUDA** for high-performance large tensor computations.
-- 🧱 A variety of neural network _components_, such as fully connected (`FC`) layer.
+- ⚡ _GPU acceleration_ via **CUDA** for high-performance computations.
+- 🧱 A variety of neural network **components**, such as `FC` (fully connected), `BatchNorm`, and `Dropout` layers.
 - 📝 A _declarative API_ for defining neural networks using `stream` package.
 
 ## Installation
@@ -21,7 +21,7 @@ git clone https://github.com/sahandsafizadeh/qeep
 Ensure that you have [Go](https://go.dev/dl/) installed. Then, Link the local qeep package to your project using _Go modules_:
 
 ```go
-go mod edit -require=github.com/sahandsafizadeh/qeep@v0.0.0
+go mod edit -require=github.com/sahandsafizadeh/qeep@v0.6.0
 go mod edit -replace=github.com/sahandsafizadeh/qeep=./qeep
 go mod tidy
 ```
@@ -50,13 +50,17 @@ const dev = tensor.CPU
 func prepareModel() (m *model.Model, err error) {
 	input := stream.Input()
 
-	x := stream.FC(&layers.FCConfig{Outputs: 16, Device: dev})(input)
+	x := stream.FC(&layers.FCConfig{Outputs: 256, Device: dev})(input)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
-	x = stream.FC(&layers.FCConfig{Outputs: 12, Device: dev})(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 128, Device: dev})(x)
+	x = stream.BatchNorm(&layers.BatchNormConfig{Device: dev})(x)
 	x = stream.Relu()(x)
+	x = stream.Dropout(&layers.DropoutConfig{Rate: 0.2})(x)
 
-	x = stream.FC(&layers.FCConfig{Outputs: 3, Device: dev})(x)
+	x = stream.FC(&layers.FCConfig{Outputs: 10, Device: dev})(x)
 	output := stream.Softmax(&activations.SoftmaxConfig{Dim: 1})(x)
 
 	/* -------------------- */
@@ -77,13 +81,13 @@ func prepareModel() (m *model.Model, err error) {
 	}
 
 	return m, nil
+}
 ```
 
-📂 More working [examples](./examples) are provided. You can download their dataset and run them like the following for _Iris Classification_:
+📂 More working [examples](./examples) are provided. You can **download their dataset** and run them like the following for _MNIST_ Classification:
 
 ```bash
-cd ./qeep/examples/03-Iris/
-curl -o data.csv https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
+cd ./qeep/examples/04-mnist/
 go run .
 ```
 

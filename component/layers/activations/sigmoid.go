@@ -28,20 +28,74 @@ func (c *Sigmoid) Forward(xs ...tensor.Tensor) (y tensor.Tensor, err error) {
 }
 
 func (c *Sigmoid) forward(x tensor.Tensor) (y tensor.Tensor, err error) {
+	/*
+		For numerical stability:
+		sigmoid(x) =
+			- x >= 0: 1 / (1 + exp(-x))
+			- x <  0: exp(x) / (1 + exp(x))
+	*/
+
+	_0, err := c.toUntrackedFull(x, 0)
+	if err != nil {
+		return y, err
+	}
 	_1, err := c.toUntrackedFull(x, 1)
 	if err != nil {
 		return y, err
 	}
 
-	x = x.Scale(-1)
-	x = x.Exp()
-
-	y, err = _1.Add(x)
+	xp, err := x.ElMax(_0)
+	if err != nil {
+		return y, err
+	}
+	xn, err := x.ElMin(_0)
 	if err != nil {
 		return y, err
 	}
 
-	return y.Pow(-1), nil
+	maskp, err := x.Ge(_0)
+	if err != nil {
+		return y, err
+	}
+	maskn, err := _1.Sub(maskp)
+	if err != nil {
+		return y, err
+	}
+
+	// ----- positive part -----
+
+	posr := xp.Scale(-1).Exp()
+	posr, err = _1.Add(posr)
+	if err != nil {
+		return y, err
+	}
+	posr = posr.Pow(-1)
+
+	posr, err = posr.Mul(maskp)
+	if err != nil {
+		return y, err
+	}
+
+	// ----- negative part -----
+
+	nn := xn.Exp()
+	nd, err := _1.Add(nn)
+	if err != nil {
+		return y, err
+	}
+	negr, err := nn.Div(nd)
+	if err != nil {
+		return y, err
+	}
+
+	negr, err = negr.Mul(maskn)
+	if err != nil {
+		return y, err
+	}
+
+	// ----- final result -----
+
+	return posr.Add(negr)
 }
 
 /* ----- helpers ----- */

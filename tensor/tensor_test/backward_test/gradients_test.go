@@ -1731,7 +1731,7 @@ func TestMax(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [1,4] tensor with three max-ties / MaxAlong(1) then BackPropagate / gradient is 1 at each tied max position", func(t *testing.T) {
+		t.Run("grad-tracked [1,4] tensor with three max-ties / MaxAlong(1) then BackPropagate / gradient is divided evenly among tied max positions", func(t *testing.T) {
 			x, err := tensor.Of([][]float64{
 				{3., 5., 5., 5.},
 			}, &tensor.Config{
@@ -1754,7 +1754,7 @@ func TestMax(t *testing.T) {
 			act := x.Gradient()
 
 			exp, err := tensor.Of([][]float64{
-				{0., 1., 1., 1.},
+				{0., 1. / 3., 1. / 3., 1. / 3.},
 			}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
@@ -1912,7 +1912,7 @@ func TestMin(t *testing.T) {
 			assertGradientEquals(t, act, exp)
 		})
 
-		t.Run("grad-tracked [1,4] tensor with three min-ties / MinAlong(1) then BackPropagate / gradient is 1 at each tied min position", func(t *testing.T) {
+		t.Run("grad-tracked [1,4] tensor with three min-ties / MinAlong(1) then BackPropagate / gradient is divided evenly among tied min positions", func(t *testing.T) {
 			x, err := tensor.Of([][]float64{
 				{5., 3., 3., 3.},
 			}, &tensor.Config{
@@ -1935,7 +1935,7 @@ func TestMin(t *testing.T) {
 			act := x.Gradient()
 
 			exp, err := tensor.Of([][]float64{
-				{0., 1., 1., 1.},
+				{0., 1. / 3., 1. / 3., 1. / 3.},
 			}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,

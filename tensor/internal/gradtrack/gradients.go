@@ -296,6 +296,21 @@ func MaxAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 						return o, err
 					}
 
+					cnt, err := gx.SumAlong(dim)
+					if err != nil {
+						return o, err
+					}
+
+					cnt, err = reducerBroadcasted(cnt, x, dim)
+					if err != nil {
+						return o, err
+					}
+
+					gx, err = gx.Div(cnt)
+					if err != nil {
+						return o, err
+					}
+
 					return gy.Mul(gx)
 				},
 			},
@@ -328,6 +343,21 @@ func MinAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 					}
 
 					gx, err := x.Eq(yb)
+					if err != nil {
+						return o, err
+					}
+
+					cnt, err := gx.SumAlong(dim)
+					if err != nil {
+						return o, err
+					}
+
+					cnt, err = reducerBroadcasted(cnt, x, dim)
+					if err != nil {
+						return o, err
+					}
+
+					gx, err = gx.Div(cnt)
 					if err != nil {
 						return o, err
 					}

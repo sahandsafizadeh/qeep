@@ -18,8 +18,20 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); !(9.-1e-10 < val && val < 9.+1e-10) {
-				t.Fatalf("expected (9) as the sum value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Sum(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -29,8 +41,20 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); !(10.-1e-10 < val && val < 10.+1e-10) {
-				t.Fatalf("expected (10) as the sum value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Sum(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(10., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -44,8 +68,20 @@ func TestSum(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Sum(); !(36.-1e-10 < val && val < 36.+1e-10) {
-				t.Fatalf("expected (36) as the sum value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Sum(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(36., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -62,8 +98,20 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); !(9.-1e-10 < val && val < 9.+1e-10) {
-				t.Fatalf("expected (9) as the max value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Max(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -73,8 +121,20 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); !(6.-1e-10 < val && val < 6.+1e-10) {
-				t.Fatalf("expected (6) as the max value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Max(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(6., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -88,8 +148,20 @@ func TestMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Max(); !(9.-1e-10 < val && val < 9.+1e-10) {
-				t.Fatalf("expected (9) as the max value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Max(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -106,8 +178,20 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); !(9.-1e-10 < val && val < 9.+1e-10) {
-				t.Fatalf("expected (9) as the min value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Min(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -117,8 +201,20 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); !(4.-1e-10 < val && val < 4.+1e-10) {
-				t.Fatalf("expected (4) as the min value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Min(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(4., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -132,8 +228,20 @@ func TestMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Min(); !(-5.-1e-10 < val && val < -5.+1e-10) {
-				t.Fatalf("expected (-5) as the min value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Min(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(-5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -150,8 +258,20 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); !(9.-1e-10 < val && val < 9.+1e-10) {
-				t.Fatalf("expected (9) as the avg value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Avg(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -161,8 +281,20 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); !(5.-1e-10 < val && val < 5.+1e-10) {
-				t.Fatalf("expected (5) as the avg value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Avg(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -176,8 +308,20 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); !(3.-1e-10 < val && val < 3.+1e-10) {
-				t.Fatalf("expected (3) as the avg value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Avg(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -190,8 +334,20 @@ func TestAvg(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Avg(); val != 1e308 {
-				t.Fatalf("expected (1e308) as the avg value of tensor, got (%e)", val)
+			act, err := tensor.Of(ten.Avg(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(1e308, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -208,8 +364,20 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); !(0.-1e-10 < val && val < 0.+1e-10) {
-				t.Fatalf("expected (0) as the var value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Var(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -219,8 +387,20 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); !(4.-1e-10 < val && val < 4.+1e-10) {
-				t.Fatalf("expected (4) as the var value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Var(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(4., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -230,8 +410,20 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); !(4.-1e-10 < val && val < 4.+1e-10) {
-				t.Fatalf("expected (4) as the var value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Var(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(4., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -241,8 +433,20 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); !(0.-1e-10 < val && val < 0.+1e-10) {
-				t.Fatalf("expected (0) as the var value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Var(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -255,8 +459,20 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); !(6.-1e-10 < val && val < 6.+1e-10) {
-				t.Fatalf("expected (6) as the var value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Var(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(6., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -266,8 +482,20 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); !(9.-1e-10 < val && val < 9.+1e-10) {
-				t.Fatalf("expected (9) as the var value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Var(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -286,8 +514,20 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); !(13.-1e-10 < val && val < 13.+1e-10) {
-				t.Fatalf("expected (13) as the var value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Var(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(13., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -301,8 +541,20 @@ func TestVar(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Var(); !(9.-1e-10 < val && val < 9.+1e-10) {
-				t.Fatalf("expected (9) as the var value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Var(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -319,8 +571,20 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); !(0.-1e-10 < val && val < 0.+1e-10) {
-				t.Fatalf("expected (0) as the std value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Std(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -330,8 +594,20 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); !(2.-1e-10 < val && val < 2.+1e-10) {
-				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Std(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -341,8 +617,20 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); !(2.-1e-10 < val && val < 2.+1e-10) {
-				t.Fatalf("expected (2) as the std value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Std(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -352,8 +640,20 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); !(0.-1e-10 < val && val < 0.+1e-10) {
-				t.Fatalf("expected (0) as the std value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Std(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -363,8 +663,20 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); !(3.-1e-10 < val && val < 3.+1e-10) {
-				t.Fatalf("expected (3) as the std value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Std(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -377,8 +689,20 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); !(math.Sqrt(6)-1e-10 < val && val < math.Sqrt(6)+1e-10) {
-				t.Fatalf("expected (sqrt(6)) as the std value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Std(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(math.Sqrt(6), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -397,8 +721,20 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); !(math.Sqrt(13)-1e-10 < val && val < math.Sqrt(13)+1e-10) {
-				t.Fatalf("expected (sqrt(13)) as the std value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Std(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(math.Sqrt(13), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -412,8 +748,20 @@ func TestStd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Std(); !(3.-1e-10 < val && val < 3.+1e-10) {
-				t.Fatalf("expected (3) as the std value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Std(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})
@@ -430,8 +778,20 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); !(9.-1e-10 < val && val < 9.+1e-10) {
-				t.Fatalf("expected (9) as the mean value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Mean(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(9., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -441,8 +801,20 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); !(5.-1e-10 < val && val < 5.+1e-10) {
-				t.Fatalf("expected (5) as the mean value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Mean(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -456,8 +828,20 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); !(3.-1e-10 < val && val < 3.+1e-10) {
-				t.Fatalf("expected (3) as the mean value of tensor, got (%f)", val)
+			act, err := tensor.Of(ten.Mean(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -470,8 +854,20 @@ func TestMean(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if val := ten.Mean(); val != 1e308 {
-				t.Fatalf("expected (1e308) as the mean value of tensor, got (%e)", val)
+			act, err := tensor.Of(ten.Mean(), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of(1e308, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 	})

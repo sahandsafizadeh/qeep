@@ -79,8 +79,6 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
         return a == b ? 1. : 0.;
     case OP_NE:
         return a != b ? 1. : 0.;
-    case OP_EQUALS:
-        return fabs(a - b) <= 1e-12 ? 1. : 0.;
     case OP_GT:
         return a > b ? 1. : 0.;
     case OP_GE:
@@ -101,6 +99,8 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
         return a * b;
     case OP_DIV:
         return a / b;
+    case OP_EQUALS:
+        return fabs(a - b) <= 1e-12 ? 1. : 0.;
     }
 
     return NAN;

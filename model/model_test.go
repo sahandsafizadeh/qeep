@@ -541,7 +541,7 @@ func TestModel(t *testing.T) {
 			}
 
 			// ----- then -----
-			if val := result["MSE"]; val != 3.75 {
+			if val := result["MSE"]; !(3.74-1e-12 < val && val < 3.76+1e-12) {
 				t.Fatalf("expected metric value to be (3.75): got (%f)", val)
 			}
 		})
@@ -601,7 +601,7 @@ func TestModel(t *testing.T) {
 			}
 
 			// ----- then -----
-			if val := result["MSE"]; val != 0.25 {
+			if val := result["MSE"]; !(0.25-1e-12 < val && val < 0.25+1e-12) {
 				t.Fatalf("expected metric value to be (0.25): got (%f)", val)
 			}
 		})

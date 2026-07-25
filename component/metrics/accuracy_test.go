@@ -39,8 +39,7 @@ func TestAccuracy(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := metric.Result()
-			if !(1-1e-10 < result && result < 1+1e-10) {
+			if result := metric.Result(); result != 1. {
 				t.Fatalf("expected result to be (1): got (%f)", result)
 			}
 		})
@@ -76,8 +75,7 @@ func TestAccuracy(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := metric.Result()
-			if !(0.6-1e-10 < result && result < 0.6+1e-10) {
+			if result := metric.Result(); result != 0.6 {
 				t.Fatalf("expected result to be (0.6): got (%f)", result)
 			}
 		})
@@ -113,9 +111,7 @@ func TestAccuracy(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := metric.Result()
-
-			if !(1-1e-10 < result && result < 1+1e-10) {
+			if result := metric.Result(); result != 1. {
 				t.Fatalf("expected result to be (1): got (%f)", result)
 			}
 		})
@@ -163,8 +159,7 @@ func TestAccuracy(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := metric.Result()
-			if !(0.5-1e-10 < result && result < 0.5+1e-10) {
+			if result := metric.Result(); result != 0.5 {
 				t.Fatalf("expected result to be (0.5): got (%f)", result)
 			}
 		})
@@ -236,8 +231,7 @@ func TestAccuracy(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := metric.Result()
-			if !(0.375-1e-10 < result && result < 0.375+1e-10) {
+			if result := metric.Result(); result != 0.375 {
 				t.Fatalf("expected result to be (0.375): got (%f)", result)
 			}
 		})

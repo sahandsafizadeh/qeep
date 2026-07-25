@@ -26,24 +26,15 @@ func TestSigmoid(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err := tensor.Of(-1e-10, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			expu, err := tensor.Of(1e-10, &tensor.Config{Device: dev})
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if p, err := act.Gt(expl); err != nil {
+			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
-			}
-			if p, err := act.Lt(expu); err != nil {
-				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -60,24 +51,15 @@ func TestSigmoid(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err := tensor.Of(1.-1e-10, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			expu, err := tensor.Of(1.+1e-10, &tensor.Config{Device: dev})
+			exp, err := tensor.Of(1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if p, err := act.Gt(expl); err != nil {
+			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
-			}
-			if p, err := act.Lt(expu); err != nil {
-				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -94,26 +76,15 @@ func TestSigmoid(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			c := 1. / (1 + (1. / math.E))
-
-			expl, err := tensor.Of(c-1e-10, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			expu, err := tensor.Of(c+1e-10, &tensor.Config{Device: dev})
+			exp, err := tensor.Of(1./(1+(1./math.E)), &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if p, err := act.Gt(expl); err != nil {
+			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
-			}
-			if p, err := act.Lt(expu); err != nil {
-				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -134,7 +105,7 @@ func TestSigmoid(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			expu, err := tensor.Of(1e-240, &tensor.Config{Device: dev})
+			expu, err := tensor.Of(1e-300, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}

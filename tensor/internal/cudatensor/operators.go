@@ -159,9 +159,11 @@ func (t *CUDATensor) matMul(u *CUDATensor) *CUDATensor {
 }
 
 func (t *CUDATensor) equals(u *CUDATensor) bool {
-	o := t.eq(u)
-	n := o.numElems()
-	return o.sum() >= float64(n)
+	o := applyBinaryOperation(t, u, t.dims, func(a C.CUDATensor, b C.CUDATensor, view_o C.CUDAView) *C.double {
+		return C.Equals(a, b, view_o)
+	})
+
+	return o.avg() >= 1
 }
 
 func applyHalfBinaryOperation(x *CUDATensor, a float64, dims []int, hbf_c halfBinaryOperatorFunc_C) *CUDATensor {

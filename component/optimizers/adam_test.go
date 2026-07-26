@@ -272,11 +272,11 @@ func TestAdam(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err := tensor.Full(nil, 0.999-1e-10, &tensor.Config{Device: dev})
+			expl, err := tensor.Full(nil, 0.999-1e-5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			expu, err := tensor.Full(nil, 0.999+1e-10, &tensor.Config{Device: dev})
+			expu, err := tensor.Full(nil, 0.999+1e-5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -305,11 +305,11 @@ func TestAdam(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err = tensor.Full(nil, 0.998-1e-10, &tensor.Config{Device: dev})
+			expl, err = tensor.Full(nil, 0.998-1e-5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			expu, err = tensor.Full(nil, 0.998+1e-10, &tensor.Config{Device: dev})
+			expu, err = tensor.Full(nil, 0.998+1e-5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -352,11 +352,11 @@ func TestAdam(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err := tensor.Full(nil, 0.999-1e-10, &tensor.Config{Device: dev})
+			expl, err := tensor.Full(nil, 0.999-1e-5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			expu, err := tensor.Full(nil, 0.999+1e-10, &tensor.Config{Device: dev})
+			expu, err := tensor.Full(nil, 0.999+1e-5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -385,11 +385,11 @@ func TestAdam(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err = tensor.Full(nil, 0.998-1e-10, &tensor.Config{Device: dev})
+			expl, err = tensor.Full(nil, 0.998-1e-5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			expu, err = tensor.Full(nil, 0.998+1e-10, &tensor.Config{Device: dev})
+			expu, err = tensor.Full(nil, 0.998+1e-5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}

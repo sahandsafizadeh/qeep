@@ -28,9 +28,11 @@ enum OperationType
     OP_SUB,
     OP_MUL,
     OP_DIV,
+    OP_EQUALS,
 };
 
-const double DOUBLE_EQUALITY_THRESHOLD = 1e-12;
+const double DOUBLE_EQ_THRESHOLD = 1e-15;
+const double DOUBLE_EQUALS_THRESHOLD = 1e-10;
 
 /* ----- device functions ----- */
 
@@ -77,9 +79,9 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
     switch (opt)
     {
     case OP_EQ:
-        return fabs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 1. : 0.;
+        return fabs(a - b) <= DOUBLE_EQ_THRESHOLD ? 1. : 0.;
     case OP_NE:
-        return fabs(a - b) <= DOUBLE_EQUALITY_THRESHOLD ? 0. : 1.;
+        return fabs(a - b) <= DOUBLE_EQ_THRESHOLD ? 0. : 1.;
     case OP_GT:
         return a > b ? 1. : 0.;
     case OP_GE:
@@ -100,6 +102,8 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
         return a * b;
     case OP_DIV:
         return a / b;
+    case OP_EQUALS:
+        return fabs(a - b) <= DOUBLE_EQUALS_THRESHOLD ? 1. : 0.;
     }
 
     return NAN;
@@ -324,6 +328,7 @@ extern "C"
     double *Div(CUDATensor a, CUDATensor b, CUDAView view_o);
     double *Dot(CUDATensor a, CUDATensor b, CUDAView view_o);
     double *MatMul(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Equals(CUDATensor a, CUDATensor b, CUDAView view_o);
 }
 
 double *Scale(CUDATensor x, double a, CUDAView view_o)
@@ -444,4 +449,9 @@ double *Dot(CUDATensor a, CUDATensor b, CUDAView view_o)
 double *MatMul(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
     return runMatMul(a, b, view_o);
+}
+
+double *Equals(CUDATensor a, CUDATensor b, CUDAView view_o)
+{
+    return runBinaryOp(a, b, OP_EQUALS, view_o);
 }

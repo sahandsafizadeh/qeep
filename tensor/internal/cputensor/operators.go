@@ -6,7 +6,10 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
-const float64EqualityThreshold = 1e-12
+const (
+	float64EqThreshold     = 1e-15
+	float64EqualsThreshold = 1e-10
+)
 
 func (t *CPUTensor) scale(u float64) *CPUTensor {
 	return applyUnaryFuncOnTensorElemWise(t, func(a float64) float64 { return u * a })
@@ -51,7 +54,7 @@ func (t *CPUTensor) tanh() *CPUTensor {
 func (t *CPUTensor) eq(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u,
 		func(a, b float64) float64 {
-			if math.Abs(a-b) <= float64EqualityThreshold {
+			if math.Abs(a-b) <= float64EqThreshold {
 				return 1.
 			} else {
 				return 0.
@@ -62,7 +65,7 @@ func (t *CPUTensor) eq(u *CPUTensor) *CPUTensor {
 func (t *CPUTensor) ne(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u,
 		func(a, b float64) float64 {
-			if math.Abs(a-b) <= float64EqualityThreshold {
+			if math.Abs(a-b) <= float64EqThreshold {
 				return 0.
 			} else {
 				return 1.
@@ -215,7 +218,14 @@ func (t *CPUTensor) matMul(u *CPUTensor) *CPUTensor {
 }
 
 func (t *CPUTensor) equals(u *CPUTensor) bool {
-	o := t.eq(u)
-	n := o.numElems()
-	return o.sum() >= float64(n)
+	o := applyBinaryFuncOnTensorsElemWise(t, u,
+		func(a, b float64) float64 {
+			if math.Abs(a-b) <= float64EqualsThreshold {
+				return 1.
+			} else {
+				return 0.
+			}
+		})
+
+	return o.avg() >= 1
 }

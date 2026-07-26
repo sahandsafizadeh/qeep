@@ -43,9 +43,8 @@ func TestMSE(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := metric.Result()
-			if !(1.-1e-10 < result && result < 1.+1e-10) {
-				t.Fatalf("expected result to be (1): got (%f)", result)
+			if res := metric.Result(); res != 1. {
+				t.Fatalf("expected result to be (1): got (%f)", res)
 			}
 		})
 
@@ -92,9 +91,8 @@ func TestMSE(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := metric.Result()
-			if !(11.5-1e-10 < result && result < 11.5+1e-10) {
-				t.Fatalf("expected result to be (11.5): got (%f)", result)
+			if res := metric.Result(); res != 11.5 {
+				t.Fatalf("expected result to be (11.5): got (%f)", res)
 			}
 		})
 
@@ -161,9 +159,8 @@ func TestMSE(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := metric.Result()
-			if !(8.6-1e-10 < result && result < 8.6+1e-10) {
-				t.Fatalf("expected result to be (8.6): got (%f)", result)
+			if res := metric.Result(); res != 8.6 {
+				t.Fatalf("expected result to be (8.6): got (%f)", res)
 			}
 		})
 

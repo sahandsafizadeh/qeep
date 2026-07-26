@@ -29,24 +29,15 @@ func TestBCE(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err := tensor.Of(0.-1e-10, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			expu, err := tensor.Of(0.+1e-10, &tensor.Config{Device: dev})
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if p, err := act.Gt(expl); err != nil {
+			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
-			}
-			if p, err := act.Lt(expu); err != nil {
-				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
@@ -67,24 +58,15 @@ func TestBCE(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			expl, err := tensor.Of(0.-1e-10, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			expu, err := tensor.Of(0.+1e-10, &tensor.Config{Device: dev})
+			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if p, err := act.Gt(expl); err != nil {
+			if eq, err := act.Equals(exp); err != nil {
 				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
-			}
-			if p, err := act.Lt(expu); err != nil {
-				t.Fatal(err)
-			} else if p.Sum() < float64(p.NElems()) {
-				t.Fatal("expected output to be in range")
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 

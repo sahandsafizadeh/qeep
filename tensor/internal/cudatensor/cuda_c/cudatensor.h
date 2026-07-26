@@ -59,6 +59,7 @@ double *Mul(CUDATensor a, CUDATensor b, CUDAView view_o);
 double *Div(CUDATensor a, CUDATensor b, CUDAView view_o);
 double *Dot(CUDATensor a, CUDATensor b, CUDAView view_o);
 double *MatMul(CUDATensor a, CUDATensor b, CUDAView view_o);
+double *Equals(CUDATensor a, CUDATensor b, CUDAView view_o);
 
 /*--------------- memory -----------------*/
 void GetCudaMemInfo(size_t *free_mem, size_t *total_mem);

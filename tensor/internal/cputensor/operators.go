@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	float64EqThreshold     = 1e-240
-	float64EqualsThreshold = 1e-12
+	float64EqThreshold     = 1e-15
+	float64EqualsThreshold = 1e-10
 )
 
 func (t *CPUTensor) scale(u float64) *CPUTensor {

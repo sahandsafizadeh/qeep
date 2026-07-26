@@ -31,8 +31,8 @@ enum OperationType
     OP_EQUALS,
 };
 
-const double DOUBLE_EQ_THRESHOLD = 1e-240;
-const double DOUBLE_EQUALS_THRESHOLD = 1e-12;
+const double DOUBLE_EQ_THRESHOLD = 1e-15;
+const double DOUBLE_EQUALS_THRESHOLD = 1e-10;
 
 /* ----- device functions ----- */
 

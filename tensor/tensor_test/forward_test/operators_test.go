@@ -919,7 +919,7 @@ func TestEq(t *testing.T) {
 		})
 
 		t.Run("1D tensor [0, e+eps] / Eq([0, e]) / returns [1, 0]", func(t *testing.T) {
-			t1, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			t1, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1118,7 +1118,7 @@ func TestNe(t *testing.T) {
 		})
 
 		t.Run("1D tensor [0, e+eps] / Ne([0, e]) / returns [0, 1]", func(t *testing.T) {
-			t1, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			t1, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1317,7 +1317,7 @@ func TestGt(t *testing.T) {
 		})
 
 		t.Run("1D tensor [0, e+eps] / Gt([0, e]) / returns [0, 1]", func(t *testing.T) {
-			t1, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			t1, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1516,7 +1516,7 @@ func TestGe(t *testing.T) {
 		})
 
 		t.Run("1D tensor [0, e+eps] / Ge([0, e]) / returns [1, 1]", func(t *testing.T) {
-			t1, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			t1, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1715,7 +1715,7 @@ func TestLt(t *testing.T) {
 		})
 
 		t.Run("1D tensor [0, e+eps] / Lt([0, e]) / returns [0, 0]", func(t *testing.T) {
-			t1, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			t1, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1914,7 +1914,7 @@ func TestLe(t *testing.T) {
 		})
 
 		t.Run("1D tensor [0, e+eps] / Le([0, e]) / returns [1, 0]", func(t *testing.T) {
-			t1, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			t1, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2113,7 +2113,7 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("1D tensor [0, e+eps] / ElMax([0, e]) / returns [0, e+eps]", func(t *testing.T) {
-			t1, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			t1, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2127,7 +2127,7 @@ func TestElMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			exp, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2312,7 +2312,7 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("1D tensor [0, e+eps] / ElMin([0, e]) / returns [0, e]", func(t *testing.T) {
-			t1, err := tensor.Of([]float64{0., math.E + 1e-10}, &tensor.Config{Device: dev})
+			t1, err := tensor.Of([]float64{0., math.E + 1e-15}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}

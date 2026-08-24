@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/sahandsafizadeh/qeep/component/layers"
 	"github.com/sahandsafizadeh/qeep/component/layers/activations"
@@ -30,7 +31,7 @@ const (
 func main() {
 	result, err := run()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	for m, r := range result {

@@ -3,14 +3,14 @@ package tensor
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/cputensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/cudatensor"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 // Full returns a tensor with the given shape, where every element equals value.
-func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) {
+func Full(dims []int, value float64, conf *Config) (t core.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
 		return t, fmt.Errorf("Full tensor config data validation failed: %w", err)
@@ -33,7 +33,7 @@ func Full(dims []int, value float64, conf *Config) (t tensor.Tensor, err error) 
 }
 
 // Zeros returns a tensor with the given shape, filled with zeros.
-func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
+func Zeros(dims []int, conf *Config) (t core.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
 		return t, fmt.Errorf("Zeros tensor config data validation failed: %w", err)
@@ -56,7 +56,7 @@ func Zeros(dims []int, conf *Config) (t tensor.Tensor, err error) {
 }
 
 // Ones returns a tensor with the given shape, filled with ones.
-func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
+func Ones(dims []int, conf *Config) (t core.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
 		return t, fmt.Errorf("Ones tensor config data validation failed: %w", err)
@@ -79,7 +79,7 @@ func Ones(dims []int, conf *Config) (t tensor.Tensor, err error) {
 }
 
 // Eye returns a d-by-d identity matrix (ones on diagonal, zeros elsewhere).
-func Eye(d int, conf *Config) (t tensor.Tensor, err error) {
+func Eye(d int, conf *Config) (t core.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
 		return t, fmt.Errorf("Eye tensor config data validation failed: %w", err)
@@ -102,7 +102,7 @@ func Eye(d int, conf *Config) (t tensor.Tensor, err error) {
 }
 
 // RandU returns a tensor with the given shape, filled with uniformly distributed random values in [l, u).
-func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) {
+func RandU(dims []int, l, u float64, conf *Config) (t core.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
 		return t, fmt.Errorf("RandU tensor config data validation failed: %w", err)
@@ -125,7 +125,7 @@ func RandU(dims []int, l, u float64, conf *Config) (t tensor.Tensor, err error) 
 }
 
 // RandN returns a tensor with shape dims filled with normally distributed random values.
-func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) {
+func RandN(dims []int, u, s float64, conf *Config) (t core.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
 		return t, fmt.Errorf("RandN tensor config data validation failed: %w", err)
@@ -148,7 +148,7 @@ func RandN(dims []int, u, s float64, conf *Config) (t tensor.Tensor, err error) 
 }
 
 // Of creates a tensor from slice (float64 or nested slices up to 4D).
-func Of[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
+func Of[T inputDataType](data T, conf *Config) (t core.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
 		return t, fmt.Errorf("Of tensor config data validation failed: %w", err)
@@ -172,7 +172,7 @@ func Of[T inputDataType](data T, conf *Config) (t tensor.Tensor, err error) {
 
 // Concat joins tensors along the specified dimension.
 // All input tensors must reside on the same device and have compatible shapes.
-func Concat(ts []tensor.Tensor, dim int) (t tensor.Tensor, err error) {
+func Concat(ts []core.Tensor, dim int) (t core.Tensor, err error) {
 	err = validateImplementationsUnity(ts)
 	if err != nil {
 		return t, fmt.Errorf("Concat tensor implementation validation failed: %w", err)
@@ -196,7 +196,7 @@ func Concat(ts []tensor.Tensor, dim int) (t tensor.Tensor, err error) {
 
 // BackPropagate computes gradients for t and all tensors in its computation graph.
 // After backpropagation, gradient contexts become invalid and must be reset before reuse.
-func BackPropagate(t tensor.Tensor) (err error) {
+func BackPropagate(t core.Tensor) (err error) {
 	err = validateImplementation(t)
 	if err != nil {
 		return fmt.Errorf("BackPropagate tensor implementation validation failed: %w", err)
@@ -233,7 +233,7 @@ func toValidConfig(iconf *Config) (conf *Config, err error) {
 	return conf, nil
 }
 
-func validateImplementation(t tensor.Tensor) (err error) {
+func validateImplementation(t core.Tensor) (err error) {
 	switch t.(type) {
 	case *cputensor.CPUTensor,
 		*cudatensor.CUDATensor:
@@ -244,7 +244,7 @@ func validateImplementation(t tensor.Tensor) (err error) {
 	}
 }
 
-func validateImplementationsUnity(ts []tensor.Tensor) (err error) {
+func validateImplementationsUnity(ts []core.Tensor) (err error) {
 	if len(ts) < 2 {
 		return fmt.Errorf("expected at least (2) tensors: got (%d)", len(ts))
 	}

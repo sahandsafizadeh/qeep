@@ -1,16 +1,16 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
-func toZeros(t tensor.Tensor) tensor.Tensor {
+func toZeros(t core.Tensor) core.Tensor {
 	return t.Scale(0)
 }
 
-func toOnes(t tensor.Tensor) tensor.Tensor {
+func toOnes(t core.Tensor) core.Tensor {
 	return t.Pow(0)
 }
 
-func reducerBroadcasted(y tensor.Tensor, x tensor.Tensor, dim int) (o tensor.Tensor, err error) {
+func reducerBroadcasted(y core.Tensor, x core.Tensor, dim int) (o core.Tensor, err error) {
 	o, err = y.UnSqueeze(dim)
 	if err != nil {
 		return o, err

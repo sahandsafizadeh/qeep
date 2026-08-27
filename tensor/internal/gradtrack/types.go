@@ -1,22 +1,22 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
 type GradContext struct {
 	tracked   bool
 	bpdirty   bool
-	gradient  tensor.Tensor
+	gradient  core.Tensor
 	backEdges []*backwardEdge
 }
 
 type backwardEdge struct {
-	target tensor.Tensor
+	target core.Tensor
 	gradFn chainGradFunc
 }
 
 type backpropState struct {
 	unconsumed int
-	grsnapshot tensor.Tensor
+	grsnapshot core.Tensor
 }
 
-type chainGradFunc func() (tensor.Tensor, error)
+type chainGradFunc func() (core.Tensor, error)

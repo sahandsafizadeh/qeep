@@ -3,10 +3,10 @@ package dimsutil
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 )
 
-func BroadcastForBinaryOps(t tensor.Tensor, u tensor.Tensor) (t1 tensor.Tensor, t2 tensor.Tensor, err error) {
+func BroadcastForBinaryOps(t core.Tensor, u core.Tensor) (t1 core.Tensor, t2 core.Tensor, err error) {
 	shape := targetBroadcastShape(t.Shape(), u.Shape())
 
 	t1, err = t.Broadcast(shape)
@@ -22,7 +22,7 @@ func BroadcastForBinaryOps(t tensor.Tensor, u tensor.Tensor) (t1 tensor.Tensor, 
 	return t1, t2, nil
 }
 
-func BroadcastForMatMul(t tensor.Tensor, u tensor.Tensor) (t1 tensor.Tensor, t2 tensor.Tensor, err error) {
+func BroadcastForMatMul(t core.Tensor, u core.Tensor) (t1 core.Tensor, t2 core.Tensor, err error) {
 	dims1 := t.Shape()
 	dims2 := u.Shape()
 	shape := targetBroadcastShape(dims1, dims2)

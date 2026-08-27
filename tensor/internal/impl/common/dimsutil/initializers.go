@@ -1,8 +1,8 @@
 package dimsutil
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
-func ConcatDims[T tensor.Tensor](ts []T, dim int) []int {
+func ConcatDims[T core.Tensor](ts []T, dim int) []int {
 	common := 0
 	for _, t := range ts {
 		common += t.Shape()[dim]

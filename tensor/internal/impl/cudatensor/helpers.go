@@ -11,11 +11,11 @@ import "C"
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
-func assertCUDATensor(t tensor.Tensor) (ct *CUDATensor, err error) {
+func assertCUDATensor(t core.Tensor) (ct *CUDATensor, err error) {
 	ct, ok := t.(*CUDATensor)
 	if !ok {
 		return ct, fmt.Errorf("expected input tensor to be on CUDA")
@@ -24,7 +24,7 @@ func assertCUDATensor(t tensor.Tensor) (ct *CUDATensor, err error) {
 	return ct, nil
 }
 
-func assertCUDATensors(ts []tensor.Tensor) (cts []*CUDATensor, err error) {
+func assertCUDATensors(ts []core.Tensor) (cts []*CUDATensor, err error) {
 	cts = make([]*CUDATensor, len(ts))
 	for i, t := range ts {
 		cts[i], err = assertCUDATensor(t)
@@ -84,7 +84,7 @@ func toDimArr_C(dims []int) C.DimArr {
 	}
 }
 
-func toRangeArr_C(index []tensor.Range) C.RangeArr {
+func toRangeArr_C(index []core.Range) C.RangeArr {
 	size_c := (C.int)(len(index))
 
 	var arr_c [C.MAX_DIMS]C.Range

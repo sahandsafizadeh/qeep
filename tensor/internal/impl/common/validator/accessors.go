@@ -3,7 +3,7 @@ package validator
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 )
 
 func ValidateAtIndexAgainstDims(index []int, dims []int) (err error) {
@@ -20,7 +20,7 @@ func ValidateAtIndexAgainstDims(index []int, dims []int) (err error) {
 	return nil
 }
 
-func ValidateSliceIndexAgainstDims(index []tensor.Range, dims []int) (err error) {
+func ValidateSliceIndexAgainstDims(index []core.Range, dims []int) (err error) {
 	if len(index) > len(dims) {
 		return fmt.Errorf("expected index length to be smaller than or equal to the number of dimensions: (%d) > (%d)", len(index), len(dims))
 	}
@@ -49,7 +49,7 @@ func ValidateSliceIndexAgainstDims(index []tensor.Range, dims []int) (err error)
 	return nil
 }
 
-func ValidatePatchIndexAgainstDims(index []tensor.Range, srcDims, dstDims []int) (err error) {
+func ValidatePatchIndexAgainstDims(index []core.Range, srcDims, dstDims []int) (err error) {
 	if len(srcDims) != len(dstDims) {
 		return fmt.Errorf("expected number of dimensions to match among source and target tensors: (%d) != (%d)", len(srcDims), len(dstDims))
 	}

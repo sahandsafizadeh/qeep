@@ -3,10 +3,10 @@ package cputensor
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 )
 
-func assertCPUTensor(t tensor.Tensor) (ct *CPUTensor, err error) {
+func assertCPUTensor(t core.Tensor) (ct *CPUTensor, err error) {
 	ct, ok := t.(*CPUTensor)
 	if !ok {
 		return ct, fmt.Errorf("expected input tensor to be on CPU")
@@ -15,7 +15,7 @@ func assertCPUTensor(t tensor.Tensor) (ct *CPUTensor, err error) {
 	return ct, nil
 }
 
-func assertCPUTensors(ts []tensor.Tensor) (cts []*CPUTensor, err error) {
+func assertCPUTensors(ts []core.Tensor) (cts []*CPUTensor, err error) {
 	cts = make([]*CPUTensor, len(ts))
 	for i, t := range ts {
 		cts[i], err = assertCPUTensor(t)

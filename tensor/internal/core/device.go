@@ -1,4 +1,4 @@
-package tensor
+package core
 
 import "strconv"
 

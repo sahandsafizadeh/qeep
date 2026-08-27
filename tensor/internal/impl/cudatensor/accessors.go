@@ -9,8 +9,8 @@ package cudatensor
 import "C"
 
 import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func (t *CUDATensor) numElems() int {
@@ -26,7 +26,7 @@ func (t *CUDATensor) at(index []int) float64 {
 	return float64(elem_c)
 }
 
-func (t *CUDATensor) slice(index []tensor.Range) *CUDATensor {
+func (t *CUDATensor) slice(index []core.Range) *CUDATensor {
 	cidx := dimsutil.CompleteIndex(index, t.dims)
 
 	o := new(CUDATensor)
@@ -44,7 +44,7 @@ func (t *CUDATensor) slice(index []tensor.Range) *CUDATensor {
 	return o
 }
 
-func (t *CUDATensor) patch(index []tensor.Range, u *CUDATensor) *CUDATensor {
+func (t *CUDATensor) patch(index []core.Range, u *CUDATensor) *CUDATensor {
 	index = dimsutil.CompleteIndex(index, u.dims)
 	dims := t.dims
 

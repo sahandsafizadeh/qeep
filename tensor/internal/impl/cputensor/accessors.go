@@ -1,8 +1,8 @@
 package cputensor
 
 import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 
 func (t *CPUTensor) numElems() int {
@@ -18,7 +18,7 @@ func (t *CPUTensor) at(index []int) float64 {
 	return t.data[lnpos]
 }
 
-func (t *CPUTensor) slice(index []tensor.Range) *CPUTensor {
+func (t *CPUTensor) slice(index []core.Range) *CPUTensor {
 	cidx := dimsutil.CompleteIndex(index, t.dims)
 
 	o := new(CPUTensor)
@@ -36,7 +36,7 @@ func (t *CPUTensor) slice(index []tensor.Range) *CPUTensor {
 	return o
 }
 
-func (t *CPUTensor) patch(index []tensor.Range, u *CPUTensor) *CPUTensor {
+func (t *CPUTensor) patch(index []core.Range, u *CPUTensor) *CPUTensor {
 	cidx := dimsutil.CompleteIndex(index, u.dims)
 	tidx := make([]int, len(t.dims))
 	uidx := make([]int, len(u.dims))

@@ -3,12 +3,12 @@ package validator
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 )
 
 func ValidateInputDims(dims []int) (err error) {
-	if len(dims) > tensor.MaxDims {
-		return fmt.Errorf("expected at most (%d) dimensions: got (%d)", tensor.MaxDims, len(dims))
+	if len(dims) > core.MaxDims {
+		return fmt.Errorf("expected at most (%d) dimensions: got (%d)", core.MaxDims, len(dims))
 	}
 
 	for i, d := range dims {

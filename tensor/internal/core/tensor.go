@@ -1,4 +1,4 @@
-package tensor
+package core
 
 type Tensor interface {
 	/*--------------- accessors ---------------*/

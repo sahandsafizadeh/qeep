@@ -1,8 +1,8 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
-func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int) *GradContext {
+func Concat(y core.Tensor, xs []core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(xs...) {
 		return NewDirtyGradContext()
 	}
@@ -15,9 +15,9 @@ func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int) *GradContext {
 	var base int
 	for i := range backEdges {
 		shape := xs[i].Shape()
-		index := make([]tensor.Range, len(shape))
+		index := make([]core.Range, len(shape))
 
-		index[dim] = tensor.Range{
+		index[dim] = core.Range{
 			From: base,
 			To:   base + shape[dim],
 		}
@@ -26,7 +26,7 @@ func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int) *GradContext {
 
 		backEdges[i] = &backwardEdge{
 			target: xs[i],
-			gradFn: func() (tensor.Tensor, error) {
+			gradFn: func() (core.Tensor, error) {
 				return y.Gradient().Slice(index)
 			},
 		}
@@ -38,7 +38,7 @@ func Concat(y tensor.Tensor, xs []tensor.Tensor, dim int) *GradContext {
 	}
 }
 
-func Slice(y tensor.Tensor, x tensor.Tensor, index []tensor.Range) *GradContext {
+func Slice(y core.Tensor, x core.Tensor, index []core.Range) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -51,7 +51,7 @@ func Slice(y tensor.Tensor, x tensor.Tensor, index []tensor.Range) *GradContext 
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return toZeros(x).Patch(index, y.Gradient())
 				},
 			},
@@ -59,7 +59,7 @@ func Slice(y tensor.Tensor, x tensor.Tensor, index []tensor.Range) *GradContext 
 	}
 }
 
-func Patch(y tensor.Tensor, x tensor.Tensor, p tensor.Tensor, index []tensor.Range) *GradContext {
+func Patch(y core.Tensor, x core.Tensor, p core.Tensor, index []core.Range) *GradContext {
 	if anyIsBPDirty(x, p) {
 		return NewDirtyGradContext()
 	}
@@ -72,13 +72,13 @@ func Patch(y tensor.Tensor, x tensor.Tensor, p tensor.Tensor, index []tensor.Ran
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Patch(index, toZeros(p))
 				},
 			},
 			{
 				target: p,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Slice(index)
 				},
 			},
@@ -86,7 +86,7 @@ func Patch(y tensor.Tensor, x tensor.Tensor, p tensor.Tensor, index []tensor.Ran
 	}
 }
 
-func Transpose(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Transpose(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -99,7 +99,7 @@ func Transpose(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Transpose()
 				},
 			},
@@ -107,7 +107,7 @@ func Transpose(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Reshape(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Reshape(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -120,7 +120,7 @@ func Reshape(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Reshape(x.Shape())
 				},
 			},
@@ -128,7 +128,7 @@ func Reshape(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func UnSqueeze(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func UnSqueeze(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -141,7 +141,7 @@ func UnSqueeze(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Reshape(x.Shape())
 				},
 			},
@@ -149,7 +149,7 @@ func UnSqueeze(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Squeeze(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Squeeze(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -162,7 +162,7 @@ func Squeeze(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Reshape(x.Shape())
 				},
 			},
@@ -170,7 +170,7 @@ func Squeeze(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Flatten(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Flatten(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -183,7 +183,7 @@ func Flatten(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Reshape(x.Shape())
 				},
 			},
@@ -191,7 +191,7 @@ func Flatten(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Broadcast(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Broadcast(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -204,7 +204,7 @@ func Broadcast(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy := y.Gradient()
 					srcDims := x.Shape()
 					dstDims := y.Shape()
@@ -246,7 +246,7 @@ func Broadcast(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func SumAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
+func SumAlong(y core.Tensor, x core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -259,7 +259,7 @@ func SumAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return reducerBroadcasted(y.Gradient(), x, dim)
 				},
 			},
@@ -267,7 +267,7 @@ func SumAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 	}
 }
 
-func MaxAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
+func MaxAlong(y core.Tensor, x core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -280,7 +280,7 @@ func MaxAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy, err := reducerBroadcasted(y.Gradient(), x, dim)
 					if err != nil {
 						return o, err
@@ -318,7 +318,7 @@ func MaxAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 	}
 }
 
-func MinAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
+func MinAlong(y core.Tensor, x core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -331,7 +331,7 @@ func MinAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy, err := reducerBroadcasted(y.Gradient(), x, dim)
 					if err != nil {
 						return o, err
@@ -369,7 +369,7 @@ func MinAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 	}
 }
 
-func AvgAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
+func AvgAlong(y core.Tensor, x core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -382,7 +382,7 @@ func AvgAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy, err := reducerBroadcasted(y.Gradient(), x, dim)
 					if err != nil {
 						return o, err
@@ -397,7 +397,7 @@ func AvgAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 	}
 }
 
-func VarAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
+func VarAlong(y core.Tensor, x core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -410,7 +410,7 @@ func VarAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy, err := reducerBroadcasted(y.Gradient(), x, dim)
 					if err != nil {
 						return o, err
@@ -445,7 +445,7 @@ func VarAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 	}
 }
 
-func StdAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
+func StdAlong(y core.Tensor, x core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -458,7 +458,7 @@ func StdAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy, err := reducerBroadcasted(y.Gradient(), x, dim)
 					if err != nil {
 						return o, err
@@ -503,7 +503,7 @@ func StdAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 	}
 }
 
-func MeanAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
+func MeanAlong(y core.Tensor, x core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -516,7 +516,7 @@ func MeanAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy, err := reducerBroadcasted(y.Gradient(), x, dim)
 					if err != nil {
 						return o, err
@@ -531,7 +531,7 @@ func MeanAlong(y tensor.Tensor, x tensor.Tensor, dim int) *GradContext {
 	}
 }
 
-func Scale(y tensor.Tensor, x tensor.Tensor, a float64) *GradContext {
+func Scale(y core.Tensor, x core.Tensor, a float64) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -544,7 +544,7 @@ func Scale(y tensor.Tensor, x tensor.Tensor, a float64) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Scale(a), nil
 				},
 			},
@@ -552,7 +552,7 @@ func Scale(y tensor.Tensor, x tensor.Tensor, a float64) *GradContext {
 	}
 }
 
-func Pow(y tensor.Tensor, x tensor.Tensor, a float64) *GradContext {
+func Pow(y core.Tensor, x core.Tensor, a float64) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -565,7 +565,7 @@ func Pow(y tensor.Tensor, x tensor.Tensor, a float64) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					gy := y.Gradient()
 					gx := x.Pow(a - 1)
 					gx = gx.Scale(a)
@@ -577,7 +577,7 @@ func Pow(y tensor.Tensor, x tensor.Tensor, a float64) *GradContext {
 	}
 }
 
-func Exp(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Exp(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -590,7 +590,7 @@ func Exp(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Mul(y)
 				},
 			},
@@ -598,7 +598,7 @@ func Exp(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Log(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Log(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -611,7 +611,7 @@ func Log(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Div(x)
 				},
 			},
@@ -619,7 +619,7 @@ func Log(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Sin(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Sin(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -632,7 +632,7 @@ func Sin(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					gy := y.Gradient()
 					gx := x.Cos()
 
@@ -643,7 +643,7 @@ func Sin(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Cos(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Cos(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -656,7 +656,7 @@ func Cos(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					gy := y.Gradient()
 					gx := x.Sin().Scale(-1)
 
@@ -667,7 +667,7 @@ func Cos(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Tan(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Tan(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -680,7 +680,7 @@ func Tan(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					gy := y.Gradient()
 					gx := x.Cos().Pow(-2)
 
@@ -691,7 +691,7 @@ func Tan(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Sinh(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Sinh(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -704,7 +704,7 @@ func Sinh(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					gy := y.Gradient()
 					gx := x.Cosh()
 
@@ -715,7 +715,7 @@ func Sinh(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Cosh(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Cosh(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -728,7 +728,7 @@ func Cosh(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					gy := y.Gradient()
 					gx := x.Sinh()
 
@@ -739,7 +739,7 @@ func Cosh(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func Tanh(y tensor.Tensor, x tensor.Tensor) *GradContext {
+func Tanh(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -752,7 +752,7 @@ func Tanh(y tensor.Tensor, x tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: x,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					gy := y.Gradient()
 					gx := x.Cosh().Pow(-2)
 
@@ -763,7 +763,7 @@ func Tanh(y tensor.Tensor, x tensor.Tensor) *GradContext {
 	}
 }
 
-func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
+func ElMax(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 	if anyIsBPDirty(a, b) {
 		return NewDirtyGradContext()
 	}
@@ -776,7 +776,7 @@ func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: a,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy := y.Gradient()
 
 					ga, err := y.Eq(a)
@@ -799,7 +799,7 @@ func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 			},
 			{
 				target: b,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy := y.Gradient()
 
 					gb, err := y.Eq(b)
@@ -824,7 +824,7 @@ func ElMax(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 	}
 }
 
-func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
+func ElMin(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 	if anyIsBPDirty(a, b) {
 		return NewDirtyGradContext()
 	}
@@ -837,7 +837,7 @@ func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: a,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy := y.Gradient()
 
 					ga, err := y.Eq(a)
@@ -860,7 +860,7 @@ func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 			},
 			{
 				target: b,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy := y.Gradient()
 
 					gb, err := y.Eq(b)
@@ -885,7 +885,7 @@ func ElMin(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 	}
 }
 
-func Add(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
+func Add(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 	if anyIsBPDirty(a, b) {
 		return NewDirtyGradContext()
 	}
@@ -898,13 +898,13 @@ func Add(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: a,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient(), nil
 				},
 			},
 			{
 				target: b,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient(), nil
 				},
 			},
@@ -912,7 +912,7 @@ func Add(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 	}
 }
 
-func Sub(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
+func Sub(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 	if anyIsBPDirty(a, b) {
 		return NewDirtyGradContext()
 	}
@@ -925,13 +925,13 @@ func Sub(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: a,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient(), nil
 				},
 			},
 			{
 				target: b,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Scale(-1), nil
 				},
 			},
@@ -939,7 +939,7 @@ func Sub(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 	}
 }
 
-func Mul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
+func Mul(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 	if anyIsBPDirty(a, b) {
 		return NewDirtyGradContext()
 	}
@@ -952,13 +952,13 @@ func Mul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: a,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Mul(b)
 				},
 			},
 			{
 				target: b,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Mul(a)
 				},
 			},
@@ -966,7 +966,7 @@ func Mul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 	}
 }
 
-func Div(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
+func Div(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 	if anyIsBPDirty(a, b) {
 		return NewDirtyGradContext()
 	}
@@ -979,13 +979,13 @@ func Div(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: a,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Div(b)
 				},
 			},
 			{
 				target: b,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy := y.Gradient()
 
 					gb, err := y.Scale(-1).Div(b)
@@ -1000,7 +1000,7 @@ func Div(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 	}
 }
 
-func Dot(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
+func Dot(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 	if anyIsBPDirty(a, b) {
 		return NewDirtyGradContext()
 	}
@@ -1013,13 +1013,13 @@ func Dot(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: a,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Mul(b)
 				},
 			},
 			{
 				target: b,
-				gradFn: func() (tensor.Tensor, error) {
+				gradFn: func() (core.Tensor, error) {
 					return y.Gradient().Mul(a)
 				},
 			},
@@ -1027,7 +1027,7 @@ func Dot(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 	}
 }
 
-func MatMul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
+func MatMul(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 	if anyIsBPDirty(a, b) {
 		return NewDirtyGradContext()
 	}
@@ -1040,7 +1040,7 @@ func MatMul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 		backEdges: []*backwardEdge{
 			{
 				target: a,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy := y.Gradient()
 
 					ga, err := b.Transpose()
@@ -1053,7 +1053,7 @@ func MatMul(y tensor.Tensor, a tensor.Tensor, b tensor.Tensor) *GradContext {
 			},
 			{
 				target: b,
-				gradFn: func() (o tensor.Tensor, err error) {
+				gradFn: func() (o core.Tensor, err error) {
 					gy := y.Gradient()
 
 					gb, err := a.Transpose()

@@ -1,19 +1,19 @@
 package tensor
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
 // Tensor is a multi-dimensional array supporting linear algebra and automatic differentiation.
-type Tensor = tensor.Tensor
+type Tensor = core.Tensor
 
 // Device selects where tensor data and computation live.
-type Device = tensor.Device
+type Device = core.Device
 
 // Range specifies a half-open interval [Start, End) for slicing.
-type Range = tensor.Range
+type Range = core.Range
 
 const (
-	CPU  = tensor.CPU
-	CUDA = tensor.CUDA
+	CPU  = core.CPU
+	CUDA = core.CUDA
 )
 
 type Config struct {

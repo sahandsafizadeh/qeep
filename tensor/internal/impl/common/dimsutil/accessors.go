@@ -1,6 +1,6 @@
 package dimsutil
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
 func DimsToNumElems(dims []int) int {
 	elems := 1
@@ -26,7 +26,7 @@ func DimsToStrides(dims []int) []int {
 	return strd
 }
 
-func IndexToDims(index []tensor.Range) []int {
+func IndexToDims(index []core.Range) []int {
 	dims := make([]int, len(index))
 	for i, idx := range index {
 		dims[i] = idx.To - idx.From
@@ -35,12 +35,12 @@ func IndexToDims(index []tensor.Range) []int {
 	return dims
 }
 
-func CompleteIndex(index []tensor.Range, dims []int) []tensor.Range {
-	cidx := make([]tensor.Range, len(dims))
+func CompleteIndex(index []core.Range, dims []int) []core.Range {
+	cidx := make([]core.Range, len(dims))
 	for i := range cidx {
 		// special case of all elements along dim
 		if i >= len(index) || (index[i].From == 0 && index[i].To == 0) {
-			cidx[i] = tensor.Range{From: 0, To: dims[i]}
+			cidx[i] = core.Range{From: 0, To: dims[i]}
 		} else {
 			cidx[i] = index[i]
 		}

@@ -11,7 +11,7 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 )
 
 func constTensor(dims []int, value float64) *CUDATensor {

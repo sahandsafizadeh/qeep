@@ -8,7 +8,7 @@ package cudatensor
 */
 import "C"
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 
 func (t *CUDATensor) scale(u float64) *CUDATensor {
 	return applyHalfBinaryOperation(t, u, t.dims, func(x C.CUDATensor, a C.double, view_o C.CUDAView) *C.double {

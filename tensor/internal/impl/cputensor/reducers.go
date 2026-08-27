@@ -3,7 +3,7 @@ package cputensor
 import (
 	"math"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 )
 
 func (t *CPUTensor) sum() float64 {

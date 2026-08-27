@@ -11,7 +11,7 @@ import "C"
 import (
 	"slices"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 )
 
 func (t *CUDATensor) transpose() *CUDATensor {

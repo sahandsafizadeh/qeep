@@ -1,7 +1,7 @@
 package cputensor
 
 import (
-	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 	"gonum.org/v1/gonum/stat/distuv"
 )
 

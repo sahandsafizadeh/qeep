@@ -8,7 +8,7 @@ package cudatensor
 */
 import "C"
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 
 func (t *CUDATensor) sum() float64 {
 	return applyReduction(t, func(x C.CUDATensor) C.double {

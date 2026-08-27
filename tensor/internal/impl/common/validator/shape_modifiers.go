@@ -3,7 +3,7 @@ package validator
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 

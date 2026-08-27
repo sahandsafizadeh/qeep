@@ -1,18 +1,18 @@
 package cputensor
 
 import (
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 	"gonum.org/v1/gonum/stat/distuv"
 )
 
 func newTensorWithElementWiseInit(dims []int, fn elemInitFunc) *CPUTensor {
 	t := new(CPUTensor)
 	t.ofst = 0
-	t.strd = util.DimsToStrides(dims)
+	t.strd = dimsutil.DimsToStrides(dims)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 
-	t.data = make([]float64, util.DimsToNumElems(dims))
+	t.data = make([]float64, dimsutil.DimsToNumElems(dims))
 	for i := range t.data {
 		t.data[i] = fn()
 	}
@@ -53,22 +53,22 @@ func tensorFromData(idata any) *CPUTensor {
 	switch v := idata.(type) {
 	case float64:
 		dims = []int{}
-		strd = util.DimsToStrides(dims)
-		data = make([]float64, util.DimsToNumElems(dims))
+		strd = dimsutil.DimsToStrides(dims)
+		data = make([]float64, dimsutil.DimsToNumElems(dims))
 		data[0] = v
 
 	case []float64:
 		dims = []int{len(v)}
-		strd = util.DimsToStrides(dims)
-		data = make([]float64, util.DimsToNumElems(dims))
+		strd = dimsutil.DimsToStrides(dims)
+		data = make([]float64, dimsutil.DimsToNumElems(dims))
 		for i, v0 := range v {
 			data[i*strd[0]] = v0
 		}
 
 	case [][]float64:
 		dims = []int{len(v), len(v[0])}
-		strd = util.DimsToStrides(dims)
-		data = make([]float64, util.DimsToNumElems(dims))
+		strd = dimsutil.DimsToStrides(dims)
+		data = make([]float64, dimsutil.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
 				data[i*strd[0]+j*strd[1]] = v1
@@ -77,8 +77,8 @@ func tensorFromData(idata any) *CPUTensor {
 
 	case [][][]float64:
 		dims = []int{len(v), len(v[0]), len(v[0][0])}
-		strd = util.DimsToStrides(dims)
-		data = make([]float64, util.DimsToNumElems(dims))
+		strd = dimsutil.DimsToStrides(dims)
+		data = make([]float64, dimsutil.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
 				for k, v2 := range v1 {
@@ -89,8 +89,8 @@ func tensorFromData(idata any) *CPUTensor {
 
 	case [][][][]float64:
 		dims = []int{len(v), len(v[0]), len(v[0][0]), len(v[0][0][0])}
-		strd = util.DimsToStrides(dims)
-		data = make([]float64, util.DimsToNumElems(dims))
+		strd = dimsutil.DimsToStrides(dims)
+		data = make([]float64, dimsutil.DimsToNumElems(dims))
 		for i, v0 := range v {
 			for j, v1 := range v0 {
 				for k, v2 := range v1 {
@@ -114,7 +114,7 @@ func tensorFromData(idata any) *CPUTensor {
 }
 
 func tensorFromConcat(ts []*CPUTensor, dim int) *CPUTensor {
-	dims := util.ConcatDims(ts, dim)
+	dims := dimsutil.ConcatDims(ts, dim)
 	dstidx := make([]int, len(dims))
 	srcidx := make([]int, len(dims))
 

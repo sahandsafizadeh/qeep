@@ -5,10 +5,10 @@ package cudatensor
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/validator"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 // used for device selection at tests
@@ -598,7 +598,7 @@ func (t *CUDATensor) Add(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return o, fmt.Errorf("Add tensors' device validation failed: %w", err)
 	}
 
-	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
+	t1, t2, err := dimsutil.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		return o, fmt.Errorf("Add tensors' broadcasting failed: %w", err)
 	}
@@ -618,7 +618,7 @@ func (t *CUDATensor) Sub(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return o, fmt.Errorf("Sub tensors' device validation failed: %w", err)
 	}
 
-	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
+	t1, t2, err := dimsutil.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		return o, fmt.Errorf("Sub tensors' broadcasting failed: %w", err)
 	}
@@ -638,7 +638,7 @@ func (t *CUDATensor) Mul(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return o, fmt.Errorf("Mul tensors' device validation failed: %w", err)
 	}
 
-	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
+	t1, t2, err := dimsutil.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		return o, fmt.Errorf("Mul tensors' broadcasting failed: %w", err)
 	}
@@ -658,7 +658,7 @@ func (t *CUDATensor) Div(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return o, fmt.Errorf("Div tensors' device validation failed: %w", err)
 	}
 
-	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
+	t1, t2, err := dimsutil.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		return o, fmt.Errorf("Div tensors' broadcasting failed: %w", err)
 	}
@@ -683,7 +683,7 @@ func (t *CUDATensor) Dot(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return o, fmt.Errorf("Dot tensors' dimension validation failed: %w", err)
 	}
 
-	t1, t2, err := util.BroadcastForBinaryOps(t, _u)
+	t1, t2, err := dimsutil.BroadcastForBinaryOps(t, _u)
 	if err != nil {
 		return o, fmt.Errorf("Dot tensors' broadcasting failed: %w", err)
 	}
@@ -708,7 +708,7 @@ func (t *CUDATensor) MatMul(u tensor.Tensor) (o tensor.Tensor, err error) {
 		return o, fmt.Errorf("MatMul tensors' dimension validation failed: %w", err)
 	}
 
-	t1, t2, err := util.BroadcastForMatMul(t, _u)
+	t1, t2, err := dimsutil.BroadcastForMatMul(t, _u)
 	if err != nil {
 		return o, fmt.Errorf("MatMul tensors' broadcasting failed: %w", err)
 	}

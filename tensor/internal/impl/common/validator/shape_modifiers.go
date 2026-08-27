@@ -3,8 +3,8 @@ package validator
 import (
 	"fmt"
 
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 func ValidateTransposeDims(dims []int) (err error) {
@@ -16,8 +16,8 @@ func ValidateTransposeDims(dims []int) (err error) {
 }
 
 func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err error) {
-	srcElems := util.DimsToNumElems(srcDims)
-	dstElems := util.DimsToNumElems(dstDims)
+	srcElems := dimsutil.DimsToNumElems(srcDims)
+	dstElems := dimsutil.DimsToNumElems(dstDims)
 
 	if dstElems != srcElems {
 		return fmt.Errorf("expected number of elements in source and target tensors to match: (%d) != (%d)", srcElems, dstElems)

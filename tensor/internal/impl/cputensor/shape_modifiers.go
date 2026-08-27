@@ -3,7 +3,7 @@ package cputensor
 import (
 	"slices"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 )
 
 func (t *CPUTensor) transpose() *CPUTensor {
@@ -14,7 +14,7 @@ func (t *CPUTensor) transpose() *CPUTensor {
 	o.strd = make([]int, n)
 	copy(o.strd, t.strd)
 	o.strd[n-2], o.strd[n-1] = o.strd[n-1], o.strd[n-2]
-	o.dims = util.TransposeDims(t.dims)
+	o.dims = dimsutil.TransposeDims(t.dims)
 
 	o.data = t.data // reuse data
 
@@ -46,7 +46,7 @@ func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
 
 func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 	fofst := 0
-	fstrd := util.DimsToStrides(t.dims)
+	fstrd := dimsutil.DimsToStrides(t.dims)
 
 	if t.ofst != fofst || !slices.Equal(t.strd, fstrd) { // impossible to reuse data; copy
 		index := make([]int, len(t.dims))
@@ -58,7 +58,7 @@ func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 
 	o := new(CPUTensor)
 	o.ofst = 0
-	o.strd = util.DimsToStrides(shape)
+	o.strd = dimsutil.DimsToStrides(shape)
 	o.dims = make([]int, len(shape))
 	copy(o.dims, shape)
 
@@ -68,13 +68,13 @@ func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 }
 
 func (t *CPUTensor) unsqueeze(dim int) *CPUTensor {
-	return t.reshape(util.UnSqueezeDims(dim, t.dims))
+	return t.reshape(dimsutil.UnSqueezeDims(dim, t.dims))
 }
 
 func (t *CPUTensor) squeeze(dim int) *CPUTensor {
-	return t.reshape(util.SqueezeDims(dim, t.dims))
+	return t.reshape(dimsutil.SqueezeDims(dim, t.dims))
 }
 
 func (t *CPUTensor) flatten(fromDim int) *CPUTensor {
-	return t.reshape(util.FlattenDims(fromDim, t.dims))
+	return t.reshape(dimsutil.FlattenDims(fromDim, t.dims))
 }

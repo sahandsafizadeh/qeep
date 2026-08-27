@@ -1,4 +1,4 @@
-package util
+package dimsutil
 
 func TransposeDims(dims []int) []int {
 	res := make([]int, len(dims))

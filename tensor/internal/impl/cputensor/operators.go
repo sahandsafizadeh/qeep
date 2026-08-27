@@ -3,7 +3,7 @@ package cputensor
 import (
 	"math"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 )
 
 const (
@@ -159,7 +159,7 @@ func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *
 
 func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
-	dims := util.DotDims(t1.dims)
+	dims := dimsutil.DotDims(t1.dims)
 
 	nd := len(t1.dims)
 	n := t1.dims[nd-1]
@@ -188,7 +188,7 @@ func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 
 func (t *CPUTensor) matMul(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
-	dims := util.MatMulDims(t1.dims, t2.dims)
+	dims := dimsutil.MatMulDims(t1.dims, t2.dims)
 
 	nd := len(dims)
 	n := t1.dims[nd-1] // shared dim (m×n × n×k = m×k)

@@ -3,7 +3,7 @@ package cputensor
 import (
 	"math"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 )
 
 func (t *CPUTensor) sum() float64 {
@@ -85,7 +85,7 @@ func (t *CPUTensor) reduceAll(r reducer) float64 {
 }
 
 func (t *CPUTensor) reduceDim(dim int, r reducer) *CPUTensor {
-	dims := util.SqueezeDims(dim, t.dims)
+	dims := dimsutil.SqueezeDims(dim, t.dims)
 	dstidx := make([]int, len(dims))
 	srcidx := make([]int, len(t.dims))
 

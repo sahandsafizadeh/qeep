@@ -8,7 +8,7 @@ package cudatensor
 */
 import "C"
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/util"
+import "github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 
 func (t *CUDATensor) scale(u float64) *CUDATensor {
 	return applyHalfBinaryOperation(t, u, t.dims, func(x C.CUDATensor, a C.double, view_o C.CUDAView) *C.double {
@@ -143,7 +143,7 @@ func (t *CUDATensor) div(u *CUDATensor) *CUDATensor {
 }
 
 func (t *CUDATensor) dot(u *CUDATensor) *CUDATensor {
-	dims := util.DotDims(t.dims)
+	dims := dimsutil.DotDims(t.dims)
 
 	return applyBinaryOperation(t, u, dims, func(a C.CUDATensor, b C.CUDATensor, view_o C.CUDAView) *C.double {
 		return C.Dot(a, b, view_o)
@@ -151,7 +151,7 @@ func (t *CUDATensor) dot(u *CUDATensor) *CUDATensor {
 }
 
 func (t *CUDATensor) matMul(u *CUDATensor) *CUDATensor {
-	dims := util.MatMulDims(t.dims, u.dims)
+	dims := dimsutil.MatMulDims(t.dims, u.dims)
 
 	return applyBinaryOperation(t, u, dims, func(a C.CUDATensor, b C.CUDATensor, view_o C.CUDAView) *C.double {
 		return C.MatMul(a, b, view_o)

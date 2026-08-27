@@ -9,12 +9,12 @@ package cudatensor
 import "C"
 
 import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
 )
 
 func (t *CUDATensor) numElems() int {
-	return util.DimsToNumElems(t.dims)
+	return dimsutil.DimsToNumElems(t.dims)
 }
 
 func (t *CUDATensor) at(index []int) float64 {
@@ -27,13 +27,13 @@ func (t *CUDATensor) at(index []int) float64 {
 }
 
 func (t *CUDATensor) slice(index []tensor.Range) *CUDATensor {
-	cidx := util.CompleteIndex(index, t.dims)
+	cidx := dimsutil.CompleteIndex(index, t.dims)
 
 	o := new(CUDATensor)
 	o.ofst = t.ofst
 	o.strd = make([]int, len(t.strd))
 	copy(o.strd, t.strd)
-	o.dims = util.IndexToDims(cidx)
+	o.dims = dimsutil.IndexToDims(cidx)
 
 	for i, r := range cidx {
 		o.ofst += t.strd[i] * r.From
@@ -45,7 +45,7 @@ func (t *CUDATensor) slice(index []tensor.Range) *CUDATensor {
 }
 
 func (t *CUDATensor) patch(index []tensor.Range, u *CUDATensor) *CUDATensor {
-	index = util.CompleteIndex(index, u.dims)
+	index = dimsutil.CompleteIndex(index, u.dims)
 	dims := t.dims
 
 	t_c := toCUDATensor_C(t)

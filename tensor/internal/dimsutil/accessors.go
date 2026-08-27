@@ -1,4 +1,4 @@
-package util
+package dimsutil
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 

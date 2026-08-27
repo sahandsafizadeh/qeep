@@ -11,7 +11,7 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 )
 
 func constTensor(dims []int, value float64) *CUDATensor {
@@ -113,7 +113,7 @@ func tensorFromData(data any) *CUDATensor {
 }
 
 func tensorFromConcat(ts []*CUDATensor, dim int) *CUDATensor {
-	dims := util.ConcatDims(ts, dim)
+	dims := dimsutil.ConcatDims(ts, dim)
 	size := len(ts)
 
 	tsrcs := make([]C.CUDATensor, size)

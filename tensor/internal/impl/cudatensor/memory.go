@@ -14,7 +14,7 @@ import (
 	"sync"
 	"unsafe"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/dimsutil"
 )
 
 const (
@@ -32,13 +32,13 @@ var (
 func newCUDATensor(dims []int, data *C.double) *CUDATensor {
 	t := new(CUDATensor)
 	t.ofst = 0
-	t.strd = util.DimsToStrides(dims)
+	t.strd = dimsutil.DimsToStrides(dims)
 	t.dims = make([]int, len(dims))
 	copy(t.dims, dims)
 
 	sbuf := new(sharedBuffer)
 	sbuf.data = unsafe.Pointer(data)
-	sbuf.size = util.DimsToNumElems(dims)
+	sbuf.size = dimsutil.DimsToNumElems(dims)
 	sbuf.rcnt = 1
 
 	t.sbuf = sbuf

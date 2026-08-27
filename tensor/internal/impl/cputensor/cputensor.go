@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/validator"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/util"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/validator"
 )
 
 /*------------- initializers ------------*/

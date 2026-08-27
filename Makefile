@@ -16,8 +16,8 @@ install_linters:
 
 # -------------------- CUDA --------------------
 QEEP_CUDA_LIB_FILE := libcudatensor.so
-QEEP_CUDA_SRC_PATH := ./tensor/internal/cudatensor/cuda_c
-QEEP_CUDA_LIB_PATH := ./tensor/internal/cudatensor/lib
+QEEP_CUDA_SRC_PATH := ./tensor/internal/impl/cudatensor/cuda_c
+QEEP_CUDA_LIB_PATH := ./tensor/internal/impl/cudatensor/lib
 
 cuda:
 	@nvcc -Xcompiler -fPIC -shared -o $(QEEP_CUDA_LIB_FILE) $(QEEP_CUDA_SRC_PATH)/*.cu

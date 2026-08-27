@@ -3,9 +3,9 @@ package tensor
 import (
 	"fmt"
 
-	"github.com/sahandsafizadeh/qeep/tensor/internal/cputensor"
-	"github.com/sahandsafizadeh/qeep/tensor/internal/cudatensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/cputensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/cudatensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/tensor"
 )
 

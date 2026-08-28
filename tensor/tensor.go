@@ -78,8 +78,6 @@ func BackPropagate(t core.Tensor) error {
 	return dispatch.BackPropagate(t)
 }
 
-/* ----- testing helpers ----- */
-
 func RunTestLogicOnDevices(testLogic func(Device)) {
 	dispatch.RunTestLogicOnDevices(testLogic)
 }

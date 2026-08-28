@@ -62,7 +62,7 @@ func RandN(dims []int, u, s float64, conf *Config) (core.Tensor, error) {
 }
 
 // Of creates a tensor from slice (float64 or nested slices up to 4D).
-func Of[T core.InputDataType](data T, conf *Config) (core.Tensor, error) {
+func Of[T dispatch.InputDataType](data T, conf *Config) (core.Tensor, error) {
 	return dispatch.Of(data, conf)
 }
 

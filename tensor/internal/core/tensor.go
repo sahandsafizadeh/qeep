@@ -70,3 +70,15 @@ type Tensor interface {
 	/*----------------- device ----------------*/
 	Device() Device
 }
+
+type Config struct {
+	Device    Device
+	GradTrack bool
+}
+
+type Range struct {
+	From int
+	To   int
+}
+
+const MaxDims = 6

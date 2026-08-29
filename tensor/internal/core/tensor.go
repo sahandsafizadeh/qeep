@@ -70,7 +70,7 @@ type Tensor interface {
 
 type ExporterTensor interface {
 	Tensor
-	Export() Snapshot
+	Export() *Snapshot
 }
 
 type Snapshot struct {

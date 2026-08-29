@@ -9,7 +9,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/validator"
 )
 
-/*------------- initializers ------------*/
+/*---------- initializers ----------*/
 
 func Full(dims []int, value float64, withGrad bool) (o core.Tensor, err error) {
 	err = validator.ValidateInputDims(dims)
@@ -93,7 +93,7 @@ func RandN(dims []int, u, s float64, withGrad bool) (o core.Tensor, err error) {
 	return r, nil
 }
 
-func Of(data any, withGrad bool) (o core.Tensor, err error) {
+func Of[T core.InputDataType](data T, withGrad bool) (o core.Tensor, err error) {
 	err = validator.ValidateInputDataDimUnity(data)
 	if err != nil {
 		return o, fmt.Errorf("Of input data validation failed: %w", err)
@@ -127,16 +127,20 @@ func Concat(ts []core.Tensor, dim int) (o core.Tensor, err error) {
 	return r, nil
 }
 
-/*--------------- methods ---------------*/
-
-func (t *CPUTensor) NElems() int {
-	return t.numElems()
-}
+/*---------- public methods ----------*/
 
 func (t *CPUTensor) Shape() []int {
 	shape := make([]int, len(t.dims))
 	copy(shape, t.dims)
 	return shape
+}
+
+func (t *CPUTensor) Device() core.Device {
+	return core.CPU
+}
+
+func (t *CPUTensor) NElems() int {
+	return t.numElems()
 }
 
 func (t *CPUTensor) At(index ...int) (value float64, err error) {
@@ -156,23 +160,6 @@ func (t *CPUTensor) Slice(index []core.Range) (o core.Tensor, err error) {
 
 	r := t.slice(index)
 	r.gctx = gradtrack.Slice(r, t, index)
-
-	return r, nil
-}
-
-func (t *CPUTensor) Patch(index []core.Range, u core.Tensor) (o core.Tensor, err error) {
-	_u, err := assertCPUTensor(u)
-	if err != nil {
-		return o, fmt.Errorf("Patch tensors' device validation failed: %w", err)
-	}
-
-	err = validator.ValidatePatchIndexAgainstDims(index, _u.dims, t.dims)
-	if err != nil {
-		return o, fmt.Errorf("Patch input index or tensors' dimension validation failed: %w", err)
-	}
-
-	r := t.patch(index, _u)
-	r.gctx = gradtrack.Patch(r, t, _u, index)
 
 	return r, nil
 }
@@ -206,6 +193,18 @@ func (t *CPUTensor) Reshape(shape []int) (o core.Tensor, err error) {
 	return r, nil
 }
 
+func (t *CPUTensor) Flatten(fromDim int) (o core.Tensor, err error) {
+	err = validator.ValidateFlattenDimAgainstDims(fromDim, t.dims)
+	if err != nil {
+		return o, fmt.Errorf("Flatten input dimension validation failed: %w", err)
+	}
+
+	r := t.flatten(fromDim)
+	r.gctx = gradtrack.Flatten(r, t)
+
+	return r, nil
+}
+
 func (t *CPUTensor) UnSqueeze(dim int) (o core.Tensor, err error) {
 	err = validator.ValidateUnSqueezeDimAgainstDims(dim, t.dims)
 	if err != nil {
@@ -226,18 +225,6 @@ func (t *CPUTensor) Squeeze(dim int) (o core.Tensor, err error) {
 
 	r := t.squeeze(dim)
 	r.gctx = gradtrack.Squeeze(r, t)
-
-	return r, nil
-}
-
-func (t *CPUTensor) Flatten(fromDim int) (o core.Tensor, err error) {
-	err = validator.ValidateFlattenDimAgainstDims(fromDim, t.dims)
-	if err != nil {
-		return o, fmt.Errorf("Flatten input dimension validation failed: %w", err)
-	}
-
-	r := t.flatten(fromDim)
-	r.gctx = gradtrack.Flatten(r, t)
 
 	return r, nil
 }
@@ -735,6 +722,23 @@ func (t *CPUTensor) Equals(u core.Tensor) (are bool, err error) {
 	return are, nil
 }
 
+func (t *CPUTensor) Patch(index []core.Range, u core.Tensor) (o core.Tensor, err error) {
+	_u, err := assertCPUTensor(u)
+	if err != nil {
+		return o, fmt.Errorf("Patch tensors' device validation failed: %w", err)
+	}
+
+	err = validator.ValidatePatchIndexAgainstDims(index, _u.dims, t.dims)
+	if err != nil {
+		return o, fmt.Errorf("Patch input index or tensors' dimension validation failed: %w", err)
+	}
+
+	r := t.patch(index, _u)
+	r.gctx = gradtrack.Patch(r, t, _u, index)
+
+	return r, nil
+}
+
 func (t *CPUTensor) Gradient() core.Tensor {
 	return t.gctx.Gradient()
 }
@@ -747,10 +751,12 @@ func (t *CPUTensor) ResetGradContext(tracked bool) {
 	t.gctx = gradtrack.NewGradContext(tracked)
 }
 
-func (t *CPUTensor) GradContext() any {
+/*---------- internal methods ----------*/
+
+func (t *CPUTensor) GradContext() *gradtrack.GradContext {
 	return t.gctx
 }
 
-func (t *CPUTensor) Device() core.Device {
-	return core.CPU
+func (t *CPUTensor) Export() *core.Snapshot {
+	panic("unimplemented")
 }

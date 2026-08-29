@@ -24,12 +24,12 @@ func constTensor(dims []int, value float64) *CPUTensor {
 	return newTensorWithElementWiseInit(dims, func() float64 { return value })
 }
 
-func eyeMatrix(n int) *CPUTensor {
+func eyeMatrix(d int) *CPUTensor {
 	i := 0
-	return newTensorWithElementWiseInit([]int{n, n}, func() float64 {
+	return newTensorWithElementWiseInit([]int{d, d}, func() float64 {
 		defer func() { i++ }()
 
-		if i%(n+1) == 0 {
+		if i%(d+1) == 0 {
 			return 1.
 		} else {
 			return 0.

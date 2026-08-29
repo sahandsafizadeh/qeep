@@ -3,6 +3,7 @@ package cputensor
 import (
 	"math"
 
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 )
 
@@ -141,22 +142,6 @@ func (t *CPUTensor) div(u *CPUTensor) *CPUTensor {
 	return applyBinaryFuncOnTensorsElemWise(t, u, func(a, b float64) float64 { return a / b })
 }
 
-func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTensor {
-	index := make([]int, len(t.dims))
-	return newTensorWithElementWiseInit(t.dims, func() float64 {
-		defer updateElementWiseIndex(index, t.dims)
-		return suf(t.at(index))
-	})
-}
-
-func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
-	index := make([]int, len(t1.dims))
-	return newTensorWithElementWiseInit(t1.dims, func() float64 {
-		defer updateElementWiseIndex(index, t1.dims)
-		return sbf(t1.at(index), t2.at(index))
-	})
-}
-
 func (t *CPUTensor) dot(u *CPUTensor) *CPUTensor {
 	t1, t2 := t, u
 	dims := dimsutil.DotDims(t1.dims)
@@ -228,4 +213,42 @@ func (t *CPUTensor) equals(u *CPUTensor) bool {
 		})
 
 	return o.avg() >= 1
+}
+
+func (t *CPUTensor) patch(index []core.Range, u *CPUTensor) *CPUTensor {
+	cidx := dimsutil.CompleteIndex(index, u.dims)
+	tidx := make([]int, len(t.dims))
+	uidx := make([]int, len(u.dims))
+
+	return newTensorWithElementWiseInit(t.dims, func() float64 {
+		defer updateElementWiseIndex(tidx, t.dims)
+
+		for i, r := range cidx {
+			if tidx[i] < r.From || tidx[i] >= r.To {
+				return t.at(tidx)
+			}
+		}
+
+		for i, r := range cidx {
+			uidx[i] = tidx[i] - r.From
+		}
+
+		return u.at(uidx)
+	})
+}
+
+func applyUnaryFuncOnTensorElemWise(t *CPUTensor, suf scalarUnaryFunc) *CPUTensor {
+	index := make([]int, len(t.dims))
+	return newTensorWithElementWiseInit(t.dims, func() float64 {
+		defer updateElementWiseIndex(index, t.dims)
+		return suf(t.at(index))
+	})
+}
+
+func applyBinaryFuncOnTensorsElemWise(t1, t2 *CPUTensor, sbf scalarBinaryFunc) *CPUTensor {
+	index := make([]int, len(t1.dims))
+	return newTensorWithElementWiseInit(t1.dims, func() float64 {
+		defer updateElementWiseIndex(index, t1.dims)
+		return sbf(t1.at(index), t2.at(index))
+	})
 }

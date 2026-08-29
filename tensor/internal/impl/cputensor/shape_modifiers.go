@@ -21,29 +21,6 @@ func (t *CPUTensor) transpose() *CPUTensor {
 	return o
 }
 
-func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
-	o := new(CPUTensor)
-	o.ofst = t.ofst
-	o.strd = make([]int, len(shape))
-	o.dims = make([]int, len(shape))
-	copy(o.dims, shape)
-
-	offset := len(shape) - len(t.dims)
-	for i := range o.strd {
-		if i < offset {
-			o.strd[i] = 0
-		} else if j := i - offset; t.dims[j] == 1 && shape[i] != 1 {
-			o.strd[i] = 0
-		} else {
-			o.strd[i] = t.strd[j]
-		}
-	}
-
-	o.data = t.data // reuse data
-
-	return o
-}
-
 func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 	fofst := 0
 	fstrd := dimsutil.DimsToStrides(t.dims)
@@ -67,6 +44,10 @@ func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 	return o
 }
 
+func (t *CPUTensor) flatten(fromDim int) *CPUTensor {
+	return t.reshape(dimsutil.FlattenDims(fromDim, t.dims))
+}
+
 func (t *CPUTensor) unsqueeze(dim int) *CPUTensor {
 	return t.reshape(dimsutil.UnSqueezeDims(dim, t.dims))
 }
@@ -75,6 +56,25 @@ func (t *CPUTensor) squeeze(dim int) *CPUTensor {
 	return t.reshape(dimsutil.SqueezeDims(dim, t.dims))
 }
 
-func (t *CPUTensor) flatten(fromDim int) *CPUTensor {
-	return t.reshape(dimsutil.FlattenDims(fromDim, t.dims))
+func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
+	o := new(CPUTensor)
+	o.ofst = t.ofst
+	o.strd = make([]int, len(shape))
+	o.dims = make([]int, len(shape))
+	copy(o.dims, shape)
+
+	offset := len(shape) - len(t.dims)
+	for i := range o.strd {
+		if i < offset {
+			o.strd[i] = 0
+		} else if j := i - offset; t.dims[j] == 1 && shape[i] != 1 {
+			o.strd[i] = 0
+		} else {
+			o.strd[i] = t.strd[j]
+		}
+	}
+
+	o.data = t.data // reuse data
+
+	return o
 }

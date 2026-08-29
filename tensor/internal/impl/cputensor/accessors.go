@@ -35,25 +35,3 @@ func (t *CPUTensor) slice(index []core.Range) *CPUTensor {
 
 	return o
 }
-
-func (t *CPUTensor) patch(index []core.Range, u *CPUTensor) *CPUTensor {
-	cidx := dimsutil.CompleteIndex(index, u.dims)
-	tidx := make([]int, len(t.dims))
-	uidx := make([]int, len(u.dims))
-
-	return newTensorWithElementWiseInit(t.dims, func() float64 {
-		defer updateElementWiseIndex(tidx, t.dims)
-
-		for i, r := range cidx {
-			if tidx[i] < r.From || tidx[i] >= r.To {
-				return t.at(tidx)
-			}
-		}
-
-		for i, r := range cidx {
-			uidx[i] = tidx[i] - r.From
-		}
-
-		return u.at(uidx)
-	})
-}

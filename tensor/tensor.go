@@ -67,7 +67,7 @@ func Of[T core.InputDataType](data T, conf *Config) (Tensor, error) {
 }
 
 func Transfer[T core.ExporterTensor](t T, to Device) (Tensor, error) {
-	panic("unimplemented")
+	return dispatch.Transfer(t, to)
 }
 
 // Concat joins tensors along the specified dimension.
@@ -83,11 +83,11 @@ func BackPropagate(t Tensor) error {
 }
 
 func Save(t Tensor, path string) error {
-	panic("unimplemented")
+	return dispatch.Save(t, path)
 }
 
 func Load(path string) (Tensor, error) {
-	panic("unimplemented")
+	return dispatch.Load(path)
 }
 
 // RunTestLogicOnDevices is a test helper that runs testLogic on every available device.

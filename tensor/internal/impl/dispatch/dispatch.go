@@ -141,7 +141,7 @@ func RandN(dims []int, u, s float64, conf *core.Config) (t core.Tensor, err erro
 	return t, nil
 }
 
-func Of[T InputDataType](data T, conf *core.Config) (t core.Tensor, err error) {
+func Of[T core.InputDataType](data T, conf *core.Config) (t core.Tensor, err error) {
 	conf, err = toValidConfig(conf)
 	if err != nil {
 		return t, fmt.Errorf("Of tensor config data validation failed: %w", err)
@@ -161,6 +161,10 @@ func Of[T InputDataType](data T, conf *core.Config) (t core.Tensor, err error) {
 	}
 
 	return t, nil
+}
+
+func Transfer(t core.ExporterTensor, to core.Device) (o core.Tensor, err error) {
+	panic("unimplemented")
 }
 
 func Concat(ts []core.Tensor, dim int) (t core.Tensor, err error) {
@@ -199,67 +203,22 @@ func BackPropagate(t core.Tensor) (err error) {
 	return nil
 }
 
-/* ----- helpers ----- */
-
-func toValidConfig(iconf *core.Config) (conf *core.Config, err error) {
-	if iconf == nil {
-		iconf = &core.Config{
-			Device:    core.CPU,
-			GradTrack: false,
-		}
-	}
-
-	conf = new(core.Config)
-	*conf = *iconf
-
-	switch conf.Device {
-	case core.CPU:
-	case core.CUDA:
-	default:
-		return conf, fmt.Errorf("invalid input device")
-	}
-
-	return conf, nil
+func Save(t core.Tensor, path string) error {
+	panic("unimplemented")
 }
 
-func validateImplementation(t core.Tensor) (err error) {
-	switch t.(type) {
-	case *cputensor.CPUTensor,
-		*cudatensor.CUDATensor:
-		return nil
-
-	default:
-		return fmt.Errorf("unsupported tensor implementation")
-	}
+func Load(path string) (core.Tensor, error) {
+	panic("unimplemented")
 }
 
-func validateImplementationsUnity(ts []core.Tensor) (err error) {
-	if len(ts) < 2 {
-		return fmt.Errorf("expected at least (2) tensors: got (%d)", len(ts))
+func RunTestLogicOnDevices(testLogic func(core.Device)) {
+	devices := []core.Device{core.CPU}
+
+	if cudatensor.IsAvailable {
+		devices = append(devices, core.CUDA)
 	}
 
-	var dev core.Device
-
-	for _, t := range ts {
-		switch t.(type) {
-		case *cputensor.CPUTensor:
-			if dev == 0 {
-				dev = core.CPU
-			} else if dev != core.CPU {
-				return fmt.Errorf("input tensors not on the same device")
-			}
-
-		case *cudatensor.CUDATensor:
-			if dev == 0 {
-				dev = core.CUDA
-			} else if dev != core.CUDA {
-				return fmt.Errorf("input tensors not on the same device")
-			}
-
-		default:
-			return fmt.Errorf("unsupported tensor implementation")
-		}
+	for _, dev := range devices {
+		testLogic(dev)
 	}
-
-	return nil
 }

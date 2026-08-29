@@ -62,11 +62,11 @@ func RandN(dims []int, u, s float64, conf *Config) (Tensor, error) {
 }
 
 // Of creates a tensor from slice (float64 or nested slices up to 4D).
-func Of[T dispatch.InputDataType](data T, conf *Config) (Tensor, error) {
+func Of[T core.InputDataType](data T, conf *Config) (Tensor, error) {
 	return dispatch.Of(data, conf)
 }
 
-func Transfer[T dispatch.ExporterTensor](t T, to Device) (Tensor, error) {
+func Transfer[T core.ExporterTensor](t T, to Device) (Tensor, error) {
 	panic("unimplemented")
 }
 

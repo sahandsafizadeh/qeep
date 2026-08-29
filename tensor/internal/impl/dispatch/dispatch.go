@@ -164,7 +164,25 @@ func Of[T core.InputDataType](data T, conf *core.Config) (t core.Tensor, err err
 }
 
 func Transfer(t core.ExporterTensor, to core.Device) (o core.Tensor, err error) {
-	panic("unimplemented")
+	err = validateImplementation(t)
+	if err != nil {
+		return o, fmt.Errorf("Transfer tensor implementation validation failed: %w", err)
+	}
+
+	switch to {
+	case core.CPU:
+		o, err = cputensor.Transfer(t)
+	case core.CUDA:
+		o, err = cudatensor.Transfer(t)
+	default:
+		panic("unreachable: unsupported device")
+	}
+
+	if err != nil {
+		return o, fmt.Errorf("%s transfer: %w", to, err)
+	}
+
+	return o, nil
 }
 
 func Concat(ts []core.Tensor, dim int) (t core.Tensor, err error) {

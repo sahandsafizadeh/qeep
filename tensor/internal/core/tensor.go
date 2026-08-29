@@ -2,18 +2,18 @@ package core
 
 type Tensor interface {
 	/*--------------- accessors ---------------*/
-	NElems() int
 	Shape() []int
+	Device() Device
+	NElems() int
 	At(index ...int) (float64, error)
 	Slice(index []Range) (Tensor, error)
-	Patch(index []Range, source Tensor) (Tensor, error)
 
 	/*------------ shape modifiers ------------*/
 	Transpose() (Tensor, error)
 	Reshape(shape []int) (Tensor, error)
+	Flatten(fromDim int) (Tensor, error)
 	UnSqueeze(dim int) (Tensor, error)
 	Squeeze(dim int) (Tensor, error)
-	Flatten(fromDim int) (Tensor, error)
 	Broadcast(shape []int) (Tensor, error)
 
 	/*--------------- reducers ----------------*/
@@ -60,6 +60,7 @@ type Tensor interface {
 	Dot(Tensor) (Tensor, error)
 	MatMul(Tensor) (Tensor, error)
 	Equals(Tensor) (bool, error)
+	Patch(index []Range, src Tensor) (Tensor, error)
 
 	/*---------------- gradient ---------------*/
 	Gradient() Tensor

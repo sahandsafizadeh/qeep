@@ -26,6 +26,14 @@ func ValidateReshapeSourceDimsAgainstTargetDims(srcDims, dstDims []int) (err err
 	return nil
 }
 
+func ValidateFlattenDimAgainstDims(dim int, dims []int) (err error) {
+	if dim < 0 || dim >= len(dims) {
+		return fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
+	}
+
+	return nil
+}
+
 func ValidateUnSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 	if len(dims) == core.MaxDims {
 		return fmt.Errorf("operation causes tensor to exceed maximum (%d) dimensions", core.MaxDims)
@@ -45,14 +53,6 @@ func ValidateSqueezeDimAgainstDims(dim int, dims []int) (err error) {
 
 	if dims[dim] != 1 {
 		return fmt.Errorf("expected squeeze dimension to be (1): got (%d)", dims[dim])
-	}
-
-	return nil
-}
-
-func ValidateFlattenDimAgainstDims(dim int, dims []int) (err error) {
-	if dim < 0 || dim >= len(dims) {
-		return fmt.Errorf("expected dimension to be in range [0,%d): got (%d)", len(dims), dim)
 	}
 
 	return nil

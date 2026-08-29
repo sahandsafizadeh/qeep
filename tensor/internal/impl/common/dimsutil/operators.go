@@ -6,6 +6,28 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 )
 
+func DotDims(idims []int) []int {
+	td := len(idims)
+	cd := idims[:td-1]
+	dims := make([]int, len(cd))
+	copy(dims, cd)
+
+	return dims
+}
+
+func MatMulDims(dims1, dims2 []int) []int {
+	td := len(dims1)
+	cd := dims1[:td-2]
+	dims := make([]int, len(cd))
+	copy(dims, cd)
+
+	m := dims1[td-2]
+	k := dims2[td-1]
+	dims = append(dims, m, k)
+
+	return dims
+}
+
 func BroadcastForBinaryOps(t core.Tensor, u core.Tensor) (t1 core.Tensor, t2 core.Tensor, err error) {
 	shape := targetBroadcastShape(t.Shape(), u.Shape())
 

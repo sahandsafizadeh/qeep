@@ -10,6 +10,22 @@ func TransposeDims(dims []int) []int {
 	return res
 }
 
+func FlattenDims(dim int, dims []int) []int {
+	left := dims[:dim]
+	res := make([]int, len(left))
+	copy(res, left)
+
+	nElems := 1
+
+	for i := dim; i < len(dims); i++ {
+		nElems *= dims[i]
+	}
+
+	res = append(res, nElems)
+
+	return res
+}
+
 func UnSqueezeDims(dim int, dims []int) []int {
 	left := dims[:dim]
 	res := make([]int, len(left))
@@ -37,42 +53,4 @@ func SqueezeDims(dim int, dims []int) []int {
 	}
 
 	return res
-}
-
-func FlattenDims(dim int, dims []int) []int {
-	left := dims[:dim]
-	res := make([]int, len(left))
-	copy(res, left)
-
-	nElems := 1
-
-	for i := dim; i < len(dims); i++ {
-		nElems *= dims[i]
-	}
-
-	res = append(res, nElems)
-
-	return res
-}
-
-func DotDims(idims []int) []int {
-	td := len(idims)
-	cd := idims[:td-1]
-	dims := make([]int, len(cd))
-	copy(dims, cd)
-
-	return dims
-}
-
-func MatMulDims(dims1, dims2 []int) []int {
-	td := len(dims1)
-	cd := dims1[:td-2]
-	dims := make([]int, len(cd))
-	copy(dims, cd)
-
-	m := dims1[td-2]
-	k := dims2[td-1]
-	dims = append(dims, m, k)
-
-	return dims
 }

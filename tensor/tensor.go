@@ -76,18 +76,18 @@ func Concat(ts []Tensor, dim int) (Tensor, error) {
 	return dispatch.Concat(ts, dim)
 }
 
+// BackPropagate computes gradients for t and all tensors in its computation graph.
+// After backpropagation, gradient contexts become invalid and must be reset before reuse.
+func BackPropagate(t Tensor) error {
+	return dispatch.BackPropagate(t)
+}
+
 func Save(t Tensor, path string) error {
 	panic("unimplemented")
 }
 
 func Load(path string) (Tensor, error) {
 	panic("unimplemented")
-}
-
-// BackPropagate computes gradients for t and all tensors in its computation graph.
-// After backpropagation, gradient contexts become invalid and must be reset before reuse.
-func BackPropagate(t Tensor) error {
-	return dispatch.BackPropagate(t)
 }
 
 // RunTestLogicOnDevices is a test helper that runs testLogic on every available device.

@@ -66,20 +66,19 @@ type Tensor interface {
 	Gradient() Tensor
 	GradientTracked() bool
 	ResetGradContext(bool)
-	GradContext() any
-
-	/*----------------- device ----------------*/
-	Device() Device
 }
 
-type Config struct {
-	Device    Device
-	GradTrack bool
+type ExporterTensor interface {
+	Tensor
+	Export() Snapshot
+}
+
+type Snapshot struct {
+	Dims []int
+	Data []float64
 }
 
 type Range struct {
 	From int
 	To   int
 }
-
-const MaxDims = 6

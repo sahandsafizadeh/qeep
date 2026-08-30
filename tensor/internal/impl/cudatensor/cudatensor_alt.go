@@ -2,7 +2,10 @@
 
 package cudatensor
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
+import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
+)
 
 // used for device selection at tests
 const IsAvailable = false
@@ -13,6 +16,8 @@ const message = `CUDA implementation for tensors is not available:
 (3) build CUDA libraries by running "make cuda"
 (4) use 'cuda' build tag in the go tool
 `
+
+/*---------- initializers ----------*/
 
 func Full(dims []int, value float64, withGrad bool) (o core.Tensor, err error) {
 	panic(message)
@@ -38,7 +43,11 @@ func RandN(dims []int, u, s float64, withGrad bool) (o core.Tensor, err error) {
 	panic(message)
 }
 
-func Of(data any, withGrad bool) (o core.Tensor, err error) {
+func Of[T core.InputDataType](data T, withGrad bool) (o core.Tensor, err error) {
+	panic(message)
+}
+
+func Transfer(t core.ExporterTensor) (o core.Tensor, err error) {
 	panic(message)
 }
 
@@ -46,11 +55,17 @@ func Concat(ts []core.Tensor, dim int) (o core.Tensor, err error) {
 	panic(message)
 }
 
-func (t *CUDATensor) NElems() int {
+/*---------- public methods ----------*/
+
+func (t *CUDATensor) Shape() []int {
 	panic(message)
 }
 
-func (t *CUDATensor) Shape() []int {
+func (t *CUDATensor) Device() core.Device {
+	panic(message)
+}
+
+func (t *CUDATensor) NElems() int {
 	panic(message)
 }
 
@@ -62,10 +77,6 @@ func (t *CUDATensor) Slice(index []core.Range) (o core.Tensor, err error) {
 	panic(message)
 }
 
-func (t *CUDATensor) Patch(index []core.Range, u core.Tensor) (o core.Tensor, err error) {
-	panic(message)
-}
-
 func (t *CUDATensor) Transpose() (o core.Tensor, err error) {
 	panic(message)
 }
@@ -74,15 +85,15 @@ func (t *CUDATensor) Reshape(shape []int) (o core.Tensor, err error) {
 	panic(message)
 }
 
+func (t *CUDATensor) Flatten(fromDim int) (o core.Tensor, err error) {
+	panic(message)
+}
+
 func (t *CUDATensor) UnSqueeze(dim int) (o core.Tensor, err error) {
 	panic(message)
 }
 
 func (t *CUDATensor) Squeeze(dim int) (o core.Tensor, err error) {
-	panic(message)
-}
-
-func (t *CUDATensor) Flatten(fromDim int) (o core.Tensor, err error) {
 	panic(message)
 }
 
@@ -254,6 +265,10 @@ func (t *CUDATensor) Equals(u core.Tensor) (are bool, err error) {
 	panic(message)
 }
 
+func (t *CUDATensor) Patch(index []core.Range, u core.Tensor) (o core.Tensor, err error) {
+	panic(message)
+}
+
 func (t *CUDATensor) Gradient() core.Tensor {
 	panic(message)
 }
@@ -266,10 +281,12 @@ func (t *CUDATensor) ResetGradContext(tracked bool) {
 	panic(message)
 }
 
-func (t *CUDATensor) GradContext() any {
+/*---------- internal methods ----------*/
+
+func (t *CUDATensor) GradContext() *gradtrack.GradContext {
 	panic(message)
 }
 
-func (t *CUDATensor) Device() core.Device {
+func (t *CUDATensor) Export() *core.Snapshot {
 	panic(message)
 }

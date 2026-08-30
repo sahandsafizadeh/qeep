@@ -1,6 +1,7 @@
 package cputensor
 
 import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 	"gonum.org/v1/gonum/stat/distuv"
 )
@@ -111,6 +112,19 @@ func tensorFromData(idata any) *CPUTensor {
 		dims: dims,
 		data: data,
 	}
+}
+
+func tensorFromSnapshot(s *core.Snapshot) *CPUTensor {
+	t := new(CPUTensor)
+	t.ofst = 0
+	t.strd = dimsutil.DimsToStrides(s.Dims)
+
+	t.dims = make([]int, len(s.Dims))
+	copy(t.dims, s.Dims)
+	t.data = make([]float64, len(s.Data))
+	copy(t.data, s.Data)
+
+	return t
 }
 
 func tensorFromConcat(ts []*CPUTensor, dim int) *CPUTensor {

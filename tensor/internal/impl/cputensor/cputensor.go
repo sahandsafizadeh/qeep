@@ -105,19 +105,12 @@ func Of[T core.InputDataType](data T, withGrad bool) (o core.Tensor, err error) 
 	return r, nil
 }
 
-func Transfer(t core.ExporterTensor) (o core.Tensor, err error) {
-	x := t.Export()
+func Transfer(t core.ExporterTensor) core.Tensor {
+	s := t.Export()
+	r := tensorFromSnapshot(s)
+	r.gctx = gradtrack.Transfer(r, t)
 
-	r := &CPUTensor{
-		ofst: 0,
-		strd: dimsutil.DimsToStrides(x.Dims),
-		dims: x.Dims,
-		data: x.Data,
-	}
-
-	// r.gctx = gradtrack.Add() // todo: implement device switch
-
-	return r, nil // todo: do we need error here?
+	return r
 }
 
 func Concat(ts []core.Tensor, dim int) (o core.Tensor, err error) {

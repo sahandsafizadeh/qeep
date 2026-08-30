@@ -111,7 +111,7 @@ extern "C"
     double *Eye(CUDAView view_o);
     double *RandU(double l, double u, CUDAView view_o);
     double *RandN(double u, double s, CUDAView view_o);
-    double *Of(double *input_data, CUDAView view_o);
+    double *Import(double *input_data, CUDAView view_o);
     double *From(CUDATensor t, CUDAView view_o);
     double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o);
 }
@@ -193,7 +193,7 @@ double *RandN(double u, double s, CUDAView view_o)
     return o.data.arr;
 }
 
-double *Of(double *input_data, CUDAView view_o)
+double *Import(double *input_data, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
 

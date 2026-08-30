@@ -108,7 +108,7 @@ func tensorFromData(data any) *CUDATensor {
 	input_data_c := (*C.double)(dataptr)
 	view_o_c := toCUDAView_C(dims)
 
-	data_c := C.Of(input_data_c, view_o_c)
+	data_c := C.Import(input_data_c, view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }
@@ -125,7 +125,7 @@ func tensorFromSnapshot(s *core.Snapshot) *CPUTensor {
 	input_data_c := (*C.double)(dataptr)
 	view_o_c := toCUDAView_C(dims)
 
-	data_c := C.Of(input_data_c, view_o_c)
+	data_c := C.Import(input_data_c, view_o_c)
 
 	return newCUDATensor(dims, data_c)
 }

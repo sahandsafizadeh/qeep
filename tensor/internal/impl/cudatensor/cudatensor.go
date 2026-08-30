@@ -766,7 +766,7 @@ func (t *CUDATensor) ResetGradContext(tracked bool) {
 
 /*---------- internal methods ----------*/
 
-func (t *CUDATensor) GradContext() *gradtrack.GradContext {
+func (t *CUDATensor) GradientContext() *gradtrack.GradContext {
 	return t.gctx
 }
 

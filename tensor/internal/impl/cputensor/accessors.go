@@ -35,3 +35,12 @@ func (t *CPUTensor) slice(index []core.Range) *CPUTensor {
 
 	return o
 }
+
+func (t *CPUTensor) export() *core.Snapshot {
+	o := t.compact(t.dims)
+
+	return &core.Snapshot{
+		Dims: o.dims,
+		Data: o.data,
+	}
+}

@@ -26,11 +26,7 @@ func (t *CPUTensor) reshape(shape []int) *CPUTensor {
 	fstrd := dimsutil.DimsToStrides(t.dims)
 
 	if t.ofst != fofst || !slices.Equal(t.strd, fstrd) { // impossible to reuse data; copy
-		index := make([]int, len(t.dims))
-		return newTensorWithElementWiseInit(shape, func() float64 {
-			defer updateElementWiseIndex(index, t.dims)
-			return t.at(index)
-		})
+		return t.compact(shape)
 	}
 
 	o := new(CPUTensor)
@@ -77,4 +73,12 @@ func (t *CPUTensor) broadcast(shape []int) *CPUTensor {
 	o.data = t.data // reuse data
 
 	return o
+}
+
+func (t *CPUTensor) compact(shape []int) *CPUTensor {
+	index := make([]int, len(t.dims))
+	return newTensorWithElementWiseInit(shape, func() float64 {
+		defer updateElementWiseIndex(index, t.dims)
+		return t.at(index)
+	})
 }

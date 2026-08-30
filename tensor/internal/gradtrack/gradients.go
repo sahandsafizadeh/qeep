@@ -59,33 +59,6 @@ func Slice(y core.Tensor, x core.Tensor, index []core.Range) *GradContext {
 	}
 }
 
-func Patch(y core.Tensor, x core.Tensor, p core.Tensor, index []core.Range) *GradContext {
-	if anyIsBPDirty(x, p) {
-		return NewDirtyGradContext()
-	}
-	if nonIsTracked(x, p) {
-		return NewGradContext(false)
-	}
-
-	return &GradContext{
-		tracked: true,
-		backEdges: []*backwardEdge{
-			{
-				target: x,
-				gradFn: func() (core.Tensor, error) {
-					return y.Gradient().Patch(index, toZeros(p))
-				},
-			},
-			{
-				target: p,
-				gradFn: func() (core.Tensor, error) {
-					return y.Gradient().Slice(index)
-				},
-			},
-		},
-	}
-}
-
 func Transpose(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
@@ -128,6 +101,27 @@ func Reshape(y core.Tensor, x core.Tensor) *GradContext {
 	}
 }
 
+func Flatten(y core.Tensor, x core.Tensor) *GradContext {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
+	return &GradContext{
+		tracked: true,
+		backEdges: []*backwardEdge{
+			{
+				target: x,
+				gradFn: func() (core.Tensor, error) {
+					return y.Gradient().Reshape(x.Shape())
+				},
+			},
+		},
+	}
+}
+
 func UnSqueeze(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
@@ -150,27 +144,6 @@ func UnSqueeze(y core.Tensor, x core.Tensor) *GradContext {
 }
 
 func Squeeze(y core.Tensor, x core.Tensor) *GradContext {
-	if anyIsBPDirty(x) {
-		return NewDirtyGradContext()
-	}
-	if nonIsTracked(x) {
-		return NewGradContext(false)
-	}
-
-	return &GradContext{
-		tracked: true,
-		backEdges: []*backwardEdge{
-			{
-				target: x,
-				gradFn: func() (core.Tensor, error) {
-					return y.Gradient().Reshape(x.Shape())
-				},
-			},
-		},
-	}
-}
-
-func Flatten(y core.Tensor, x core.Tensor) *GradContext {
 	if anyIsBPDirty(x) {
 		return NewDirtyGradContext()
 	}
@@ -1062,6 +1035,33 @@ func MatMul(y core.Tensor, a core.Tensor, b core.Tensor) *GradContext {
 					}
 
 					return gb.MatMul(gy)
+				},
+			},
+		},
+	}
+}
+
+func Patch(y core.Tensor, x core.Tensor, p core.Tensor, index []core.Range) *GradContext {
+	if anyIsBPDirty(x, p) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x, p) {
+		return NewGradContext(false)
+	}
+
+	return &GradContext{
+		tracked: true,
+		backEdges: []*backwardEdge{
+			{
+				target: x,
+				gradFn: func() (core.Tensor, error) {
+					return y.Gradient().Patch(index, toZeros(p))
+				},
+			},
+			{
+				target: p,
+				gradFn: func() (core.Tensor, error) {
+					return y.Gradient().Slice(index)
 				},
 			},
 		},

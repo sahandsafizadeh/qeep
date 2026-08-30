@@ -773,5 +773,5 @@ func (t *CPUTensor) GradContext() *gradtrack.GradContext {
 }
 
 func (t *CPUTensor) Export() *core.Snapshot {
-	panic("unimplemented")
+	return t.export()
 }

@@ -171,15 +171,11 @@ func Transfer(t core.ExporterTensor, to core.Device) (o core.Tensor, err error) 
 
 	switch to {
 	case core.CPU:
-		o, err = cputensor.Transfer(t)
+		o = cputensor.Transfer(t)
 	case core.CUDA:
-		o, err = cudatensor.Transfer(t)
+		o = cudatensor.Transfer(t)
 	default:
 		panic("unreachable: unsupported device")
-	}
-
-	if err != nil {
-		return o, fmt.Errorf("%s transfer: %w", to, err)
 	}
 
 	return o, nil

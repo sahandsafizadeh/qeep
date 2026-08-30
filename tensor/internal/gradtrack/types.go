@@ -2,6 +2,11 @@ package gradtrack
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
+type gctxEnabledTensor interface {
+	core.Tensor
+	GradientContext() *GradContext
+}
+
 type GradContext struct {
 	tracked   bool
 	bpdirty   bool

@@ -11,6 +11,7 @@ import "C"
 import (
 	"unsafe"
 
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 )
 
@@ -100,6 +101,23 @@ func tensorFromData(data any) *CUDATensor {
 
 	default:
 		panic("invalid input data type: data must have been based on float64 slices")
+	}
+
+	dataptr := unsafe.Pointer(&inputData[0])
+
+	input_data_c := (*C.double)(dataptr)
+	view_o_c := toCUDAView_C(dims)
+
+	data_c := C.Of(input_data_c, view_o_c)
+
+	return newCUDATensor(dims, data_c)
+}
+
+func tensorFromSnapshot(s *core.Snapshot) *CPUTensor {
+	dims := s.Dims
+	inputData := make([]C.double, len(s.Data))
+	for i, v := range s.Data {
+		inputData[i] = (C.double)(v)
 	}
 
 	dataptr := unsafe.Pointer(&inputData[0])

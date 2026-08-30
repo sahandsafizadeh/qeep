@@ -8,7 +8,10 @@ package cudatensor
 */
 import "C"
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
+import (
+	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
+)
 
 func (t *CUDATensor) scale(u float64) *CUDATensor {
 	return applyHalfBinaryOperation(t, u, t.dims, func(x C.CUDATensor, a C.double, view_o C.CUDAView) *C.double {
@@ -164,6 +167,20 @@ func (t *CUDATensor) equals(u *CUDATensor) bool {
 	})
 
 	return o.avg() >= 1
+}
+
+func (t *CUDATensor) patch(index []core.Range, u *CUDATensor) *CUDATensor {
+	index = dimsutil.CompleteIndex(index, u.dims)
+	dims := t.dims
+
+	t_c := toCUDATensor_C(t)
+	ranges_c := toRangeArr_C(index)
+	u_c := toCUDATensor_C(u)
+	view_o_c := toCUDAView_C(dims)
+
+	data_c := C.Patch(t_c, ranges_c, u_c, view_o_c)
+
+	return newCUDATensor(dims, data_c)
 }
 
 func applyHalfBinaryOperation(x *CUDATensor, a float64, dims []int, hbf_c halfBinaryOperatorFunc_C) *CUDATensor {

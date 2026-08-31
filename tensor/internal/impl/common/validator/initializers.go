@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 )
 
 func ValidateInputDims(dims []int) (err error) {
@@ -97,6 +98,22 @@ func ValidateInputDataDimUnity(data any) (err error) {
 
 	default:
 		panic("unreachable: compiler accepted input must be of type float64 | []float64 | [][]float64 | [][][]float64 | [][][][]float64")
+	}
+
+	return nil
+}
+
+func ValidateSnapshot(s *core.Snapshot) (err error) {
+	err = ValidateInputDims(s.Dims)
+	if err != nil {
+		return err
+	}
+
+	dataElems := len(s.Data)
+	dimsElems := dimsutil.DimsToNumElems(s.Dims)
+
+	if dataElems != dimsElems {
+		return fmt.Errorf("expected number of elements in snapshot data to match its dims: (%d) != (%d)", dataElems, dimsElems)
 	}
 
 	return nil

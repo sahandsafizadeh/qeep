@@ -2,7 +2,7 @@ package gradtrack
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
-type gctxEnabledTensor interface {
+type GctxEnabledTensor interface {
 	core.Tensor
 	GradientContext() *GradContext
 }
@@ -15,7 +15,7 @@ type GradContext struct {
 }
 
 type backwardEdge struct {
-	target core.Tensor
+	target GctxEnabledTensor
 	gradFn chainGradFunc
 }
 

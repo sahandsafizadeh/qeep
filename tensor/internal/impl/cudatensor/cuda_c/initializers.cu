@@ -68,18 +68,6 @@ __global__ void fillRandN(CUDATensor o, double u, double s, unsigned long long s
     }
 }
 
-__global__ void fillCopy(CUDATensor o, CUDATensor t)
-{
-    const unsigned int tpos = threadPosition();
-    const unsigned int stride = totalThreads();
-
-    for (size_t i = tpos; i < o.data.size; i += stride)
-    {
-        size_t lnpos_t = flatpos(i, t.view);
-        o.data.arr[i] = t.data.arr[lnpos_t];
-    }
-}
-
 __global__ void fillConcat(CUDATensor o, CUDATensor *ts, size_t *ofsts, int size, int dim)
 {
     const unsigned int tpos = threadPosition();
@@ -112,7 +100,6 @@ extern "C"
     double *RandU(double l, double u, CUDAView view_o);
     double *RandN(double u, double s, CUDAView view_o);
     double *Import(double *input_data, CUDAView view_o);
-    double *From(CUDATensor t, CUDAView view_o);
     double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o);
 }
 
@@ -211,24 +198,6 @@ double *Import(double *input_data, CUDAView view_o)
     return data_o.arr;
 }
 
-double *From(CUDATensor t, CUDAView view_o)
-{
-    size_t n = elemcnt(view_o.dims);
-
-    CUDAData data_o = (CUDAData){n, NULL};
-    handleCudaError(
-        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
-
-    CUDATensor o = (CUDATensor){view_o, data_o};
-
-    LaunchParams lps = launchParams(o.data.size);
-    fillCopy<<<lps.blockSize, lps.threadSize>>>(o, t);
-    handleCudaError(
-        cudaGetLastError());
-
-    return o.data.arr;
-}
-
 double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o)
 {
     size_t n = elemcnt(view_o.dims);
@@ -272,8 +241,10 @@ double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o)
     handleCudaError(
         cudaGetLastError());
 
-    cudaFree(_ts);
-    cudaFree(_ofsts);
+    handleCudaError(
+        cudaFree(_ts));
+    handleCudaError(
+        cudaFree(_ofsts));
 
     return o.data.arr;
 }

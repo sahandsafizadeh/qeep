@@ -11,12 +11,14 @@ double *Eye(CUDAView view_o);
 double *RandU(double l, double u, CUDAView view_o);
 double *RandN(double u, double s, CUDAView view_o);
 double *Import(double *input_data, CUDAView view_o);
-double *From(CUDATensor t, CUDAView view_o);
 double *Concat(CUDATensor ts[], int size, int dim, CUDAView view_o);
 
 /*--------------- accessors ---------------*/
 double At(CUDATensor t, DimArr index);
-double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o);
+void Export(CUDATensor t, double *output_data, CUDAView view_o);
+
+/*------------ shape modifiers ------------*/
+double *Compact(CUDATensor t, CUDAView view_o);
 
 /*--------------- reducers ----------------*/
 double Sum(CUDATensor t);

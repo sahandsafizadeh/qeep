@@ -7,6 +7,7 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor/internal/gradtrack"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/cputensor"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/cudatensor"
+	"github.com/sahandsafizadeh/qeep/tensor/internal/persist"
 )
 
 func Full(dims []int, value float64, conf *core.Config) (t core.Tensor, err error) {
@@ -163,7 +164,12 @@ func Of[T core.InputDataType](data T, conf *core.Config) (t core.Tensor, err err
 	return t, nil
 }
 
-func Transfer(t core.ExporterTensor, to core.Device) (o core.Tensor, err error) {
+func Transfer(t core.Tensor, to core.Device) (o core.Tensor, err error) {
+	t, ok := t.(core.ExporterTensor)
+	if !ok {
+		return o, fmt.Errorf("Transfer tensor implementation validation failed: %w", err)
+	}
+
 	err = validateImplementation(t)
 	if err != nil {
 		return o, fmt.Errorf("Transfer tensor implementation validation failed: %w", err)
@@ -171,11 +177,15 @@ func Transfer(t core.ExporterTensor, to core.Device) (o core.Tensor, err error) 
 
 	switch to {
 	case core.CPU:
-		o = cputensor.Transfer(t)
+		o, err = cputensor.Transfer(t.(core.ExporterTensor))
 	case core.CUDA:
-		o = cudatensor.Transfer(t)
+		o, err = cudatensor.Transfer(t.(core.ExporterTensor))
 	default:
 		panic("unreachable: unsupported device")
+	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", to, err)
 	}
 
 	return o, nil
@@ -217,12 +227,45 @@ func BackPropagate(t core.Tensor) (err error) {
 	return nil
 }
 
-func Save(t core.Tensor, path string) error {
-	panic("unimplemented")
+func Save(t core.Tensor, path string) (err error) {
+	err = validateImplementation(t)
+	if err != nil {
+		return fmt.Errorf("Save tensor implementation validation failed: %w", err)
+	}
+
+	err = persist.Save(t.(core.ExporterTensor).Export(), path)
+	if err != nil {
+		return fmt.Errorf("Save operation failed: %w", err)
+	}
+
+	return nil
 }
 
-func Load(path string) (core.Tensor, error) {
-	panic("unimplemented")
+func Load(path string, conf *core.Config) (t core.Tensor, err error) {
+	conf, err = toValidConfig(conf)
+	if err != nil {
+		return t, fmt.Errorf("Load tensor config data validation failed: %w", err)
+	}
+
+	s, err := persist.Load(path)
+	if err != nil {
+		return t, fmt.Errorf("Load operation failed: %w", err)
+	}
+
+	switch conf.Device {
+	case core.CPU:
+		t, err = cputensor.Import(s, conf.GradTrack)
+	case core.CUDA:
+		t, err = cudatensor.Import(s, conf.GradTrack)
+	default:
+		panic("unreachable: unsupported device")
+	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
 }
 
 func RunTestLogicOnDevices(testLogic func(core.Device)) {

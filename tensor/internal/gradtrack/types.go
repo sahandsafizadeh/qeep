@@ -10,18 +10,18 @@ type gctxTensor interface {
 type GradContext struct {
 	tracked   bool
 	bpdirty   bool
-	gradient  gctxTensor
+	gradient  core.Tensor
 	backEdges []*backwardEdge
 }
 
 type backwardEdge struct {
-	target gctxTensor
+	target core.Tensor
 	gradFn chainGradFunc
 }
 
 type backpropState struct {
 	unconsumed int
-	grsnapshot gctxTensor
+	grsnapshot core.Tensor
 }
 
-type chainGradFunc func() (gctxTensor, error)
+type chainGradFunc func() (core.Tensor, error)

@@ -9,6 +9,8 @@ package cudatensor
 import "C"
 
 import (
+	"unsafe"
+
 	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 )
@@ -44,16 +46,28 @@ func (t *CUDATensor) slice(index []core.Range) *CUDATensor {
 	return o
 }
 
-func (t *CUDATensor) patch(index []core.Range, u *CUDATensor) *CUDATensor {
-	index = dimsutil.CompleteIndex(index, u.dims)
-	dims := t.dims
+func (t *CUDATensor) export() *core.Snapshot {
+	n := t.numElems()
+	output_data := make([]C.double, n)
+
+	output_data_ptr := unsafe.Pointer(&output_data[0])
 
 	t_c := toCUDATensor_C(t)
-	ranges_c := toRangeArr_C(index)
-	u_c := toCUDATensor_C(u)
-	view_o_c := toCUDAView_C(dims)
+	output_data_c := (*C.double)(output_data_ptr)
+	view_o_c := toCUDAView_C(t.dims)
 
-	data_c := C.Patch(t_c, ranges_c, u_c, view_o_c)
+	C.Export(t_c, output_data_c, view_o_c)
 
-	return newCUDATensor(dims, data_c)
+	dims := make([]int, len(t.dims))
+	copy(dims, t.dims)
+
+	data := make([]float64, len(output_data))
+	for i, v := range output_data {
+		data[i] = float64(v)
+	}
+
+	return &core.Snapshot{
+		Dims: dims,
+		Data: data,
+	}
 }

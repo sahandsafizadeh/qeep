@@ -37,7 +37,7 @@ func (t *CUDATensor) reshape(shape []int) *CUDATensor {
 		t_c := toCUDATensor_C(t)
 		view_o_c := toCUDAView_C(shape)
 
-		data_c := C.From(t_c, view_o_c)
+		data_c := C.Compact(t_c, view_o_c)
 
 		return newCUDATensor(shape, data_c)
 	}

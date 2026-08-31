@@ -1,7 +1,5 @@
 package gradtrack
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
-
 func NewGradContext(tracked bool) *GradContext {
 	return &GradContext{tracked: tracked}
 }
@@ -16,13 +14,13 @@ func (gctx *GradContext) Tracked() bool {
 	return gctx.tracked
 }
 
-func (gctx *GradContext) Gradient() core.Tensor {
+func (gctx *GradContext) Gradient() gctxTensor {
 	return gctx.gradient
 }
 
 /* ----- helpers ----- */
 
-func anyIsBPDirty(ts ...GctxEnabledTensor) bool {
+func anyIsBPDirty(ts ...gctxTensor) bool {
 	for _, t := range ts {
 		gctx := t.GradientContext()
 		if gctx.bpdirty {
@@ -33,7 +31,7 @@ func anyIsBPDirty(ts ...GctxEnabledTensor) bool {
 	return false
 }
 
-func nonIsTracked(ts ...GctxEnabledTensor) bool {
+func nonIsTracked(ts ...gctxTensor) bool {
 	for _, t := range ts {
 		gctx := t.GradientContext()
 		if gctx.tracked {

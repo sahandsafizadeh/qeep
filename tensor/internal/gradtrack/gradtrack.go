@@ -22,7 +22,7 @@ func (gctx *GradContext) Gradient() core.Tensor {
 
 /* ----- helpers ----- */
 
-func anyIsBPDirty(ts ...gctxEnabledTensor) bool {
+func anyIsBPDirty(ts ...GctxEnabledTensor) bool {
 	for _, t := range ts {
 		gctx := t.GradientContext()
 		if gctx.bpdirty {
@@ -33,7 +33,7 @@ func anyIsBPDirty(ts ...gctxEnabledTensor) bool {
 	return false
 }
 
-func nonIsTracked(ts ...gctxEnabledTensor) bool {
+func nonIsTracked(ts ...GctxEnabledTensor) bool {
 	for _, t := range ts {
 		gctx := t.GradientContext()
 		if gctx.tracked {

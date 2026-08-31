@@ -1,4 +1,4 @@
-package forward_test
+package tensor_test
 
 import (
 	"testing"

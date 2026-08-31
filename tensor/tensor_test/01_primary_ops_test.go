@@ -6,7 +6,7 @@
 //
 // Full, At, Of, and Equals are the primary functions under test here, as they underpin this
 // baseline and are relied upon throughout the rest of the test suite.
-package forward_test
+package tensor_test
 
 import (
 	"fmt"

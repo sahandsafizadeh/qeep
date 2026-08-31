@@ -1,7 +1,7 @@
 // Accessors are the second group of functions under test in this package.
 // They are verified using only the primary functions (Full, Of, At, Equals)
 // established as a baseline in primary_ops_test.go.
-package forward_test
+package tensor_test
 
 import (
 	"slices"

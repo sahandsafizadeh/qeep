@@ -110,12 +110,30 @@ func Of[T core.InputDataType](data T, withGrad bool) (o core.Tensor, err error) 
 	return r, nil
 }
 
-func Transfer(t core.ExporterTensor) core.Tensor {
+func Import(s *core.Snapshot, withGrad bool) (o core.Tensor, err error) {
+	err = validator.ValidateSnapshot(s)
+	if err != nil {
+		return o, fmt.Errorf("Import snapshot validation failed: %w", err)
+	}
+
+	r := tensorFromSnapshot(s)
+	r.gctx = gradtrack.NewGradContext(withGrad)
+
+	return r, nil
+}
+
+func Transfer(t core.ExporterTensor) (o core.Tensor, err error) {
 	s := t.Export()
+
+	err = validator.ValidateSnapshot(s)
+	if err != nil {
+		return o, fmt.Errorf("Transfer snapshot validation failed: %w", err)
+	}
+
 	r := tensorFromSnapshot(s)
 	r.gctx = gradtrack.Transfer(r, t)
 
-	return r
+	return r, nil
 }
 
 func Concat(ts []core.Tensor, dim int) (o core.Tensor, err error) {

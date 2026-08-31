@@ -47,7 +47,11 @@ func Of[T core.InputDataType](data T, withGrad bool) (o core.Tensor, err error) 
 	panic(message)
 }
 
-func Transfer(t core.ExporterTensor) core.Tensor {
+func Import(s *core.Snapshot, withGrad bool) (o core.Tensor, err error) {
+	panic(message)
+}
+
+func Transfer(t core.ExporterTensor) (o core.Tensor, err error) {
 	panic(message)
 }
 

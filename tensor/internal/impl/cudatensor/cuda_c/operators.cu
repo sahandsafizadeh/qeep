@@ -34,7 +34,7 @@ enum OperationType
 const double DOUBLE_EQ_THRESHOLD = 1e-15;
 const double DOUBLE_EQUALS_THRESHOLD = 1e-10;
 
-/* ----- device functions ----- */
+/* ----- device helper functions ----- */
 
 __device__ inline double halfBinaryOp(double x, double a, OperationType opt)
 {
@@ -108,6 +108,36 @@ __device__ inline double binaryOp(double a, double b, OperationType opt)
 
     return NAN;
 }
+
+__device__ bool fallsin(DimArr index, RangeArr ranges)
+{
+    for (int i = 0; i < index.size; i++)
+    {
+        Range range = ranges.arr[i];
+        size_t idx = index.arr[i];
+        size_t from = range.from;
+        size_t to = range.to;
+
+        if (idx < from || idx >= to)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+__device__ size_t patchpos(DimArr index, RangeArr ranges, CUDAView view)
+{
+    for (int i = 0; i < index.size; i++)
+    {
+        index.arr[i] -= ranges.arr[i].from;
+    }
+
+    return index2lnpos(index, view);
+}
+
+/* ----- device functions ----- */
 
 __global__ void applyHalfBinaryFuncElemWise(CUDATensor y, CUDATensor x, double a, OperationType opt)
 {
@@ -208,6 +238,31 @@ __global__ void applyMatMul(CUDATensor y, CUDATensor a, CUDATensor b)
     }
 }
 
+__global__ void applyPatch(CUDATensor o, CUDATensor t, RangeArr ranges, CUDATensor u)
+{
+    const unsigned int tpos = threadPosition();
+    const unsigned int stride = totalThreads();
+
+    for (size_t i = tpos; i < o.data.size; i += stride)
+    {
+        double value;
+
+        DimArr index_o = lnpos2index(i, o.view);
+        if (!fallsin(index_o, ranges))
+        {
+            size_t lnpos_t = index2lnpos(index_o, t.view);
+            value = t.data.arr[lnpos_t];
+        }
+        else
+        {
+            size_t lnpos_t = patchpos(index_o, ranges, u.view);
+            value = u.data.arr[lnpos_t];
+        }
+
+        o.data.arr[i] = value;
+    }
+}
+
 /* ----- API helper functions ----- */
 
 double *runHalfBinaryOp(CUDATensor x, double a, OperationType opt, CUDAView view_o)
@@ -300,6 +355,24 @@ double *runMatMul(CUDATensor a, CUDATensor b, CUDAView view_o)
     return o.data.arr;
 }
 
+double *runPatch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o)
+{
+    size_t n = elemcnt(view_o.dims);
+
+    CUDAData data_o = (CUDAData){n, NULL};
+    handleCudaError(
+        cudaMalloc(&data_o.arr, data_o.size * sizeof(double)));
+
+    CUDATensor o = (CUDATensor){view_o, data_o};
+
+    LaunchParams lps = launchParams(o.data.size);
+    applyPatch<<<lps.blockSize, lps.threadSize>>>(o, t, ranges, u);
+    handleCudaError(
+        cudaGetLastError());
+
+    return o.data.arr;
+}
+
 /* ----- API functions ----- */
 
 extern "C"
@@ -329,6 +402,7 @@ extern "C"
     double *Dot(CUDATensor a, CUDATensor b, CUDAView view_o);
     double *MatMul(CUDATensor a, CUDATensor b, CUDAView view_o);
     double *Equals(CUDATensor a, CUDATensor b, CUDAView view_o);
+    double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o);
 }
 
 double *Scale(CUDATensor x, double a, CUDAView view_o)
@@ -454,4 +528,9 @@ double *MatMul(CUDATensor a, CUDATensor b, CUDAView view_o)
 double *Equals(CUDATensor a, CUDATensor b, CUDAView view_o)
 {
     return runBinaryOp(a, b, OP_EQUALS, view_o);
+}
+
+double *Patch(CUDATensor t, RangeArr ranges, CUDATensor u, CUDAView view_o)
+{
+    return runPatch(t, ranges, u, view_o);
 }

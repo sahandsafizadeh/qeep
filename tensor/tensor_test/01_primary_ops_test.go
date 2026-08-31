@@ -1,5 +1,3 @@
-// Package forward_test verifies the forward pass (non-gradient) behavior of all tensor operations.
-//
 // Some initializers, accessors and operators are tested together rather than in isolation
 // to resolve a chicken-and-egg dependency: verifying that a tensor was initialized correctly
 // requires reading its values back, and trusting that a read is correct requires knowing the

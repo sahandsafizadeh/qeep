@@ -594,6 +594,223 @@ func TestReshape(t *testing.T) {
 	})
 }
 
+func TestFlatten(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== main paths ==============================
+
+		t.Run("Zeros([1]) 1D tensor / Flatten(0) / returns [1] 1D tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Flatten(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(0) / returns [24] 1D tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Flatten(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{24}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(1) / returns [2,12] 2D tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Flatten(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{2, 12}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(2) / returns same shape [2,3,4]", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Flatten(2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Zeros([1,2,3,4,5,6]) 6D tensor / Flatten(2) / returns [1,2,360] tensor", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Flatten(2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Zeros([]int{1, 2, 360}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Of([2,3,4]) 3D tensor with sequential values 0..23 / Flatten(1) / returns [2,12] tensor with values preserved in row-major order", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{0., 1., 2., 3.},
+					{4., 5., 6., 7.},
+					{8., 9., 10., 11.},
+				},
+				{
+					{12., 13., 14., 15.},
+					{16., 17., 18., 19.},
+					{20., 21., 22., 23.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Flatten(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.},
+				{12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		// ============================== validations ==============================
+
+		t.Run("Zeros(nil) scalar / Flatten(-1) / returns error: dimension out of range [0,0)", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Flatten(-1)
+			if err == nil {
+				t.Fatal("expected error because of dimension (-1) being out of range")
+			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Zeros(nil) scalar / Flatten(0) / returns error: dimension out of range [0,0)", func(t *testing.T) {
+			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Flatten(0)
+			if err == nil {
+				t.Fatal("expected error because of dimension (0) being out of range")
+			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Zeros([1]) 1D tensor / Flatten(1) / returns error: dimension out of range [0,1)", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Flatten(1)
+			if err == nil {
+				t.Fatal("expected error because of dimension (1) being out of range")
+			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Zeros([1,2,3]) 3D tensor / Flatten(3) / returns error: dimension out of range [0,3)", func(t *testing.T) {
+			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Flatten(3)
+			if err == nil {
+				t.Fatal("expected error because of dimension (3) being out of range")
+			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,3): got (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+}
+
 func TestUnSqueeze(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
@@ -1034,223 +1251,6 @@ func TestSqueeze(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of dimension (1) not being equal to (1)")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (2)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-	})
-}
-
-func TestFlatten(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		// ============================== main paths ==============================
-
-		t.Run("Zeros([1]) 1D tensor / Flatten(0) / returns [1] 1D tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act, err := ten.Flatten(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			exp, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
-		})
-
-		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(0) / returns [24] 1D tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act, err := ten.Flatten(0)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			exp, err := tensor.Zeros([]int{24}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
-		})
-
-		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(1) / returns [2,12] 2D tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act, err := ten.Flatten(1)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			exp, err := tensor.Zeros([]int{2, 12}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
-		})
-
-		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(2) / returns same shape [2,3,4]", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act, err := ten.Flatten(2)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			exp, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
-		})
-
-		t.Run("Zeros([1,2,3,4,5,6]) 6D tensor / Flatten(2) / returns [1,2,360] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act, err := ten.Flatten(2)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			exp, err := tensor.Zeros([]int{1, 2, 360}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
-		})
-
-		t.Run("Of([2,3,4]) 3D tensor with sequential values 0..23 / Flatten(1) / returns [2,12] tensor with values preserved in row-major order", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
-				{
-					{0., 1., 2., 3.},
-					{4., 5., 6., 7.},
-					{8., 9., 10., 11.},
-				},
-				{
-					{12., 13., 14., 15.},
-					{16., 17., 18., 19.},
-					{20., 21., 22., 23.},
-				},
-			}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			act, err := ten.Flatten(1)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			exp, err := tensor.Of([][]float64{
-				{0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.},
-				{12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23.},
-			}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := act.Equals(exp); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
-		})
-
-		// ============================== validations ==============================
-
-		t.Run("Zeros(nil) scalar / Flatten(-1) / returns error: dimension out of range [0,0)", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.Flatten(-1)
-			if err == nil {
-				t.Fatal("expected error because of dimension (-1) being out of range")
-			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Zeros(nil) scalar / Flatten(0) / returns error: dimension out of range [0,0)", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.Flatten(0)
-			if err == nil {
-				t.Fatal("expected error because of dimension (0) being out of range")
-			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Zeros([1]) 1D tensor / Flatten(1) / returns error: dimension out of range [0,1)", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.Flatten(1)
-			if err == nil {
-				t.Fatal("expected error because of dimension (1) being out of range")
-			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Zeros([1,2,3]) 3D tensor / Flatten(3) / returns error: dimension out of range [0,3)", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = ten.Flatten(3)
-			if err == nil {
-				t.Fatal("expected error because of dimension (3) being out of range")
-			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,3): got (3)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

@@ -2,6 +2,31 @@ package gradtrack
 
 import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 
+func Transfer(y core.Tensor, x core.Tensor) *GradContext {
+	if anyIsBPDirty(x) {
+		return NewDirtyGradContext()
+	}
+	if nonIsTracked(x) {
+		return NewGradContext(false)
+	}
+
+	return &GradContext{
+		tracked: true,
+		backEdges: []*backwardEdge{
+			{
+				target: x,
+				gradFn: func() (core.Tensor, error) {
+					to := x.Device()
+					gy := y.Gradient()
+					gy = gy.(core.ExporterTensor)
+
+					return transferFunc(gy, to)
+				},
+			},
+		},
+	}
+}
+
 func Concat(y core.Tensor, xs []core.Tensor, dim int) *GradContext {
 	if anyIsBPDirty(xs...) {
 		return NewDirtyGradContext()

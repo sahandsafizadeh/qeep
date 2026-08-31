@@ -71,7 +71,7 @@ func Load(path string, conf *Config) (Tensor, error) {
 	return dispatch.Load(path, conf)
 }
 
-// Transfer returns a tensor placed on the given device.
+// Transfer returns a tensor on the given device created from t.
 func Transfer(t Tensor, to Device) (Tensor, error) {
 	return dispatch.Transfer(t, to)
 }

@@ -61,12 +61,18 @@ func RandN(dims []int, u, s float64, conf *Config) (Tensor, error) {
 	return dispatch.RandN(dims, u, s, conf)
 }
 
-// Of creates a tensor from slice (float64 or nested slices up to 4D).
+// Of returns a tensor from slice (float64 or nested slices up to 4D).
 func Of[T core.InputDataType](data T, conf *Config) (Tensor, error) {
 	return dispatch.Of(data, conf)
 }
 
-func Transfer[T core.ExporterTensor](t T, to Device) (Tensor, error) {
+// Load returns a tensor restored from the file written by Save to path.
+func Load(path string, conf *Config) (Tensor, error) {
+	return dispatch.Load(path, conf)
+}
+
+// Transfer returns a tensor placed on the given device.
+func Transfer(t Tensor, to Device) (Tensor, error) {
 	return dispatch.Transfer(t, to)
 }
 
@@ -82,12 +88,9 @@ func BackPropagate(t Tensor) error {
 	return dispatch.BackPropagate(t)
 }
 
+// Save writes tensor's elements and shape to path. Gradient state is not stored.
 func Save(t Tensor, path string) error {
 	return dispatch.Save(t, path)
-}
-
-func Load(path string) (Tensor, error) {
-	return dispatch.Load(path)
 }
 
 // RunTestLogicOnDevices is a test helper that runs testLogic on every available device.

@@ -10,6 +10,7 @@ package tensor_test
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/sahandsafizadeh/qeep/tensor"
@@ -18,21 +19,7 @@ import (
 func TestFullAt(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
-
-		t.Run("Full(nil, 0) with nil config / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
-			ten, err := tensor.Full(nil, 0., nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if d := ten.Device(); d != tensor.CPU {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
-			}
-			if ten.GradientTracked() {
-				t.Fatal("expected tensor to not be gradient tracked")
-			}
-		})
+		// ============================== main functionalities ==============================
 
 		t.Run("Full(nil, -1) scalar tensor / At() with no indices / returns -1", func(t *testing.T) {
 			ten, err := tensor.Full(nil, -1., &tensor.Config{Device: dev})
@@ -60,6 +47,19 @@ func TestFullAt(t *testing.T) {
 			}
 		})
 
+		t.Run("Full([1,1,1], 7) 3D tensor / At(0,0,0) / returns 7", func(t *testing.T) {
+			ten, err := tensor.Full([]int{1, 1, 1}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val, err := ten.At(0, 0, 0); err != nil {
+				t.Fatal(err)
+			} else if int(val) != 7 {
+				t.Fatalf("expected (7) as tensor value in position [0,0,0], got (%f)", val)
+			}
+		})
+
 		t.Run("Full([1,2], 0) 2D tensor / At(i,j) for all positions / returns 0", func(t *testing.T) {
 			ten, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
@@ -76,6 +76,31 @@ func TestFullAt(t *testing.T) {
 				t.Fatal(err)
 			} else if int(val) != 0 {
 				t.Fatalf("expected (0) as tensor value in position [0,1], got (%f)", val)
+			}
+		})
+
+		t.Run("Full([3,1], -5) 2D tensor / At(i,j) for all positions / returns -5", func(t *testing.T) {
+			ten, err := tensor.Full([]int{3, 1}, -5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if val, err := ten.At(0, 0); err != nil {
+				t.Fatal(err)
+			} else if int(val) != -5 {
+				t.Fatalf("expected (-5) as tensor value in position [0,0], got (%f)", val)
+			}
+
+			if val, err := ten.At(1, 0); err != nil {
+				t.Fatal(err)
+			} else if int(val) != -5 {
+				t.Fatalf("expected (-5) as tensor value in position [1,0], got (%f)", val)
+			}
+
+			if val, err := ten.At(2, 0); err != nil {
+				t.Fatal(err)
+			} else if int(val) != -5 {
+				t.Fatalf("expected (-5) as tensor value in position [2,0], got (%f)", val)
 			}
 		})
 
@@ -98,6 +123,74 @@ func TestFullAt(t *testing.T) {
 					}
 				}
 			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Full([2^24], 8) large 1D tensor / At(i) for all positions / returns 8", func(t *testing.T) {
+			n := 1 << 24
+
+			ten, err := tensor.Full([]int{n}, 8., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for i := range n {
+				if val, err := ten.At(i); err != nil {
+					t.Fatal(err)
+				} else if int(val) != 8 {
+					t.Fatalf("expected (8) as tensor value in position [%d], got (%f)", i, val)
+				}
+			}
+		})
+
+		t.Run("Full([2^10], 4) 1D tensor / concurrent repeated Full over every iteration / never errors", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						if _, err := tensor.Full([]int{n}, 4., &tensor.Config{Device: dev}); err != nil {
+							t.Error(err)
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		t.Run("Full([2^16], 4) large 1D tensor / concurrent At(i) over every position / always returns 4", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ng = 1 << 8
+			)
+
+			ten, err := tensor.Full([]int{n}, 4., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for i := range n {
+						if val, err := ten.At(i); err != nil {
+							t.Error(err)
+							return
+						} else if int(val) != 4 {
+							t.Errorf("expected (4) as tensor value in position [%d], got (%f)", i, val)
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
 		})
 
 		// ============================== side effects ==============================

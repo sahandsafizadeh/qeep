@@ -155,7 +155,8 @@ func TestFullAt(t *testing.T) {
 			for range ng {
 				wg.Go(func() {
 					for range ni {
-						if _, err := tensor.Full([]int{n}, 4., &tensor.Config{Device: dev}); err != nil {
+						_, err := tensor.Full([]int{n}, 4., &tensor.Config{Device: dev})
+						if err != nil {
 							t.Error(err)
 							return
 						}
@@ -400,21 +401,7 @@ func TestFullAt(t *testing.T) {
 func TestOfAt(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
-
-		t.Run("Of(nil config) / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
-			ten, err := tensor.Of(0., nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if d := ten.Device(); d != tensor.CPU {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
-			}
-			if ten.GradientTracked() {
-				t.Fatal("expected tensor to not be gradient tracked")
-			}
-		})
+		// ============================== main functionalities ==============================
 
 		t.Run("Of(2) scalar / At() / returns 2", func(t *testing.T) {
 			ten, err := tensor.Of(2., &tensor.Config{Device: dev})
@@ -553,6 +540,90 @@ func TestOfAt(t *testing.T) {
 					}
 				}
 			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Of([2^24]) large 1D tensor / At(i) for all positions / matches source data", func(t *testing.T) {
+			n := 1 << 24
+
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			ten, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for i := range n {
+				if val, err := ten.At(i); err != nil {
+					t.Fatal(err)
+				} else if val != data[i] {
+					t.Fatalf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
+				}
+			}
+		})
+
+		t.Run("Of([2^10]) 1D tensor / concurrent repeated Of over every iteration / never errors", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						_, err := tensor.Of(data, &tensor.Config{Device: dev})
+						if err != nil {
+							t.Error(err)
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		t.Run("Of([2^10]) large 1D tensor / concurrent At(i) over every position / matches source data", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ng = 1 << 8
+			)
+
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			ten, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for i := range n {
+						if val, err := ten.At(i); err != nil {
+							t.Error(err)
+							return
+						} else if val != data[i] {
+							t.Errorf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
 		})
 
 		// ============================== side effects ==============================

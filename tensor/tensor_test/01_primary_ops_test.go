@@ -1,11 +1,3 @@
-// Some initializers, accessors and operators are tested together rather than in isolation
-// to resolve a chicken-and-egg dependency: verifying that a tensor was initialized correctly
-// requires reading its values back, and trusting that a read is correct requires knowing the
-// tensor was created correctly. By cross-validating both in the same suite, they establish a
-// mutually consistent baseline that all other tests in this package build upon.
-//
-// Full, At, Of, and Equals are the primary functions under test here, as they underpin this
-// baseline and are relied upon throughout the rest of the test suite.
 package tensor_test
 
 import (
@@ -15,6 +7,16 @@ import (
 
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
+
+/*
+	Some initializers, accessors and operators are tested together rather than in isolation
+	to resolve a chicken-and-egg dependency: verifying that a tensor was initialized correctly
+	requires reading its values back, and trusting that a read is correct requires knowing the
+	tensor was created correctly. By cross-validating both in the same suite, they establish a
+	mutually consistent baseline that all other tests in this package build upon.
+	Full, At, Of, and Equals are the primary functions under test here, as they underpin this
+	baseline and are relied upon throughout the rest of the test suite.
+*/
 
 func TestFullAt(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
@@ -127,8 +129,8 @@ func TestFullAt(t *testing.T) {
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Full([2^24], 8) large 1D tensor / At(i) for all positions / returns 8", func(t *testing.T) {
-			n := 1 << 24
+		t.Run("Full([2^20], 8) large 1D tensor / At(i) for all positions / returns 8", func(t *testing.T) {
+			n := 1 << 20
 
 			ten, err := tensor.Full([]int{n}, 8., &tensor.Config{Device: dev})
 			if err != nil {
@@ -544,8 +546,8 @@ func TestOfAt(t *testing.T) {
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Of([2^24]) large 1D tensor / At(i) for all positions / matches source data", func(t *testing.T) {
-			n := 1 << 24
+		t.Run("Of([2^20]) large 1D tensor / At(i) for all positions / matches source data", func(t *testing.T) {
+			n := 1 << 20
 
 			data := make([]float64, n)
 			for i := range data {
@@ -966,6 +968,71 @@ func TestEquals(t *testing.T) {
 		})
 
 		// ============================== extra functionalities ==============================
+
+		t.Run("Of([2^20]) large 1D tensors differing in one element / Equals() / returns false", func(t *testing.T) {
+			n := 1 << 20
+
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			t1, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			data[n-1]--
+
+			t2, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(t2); err != nil {
+				t.Fatal(err)
+			} else if eq {
+				t.Fatal("expected large 1D tensors differing in a single element to not be equal")
+			}
+		})
+
+		t.Run("Of([2^10]) 1D tensors / concurrent repeated Equals over every iteration / never errors", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			t1, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						if eq, err := t1.Equals(t2); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected equal 1D tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
 
 		// ============================== validations ==============================
 

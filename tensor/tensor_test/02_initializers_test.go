@@ -302,21 +302,7 @@ func TestZeros(t *testing.T) {
 func TestOnes(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
-
-		t.Run("Ones(nil config) / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
-			ten, err := tensor.Ones(nil, nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if d := ten.Device(); d != tensor.CPU {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
-			}
-			if ten.GradientTracked() {
-				t.Fatal("expected tensor to not be gradient tracked")
-			}
-		})
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones(nil) scalar / Equals Full(nil, 1.) / returns true", func(t *testing.T) {
 			act, err := tensor.Ones(nil, &tensor.Config{Device: dev})
@@ -390,12 +376,109 @@ func TestOnes(t *testing.T) {
 			}
 		})
 
+		t.Run("Ones(nil) scalar tensor / Device() / returns the device it was created on", func(t *testing.T) {
+			ten, err := tensor.Ones(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("Ones(nil) with GradTrack true / GradientTracked() / returns true", func(t *testing.T) {
+			ten, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !ten.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
+			}
+		})
+
+		t.Run("Ones(nil) with GradTrack false / GradientTracked() / returns false", func(t *testing.T) {
+			ten, err := tensor.Ones(nil, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		t.Run("Ones(nil) with nil config / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
+			ten, err := tensor.Ones(nil, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Ones([2^20]) large 1D tensor / Equals Full([2^20], 1.) / returns true", func(t *testing.T) {
+			n := 1 << 20
+
+			act, err := tensor.Ones([]int{n}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Ones([2^10]) 1D tensor / concurrent repeated Ones over every iteration / never errors", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						_, err := tensor.Ones([]int{n}, &tensor.Config{Device: dev})
+						if err != nil {
+							t.Error(err)
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
 		// ============================== side effects ==============================
 
-		t.Run("Ones([3,4]) does not share dims slice / Shape() after mutating dims / returns [3,4]", func(t *testing.T) {
+		t.Run("Ones([3,4]) does not share dims slice / Equals Ones([3,4]) after mutating dims / returns true", func(t *testing.T) {
 			dims := []int{3, 4}
 
-			ten, err := tensor.Ones(dims, &tensor.Config{Device: dev})
+			act, err := tensor.Ones(dims, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -403,8 +486,48 @@ func TestOnes(t *testing.T) {
 			dims[0] = 1
 			dims[1] = 1
 
-			if shape := ten.Shape(); !slices.Equal(shape, []int{3, 4}) {
-				t.Fatal("expected tensor to have shape [3, 4], got", shape)
+			exp, err := tensor.Ones([]int{3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Ones(nil) does not retain config pointer / Device() after mutating config / returns the creation device", func(t *testing.T) {
+			conf := &tensor.Config{Device: dev}
+
+			ten, err := tensor.Ones(nil, conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.Device++
+
+			if d := ten.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("Ones(nil) does not retain config pointer / GradientTracked() after mutating config / returns the creation setting", func(t *testing.T) {
+			conf := &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			}
+
+			ten, err := tensor.Ones(nil, conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.GradTrack = false
+
+			if !ten.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 

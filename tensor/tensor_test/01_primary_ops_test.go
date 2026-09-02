@@ -14,8 +14,8 @@ import (
 	requires reading its values back, and trusting that a read is correct requires knowing the
 	tensor was created correctly. By cross-validating both in the same suite, they establish a
 	mutually consistent baseline that all other tests in this package build upon.
-	Full, At, Of, and Equals are the primary functions under test here, as they underpin this
-	baseline and are relied upon throughout the rest of the test suite.
+	Full, Of, At, Device, GradientTracked, and Equals are the primary functions under test here,
+	as they underpin this baseline and are relied upon throughout the rest of the test suite.
 */
 
 func TestFullAt(t *testing.T) {
@@ -805,6 +805,269 @@ func TestOfAt(t *testing.T) {
 				t.Fatal("expected error because of invalid input device")
 			} else if err.Error() != "Of tensor config data validation failed: invalid input device" {
 				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+}
+
+func TestDevice(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== main functionalities ==============================
+
+		t.Run("Full(nil, 0) scalar tensor / Device() / returns the device it was created on", func(t *testing.T) {
+			ten, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("Of(0) scalar tensor / Device() / returns the device it was created on", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("Full(nil, 0) with nil config / Device() / returns CPU", func(t *testing.T) {
+			ten, err := tensor.Full(nil, 0., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+		})
+
+		t.Run("Of(0) with nil config / Device() / returns CPU", func(t *testing.T) {
+			ten, err := tensor.Of(0., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := ten.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Full(nil, 0) scalar tensor / concurrent repeated Device() over every iteration / always returns the creation device", func(t *testing.T) {
+			const (
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			ten, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						if d := ten.Device(); d != dev {
+							t.Errorf("expected tensor's device to be (%s), got (%s)", dev, d)
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Full(nil, 0) does not retain config pointer / Device() after mutating config / returns the creation device", func(t *testing.T) {
+			conf := &tensor.Config{Device: dev}
+
+			ten, err := tensor.Full(nil, 0., conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.Device++
+
+			if d := ten.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("Of(0) does not retain config pointer / Device() after mutating config / returns the creation device", func(t *testing.T) {
+			conf := &tensor.Config{Device: dev}
+
+			ten, err := tensor.Of(0., conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.Device++
+
+			if d := ten.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+	})
+}
+
+func TestGradientTracked(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== main functionalities ==============================
+
+		t.Run("Full(nil, 0) with GradTrack true / GradientTracked() / returns true", func(t *testing.T) {
+			ten, err := tensor.Full(nil, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !ten.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) with GradTrack true / GradientTracked() / returns true", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !ten.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
+			}
+		})
+
+		t.Run("Full(nil, 0) with GradTrack false / GradientTracked() / returns false", func(t *testing.T) {
+			ten, err := tensor.Full(nil, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) with GradTrack false / GradientTracked() / returns false", func(t *testing.T) {
+			ten, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		t.Run("Full(nil, 0) with nil config / GradientTracked() / returns false", func(t *testing.T) {
+			ten, err := tensor.Full(nil, 0., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) with nil config / GradientTracked() / returns false", func(t *testing.T) {
+			ten, err := tensor.Of(0., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if ten.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Full(nil, 0) with GradTrack true / concurrent repeated GradientTracked() over every iteration / always returns true", func(t *testing.T) {
+			const (
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			ten, err := tensor.Full(nil, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						if !ten.GradientTracked() {
+							t.Error("expected tensor to be gradient tracked")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Full(nil, 0) does not retain config pointer / GradientTracked() after mutating config / returns the creation setting", func(t *testing.T) {
+			conf := &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			}
+
+			ten, err := tensor.Full(nil, 0., conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.GradTrack = false
+
+			if !ten.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) does not retain config pointer / GradientTracked() after mutating config / returns the creation setting", func(t *testing.T) {
+			conf := &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			}
+
+			ten, err := tensor.Of(0., conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.GradTrack = false
+
+			if !ten.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 	})

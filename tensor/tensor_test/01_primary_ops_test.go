@@ -811,14 +811,13 @@ func TestOfAt(t *testing.T) {
 func TestEquals(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Full(nil, 3) scalar == Full(nil, 3) scalar / Equals() / returns true", func(t *testing.T) {
 			t1, err := tensor.Full(nil, 3., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			t2, err := tensor.Full(nil, 3., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -836,7 +835,6 @@ func TestEquals(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			t2, err := tensor.Full(nil, 4., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -849,12 +847,34 @@ func TestEquals(t *testing.T) {
 			}
 		})
 
+		t.Run("Full(nil, 3) gradtrack == Full(nil, 3) non-gradtrack / Equals() / returns true", func(t *testing.T) {
+			t1, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := t1.Equals(t2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected scalar tensors with equal values to be equal regardless of gradtrack config")
+			}
+		})
+
 		t.Run("Of([1,2,3]) == Of([1,2,3]) 1D tensors / Equals() / returns true", func(t *testing.T) {
 			t1, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			t2, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -872,7 +892,6 @@ func TestEquals(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			t2, err := tensor.Of([]float64{1., 2., 4.}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -945,6 +964,8 @@ func TestEquals(t *testing.T) {
 				t.Fatal("expected tensor to equal itself")
 			}
 		})
+
+		// ============================== extra functionalities ==============================
 
 		// ============================== validations ==============================
 

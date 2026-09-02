@@ -2,5 +2,6 @@
   "go.formatTool": "gofmt",
   "go.lintTool": "golangci-lint",
   "go.lintFlags": ["--fast"],
-  "go.lintOnSave": "package"
+  "go.lintOnSave": "package",
+  "go.testFlags": ["-race"]
 }

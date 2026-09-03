@@ -146,7 +146,7 @@ func TestFullAt(t *testing.T) {
 			}
 		})
 
-		t.Run("Full([2^10], 4) 1D tensor / concurrent repeated Full over every iteration / never errors", func(t *testing.T) {
+		t.Run("Full([2^10], 4) 1D tensor / concurrent repeated Full then At(i) over every position / never errors and always returns 4", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4
@@ -157,10 +157,20 @@ func TestFullAt(t *testing.T) {
 			for range ng {
 				wg.Go(func() {
 					for range ni {
-						_, err := tensor.Full([]int{n}, 4., &tensor.Config{Device: dev})
+						ten, err := tensor.Full([]int{n}, 4., &tensor.Config{Device: dev})
 						if err != nil {
 							t.Error(err)
 							return
+						}
+
+						for i := range n {
+							if val, err := ten.At(i); err != nil {
+								t.Error(err)
+								return
+							} else if int(val) != 4 {
+								t.Errorf("expected (4) as tensor value in position [%d], got (%f)", i, val)
+								return
+							}
 						}
 					}
 				})

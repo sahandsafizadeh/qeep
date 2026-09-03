@@ -594,10 +594,20 @@ func TestOfAt(t *testing.T) {
 			for range ng {
 				wg.Go(func() {
 					for range ni {
-						_, err := tensor.Of(data, &tensor.Config{Device: dev})
+						ten, err := tensor.Of(data, &tensor.Config{Device: dev})
 						if err != nil {
 							t.Error(err)
 							return
+						}
+
+						for i := range n {
+							if val, err := ten.At(i); err != nil {
+								t.Error(err)
+								return
+							} else if val != data[i] {
+								t.Errorf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
+								return
+							}
 						}
 					}
 				})

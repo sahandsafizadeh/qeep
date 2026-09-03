@@ -1543,15 +1543,105 @@ func TestConcat(t *testing.T) {
 			}
 		})
 
-		// ============================== side effects ==============================
+		// ============================== extra functionalities ==============================
 
-		t.Run("Concat([Zeros([4]), Zeros([6])], 0) does not share input slice / Concat then mutating slice / returns Zeros([10])", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4}, &tensor.Config{Device: dev})
+		t.Run("four Full([2^20], 7) large tensors / Concat(dim=0) / returns Full([4*2^20], 7)", func(t *testing.T) {
+			n := 1 << 20
+
+			t1, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t4, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			t2, err := tensor.Zeros([]int{6}, &tensor.Config{Device: dev})
+			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3, t4}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{4 * n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("four Full([2^10], 7) tensors / concurrent repeated Concat(dim=0) over every iteration / returns Full([4*2^10], 7)", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			t1, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t4, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{4 * n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3, t4}, 0)
+						if err != nil {
+							t.Error(err)
+							return
+						}
+
+						if eq, err := act.Equals(exp); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Concat([Full([4], 3), Full([6], 3)], 0) does not share input slice / Concat then mutating slice / returns Full([10], 3)", func(t *testing.T) {
+			t1, err := tensor.Full([]int{4}, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{6}, 3., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1563,12 +1653,12 @@ func TestConcat(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			ts[1], err = tensor.Ones([]int{6}, &tensor.Config{Device: dev})
+			ts[1], err = tensor.Full([]int{6}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{10}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{10}, 3., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}

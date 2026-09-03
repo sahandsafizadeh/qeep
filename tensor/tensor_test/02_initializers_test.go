@@ -1309,14 +1309,14 @@ func TestRandN(t *testing.T) {
 func TestConcat(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
-		t.Run("Zeros([3]) and Zeros([5]) / Concat(dim=0) / returns Zeros([8])", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+		t.Run("Full([3]) and Full([5]) / Concat(dim=0) / returns Full([8])", func(t *testing.T) {
+			t1, err := tensor.Full([]int{3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{5}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1326,7 +1326,7 @@ func TestConcat(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{8}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{8}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1338,20 +1338,20 @@ func TestConcat(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1,5,3]), Zeros([3,5,3]), Zeros([2,5,3]), Zeros([4,5,3]) / Concat(dim=0) / returns Zeros([10,5,3])", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 5, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([1,5,3]), Full([3,5,3]), Full([2,5,3]), Full([4,5,3]) / Concat(dim=0) / returns Full([10,5,3])", func(t *testing.T) {
+			t1, err := tensor.Full([]int{1, 5, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 5, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 5, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t3, err := tensor.Zeros([]int{2, 5, 3}, &tensor.Config{Device: dev})
+			t3, err := tensor.Full([]int{2, 5, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t4, err := tensor.Zeros([]int{4, 5, 3}, &tensor.Config{Device: dev})
+			t4, err := tensor.Full([]int{4, 5, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1361,7 +1361,7 @@ func TestConcat(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{10, 5, 3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{10, 5, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1373,20 +1373,20 @@ func TestConcat(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([4,2,3]), Zeros([4,4,3]), Zeros([4,1,3]), Zeros([4,3,3]) / Concat(dim=1) / returns Zeros([4,10,3])", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([4,2,3]), Full([4,4,3]), Full([4,1,3]), Full([4,3,3]) / Concat(dim=1) / returns Full([4,10,3])", func(t *testing.T) {
+			t1, err := tensor.Full([]int{4, 2, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 4, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 4, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t3, err := tensor.Zeros([]int{4, 1, 3}, &tensor.Config{Device: dev})
+			t3, err := tensor.Full([]int{4, 1, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t4, err := tensor.Zeros([]int{4, 3, 3}, &tensor.Config{Device: dev})
+			t4, err := tensor.Full([]int{4, 3, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1396,7 +1396,7 @@ func TestConcat(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{4, 10, 3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{4, 10, 3}, 7., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1418,16 +1418,8 @@ func TestConcat(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := t1.Slice(nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-			t3, err := t1.Slice(nil)
-			if err != nil {
-				t.Fatal(err)
-			}
 
-			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3}, 0)
+			act, err := tensor.Concat([]tensor.Tensor{t1, t1, t1}, 0)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1467,16 +1459,8 @@ func TestConcat(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := t1.Slice(nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-			t3, err := t1.Slice(nil)
-			if err != nil {
-				t.Fatal(err)
-			}
 
-			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3}, 1)
+			act, err := tensor.Concat([]tensor.Tensor{t1, t1, t1}, 1)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1512,16 +1496,8 @@ func TestConcat(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := t1.Slice(nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-			t3, err := t1.Slice(nil)
-			if err != nil {
-				t.Fatal(err)
-			}
 
-			act, err := tensor.Concat([]tensor.Tensor{t1, t2, t3}, 2)
+			act, err := tensor.Concat([]tensor.Tensor{t1, t1, t1}, 2)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1532,6 +1508,326 @@ func TestConcat(t *testing.T) {
 					{3., 4., 5., 3., 4., 5., 3., 4., 5.},
 				},
 			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Concat([Full([2]), Full([3])], dim=0) / Device() / returns the device the inputs were created on", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{3}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := tensor.Concat([]tensor.Tensor{t1, t2}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := act.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("t1 untracked, t2 untracked / Concat along axis 0 / y is not gradient-tracked", func(t *testing.T) {
+			t1, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{t1, t2}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("t1 grad-tracked, t2 untracked / Concat along axis 0 / y is gradient-tracked", func(t *testing.T) {
+			t1, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{t1, t2}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
+		t.Run("t1 untracked, t2 grad-tracked / Concat along axis 0 / y is gradient-tracked", func(t *testing.T) {
+			t1, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{t1, t2}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
+		// =============== gradients ===============
+
+		t.Run("two grad-tracked [2,3] tensors / Concat along axis 0 then BackPropagate / each input gradient is all-ones [2,3]", func(t *testing.T) {
+			x1, err := tensor.Full([]int{2, 3}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{2, 3}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{x1, x2}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act1 := x1.Gradient()
+			act2 := x2.Gradient()
+
+			exp1, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := act2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("two grad-tracked [3,2] tensors / Concat along last axis (axis 1) then BackPropagate / each input gradient is all-ones [3,2]", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 2}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 2}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{x1, x2}, 1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act1 := x1.Gradient()
+			act2 := x2.Gradient()
+
+			exp1, err := tensor.Full([]int{3, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Full([]int{3, 2}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := act2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("three grad-tracked inputs of shapes [5,1,3] [5,5,3] [5,2,3] / Concat along axis 1 then BackPropagate / each input gradient is all-ones matching its shape", func(t *testing.T) {
+			x1, err := tensor.Full([]int{5, 1, 3}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{5, 5, 3}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x3, err := tensor.Full([]int{5, 2, 3}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{x1, x2, x3}, 1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act1 := x1.Gradient()
+			act2 := x2.Gradient()
+			act3 := x3.Gradient()
+
+			exp1, err := tensor.Full([]int{5, 1, 3}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp2, err := tensor.Full([]int{5, 5, 3}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			exp3, err := tensor.Full([]int{5, 2, 3}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act1.Equals(exp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := act2.Equals(exp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := act3.Equals(exp3); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("same grad-tracked [3,4] tensor used twice / Concat([x,x], axis 0) then BackPropagate / gradient of x is all-twos [3,4]", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{x, x}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := x.Gradient()
+
+			exp, err := tensor.Full([]int{3, 4}, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
 			if err != nil {
 				t.Fatal(err)
 			}

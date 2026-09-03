@@ -94,11 +94,11 @@ func Save(t Tensor, path string) error {
 }
 
 // RunTestLogicOnDevices is a test helper that runs testLogic on every available device.
-func RunTestLogicOnDevices(testLogic dispatch.TestHelperAllDeviceFunc) {
+func RunTestLogicOnDevices(testLogic func(Device)) {
 	dispatch.RunTestLogicOnDevices(testLogic)
 }
 
 // RunTestLogicCrossDevice is a test helper that runs testLogic on every ordered pair of distinct available devices.
-func RunTestLogicCrossDevice(testLogic dispatch.TestHelperCrossDeviceFunc) {
+func RunTestLogicCrossDevice(testLogic func(Device, Device)) {
 	dispatch.RunTestLogicCrossDevice(testLogic)
 }

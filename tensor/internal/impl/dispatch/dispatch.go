@@ -268,7 +268,7 @@ func Load(path string, conf *core.Config) (t core.Tensor, err error) {
 	return t, nil
 }
 
-func RunTestLogicOnDevices(testLogic TestHelperAllDeviceFunc) {
+func RunTestLogicOnDevices(testLogic func(core.Device)) {
 	devices := []core.Device{core.CPU}
 
 	if cudatensor.IsAvailable {
@@ -280,7 +280,7 @@ func RunTestLogicOnDevices(testLogic TestHelperAllDeviceFunc) {
 	}
 }
 
-func RunTestLogicCrossDevice(testLogic TestHelperCrossDeviceFunc) {
+func RunTestLogicCrossDevice(testLogic func(core.Device, core.Device)) {
 	type deviceTuple struct {
 		dev1 core.Device
 		dev2 core.Device

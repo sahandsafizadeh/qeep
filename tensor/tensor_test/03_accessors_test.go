@@ -345,6 +345,29 @@ func TestSlice(t *testing.T) {
 			}
 		})
 
+		t.Run("1D tensor / Slice([1,4)) middle range / returns [2, 3, 4]", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1., 2., 3., 4., 5.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Slice([]tensor.Range{{From: 1, To: 4}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([]float64{2., 3., 4.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
 		t.Run("2D tensor / Slice([0,1)) first row / returns [[-1]]", func(t *testing.T) {
 			ten, err := tensor.Of([][]float64{{-1.}, {-2.}}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -403,6 +426,37 @@ func TestSlice(t *testing.T) {
 			}
 
 			exp, err := tensor.Of([][]float64{{-1.}, {-2.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("2D tensor / Slice([1,3), [1,3)) center block / returns [[6, 7], [10, 11]]", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2., 3., 4.},
+				{5., 6., 7., 8.},
+				{9., 10., 11., 12.},
+				{13., 14., 15., 16.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Slice([]tensor.Range{{From: 1, To: 3}, {From: 1, To: 3}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Of([][]float64{
+				{6., 7.},
+				{10., 11.},
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -544,6 +598,281 @@ func TestSlice(t *testing.T) {
 			}
 
 			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("[2] tensor / Slice([[0,1))) / Device() / returns the device the input was created on", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1., 2.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Slice([]tensor.Range{{From: 0, To: 1}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := act.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("untracked [2] tensor / Slice([[0,1))) / y is not gradient-tracked", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1., 2.}, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := ten.Slice([]tensor.Range{{From: 0, To: 1}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked [2] tensor / Slice([[0,1))) / y is gradient-tracked", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1., 2.}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := ten.Slice([]tensor.Range{{From: 0, To: 1}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
+		// =============== gradients ===============
+
+		t.Run("grad-tracked [3,4] tensor / Slice(nil) then BackPropagate / gradient is all-ones [3,4]", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Slice(nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := x.Gradient()
+
+			exp, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("grad-tracked [3,4] tensor / Slice([1:3]) then BackPropagate / gradient of x is 1 inside sliced rows, 0 outside", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Slice([]tensor.Range{{From: 1, To: 3}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := x.Gradient()
+
+			exp, err := tensor.Of([][]float64{
+				{0., 0., 0., 0.},
+				{1., 1., 1., 1.},
+				{1., 1., 1., 1.},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("grad-tracked [4,5] tensor / Slice([1:4],[1:4]) then BackPropagate / gradient of x is 1 inside slice window, 0 outside", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{
+				{0., 1., 2., 3., 4.},
+				{5., 6., 7., 8., 9.},
+				{4., 3., 2., 1., 0.},
+				{9., 8., 7., 6., 5.},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Slice([]tensor.Range{{From: 1, To: 4}, {From: 1, To: 4}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := x.Gradient()
+
+			exp, err := tensor.Of([][]float64{
+				{0., 0., 0., 0., 0.},
+				{0., 1., 1., 1., 0.},
+				{0., 1., 1., 1., 0.},
+				{0., 1., 1., 1., 0.},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("grad-tracked [4,4,4] tensor / Slice([1:3],[1:3],[1:3]) then BackPropagate / gradient is 1 inside window, 0 outside", func(t *testing.T) {
+			x, err := tensor.Full([]int{4, 4, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Slice([]tensor.Range{{From: 1, To: 3}, {From: 1, To: 3}, {From: 1, To: 3}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act := x.Gradient()
+
+			exp, err := tensor.Of([][][]float64{
+				{
+					{0., 0., 0., 0.},
+					{0., 0., 0., 0.},
+					{0., 0., 0., 0.},
+					{0., 0., 0., 0.},
+				},
+				{
+					{0., 0., 0., 0.},
+					{0., 1., 1., 0.},
+					{0., 1., 1., 0.},
+					{0., 0., 0., 0.},
+				},
+				{
+					{0., 0., 0., 0.},
+					{0., 1., 1., 0.},
+					{0., 1., 1., 0.},
+					{0., 0., 0., 0.},
+				},
+				{
+					{0., 0., 0., 0.},
+					{0., 0., 0., 0.},
+					{0., 0., 0., 0.},
+					{0., 0., 0., 0.},
+				},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
+		t.Run("1D tensor does not share ranges slice / Slice([0,1)) then mutate ranges / source and target tensors unchanged", func(t *testing.T) {
+			ten, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			index := []tensor.Range{{From: 0, To: 1}}
+
+			slc, err := ten.Slice(index)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			index[0] = tensor.Range{From: 1, To: 2}
+
+			expTen, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			expSlc, err := tensor.Of([]float64{1.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := ten.Equals(expTen); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := slc.Equals(expSlc); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")

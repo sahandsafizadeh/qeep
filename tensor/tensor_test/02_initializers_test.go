@@ -1878,6 +1878,51 @@ func TestConcat(t *testing.T) {
 			}
 		})
 
+		t.Run("four Full([2^20], 7) large grad-tracked tensors / Concat(dim=0) then BackPropagate / gradient of each is Full([2^20], 1)", func(t *testing.T) {
+			n := 1 << 20
+
+			t1, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev, GradTrack: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev, GradTrack: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t3, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev, GradTrack: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t4, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev, GradTrack: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			ten, err := tensor.Concat([]tensor.Tensor{t1, t2, t3, t4}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(ten)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for _, ti := range []tensor.Tensor{t1, t2, t3, t4} {
+				act := ti.Gradient()
+				if eq, err := act.Equals(exp); err != nil {
+					t.Fatal(err)
+				} else if !eq {
+					t.Fatal("expected tensors to be equal")
+				}
+			}
+		})
+
 		t.Run("four Full([2^10], 7) tensors / concurrent repeated Concat(dim=0) over every iteration / returns Full([4*2^10], 7)", func(t *testing.T) {
 			const (
 				n  = 1 << 10

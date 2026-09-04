@@ -116,7 +116,7 @@ func TestShape(t *testing.T) {
 func TestNElems(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Full(nil, 0) scalar tensor / NElems() / returns 1", func(t *testing.T) {
 			ten, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
@@ -171,6 +171,33 @@ func TestNElems(t *testing.T) {
 			if nElems := ten.NElems(); nElems != 120 {
 				t.Fatalf("expected tensor to have (120) elements, got (%d)", nElems)
 			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Full([5,4,3,2,1], 0) 5D tensor / concurrent repeated NElems() over every iteration / always returns 120", func(t *testing.T) {
+			const (
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			ten, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						if nElems := ten.NElems(); nElems != 120 {
+							t.Errorf("expected tensor to have (120) elements, got (%d)", nElems)
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
 		})
 	})
 }

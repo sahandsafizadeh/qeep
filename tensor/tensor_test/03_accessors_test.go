@@ -841,6 +841,71 @@ func TestSlice(t *testing.T) {
 
 		// ============================== extra functionalities ==============================
 
+		t.Run("large [2^20] 1D tensor / Slice([1,2^20-1)) / returns [2^20-2]", func(t *testing.T) {
+			n := 1 << 20
+
+			ten, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			act, err := ten.Slice([]tensor.Range{{From: 1, To: n - 1}})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{n - 2}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("[2^10] 1D tensor / concurrent repeated Slice then Equals over every iteration / never errors and always equal", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			ten, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			exp, err := tensor.Full([]int{n - 2}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						act, err := ten.Slice([]tensor.Range{{From: 1, To: n - 1}})
+						if err != nil {
+							t.Error(err)
+							return
+						}
+
+						if eq, err := act.Equals(exp); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
 		// ============================== side effects ==============================
 
 		t.Run("1D tensor does not share ranges slice / Slice([0,1)) then mutate ranges / source and target tensors unchanged", func(t *testing.T) {

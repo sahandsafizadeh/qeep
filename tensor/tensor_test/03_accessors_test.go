@@ -205,7 +205,7 @@ func TestNElems(t *testing.T) {
 func TestSlice(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor / Slice(nil) / returns same scalar", func(t *testing.T) {
 			ten, err := tensor.Of(2., &tensor.Config{Device: dev})
@@ -580,6 +580,23 @@ func TestSlice(t *testing.T) {
 			}
 		})
 
+		t.Run("2D tensor / Slice with 3 ranges / returns error: index length exceeds dimensions", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2.},
+				{3., 4.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Slice([]tensor.Range{{From: 0, To: 1}, {From: 0, To: 1}, {From: 0, To: 1}})
+			if err == nil {
+				t.Fatal("expected error because of incompatible index len (3) with dimension len (2)")
+			} else if err.Error() != "Slice input index validation failed: expected index length to be smaller than or equal to the number of dimensions: (3) > (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
 		t.Run("1D tensor / Slice([1,1)) / returns error: from not smaller than to", func(t *testing.T) {
 			ten, err := tensor.Of([]float64{3.}, &tensor.Config{Device: dev})
 			if err != nil {
@@ -660,6 +677,69 @@ func TestSlice(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of to index (3) being out of range [0,2) at dimension (0)")
 			} else if err.Error() != "Slice input index validation failed: expected index to fall in range [0,2] at dimension (0): got [1,3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("2D tensor / Slice([0,2),[0,3)) second range invalid / returns error: to index 3 out of range [0,2] at dimension 1", func(t *testing.T) {
+			ten, err := tensor.Of([][]float64{
+				{1., 2.},
+				{3., 4.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Slice([]tensor.Range{{From: 0, To: 2}, {From: 0, To: 3}})
+			if err == nil {
+				t.Fatal("expected error because of to index (3) being out of range [0,2) at dimension (1)")
+			} else if err.Error() != "Slice input index validation failed: expected index to fall in range [0,2] at dimension (1): got [0,3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor / Slice([0,2),[3,4),[0,2)) second range invalid / returns error: from index 3 out of range [0,2) at dimension 1", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 2.},
+					{3., 4.},
+				},
+				{
+					{5., 6.},
+					{7., 8.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Slice([]tensor.Range{{From: 0, To: 2}, {From: 3, To: 4}, {From: 0, To: 2}})
+			if err == nil {
+				t.Fatal("expected error because of from index (3) being out of range [0,2) at dimension (1)")
+			} else if err.Error() != "Slice input index validation failed: expected index to be in range [0,2) at dimension (1): got (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor / Slice([0,2),[0,2),[1,5)) third range invalid / returns error: to index 5 out of range [0,2] at dimension 2", func(t *testing.T) {
+			ten, err := tensor.Of([][][]float64{
+				{
+					{1., 2.},
+					{3., 4.},
+				},
+				{
+					{5., 6.},
+					{7., 8.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = ten.Slice([]tensor.Range{{From: 0, To: 2}, {From: 0, To: 2}, {From: 1, To: 5}})
+			if err == nil {
+				t.Fatal("expected error because of to index (5) being out of range [0,2) at dimension (2)")
+			} else if err.Error() != "Slice input index validation failed: expected index to fall in range [0,2] at dimension (2): got [1,5)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

@@ -165,14 +165,15 @@ func Of[T core.InputDataType](data T, conf *core.Config) (t core.Tensor, err err
 }
 
 func Transfer(t core.Tensor, to core.Device) (o core.Tensor, err error) {
-	t, ok := t.(core.ExporterTensor)
-	if !ok {
-		return o, fmt.Errorf("Transfer tensor implementation validation failed: %w", err)
-	}
-
 	err = validateImplementation(t)
 	if err != nil {
 		return o, fmt.Errorf("Transfer tensor implementation validation failed: %w", err)
+	}
+
+	switch to {
+	case core.CPU, core.CUDA:
+	default:
+		return o, fmt.Errorf("Transfer target device validation failed: invalid input device")
 	}
 
 	switch to {

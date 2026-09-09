@@ -875,19 +875,19 @@ func TestRandU(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("RandU(nil) scalar tensor / Device() / returns the device it was created on", func(t *testing.T) {
-			ten, err := tensor.RandU(nil, 0., 1., &tensor.Config{Device: dev})
+		t.Run("RandU(nil) scalar tensor | Device() | returns the device it was created on", func(t *testing.T) {
+			x, err := tensor.RandU(nil, 0., 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if d := ten.Device(); d != dev {
+			if d := x.Device(); d != dev {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
 			}
 		})
 
-		t.Run("RandU(nil) with GradTrack true / GradientTracked() / returns true", func(t *testing.T) {
-			ten, err := tensor.RandU(nil, 0., 1., &tensor.Config{
+		t.Run("RandU(nil) with GradTrack true | GradientTracked() | returns true", func(t *testing.T) {
+			x, err := tensor.RandU(nil, 0., 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -895,13 +895,13 @@ func TestRandU(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if !ten.GradientTracked() {
+			if !x.GradientTracked() {
 				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 
-		t.Run("RandU(nil) with GradTrack false / GradientTracked() / returns false", func(t *testing.T) {
-			ten, err := tensor.RandU(nil, 0., 1., &tensor.Config{
+		t.Run("RandU(nil) with GradTrack false | GradientTracked() | returns false", func(t *testing.T) {
+			x, err := tensor.RandU(nil, 0., 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -909,28 +909,28 @@ func TestRandU(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if ten.GradientTracked() {
+			if x.GradientTracked() {
 				t.Fatal("expected tensor to not be gradient tracked")
 			}
 		})
 
-		t.Run("RandU(nil) with nil config / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
-			ten, err := tensor.RandU(nil, 0., 1., nil)
+		t.Run("RandU(nil) with nil config | Device() and GradientTracked() | returns CPU and false", func(t *testing.T) {
+			x, err := tensor.RandU(nil, 0., 1., nil)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if d := ten.Device(); d != tensor.CPU {
+			if d := x.Device(); d != tensor.CPU {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
 			}
-			if ten.GradientTracked() {
+			if x.GradientTracked() {
 				t.Fatal("expected tensor to not be gradient tracked")
 			}
 		})
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("RandU([2^20], 0, 1) large 1D tensor / Shape() / returns [2^20]", func(t *testing.T) {
+		t.Run("RandU([2^20], 0, 1) large 1D tensor | construct | never errors", func(t *testing.T) {
 			n := 1 << 20
 
 			_, err := tensor.RandU([]int{n}, 0., 1., &tensor.Config{Device: dev})
@@ -939,7 +939,7 @@ func TestRandU(t *testing.T) {
 			}
 		})
 
-		t.Run("RandU([2^10], 0, 1) 1D tensor / concurrent repeated RandU over every iteration / never errors", func(t *testing.T) {
+		t.Run("RandU([2^10], 0, 1) 1D tensor | concurrent repeated RandU over every iteration | never errors", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4
@@ -963,10 +963,10 @@ func TestRandU(t *testing.T) {
 
 		// ============================== side effects ==============================
 
-		t.Run("RandU([3,4], -1, 1) does not share dims slice / Shape() after mutating dims / returns [3,4]", func(t *testing.T) {
+		t.Run("RandU([3,4], -1, 1) does not share dims slice | At(2,3) after mutating dims | never errors", func(t *testing.T) {
 			dims := []int{3, 4}
 
-			ten, err := tensor.RandU(dims, -1., 1., &tensor.Config{Device: dev})
+			x, err := tensor.RandU(dims, -1., 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -974,47 +974,47 @@ func TestRandU(t *testing.T) {
 			dims[0] = 1
 			dims[1] = 1
 
-			if _, err := ten.At(2, 3); err != nil {
+			if _, err := x.At(2, 3); err != nil {
 				t.Fatal(err)
 			}
 		})
 
-		t.Run("RandU(nil) does not retain config pointer / Device() after mutating config / returns the creation device", func(t *testing.T) {
+		t.Run("RandU(nil) does not retain config pointer | Device() after mutating config | returns the creation device", func(t *testing.T) {
 			conf := &tensor.Config{Device: dev}
 
-			ten, err := tensor.RandU(nil, 0., 1., conf)
+			x, err := tensor.RandU(nil, 0., 1., conf)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			conf.Device++
 
-			if d := ten.Device(); d != dev {
+			if d := x.Device(); d != dev {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
 			}
 		})
 
-		t.Run("RandU(nil) does not retain config pointer / GradientTracked() after mutating config / returns the creation setting", func(t *testing.T) {
+		t.Run("RandU(nil) does not retain config pointer | GradientTracked() after mutating config | returns the creation setting", func(t *testing.T) {
 			conf := &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			}
 
-			ten, err := tensor.RandU(nil, 0., 1., conf)
+			x, err := tensor.RandU(nil, 0., 1., conf)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			conf.GradTrack = false
 
-			if !ten.GradientTracked() {
+			if !x.GradientTracked() {
 				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 
 		// ============================== validations ==============================
 
-		t.Run("RandU(nil, 0, -1) / lower bound >= upper bound / returns error: lower bound not less than upper bound", func(t *testing.T) {
+		t.Run("RandU(nil, 0, -1) | lower bound >= upper bound | returns error: lower bound not less than upper bound", func(t *testing.T) {
 			_, err := tensor.RandU(nil, 0., -1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of lower bound not being less than upper bound")
@@ -1023,7 +1023,7 @@ func TestRandU(t *testing.T) {
 			}
 		})
 
-		t.Run("RandU(nil, 1, 1) / equal bounds / returns error: lower bound not less than upper bound", func(t *testing.T) {
+		t.Run("RandU(nil, 1, 1) | equal bounds | returns error: lower bound not less than upper bound", func(t *testing.T) {
 			_, err := tensor.RandU(nil, 1., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of lower bound not being less than upper bound")
@@ -1032,7 +1032,7 @@ func TestRandU(t *testing.T) {
 			}
 		})
 
-		t.Run("RandU([-1], -1, 1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("RandU([-1], -1, 1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandU([]int{-1}, -1., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -1041,7 +1041,7 @@ func TestRandU(t *testing.T) {
 			}
 		})
 
-		t.Run("RandU([0], -1, 1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("RandU([0], -1, 1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandU([]int{0}, -1., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -1050,7 +1050,7 @@ func TestRandU(t *testing.T) {
 			}
 		})
 
-		t.Run("RandU([1,-2], -1, 1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("RandU([1,-2], -1, 1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandU([]int{1, -2}, -1., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -1059,7 +1059,7 @@ func TestRandU(t *testing.T) {
 			}
 		})
 
-		t.Run("RandU([2,0,1], -1, 1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("RandU([2,0,1], -1, 1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandU([]int{2, 0, 1}, -1., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -1068,7 +1068,7 @@ func TestRandU(t *testing.T) {
 			}
 		})
 
-		t.Run("RandU([1,1,1,1,1,1,1], -1, 1) / returns error: too many dimensions", func(t *testing.T) {
+		t.Run("RandU([1,1,1,1,1,1,1], -1, 1) | returns error: too many dimensions", func(t *testing.T) {
 			_, err := tensor.RandU([]int{1, 1, 1, 1, 1, 1, 1}, -1., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of too many dimensions")
@@ -1077,7 +1077,7 @@ func TestRandU(t *testing.T) {
 			}
 		})
 
-		t.Run("RandU(nil) with invalid device / returns error: invalid device", func(t *testing.T) {
+		t.Run("RandU(nil) with invalid device | returns error: invalid device", func(t *testing.T) {
 			_, err := tensor.RandU(nil, 0., 1., &tensor.Config{Device: -1})
 			if err == nil {
 				t.Fatal("expected error because of invalid input device")
@@ -1093,19 +1093,19 @@ func TestRandN(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("RandN(nil) scalar tensor / Device() / returns the device it was created on", func(t *testing.T) {
-			ten, err := tensor.RandN(nil, 0., 1., &tensor.Config{Device: dev})
+		t.Run("RandN(nil) scalar tensor | Device() | returns the device it was created on", func(t *testing.T) {
+			x, err := tensor.RandN(nil, 0., 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if d := ten.Device(); d != dev {
+			if d := x.Device(); d != dev {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
 			}
 		})
 
-		t.Run("RandN(nil) with GradTrack true / GradientTracked() / returns true", func(t *testing.T) {
-			ten, err := tensor.RandN(nil, 0., 1., &tensor.Config{
+		t.Run("RandN(nil) with GradTrack true | GradientTracked() | returns true", func(t *testing.T) {
+			x, err := tensor.RandN(nil, 0., 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -1113,13 +1113,13 @@ func TestRandN(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if !ten.GradientTracked() {
+			if !x.GradientTracked() {
 				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 
-		t.Run("RandN(nil) with GradTrack false / GradientTracked() / returns false", func(t *testing.T) {
-			ten, err := tensor.RandN(nil, 0., 1., &tensor.Config{
+		t.Run("RandN(nil) with GradTrack false | GradientTracked() | returns false", func(t *testing.T) {
+			x, err := tensor.RandN(nil, 0., 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1127,28 +1127,28 @@ func TestRandN(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if ten.GradientTracked() {
+			if x.GradientTracked() {
 				t.Fatal("expected tensor to not be gradient tracked")
 			}
 		})
 
-		t.Run("RandN(nil) with nil config / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
-			ten, err := tensor.RandN(nil, 0., 1., nil)
+		t.Run("RandN(nil) with nil config | Device() and GradientTracked() | returns CPU and false", func(t *testing.T) {
+			x, err := tensor.RandN(nil, 0., 1., nil)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if d := ten.Device(); d != tensor.CPU {
+			if d := x.Device(); d != tensor.CPU {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
 			}
-			if ten.GradientTracked() {
+			if x.GradientTracked() {
 				t.Fatal("expected tensor to not be gradient tracked")
 			}
 		})
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("RandN([2^20], 0, 1) large 1D tensor / Shape() / returns [2^20]", func(t *testing.T) {
+		t.Run("RandN([2^20], 0, 1) large 1D tensor | construct | never errors", func(t *testing.T) {
 			n := 1 << 20
 
 			_, err := tensor.RandN([]int{n}, 0., 1., &tensor.Config{Device: dev})
@@ -1157,7 +1157,7 @@ func TestRandN(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN([2^10], 0, 1) 1D tensor / concurrent repeated RandN over every iteration / never errors", func(t *testing.T) {
+		t.Run("RandN([2^10], 0, 1) 1D tensor | concurrent repeated RandN over every iteration | never errors", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4
@@ -1181,10 +1181,10 @@ func TestRandN(t *testing.T) {
 
 		// ============================== side effects ==============================
 
-		t.Run("RandN([3,4], 0, 1) does not share dims slice / Shape() after mutating dims / returns [3,4]", func(t *testing.T) {
+		t.Run("RandN([3,4], 0, 1) does not share dims slice | At(2,3) after mutating dims | never errors", func(t *testing.T) {
 			dims := []int{3, 4}
 
-			ten, err := tensor.RandN(dims, 0., 1., &tensor.Config{Device: dev})
+			x, err := tensor.RandN(dims, 0., 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1192,47 +1192,47 @@ func TestRandN(t *testing.T) {
 			dims[0] = 1
 			dims[1] = 1
 
-			if _, err := ten.At(2, 3); err != nil {
+			if _, err := x.At(2, 3); err != nil {
 				t.Fatal(err)
 			}
 		})
 
-		t.Run("RandN(nil) does not retain config pointer / Device() after mutating config / returns the creation device", func(t *testing.T) {
+		t.Run("RandN(nil) does not retain config pointer | Device() after mutating config | returns the creation device", func(t *testing.T) {
 			conf := &tensor.Config{Device: dev}
 
-			ten, err := tensor.RandN(nil, 0., 1., conf)
+			x, err := tensor.RandN(nil, 0., 1., conf)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			conf.Device++
 
-			if d := ten.Device(); d != dev {
+			if d := x.Device(); d != dev {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
 			}
 		})
 
-		t.Run("RandN(nil) does not retain config pointer / GradientTracked() after mutating config / returns the creation setting", func(t *testing.T) {
+		t.Run("RandN(nil) does not retain config pointer | GradientTracked() after mutating config | returns the creation setting", func(t *testing.T) {
 			conf := &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			}
 
-			ten, err := tensor.RandN(nil, 0., 1., conf)
+			x, err := tensor.RandN(nil, 0., 1., conf)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			conf.GradTrack = false
 
-			if !ten.GradientTracked() {
+			if !x.GradientTracked() {
 				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 
 		// ============================== validations ==============================
 
-		t.Run("RandN(nil, 0, -1) / negative standard deviation / returns error: std dev not positive", func(t *testing.T) {
+		t.Run("RandN(nil, 0, -1) | negative standard deviation | returns error: std dev not positive", func(t *testing.T) {
 			_, err := tensor.RandN(nil, 0., -1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive standard deviation")
@@ -1241,7 +1241,7 @@ func TestRandN(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN(nil, -1, 0) / zero standard deviation / returns error: std dev not positive", func(t *testing.T) {
+		t.Run("RandN(nil, -1, 0) | zero standard deviation | returns error: std dev not positive", func(t *testing.T) {
 			_, err := tensor.RandN(nil, -1., 0., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive standard deviation")
@@ -1250,7 +1250,7 @@ func TestRandN(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN([-1], 0, 1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("RandN([-1], 0, 1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandN([]int{-1}, 0., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -1259,7 +1259,7 @@ func TestRandN(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN([0], 0, 1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("RandN([0], 0, 1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandN([]int{0}, 0., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -1268,7 +1268,7 @@ func TestRandN(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN([1,-2], 0, 1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("RandN([1,-2], 0, 1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandN([]int{1, -2}, 0., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -1277,7 +1277,7 @@ func TestRandN(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN([2,0,1], 0, 1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("RandN([2,0,1], 0, 1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.RandN([]int{2, 0, 1}, 0., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -1286,7 +1286,7 @@ func TestRandN(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN([1,1,1,1,1,1,1], 0, 1) / returns error: too many dimensions", func(t *testing.T) {
+		t.Run("RandN([1,1,1,1,1,1,1], 0, 1) | returns error: too many dimensions", func(t *testing.T) {
 			_, err := tensor.RandN([]int{1, 1, 1, 1, 1, 1, 1}, 0., 1., &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of too many dimensions")
@@ -1295,7 +1295,7 @@ func TestRandN(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN(nil) with invalid device / returns error: invalid device", func(t *testing.T) {
+		t.Run("RandN(nil) with invalid device | returns error: invalid device", func(t *testing.T) {
 			_, err := tensor.RandN(nil, 0., 1., &tensor.Config{Device: -1})
 			if err == nil {
 				t.Fatal("expected error because of invalid input device")

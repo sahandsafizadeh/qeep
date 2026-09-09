@@ -615,35 +615,35 @@ func TestOnes(t *testing.T) {
 }
 
 func TestEye(t *testing.T) {
-
-	// ============================== main functionalities ==============================
-
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-		t.Run("Eye(1) 1x1 identity matrix / Equals / returns true", func(t *testing.T) {
-			act, err := tensor.Eye(1, &tensor.Config{Device: dev})
+
+		// ============================== main functionalities ==============================
+
+		t.Run("Eye(1) 1x1 identity matrix | Equals | returns true", func(t *testing.T) {
+			x, err := tensor.Eye(1, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
+			h, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := x.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Eye(2) 2x2 identity matrix / Equals / returns true", func(t *testing.T) {
-			act, err := tensor.Eye(2, &tensor.Config{Device: dev})
+		t.Run("Eye(2) 2x2 identity matrix | Equals | returns true", func(t *testing.T) {
+			x, err := tensor.Eye(2, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{1., 0.},
 				{0., 1.},
 			}, &tensor.Config{Device: dev})
@@ -651,20 +651,20 @@ func TestEye(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := x.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Eye(5) 5x5 identity matrix / Equals / returns true", func(t *testing.T) {
-			act, err := tensor.Eye(5, &tensor.Config{Device: dev})
+		t.Run("Eye(5) 5x5 identity matrix | Equals | returns true", func(t *testing.T) {
+			x, err := tensor.Eye(5, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{1., 0., 0., 0., 0.},
 				{0., 1., 0., 0., 0.},
 				{0., 0., 1., 0., 0.},
@@ -675,26 +675,26 @@ func TestEye(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := x.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Eye(1) identity matrix / Device() / returns the device it was created on", func(t *testing.T) {
-			ten, err := tensor.Eye(1, &tensor.Config{Device: dev})
+		t.Run("Eye(1) identity matrix | Device() | returns the device it was created on", func(t *testing.T) {
+			x, err := tensor.Eye(1, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if d := ten.Device(); d != dev {
+			if d := x.Device(); d != dev {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
 			}
 		})
 
-		t.Run("Eye(1) with GradTrack true / GradientTracked() / returns true", func(t *testing.T) {
-			ten, err := tensor.Eye(1, &tensor.Config{
+		t.Run("Eye(1) with GradTrack true | GradientTracked() | returns true", func(t *testing.T) {
+			x, err := tensor.Eye(1, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -702,13 +702,13 @@ func TestEye(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if !ten.GradientTracked() {
+			if !x.GradientTracked() {
 				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 
-		t.Run("Eye(1) with GradTrack false / GradientTracked() / returns false", func(t *testing.T) {
-			ten, err := tensor.Eye(1, &tensor.Config{
+		t.Run("Eye(1) with GradTrack false | GradientTracked() | returns false", func(t *testing.T) {
+			x, err := tensor.Eye(1, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -716,31 +716,31 @@ func TestEye(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if ten.GradientTracked() {
+			if x.GradientTracked() {
 				t.Fatal("expected tensor to not be gradient tracked")
 			}
 		})
 
-		t.Run("Eye(1) with nil config / Device() and GradientTracked() / returns CPU and false", func(t *testing.T) {
-			ten, err := tensor.Eye(1, nil)
+		t.Run("Eye(1) with nil config | Device() and GradientTracked() | returns CPU and false", func(t *testing.T) {
+			x, err := tensor.Eye(1, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if d := ten.Device(); d != tensor.CPU {
+			if d := x.Device(); d != tensor.CPU {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
 			}
-			if ten.GradientTracked() {
+			if x.GradientTracked() {
 				t.Fatal("expected tensor to not be gradient tracked")
 			}
 		})
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Eye(2^10) large 2^10x2^10 identity matrix / Equals / returns true", func(t *testing.T) {
+		t.Run("Eye(2^10) large 2^10x2^10 identity matrix | Equals | returns true", func(t *testing.T) {
 			d := 1 << 10
 
-			act, err := tensor.Eye(d, &tensor.Config{Device: dev})
+			x, err := tensor.Eye(d, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -751,19 +751,19 @@ func TestEye(t *testing.T) {
 				data[i][i] = 1.
 			}
 
-			exp, err := tensor.Of(data, &tensor.Config{Device: dev})
+			h, err := tensor.Of(data, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := x.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Eye(2^5) 2^5x2^5 identity matrix / concurrent repeated Eye then Equals over every iteration / never errors and always equal", func(t *testing.T) {
+		t.Run("Eye(2^5) 2^5x2^5 identity matrix | concurrent repeated Eye then Equals over every iteration | never errors and always equal", func(t *testing.T) {
 			const (
 				d  = 1 << 5
 				ni = 1 << 4
@@ -776,7 +776,7 @@ func TestEye(t *testing.T) {
 				data[i][i] = 1.
 			}
 
-			exp, err := tensor.Of(data, &tensor.Config{Device: dev})
+			h, err := tensor.Of(data, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -785,13 +785,13 @@ func TestEye(t *testing.T) {
 			for range ng {
 				wg.Go(func() {
 					for range ni {
-						act, err := tensor.Eye(d, &tensor.Config{Device: dev})
+						x, err := tensor.Eye(d, &tensor.Config{Device: dev})
 						if err != nil {
 							t.Error(err)
 							return
 						}
 
-						if eq, err := act.Equals(exp); err != nil {
+						if eq, err := x.Equals(h); err != nil {
 							t.Error(err)
 							return
 						} else if !eq {
@@ -806,42 +806,42 @@ func TestEye(t *testing.T) {
 
 		// ============================== side effects ==============================
 
-		t.Run("Eye(1) does not retain config pointer / Device() after mutating config / returns the creation device", func(t *testing.T) {
+		t.Run("Eye(1) does not retain config pointer | Device() after mutating config | returns the creation device", func(t *testing.T) {
 			conf := &tensor.Config{Device: dev}
 
-			ten, err := tensor.Eye(1, conf)
+			x, err := tensor.Eye(1, conf)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			conf.Device++
 
-			if d := ten.Device(); d != dev {
+			if d := x.Device(); d != dev {
 				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
 			}
 		})
 
-		t.Run("Eye(1) does not retain config pointer / GradientTracked() after mutating config / returns the creation setting", func(t *testing.T) {
+		t.Run("Eye(1) does not retain config pointer | GradientTracked() after mutating config | returns the creation setting", func(t *testing.T) {
 			conf := &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			}
 
-			ten, err := tensor.Eye(1, conf)
+			x, err := tensor.Eye(1, conf)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			conf.GradTrack = false
 
-			if !ten.GradientTracked() {
+			if !x.GradientTracked() {
 				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 
 		// ============================== validations ==============================
 
-		t.Run("Eye(-1) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("Eye(-1) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Eye(-1, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -850,7 +850,7 @@ func TestEye(t *testing.T) {
 			}
 		})
 
-		t.Run("Eye(0) / returns error: non-positive dimension", func(t *testing.T) {
+		t.Run("Eye(0) | returns error: non-positive dimension", func(t *testing.T) {
 			_, err := tensor.Eye(0, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-positive dimension")
@@ -859,7 +859,7 @@ func TestEye(t *testing.T) {
 			}
 		})
 
-		t.Run("Eye(1) with invalid device / returns error: invalid device", func(t *testing.T) {
+		t.Run("Eye(1) with invalid device | returns error: invalid device", func(t *testing.T) {
 			_, err := tensor.Eye(1, &tensor.Config{Device: -1})
 			if err == nil {
 				t.Fatal("expected error because of invalid input device")

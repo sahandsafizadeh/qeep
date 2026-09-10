@@ -18,6 +18,8 @@ import (
 	are the primary functions under test here.
 */
 
+/* ----- cross-validation tests ----- */
+
 func Test_Full_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
@@ -1204,6 +1206,8 @@ func TestEquals(t *testing.T) {
 		})
 	})
 }
+
+/* ----- remaining baseline tests ----- */
 
 func TestFull(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {

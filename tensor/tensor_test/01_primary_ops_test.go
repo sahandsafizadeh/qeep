@@ -1019,6 +1019,29 @@ func TestEquals(t *testing.T) {
 			}
 		})
 
+		t.Run("Of(1x3x3 of 7) == Full([1,3,3], 7) 3D tensors with 9 elements | Equals() | returns true", func(t *testing.T) {
+			x1, err := tensor.Of([][][]float64{
+				{
+					{7., 7., 7.},
+					{7., 7., 7.},
+					{7., 7., 7.},
+				},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, 3, 3}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected Of and Full 3D tensors to be equal")
+			}
+		})
+
 		t.Run("Full([2,3,4,2], 7) 4D tensor | Equals(itself) | returns true", func(t *testing.T) {
 			x, err := tensor.Full([]int{2, 3, 4, 2}, 7., &tensor.Config{Device: dev})
 			if err != nil {

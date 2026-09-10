@@ -384,7 +384,6 @@ func Test_Full_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t 
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			err = tensor.ResetGradient(x, true)
 			if err != nil {
 				t.Fatal(err)
@@ -411,7 +410,6 @@ func Test_Full_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t 
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			err = tensor.ResetGradient(x, false)
 			if err != nil {
 				t.Fatal(err)
@@ -571,31 +569,320 @@ func Test_Of_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t *t
 			}
 		})
 
-		// ============================== extra functionalities ==============================
-
-		t.Run("Of([2^20]) large 1D tensor | At(i) for all positions | matches source data", func(t *testing.T) {
-			n := 1 << 20
-
-			data := make([]float64, n)
-			for i := range data {
-				data[i] = float64(i)
-			}
-
-			x, err := tensor.Of(data, &tensor.Config{Device: dev})
+		t.Run("Of(0) scalar tensor | Device() | returns the device it was created on", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			for i := range n {
-				if val, err := x.At(i); err != nil {
+			if d := x.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("Of(0) with GradTrack true | GradientTracked() | returns true", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !x.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) with GradTrack false | GradientTracked() | returns false", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if x.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) with nil config | Device() and GradientTracked() | returns CPU and false", func(t *testing.T) {
+			x, err := tensor.Of(0., nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := x.Device(); d != tensor.CPU {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
+			}
+			if x.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		// =============== gradients ===============
+
+		t.Run("Of(0) with GradTrack true | Gradient() | returns nil", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if x.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("Of(0) with GradTrack false | Gradient() | returns nil", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if x.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("Of(3) scalar tensor with GradTrack false | BackPropagate | Gradient() returns nil", func(t *testing.T) {
+			x, err := tensor.Of(3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if x.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("Of(3) scalar tensor with GradTrack true | BackPropagate | Gradient().At() returns 1", func(t *testing.T) {
+			x, err := tensor.Of(3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			if val, err := g.At(); err != nil {
+				t.Fatal(err)
+			} else if int(val) != 1 {
+				t.Fatalf("expected (1) as gradient scalar value, got (%f)", val)
+			}
+		})
+
+		t.Run("Of([2,-4,7]) 1D tensor with GradTrack true | BackPropagate | Gradient().At(i) for all positions returns 1", func(t *testing.T) {
+			x, err := tensor.Of([]float64{2., -4., 7.}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			for i := range 3 {
+				if val, err := g.At(i); err != nil {
 					t.Fatal(err)
-				} else if val != data[i] {
-					t.Fatalf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
+				} else if int(val) != 1 {
+					t.Fatalf("expected (1) as gradient value in position [%d], got (%f)", i, val)
 				}
 			}
 		})
 
-		t.Run("Of([2^10]) 1D tensor | concurrent repeated Of then At(i) over every position | matches source data", func(t *testing.T) {
+		t.Run("Of([[1,-6],[8,-3]]) 2D tensor with GradTrack true | BackPropagate | Gradient().At(i,j) for all positions returns 1", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{
+				{1., -6.},
+				{8., -3.},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			for i := range 2 {
+				for j := range 2 {
+					if val, err := g.At(i, j); err != nil {
+						t.Fatal(err)
+					} else if int(val) != 1 {
+						t.Fatalf("expected (1) as gradient value in position [%d,%d], got (%f)", i, j, val)
+					}
+				}
+			}
+		})
+
+		t.Run("Of(1x2x3 tensor) with GradTrack true | BackPropagate | Gradient().At(i,j,k) for all positions returns 1", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
+				{
+					{4., -2., 9.},
+					{-5., 1., 6.},
+				},
+			}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			for i := range 1 {
+				for j := range 2 {
+					for k := range 3 {
+						if val, err := g.At(i, j, k); err != nil {
+							t.Fatal(err)
+						} else if int(val) != 1 {
+							t.Fatalf("expected (1) as gradient value in position [%d,%d,%d], got (%f)", i, j, k, val)
+						}
+					}
+				}
+			}
+		})
+
+		t.Run("Of(0) with GradTrack false | ResetGradient(x, true) | GradientTracked() returns true", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.ResetGradient(x, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !x.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) with GradTrack false | ResetGradient(x, false) | GradientTracked() returns false", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if x.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) with GradTrack false | BackPropagate then ResetGradient(x, true) | Gradient() returns nil and GradientTracked() returns true", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if x.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+			if !x.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
+			}
+		})
+
+		t.Run("Of(0) with GradTrack false | BackPropagate then ResetGradient(x, false) | Gradient() returns nil and GradientTracked() returns false", func(t *testing.T) {
+			x, err := tensor.Of(0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			err = tensor.BackPropagate(x)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if x.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+			if x.GradientTracked() {
+				t.Fatal("expected tensor to not be gradient tracked")
+			}
+		})
+	})
+}
+
+func TestGradientTracked(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== main functionalities ==============================
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Full(nil, 0) with GradTrack true | concurrent repeated GradientTracked() over every iteration | always returns true", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4

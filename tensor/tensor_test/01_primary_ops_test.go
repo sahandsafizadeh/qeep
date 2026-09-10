@@ -1356,13 +1356,18 @@ func TestAt(t *testing.T) {
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Full(nil, 0) scalar tensor | concurrent repeated Device() over every iteration | always returns the creation device", func(t *testing.T) {
+		t.Run("Of([2^10]) large 1D tensor | concurrent At(i) over every position | matches source data", func(t *testing.T) {
 			const (
-				ni = 1 << 4
+				n  = 1 << 10
 				ng = 1 << 8
 			)
 
-			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			x, err := tensor.Of(data, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1370,9 +1375,12 @@ func TestAt(t *testing.T) {
 			var wg sync.WaitGroup
 			for range ng {
 				wg.Go(func() {
-					for range ni {
-						if d := x.Device(); d != dev {
-							t.Errorf("expected tensor's device to be (%s), got (%s)", dev, d)
+					for i := range n {
+						if val, err := x.At(i); err != nil {
+							t.Error(err)
+							return
+						} else if val != data[i] {
+							t.Errorf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
 							return
 						}
 					}
@@ -1381,120 +1389,131 @@ func TestAt(t *testing.T) {
 			wg.Wait()
 		})
 
-		// ============================== side effects ==============================
+		// ============================== validations ==============================
 
-		t.Run("Full(nil, 0) built from a Config pointer | Device() after mutating config.Device | returns the original creation device", func(t *testing.T) {
-			conf := &tensor.Config{Device: dev}
-
-			x, err := tensor.Full(nil, 0., conf)
+		t.Run("Full([1]) 1D tensor | At() with wrong index count | returns error: index length 0 != dimensions 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			conf.Device++
-
-			if d := x.Device(); d != dev {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			_, err = x.At()
+			if err == nil {
+				t.Fatal("expected error because of incompatible index len (0) with dimension len (1)")
+			} else if err.Error() != "At input index validation failed: expected index length to be equal to the number of dimensions: (0) != (1)" {
+				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("Of(0) built from a Config pointer | Device() after mutating config.Device | returns the original creation device", func(t *testing.T) {
-			conf := &tensor.Config{Device: dev}
-
-			x, err := tensor.Of(0., conf)
+		t.Run("Full([1]) 1D tensor | At(0,0) with wrong index count | returns error: index length 2 != dimensions 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			conf.Device++
-
-			if d := x.Device(); d != dev {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
-			}
-		})
-	})
-}
-
-func TestGradientTracked(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		// ============================== main functionalities ==============================
-
-		t.Run("Full(nil, 0) with GradTrack true | GradientTracked() | returns true", func(t *testing.T) {
-			x, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if !x.GradientTracked() {
-				t.Fatal("expected tensor to be gradient tracked")
+			_, err = x.At(0, 0)
+			if err == nil {
+				t.Fatal("expected error because of incompatible index len (2) with dimension len (1)")
+			} else if err.Error() != "At input index validation failed: expected index length to be equal to the number of dimensions: (2) != (1)" {
+				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("Of(0) with GradTrack true | GradientTracked() | returns true", func(t *testing.T) {
-			x, err := tensor.Of(0., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
+		t.Run("Full([1]) 1D tensor | At(-1) | returns error: negative index at dimension 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if !x.GradientTracked() {
-				t.Fatal("expected tensor to be gradient tracked")
+			_, err = x.At(-1)
+			if err == nil {
+				t.Fatal("expected error because of negative index")
+			} else if err.Error() != "At input index validation failed: expected index to be in range [0,1) at dimension (0): got (-1)" {
+				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("Full(nil, 0) with GradTrack false | GradientTracked() | returns false", func(t *testing.T) {
-			x, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+		t.Run("Full([1]) 1D tensor | At(1) | returns error: index out of range [0,1) at dimension 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if x.GradientTracked() {
-				t.Fatal("expected tensor to not be gradient tracked")
+			_, err = x.At(1)
+			if err == nil {
+				t.Fatal("expected error because of index (1) at dimension (0) being out of range [0,1)")
+			} else if err.Error() != "At input index validation failed: expected index to be in range [0,1) at dimension (0): got (1)" {
+				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("Of(0) with GradTrack false | GradientTracked() | returns false", func(t *testing.T) {
-			x, err := tensor.Of(0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+		t.Run("Full([1,2]) 2D tensor | At(0) with wrong index count | returns error: index length 1 != dimensions 2", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if x.GradientTracked() {
-				t.Fatal("expected tensor to not be gradient tracked")
+			_, err = x.At(0)
+			if err == nil {
+				t.Fatal("expected error because of incompatible index len (1) with dimension len (2)")
+			} else if err.Error() != "At input index validation failed: expected index length to be equal to the number of dimensions: (1) != (2)" {
+				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("Full(nil, 0) with nil config | GradientTracked() | returns false", func(t *testing.T) {
-			x, err := tensor.Full(nil, 0., nil)
+		t.Run("Full([1,2]) 2D tensor | At(0,1,0) with wrong index count | returns error: index length 3 != dimensions 2", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if x.GradientTracked() {
-				t.Fatal("expected tensor to not be gradient tracked")
+			_, err = x.At(0, 1, 0)
+			if err == nil {
+				t.Fatal("expected error because of incompatible index len (3) with dimension len (2)")
+			} else if err.Error() != "At input index validation failed: expected index length to be equal to the number of dimensions: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("Of(0) with nil config | GradientTracked() | returns false", func(t *testing.T) {
-			x, err := tensor.Of(0., nil)
+		t.Run("Full([1,2]) 2D tensor | At(-2,-1) | returns error: negative index at dimension 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if x.GradientTracked() {
-				t.Fatal("expected tensor to not be gradient tracked")
+			_, err = x.At(-2, -1)
+			if err == nil {
+				t.Fatal("expected error because of negative index")
+			} else if err.Error() != "At input index validation failed: expected index to be in range [0,1) at dimension (0): got (-2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1,2]) 2D tensor | At(1,0) | returns error: index 1 out of range [0,1) at dimension 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x.At(1, 0)
+			if err == nil {
+				t.Fatal("expected error because of index (1) at dimension (0) being out of range [0,1)")
+			} else if err.Error() != "At input index validation failed: expected index to be in range [0,1) at dimension (0): got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1,2]) 2D tensor | At(0,2) | returns error: index 2 out of range [0,2) at dimension 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x.At(0, 2)
+			if err == nil {
+				t.Fatal("expected error because of index (2) at dimension (1) being out of range [0,2)")
+			} else if err.Error() != "At input index validation failed: expected index to be in range [0,2) at dimension (1): got (2)" {
+				t.Fatal("unexpected error message returned")
 			}
 		})
 

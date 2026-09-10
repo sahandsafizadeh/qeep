@@ -14,8 +14,8 @@ import (
 	requires reading its values back, and trusting that a read is correct requires knowing the
 	tensor was created correctly. By cross-validating both in the same suite, they establish a
 	mutually consistent baseline that all other tests in this package build upon.
-	Full, Of, At, Device, GradientTracked, and Equals are the primary functions under test here,
-	as they underpin this baseline and are relied upon throughout the rest of the test suite.
+	Full, Of, At, Device, GradientTracked, Gradient, ResetGradient, BackPropagate, and Equals
+	are the primary functions under test here.
 */
 
 func Test_Full_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t *testing.T) {
@@ -875,6 +875,336 @@ func Test_Of_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t *t
 	})
 }
 
+func TestEquals(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== main functionalities ==============================
+
+		t.Run("Full(nil, 3) scalar == Full(nil, 3) scalar | Equals() | returns true", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected equal scalar tensors to be equal")
+			}
+		})
+
+		t.Run("Full(nil, 3) scalar != Full(nil, 4) scalar | Equals() | returns false", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 4., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if eq {
+				t.Fatal("expected scalar tensors with different values to not be equal")
+			}
+		})
+
+		t.Run("Full(nil, 3) gradtrack == Full(nil, 3) non-gradtrack | Equals() | returns true", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected scalar tensors with equal values to be equal regardless of gradtrack config")
+			}
+		})
+
+		t.Run("Of([1,2,3]) == Of([1,2,3]) 1D tensors | Equals() | returns true", func(t *testing.T) {
+			x1, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected equal 1D tensors to be equal")
+			}
+		})
+
+		t.Run("Of([1,2,3]) != Of([1,2,4]) 1D tensors | Equals() | returns false", func(t *testing.T) {
+			x1, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Of([]float64{1., 2., 4.}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if eq {
+				t.Fatal("expected 1D tensors with a differing element to not be equal")
+			}
+		})
+
+		t.Run("Of(2x3 matrix) == Of(2x3 same matrix) | Equals() | returns true", func(t *testing.T) {
+			x1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected equal 2D tensors to be equal")
+			}
+		})
+
+		t.Run("Of(2x3 matrix) != Of(2x3 different matrix) | Equals() | returns false", func(t *testing.T) {
+			x1, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 6.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Of([][]float64{
+				{1., 2., 3.},
+				{4., 5., 0.},
+			}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if eq {
+				t.Fatal("expected 2D tensors with a differing element to not be equal")
+			}
+		})
+
+		t.Run("Full([2,3,4,2], 7) 4D tensor | Equals(itself) | returns true", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4, 2}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x.Equals(x); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensor to equal itself")
+			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Of([2^20]) large 1D tensors differing in one element | Equals() | returns false", func(t *testing.T) {
+			n := 1 << 20
+
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			x1, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			data[n-1]--
+
+			x2, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x1.Equals(x2); err != nil {
+				t.Fatal(err)
+			} else if eq {
+				t.Fatal("expected large 1D tensors differing in a single element to not be equal")
+			}
+		})
+
+		t.Run("equal Of([2^10]) 1D tensors | concurrent repeated Equals() | never errors", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			x1, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						if eq, err := x1.Equals(x2); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected equal 1D tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		// ============================== validations ==============================
+
+		t.Run("Full(nil) scalar | Equals(nil) | returns error: nil tensor fails device validation", func(t *testing.T) {
+			x, err := tensor.Full(nil, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x.Equals(nil)
+			if err == nil {
+				t.Fatal("expected error because of nil input tensor")
+			} else if err.Error() != fmt.Sprintf("Equals tensors' device validation failed: expected input tensor to be on %s", dev) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full(nil) scalar | Equals(Full([1])) | returns error: number of dimensions mismatch", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Equals(x2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Equals tensors' dimension validation failed: expected number of dimensions to match: (0) != (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1]) | Equals(Full([1,1])) | returns error: number of dimensions mismatch", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, 1}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Equals(x2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Equals tensors' dimension validation failed: expected number of dimensions to match: (1) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([6,5,2]) | Equals(Full([6,5])) | returns error: number of dimensions mismatch", func(t *testing.T) {
+			x1, err := tensor.Full([]int{6, 5, 2}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{6, 5}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Equals(x2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having different number of dimensions")
+			} else if err.Error() != "Equals tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1,2]) | Equals(Full([2,1])) | returns error: size mismatch at dimension 0", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1, 2}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{2, 1}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Equals(x2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Equals tensors' dimension validation failed: expected sizes to match at dimension (0): (1) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([6,5,2]) | Equals(Full([6,4,2])) | returns error: size mismatch at dimension 1", func(t *testing.T) {
+			x1, err := tensor.Full([]int{6, 5, 2}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{6, 4, 2}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Equals(x2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Equals tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+}
+
 func TestFull(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
@@ -1550,336 +1880,6 @@ func TestGradientTracked(t *testing.T) {
 				})
 			}
 			wg.Wait()
-		})
-	})
-}
-
-func TestEquals(t *testing.T) {
-	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		// ============================== main functionalities ==============================
-
-		t.Run("Full(nil, 3) scalar == Full(nil, 3) scalar | Equals() | returns true", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 3., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 3., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected equal scalar tensors to be equal")
-			}
-		})
-
-		t.Run("Full(nil, 3) scalar != Full(nil, 4) scalar | Equals() | returns false", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 3., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 4., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if eq {
-				t.Fatal("expected scalar tensors with different values to not be equal")
-			}
-		})
-
-		t.Run("Full(nil, 3) gradtrack == Full(nil, 3) non-gradtrack | Equals() | returns true", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 3., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 3., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected scalar tensors with equal values to be equal regardless of gradtrack config")
-			}
-		})
-
-		t.Run("Of([1,2,3]) == Of([1,2,3]) 1D tensors | Equals() | returns true", func(t *testing.T) {
-			x1, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected equal 1D tensors to be equal")
-			}
-		})
-
-		t.Run("Of([1,2,3]) != Of([1,2,4]) 1D tensors | Equals() | returns false", func(t *testing.T) {
-			x1, err := tensor.Of([]float64{1., 2., 3.}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Of([]float64{1., 2., 4.}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if eq {
-				t.Fatal("expected 1D tensors with a differing element to not be equal")
-			}
-		})
-
-		t.Run("Of(2x3 matrix) == Of(2x3 same matrix) | Equals() | returns true", func(t *testing.T) {
-			x1, err := tensor.Of([][]float64{
-				{1., 2., 3.},
-				{4., 5., 6.},
-			}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Of([][]float64{
-				{1., 2., 3.},
-				{4., 5., 6.},
-			}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected equal 2D tensors to be equal")
-			}
-		})
-
-		t.Run("Of(2x3 matrix) != Of(2x3 different matrix) | Equals() | returns false", func(t *testing.T) {
-			x1, err := tensor.Of([][]float64{
-				{1., 2., 3.},
-				{4., 5., 6.},
-			}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Of([][]float64{
-				{1., 2., 3.},
-				{4., 5., 0.},
-			}, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if eq {
-				t.Fatal("expected 2D tensors with a differing element to not be equal")
-			}
-		})
-
-		t.Run("Full([2,3,4,2], 7) 4D tensor | Equals(itself) | returns true", func(t *testing.T) {
-			x, err := tensor.Full([]int{2, 3, 4, 2}, 7., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x.Equals(x); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensor to equal itself")
-			}
-		})
-
-		// ============================== extra functionalities ==============================
-
-		t.Run("Of([2^20]) large 1D tensors differing in one element | Equals() | returns false", func(t *testing.T) {
-			n := 1 << 20
-
-			data := make([]float64, n)
-			for i := range data {
-				data[i] = float64(i)
-			}
-
-			x1, err := tensor.Of(data, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			data[n-1]--
-
-			x2, err := tensor.Of(data, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := x1.Equals(x2); err != nil {
-				t.Fatal(err)
-			} else if eq {
-				t.Fatal("expected large 1D tensors differing in a single element to not be equal")
-			}
-		})
-
-		t.Run("equal Of([2^10]) 1D tensors | concurrent repeated Equals() | never errors", func(t *testing.T) {
-			const (
-				n  = 1 << 10
-				ni = 1 << 4
-				ng = 1 << 8
-			)
-
-			data := make([]float64, n)
-			for i := range data {
-				data[i] = float64(i)
-			}
-
-			x1, err := tensor.Of(data, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Of(data, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			var wg sync.WaitGroup
-			for range ng {
-				wg.Go(func() {
-					for range ni {
-						if eq, err := x1.Equals(x2); err != nil {
-							t.Error(err)
-							return
-						} else if !eq {
-							t.Error("expected equal 1D tensors to be equal")
-							return
-						}
-					}
-				})
-			}
-			wg.Wait()
-		})
-
-		// ============================== validations ==============================
-
-		t.Run("Full(nil) scalar | Equals(nil) | returns error: nil tensor fails device validation", func(t *testing.T) {
-			x, err := tensor.Full(nil, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = x.Equals(nil)
-			if err == nil {
-				t.Fatal("expected error because of nil input tensor")
-			} else if err.Error() != fmt.Sprintf("Equals tensors' device validation failed: expected input tensor to be on %s", dev) {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full(nil) scalar | Equals(Full([1])) | returns error: number of dimensions mismatch", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full([]int{1}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = x1.Equals(x2)
-			if err == nil {
-				t.Fatal("expected error because of tensors having different number of dimensions")
-			} else if err.Error() != "Equals tensors' dimension validation failed: expected number of dimensions to match: (0) != (1)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1]) | Equals(Full([1,1])) | returns error: number of dimensions mismatch", func(t *testing.T) {
-			x1, err := tensor.Full([]int{1}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full([]int{1, 1}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = x1.Equals(x2)
-			if err == nil {
-				t.Fatal("expected error because of tensors having different number of dimensions")
-			} else if err.Error() != "Equals tensors' dimension validation failed: expected number of dimensions to match: (1) != (2)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([6,5,2]) | Equals(Full([6,5])) | returns error: number of dimensions mismatch", func(t *testing.T) {
-			x1, err := tensor.Full([]int{6, 5, 2}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full([]int{6, 5}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = x1.Equals(x2)
-			if err == nil {
-				t.Fatal("expected error because of tensors having different number of dimensions")
-			} else if err.Error() != "Equals tensors' dimension validation failed: expected number of dimensions to match: (3) != (2)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([1,2]) | Equals(Full([2,1])) | returns error: size mismatch at dimension 0", func(t *testing.T) {
-			x1, err := tensor.Full([]int{1, 2}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full([]int{2, 1}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = x1.Equals(x2)
-			if err == nil {
-				t.Fatal("expected error because of incompatible sizes at dimension (0)")
-			} else if err.Error() != "Equals tensors' dimension validation failed: expected sizes to match at dimension (0): (1) != (2)" {
-				t.Fatal("unexpected error message returned")
-			}
-		})
-
-		t.Run("Full([6,5,2]) | Equals(Full([6,4,2])) | returns error: size mismatch at dimension 1", func(t *testing.T) {
-			x1, err := tensor.Full([]int{6, 5, 2}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full([]int{6, 4, 2}, 1., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			_, err = x1.Equals(x2)
-			if err == nil {
-				t.Fatal("expected error because of incompatible sizes at dimension (1)")
-			} else if err.Error() != "Equals tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
-				t.Fatal("unexpected error message returned")
-			}
 		})
 	})
 }

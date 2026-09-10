@@ -875,14 +875,199 @@ func Test_Of_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t *t
 	})
 }
 
-func TestGradientTracked(t *testing.T) {
+func TestFull(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
-
-		// ============================== main functionalities ==============================
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Full(nil, 0) with GradTrack true | concurrent repeated GradientTracked() over every iteration | always returns true", func(t *testing.T) {
+		t.Run("Full([2^20], 8) large 1D tensor | At(i) for all positions | returns 8", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{n}, 8., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for i := range n {
+				if val, err := x.At(i); err != nil {
+					t.Fatal(err)
+				} else if int(val) != 8 {
+					t.Fatalf("expected (8) as tensor value in position [%d], got (%f)", i, val)
+				}
+			}
+		})
+
+		t.Run("Full([2^10], 4) 1D tensor | concurrent repeated Full then At(i) over every position | never errors and always returns 4", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						x, err := tensor.Full([]int{n}, 4., &tensor.Config{Device: dev})
+						if err != nil {
+							t.Error(err)
+							return
+						}
+
+						for i := range n {
+							if val, err := x.At(i); err != nil {
+								t.Error(err)
+								return
+							} else if int(val) != 4 {
+								t.Errorf("expected (4) as tensor value in position [%d], got (%f)", i, val)
+								return
+							}
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Full([3,4], 1) 2D tensor from a caller-owned dims slice | At(2,3) after mutating that slice | returns 1", func(t *testing.T) {
+			dims := []int{3, 4}
+
+			x, err := tensor.Full(dims, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			dims[0] = 1
+			dims[1] = 1
+
+			if val, err := x.At(2, 3); err != nil {
+				t.Fatal(err)
+			} else if int(val) != 1 {
+				t.Fatalf("expected (1) as tensor value in position [2,3], got (%f)", val)
+			}
+		})
+
+		t.Run("Full(nil, 0) built from a Config pointer | Device() after mutating config.Device | returns the original creation device", func(t *testing.T) {
+			conf := &tensor.Config{Device: dev}
+
+			x, err := tensor.Full(nil, 0., conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.Device++
+
+			if d := x.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("Full(nil, 0) with GradTrack true from a Config pointer | GradientTracked() after setting config.GradTrack to false | returns true", func(t *testing.T) {
+			conf := &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			}
+
+			x, err := tensor.Full(nil, 0., conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.GradTrack = false
+
+			if !x.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
+			}
+		})
+
+		// ============================== validations ==============================
+
+		t.Run("Full([-1]) | returns error: non-positive dimension", func(t *testing.T) {
+			_, err := tensor.Full([]int{-1}, 2., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatal("expected error because of non-positive dimension")
+			} else if err.Error() != fmt.Sprintf("%s initialization: Full input dimension validation failed: expected positive dimension sizes: got (-1) at position (0)", dev) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([0]) | returns error: non-positive dimension", func(t *testing.T) {
+			_, err := tensor.Full([]int{0}, 2., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatal("expected error because of non-positive dimension")
+			} else if err.Error() != fmt.Sprintf("%s initialization: Full input dimension validation failed: expected positive dimension sizes: got (0) at position (0)", dev) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1,-2]) | returns error: non-positive dimension", func(t *testing.T) {
+			_, err := tensor.Full([]int{1, -2}, 2., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatal("expected error because of non-positive dimension")
+			} else if err.Error() != fmt.Sprintf("%s initialization: Full input dimension validation failed: expected positive dimension sizes: got (-2) at position (1)", dev) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([2,0,1]) | returns error: non-positive dimension", func(t *testing.T) {
+			_, err := tensor.Full([]int{2, 0, 1}, 2., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatal("expected error because of non-positive dimension")
+			} else if err.Error() != fmt.Sprintf("%s initialization: Full input dimension validation failed: expected positive dimension sizes: got (0) at position (1)", dev) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1,1,1,1,1,1,1]) | returns error: too many dimensions", func(t *testing.T) {
+			_, err := tensor.Full([]int{1, 1, 1, 1, 1, 1, 1}, 2., &tensor.Config{Device: dev})
+			if err == nil {
+				t.Fatal("expected error because of too many dimensions")
+			} else if err.Error() != fmt.Sprintf("%s initialization: Full input dimension validation failed: expected at most (6) dimensions: got (7)", dev) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full(nil) with invalid device | returns error: invalid device", func(t *testing.T) {
+			_, err := tensor.Full(nil, 2., &tensor.Config{Device: -1})
+			if err == nil {
+				t.Fatal("expected error because of invalid input device")
+			} else if err.Error() != "Full tensor config data validation failed: invalid input device" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+}
+
+func TestOf(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("Of([2^20]) large 1D tensor | At(i) for all positions | matches source data", func(t *testing.T) {
+			n := 1 << 20
+
+			data := make([]float64, n)
+			for i := range data {
+				data[i] = float64(i)
+			}
+
+			x, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for i := range n {
+				if val, err := x.At(i); err != nil {
+					t.Fatal(err)
+				} else if val != data[i] {
+					t.Fatalf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
+				}
+			}
+		})
+
+		t.Run("Of([2^10]) 1D tensor | concurrent repeated Of then At(i) over every position | matches source data", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4
@@ -912,39 +1097,6 @@ func TestGradientTracked(t *testing.T) {
 								t.Errorf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
 								return
 							}
-						}
-					}
-				})
-			}
-			wg.Wait()
-		})
-
-		t.Run("Of([2^10]) large 1D tensor | concurrent At(i) over every position | matches source data", func(t *testing.T) {
-			const (
-				n  = 1 << 10
-				ng = 1 << 8
-			)
-
-			data := make([]float64, n)
-			for i := range data {
-				data[i] = float64(i)
-			}
-
-			x, err := tensor.Of(data, &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			var wg sync.WaitGroup
-			for range ng {
-				wg.Go(func() {
-					for i := range n {
-						if val, err := x.At(i); err != nil {
-							t.Error(err)
-							return
-						} else if val != data[i] {
-							t.Errorf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
-							return
 						}
 					}
 				})
@@ -985,6 +1137,39 @@ func TestGradientTracked(t *testing.T) {
 				t.Fatal(err)
 			} else if int(val) != 5 {
 				t.Fatalf("expected (5) as tensor value in position [0,0,0,0], got (%f)", val)
+			}
+		})
+
+		t.Run("Of(0) built from a Config pointer | Device() after mutating config.Device | returns the original creation device", func(t *testing.T) {
+			conf := &tensor.Config{Device: dev}
+
+			x, err := tensor.Of(0., conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.Device++
+
+			if d := x.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("Of(0) with GradTrack true from a Config pointer | GradientTracked() after setting config.GradTrack to false | returns true", func(t *testing.T) {
+			conf := &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			}
+
+			x, err := tensor.Of(0., conf)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			conf.GradTrack = false
+
+			if !x.GradientTracked() {
+				t.Fatal("expected tensor to be gradient tracked")
 			}
 		})
 

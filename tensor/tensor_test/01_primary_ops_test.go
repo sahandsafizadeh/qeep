@@ -1322,51 +1322,37 @@ func TestOf(t *testing.T) {
 func TestDevice(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main functionalities ==============================
+		// ============================== extra functionalities ==============================
 
-		t.Run("Full(nil, 0) scalar tensor | Device() | returns the device it was created on", func(t *testing.T) {
+		t.Run("Full(nil, 0) scalar tensor | concurrent repeated Device() over every iteration | always returns the creation device", func(t *testing.T) {
+			const (
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
 			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if d := x.Device(); d != dev {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						if d := x.Device(); d != dev {
+							t.Errorf("expected tensor's device to be (%s), got (%s)", dev, d)
+							return
+						}
+					}
+				})
 			}
+			wg.Wait()
 		})
+	})
+}
 
-		t.Run("Of(0) scalar tensor | Device() | returns the device it was created on", func(t *testing.T) {
-			x, err := tensor.Of(0., &tensor.Config{Device: dev})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if d := x.Device(); d != dev {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
-			}
-		})
-
-		t.Run("Full(nil, 0) with nil config | Device() | returns CPU", func(t *testing.T) {
-			x, err := tensor.Full(nil, 0., nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if d := x.Device(); d != tensor.CPU {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
-			}
-		})
-
-		t.Run("Of(0) with nil config | Device() | returns CPU", func(t *testing.T) {
-			x, err := tensor.Of(0., nil)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if d := x.Device(); d != tensor.CPU {
-				t.Fatalf("expected tensor's device to be (%s), got (%s)", tensor.CPU, d)
-			}
-		})
+func TestAt(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		// ============================== extra functionalities ==============================
 

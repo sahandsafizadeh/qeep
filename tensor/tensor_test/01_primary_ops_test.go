@@ -14,13 +14,13 @@ import (
 	requires reading its values back, and trusting that a read is correct requires knowing the
 	tensor was created correctly. By cross-validating both in the same suite, they establish a
 	mutually consistent baseline that all other tests in this package build upon.
-	Full, Of, At, Device, GradientTracked, Gradient, ResetGradient, BackPropagate, and Equals
-	are the primary functions under test here.
+	Full, Of, At, Device, GradientTracked, Gradient, ResetGradient, and Equals are the primary
+	functions under test here.
 */
 
 /* ----- cross-validation tests ----- */
 
-func Test_Full_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t *testing.T) {
+func Test_Full_At_Device_GradientTracked_ResetGradient_Gradient(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		// ============================== main functionalities ==============================
@@ -427,7 +427,7 @@ func Test_Full_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t 
 	})
 }
 
-func Test_Of_At_Device_GradientTracked_ResetGradient_BackPropagate_Gradient(t *testing.T) {
+func Test_Of_At_Device_GradientTracked_ResetGradient_Gradient(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		// ============================== main functionalities ==============================

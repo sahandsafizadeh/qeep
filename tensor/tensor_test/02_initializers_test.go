@@ -2396,6 +2396,58 @@ func TestConcat(t *testing.T) {
 
 		// =============== gradients ===============
 
+		t.Run("two grad-tracked [1] tensors | Concat along axis 0 | Gradient() returns nil", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{x1, x2}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("two untracked [1] tensors | Concat along axis 0 | Gradient() returns nil", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := tensor.Concat([]tensor.Tensor{x1, x2}, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
 		t.Run("two untracked [2,3] tensors | Concat along axis 0 then BackPropagate | y has nil gradient", func(t *testing.T) {
 			x1, err := tensor.Full([]int{2, 3}, 3., &tensor.Config{
 				Device:    dev,

@@ -1516,6 +1516,11 @@ func TestAt(t *testing.T) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
+	})
+}
+
+func TestGradientTracked(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
 		// ============================== extra functionalities ==============================
 
@@ -1545,44 +1550,6 @@ func TestAt(t *testing.T) {
 				})
 			}
 			wg.Wait()
-		})
-
-		// ============================== side effects ==============================
-
-		t.Run("Full(nil, 0) with GradTrack true from a Config pointer | GradientTracked() after setting config.GradTrack to false | returns true", func(t *testing.T) {
-			conf := &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			}
-
-			x, err := tensor.Full(nil, 0., conf)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			conf.GradTrack = false
-
-			if !x.GradientTracked() {
-				t.Fatal("expected tensor to be gradient tracked")
-			}
-		})
-
-		t.Run("Of(0) with GradTrack true from a Config pointer | GradientTracked() after setting config.GradTrack to false | returns true", func(t *testing.T) {
-			conf := &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			}
-
-			x, err := tensor.Of(0., conf)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			conf.GradTrack = false
-
-			if !x.GradientTracked() {
-				t.Fatal("expected tensor to be gradient tracked")
-			}
 		})
 	})
 }

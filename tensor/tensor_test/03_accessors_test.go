@@ -13,70 +13,70 @@ func TestShape(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Full(nil, 0) scalar tensor / Shape() / returns []", func(t *testing.T) {
-			ten, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0) scalar tensor | Shape() | returns []", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if shape := ten.Shape(); !slices.Equal(shape, []int{}) {
+			if shape := x.Shape(); !slices.Equal(shape, []int{}) {
 				t.Fatal("expected tensor to have shape [], got", shape)
 			}
 		})
 
-		t.Run("Full([1], 0) 1-element 1D tensor / Shape() / returns [1]", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([1], 0) 1-element 1D tensor | Shape() | returns [1]", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if shape := ten.Shape(); !slices.Equal(shape, []int{1}) {
+			if shape := x.Shape(); !slices.Equal(shape, []int{1}) {
 				t.Fatal("expected tensor to have shape [1], got", shape)
 			}
 		})
 
-		t.Run("Full([2], 0) 1D tensor / Shape() / returns [2]", func(t *testing.T) {
-			ten, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([2], 0) 1D tensor | Shape() | returns [2]", func(t *testing.T) {
+			x, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if shape := ten.Shape(); !slices.Equal(shape, []int{2}) {
+			if shape := x.Shape(); !slices.Equal(shape, []int{2}) {
 				t.Fatal("expected tensor to have shape [2], got", shape)
 			}
 		})
 
-		t.Run("Full([3,4], 0) 2D tensor / Shape() / returns [3,4]", func(t *testing.T) {
-			ten, err := tensor.Full([]int{3, 4}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([3,4], 0) 2D tensor | Shape() | returns [3,4]", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if shape := ten.Shape(); !slices.Equal(shape, []int{3, 4}) {
+			if shape := x.Shape(); !slices.Equal(shape, []int{3, 4}) {
 				t.Fatal("expected tensor to have shape [3, 4], got", shape)
 			}
 		})
 
-		t.Run("Full([5,4,3,2,1], 0) 5D tensor / Shape() / returns [5,4,3,2,1]", func(t *testing.T) {
-			ten, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([5,4,3,2,1], 0) 5D tensor | Shape() | returns [5,4,3,2,1]", func(t *testing.T) {
+			x, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if shape := ten.Shape(); !slices.Equal(shape, []int{5, 4, 3, 2, 1}) {
+			if shape := x.Shape(); !slices.Equal(shape, []int{5, 4, 3, 2, 1}) {
 				t.Fatal("expected tensor to have shape [5, 4, 3, 2, 1], got", shape)
 			}
 		})
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Full([5,4,3,2,1], 0) 5D tensor / concurrent repeated Shape() over every iteration / always returns [5,4,3,2,1]", func(t *testing.T) {
+		t.Run("Full([5,4,3,2,1], 0) 5D tensor | concurrent repeated Shape() over every iteration | always returns [5,4,3,2,1]", func(t *testing.T) {
 			const (
 				ni = 1 << 4
 				ng = 1 << 8
 			)
 
-			ten, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
+			x, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -85,7 +85,7 @@ func TestShape(t *testing.T) {
 			for range ng {
 				wg.Go(func() {
 					for range ni {
-						if shape := ten.Shape(); !slices.Equal(shape, []int{5, 4, 3, 2, 1}) {
+						if shape := x.Shape(); !slices.Equal(shape, []int{5, 4, 3, 2, 1}) {
 							t.Error("expected tensor to have shape [5, 4, 3, 2, 1], got", shape)
 							return
 						}
@@ -97,16 +97,16 @@ func TestShape(t *testing.T) {
 
 		// ============================== side effects ==============================
 
-		t.Run("Full([3,4], 0) 2D tensor / Shape() then mutate result / original shape unchanged", func(t *testing.T) {
-			ten, err := tensor.Full([]int{3, 4}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([3,4], 0) 2D tensor | Shape() then mutate result | is unchanged", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			shape := ten.Shape()
+			shape := x.Shape()
 			shape[0] = 99
 
-			if shape := ten.Shape(); !slices.Equal(shape, []int{3, 4}) {
+			if shape := x.Shape(); !slices.Equal(shape, []int{3, 4}) {
 				t.Fatal("expected tensor shape to remain [3, 4] after mutating returned slice, got", shape)
 			}
 		})

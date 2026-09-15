@@ -1084,7 +1084,7 @@ func TestEquals(t *testing.T) {
 			}
 		})
 
-		t.Run("equal Of([2^10]) 1D tensors | concurrent repeated Equals() | never errors", func(t *testing.T) {
+		t.Run("equal Of([2^10]) 1D tensors | concurrent repeated Equals() | never errors and always equal", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4

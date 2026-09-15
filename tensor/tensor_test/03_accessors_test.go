@@ -118,70 +118,70 @@ func TestNElems(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Full(nil, 0) scalar tensor / NElems() / returns 1", func(t *testing.T) {
-			ten, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0) scalar tensor | NElems() | returns 1", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if nElems := ten.NElems(); nElems != 1 {
+			if nElems := x.NElems(); nElems != 1 {
 				t.Fatalf("expected tensor to have (1) element, got (%d)", nElems)
 			}
 		})
 
-		t.Run("Full([1], 0) 1-element 1D tensor / NElems() / returns 1", func(t *testing.T) {
-			ten, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([1], 0) 1-element 1D tensor | NElems() | returns 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if nElems := ten.NElems(); nElems != 1 {
+			if nElems := x.NElems(); nElems != 1 {
 				t.Fatalf("expected tensor to have (1) element, got (%d)", nElems)
 			}
 		})
 
-		t.Run("Full([2], 0) 1D tensor / NElems() / returns 2", func(t *testing.T) {
-			ten, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([2], 0) 1D tensor | NElems() | returns 2", func(t *testing.T) {
+			x, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if nElems := ten.NElems(); nElems != 2 {
+			if nElems := x.NElems(); nElems != 2 {
 				t.Fatalf("expected tensor to have (2) elements, got (%d)", nElems)
 			}
 		})
 
-		t.Run("Full([3,4], 0) 2D tensor / NElems() / returns 12", func(t *testing.T) {
-			ten, err := tensor.Full([]int{3, 4}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([3,4], 0) 2D tensor | NElems() | returns 12", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if nElems := ten.NElems(); nElems != 12 {
+			if nElems := x.NElems(); nElems != 12 {
 				t.Fatalf("expected tensor to have (12) elements, got (%d)", nElems)
 			}
 		})
 
-		t.Run("Full([5,4,3,2,1], 0) 5D tensor / NElems() / returns 120", func(t *testing.T) {
-			ten, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
+		t.Run("Full([5,4,3,2,1], 0) 5D tensor | NElems() | returns 120", func(t *testing.T) {
+			x, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if nElems := ten.NElems(); nElems != 120 {
+			if nElems := x.NElems(); nElems != 120 {
 				t.Fatalf("expected tensor to have (120) elements, got (%d)", nElems)
 			}
 		})
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Full([5,4,3,2,1], 0) 5D tensor / concurrent repeated NElems() over every iteration / always returns 120", func(t *testing.T) {
+		t.Run("Full([5,4,3,2,1], 0) 5D tensor | concurrent repeated NElems() over every iteration | always returns 120", func(t *testing.T) {
 			const (
 				ni = 1 << 4
 				ng = 1 << 8
 			)
 
-			ten, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
+			x, err := tensor.Full([]int{5, 4, 3, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -190,7 +190,7 @@ func TestNElems(t *testing.T) {
 			for range ng {
 				wg.Go(func() {
 					for range ni {
-						if nElems := ten.NElems(); nElems != 120 {
+						if nElems := x.NElems(); nElems != 120 {
 							t.Errorf("expected tensor to have (120) elements, got (%d)", nElems)
 							return
 						}

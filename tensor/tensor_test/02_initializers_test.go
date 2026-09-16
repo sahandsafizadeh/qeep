@@ -2761,8 +2761,8 @@ func TestConcat(t *testing.T) {
 			}
 
 			for _, xi := range []tensor.Tensor{x1, x2, x3, x4} {
-				act := xi.Gradient()
-				if eq, err := act.Equals(h); err != nil {
+				g := xi.Gradient()
+				if eq, err := g.Equals(h); err != nil {
 					t.Fatal(err)
 				} else if !eq {
 					t.Fatal("expected tensors to be equal")

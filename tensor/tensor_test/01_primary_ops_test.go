@@ -1466,14 +1466,14 @@ func TestOf(t *testing.T) {
 		t.Run("Of([5]) 1D tensor from a caller-owned slice | At(0) after mutating source | returns 5", func(t *testing.T) {
 			data := []float64{5.}
 
-			ten, err := tensor.Of(data, &tensor.Config{Device: dev})
+			x, err := tensor.Of(data, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			data[0] = 3.
 
-			if val, err := ten.At(0); err != nil {
+			if val, err := x.At(0); err != nil {
 				t.Fatal(err)
 			} else if int(val) != 5 {
 				t.Fatalf("expected (5) as tensor value in position [0], got (%f)", val)
@@ -1483,14 +1483,14 @@ func TestOf(t *testing.T) {
 		t.Run("Of([[[[5]]]]) 4D tensor from a caller-owned slice | At(0,0,0,0) after mutating source | returns 5", func(t *testing.T) {
 			data := [][][][]float64{{{{5.}}}}
 
-			ten, err := tensor.Of(data, &tensor.Config{Device: dev})
+			x, err := tensor.Of(data, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			data[0][0][0][0] = 3.
 
-			if val, err := ten.At(0, 0, 0, 0); err != nil {
+			if val, err := x.At(0, 0, 0, 0); err != nil {
 				t.Fatal(err)
 			} else if int(val) != 5 {
 				t.Fatalf("expected (5) as tensor value in position [0,0,0,0], got (%f)", val)

@@ -1352,6 +1352,9 @@ func TestSaveLoad(t *testing.T) {
 				"meta": int64bytes([]int64{0}),
 				"data": float64bytes([]float64{1., 2.}),
 			})
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {

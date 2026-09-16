@@ -546,7 +546,7 @@ func TestTransfer(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			_, err = tensor.Transfer(x, tensor.Device(0))
+			_, err = tensor.Transfer(x, -1)
 			if err == nil {
 				t.Fatal("expected error because of invalid target device")
 			} else if err.Error() != "Transfer target device validation failed: invalid input device" {

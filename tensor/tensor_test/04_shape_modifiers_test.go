@@ -9,7 +9,7 @@ import (
 func TestTranspose(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("1x1 matrix / Transpose() / returns same matrix", func(t *testing.T) {
 			ten, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
@@ -222,6 +222,12 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / Transpose() / returns error: fewer than 2 dimensions", func(t *testing.T) {
@@ -257,7 +263,7 @@ func TestTranspose(t *testing.T) {
 func TestReshape(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Zeros(nil) scalar / Reshape([1,1]) / returns [1,1] tensor", func(t *testing.T) {
 			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
@@ -504,6 +510,10 @@ func TestReshape(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
 		// ============================== side effects ==============================
 
 		t.Run("Zeros([2,3]) does not share shape slice / Reshape([3,2]) after mutating shape / returns correct [3,2] tensor", func(t *testing.T) {
@@ -597,7 +607,7 @@ func TestReshape(t *testing.T) {
 func TestFlatten(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Zeros([1]) 1D tensor / Flatten(0) / returns [1] 1D tensor", func(t *testing.T) {
 			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
@@ -751,6 +761,12 @@ func TestFlatten(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / Flatten(-1) / returns error: dimension out of range [0,0)", func(t *testing.T) {
@@ -814,7 +830,7 @@ func TestFlatten(t *testing.T) {
 func TestUnSqueeze(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Zeros(nil) scalar / UnSqueeze(0) / returns [1] tensor", func(t *testing.T) {
 			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
@@ -983,6 +999,12 @@ func TestUnSqueeze(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / UnSqueeze(-1) / returns error: dimension out of range [0,0]", func(t *testing.T) {
@@ -1046,7 +1068,7 @@ func TestUnSqueeze(t *testing.T) {
 func TestSqueeze(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Zeros([1]) 1D tensor / Squeeze(0) / returns scalar tensor", func(t *testing.T) {
 			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
@@ -1169,6 +1191,12 @@ func TestSqueeze(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / Squeeze(-1) / returns error: dimension out of range [0,0)", func(t *testing.T) {
@@ -1260,7 +1288,7 @@ func TestSqueeze(t *testing.T) {
 func TestBroadcast(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Of(5) scalar / Broadcast(nil) / returns same scalar", func(t *testing.T) {
 			ten, err := tensor.Of(5., &tensor.Config{Device: dev})
@@ -1498,6 +1526,12 @@ func TestBroadcast(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
 
 		// ============================== validations ==============================
 

@@ -745,7 +745,7 @@ func TestReshape(t *testing.T) {
 			}
 		})
 
-		t.Run("Of([2,3,3]) 3D tensor with sequential elements 0..17 | Reshape([3,6]) | elements laid out row-major across new shape", func(t *testing.T) {
+		t.Run("Of([2,3,3]) 3D tensor with sequential elements 0..17 | Reshape([3,6]) | returns tensor with elements laid out row-major across new shape", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{0., 1., 2.},

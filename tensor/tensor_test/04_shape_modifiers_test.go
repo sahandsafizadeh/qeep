@@ -1041,7 +1041,7 @@ func TestReshape(t *testing.T) {
 
 		// ============================== side effects ==============================
 
-		t.Run("Full([2,3], 0.) does not share shape slice | Reshape([3,2]) after mutating shape | returns correct [3,2] tensor", func(t *testing.T) {
+		t.Run("Full([2,3], 0.) 2D tensor | Reshape([3,2]) then mutating the input shape slice | y remains unaffected [3,2] tensor", func(t *testing.T) {
 			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)

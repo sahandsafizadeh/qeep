@@ -1686,13 +1686,13 @@ func TestFlatten(t *testing.T) {
 
 		// ============================== validations ==============================
 
-		t.Run("Zeros(nil) scalar / Flatten(-1) / returns error: dimension out of range [0,0)", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0.) scalar | Flatten(-1) | returns error: dimension out of range [0,0)", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Flatten(-1)
+			_, err = x.Flatten(-1)
 			if err == nil {
 				t.Fatal("expected error because of dimension (-1) being out of range")
 			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
@@ -1700,13 +1700,13 @@ func TestFlatten(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros(nil) scalar / Flatten(0) / returns error: dimension out of range [0,0)", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0.) scalar | Flatten(0) | returns error: dimension out of range [0,0)", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Flatten(0)
+			_, err = x.Flatten(0)
 			if err == nil {
 				t.Fatal("expected error because of dimension (0) being out of range")
 			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
@@ -1714,13 +1714,13 @@ func TestFlatten(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1]) 1D tensor / Flatten(1) / returns error: dimension out of range [0,1)", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+		t.Run("Full([1], 0.) 1D tensor | Flatten(1) | returns error: dimension out of range [0,1)", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Flatten(1)
+			_, err = x.Flatten(1)
 			if err == nil {
 				t.Fatal("expected error because of dimension (1) being out of range")
 			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
@@ -1728,13 +1728,13 @@ func TestFlatten(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1,2,3]) 3D tensor / Flatten(3) / returns error: dimension out of range [0,3)", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([1,2,3], 0.) 3D tensor | Flatten(3) | returns error: dimension out of range [0,3)", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Flatten(3)
+			_, err = x.Flatten(3)
 			if err == nil {
 				t.Fatal("expected error because of dimension (3) being out of range")
 			} else if err.Error() != "Flatten input dimension validation failed: expected dimension to be in range [0,3): got (3)" {
@@ -2193,13 +2193,13 @@ func TestUnSqueeze(t *testing.T) {
 
 		// ============================== validations ==============================
 
-		t.Run("Zeros(nil) scalar / UnSqueeze(-1) / returns error: dimension out of range [0,0]", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0.) scalar | UnSqueeze(-1) | returns error: dimension out of range [0,0]", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.UnSqueeze(-1)
+			_, err = x.UnSqueeze(-1)
 			if err == nil {
 				t.Fatal("expected error because of dimension (-1) being out of range")
 			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,0]: got (-1)" {
@@ -2207,13 +2207,13 @@ func TestUnSqueeze(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros(nil) scalar / UnSqueeze(1) / returns error: dimension out of range [0,0]", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0.) scalar | UnSqueeze(1) | returns error: dimension out of range [0,0]", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.UnSqueeze(1)
+			_, err = x.UnSqueeze(1)
 			if err == nil {
 				t.Fatal("expected error because of dimension (1) being out of range")
 			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,0]: got (1)" {
@@ -2221,13 +2221,13 @@ func TestUnSqueeze(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([2]) 1D tensor / UnSqueeze(2) / returns error: dimension out of range [0,1]", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+		t.Run("Full([2], 0.) 1D tensor | UnSqueeze(2) | returns error: dimension out of range [0,1]", func(t *testing.T) {
+			x, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.UnSqueeze(2)
+			_, err = x.UnSqueeze(2)
 			if err == nil {
 				t.Fatal("expected error because of dimension (2) being out of range")
 			} else if err.Error() != "UnSqueeze input dimension validation failed: expected dimension to be in range [0,1]: got (2)" {
@@ -2235,13 +2235,13 @@ func TestUnSqueeze(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1,1,1,1,1,1]) 6D tensor / UnSqueeze(2) / returns error: exceeds maximum 6 dimensions", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 1, 1, 1, 1, 1}, &tensor.Config{Device: dev})
+		t.Run("Full([1,1,1,1,1,1], 0.) 6D tensor | UnSqueeze(2) | returns error: exceeds maximum 6 dimensions", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 1, 1, 1, 1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.UnSqueeze(2)
+			_, err = x.UnSqueeze(2)
 			if err == nil {
 				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "UnSqueeze input dimension validation failed: operation causes tensor to exceed maximum (6) dimensions" {
@@ -2654,13 +2654,13 @@ func TestSqueeze(t *testing.T) {
 
 		// ============================== validations ==============================
 
-		t.Run("Zeros(nil) scalar / Squeeze(-1) / returns error: dimension out of range [0,0)", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0.) scalar | Squeeze(-1) | returns error: dimension out of range [0,0)", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Squeeze(-1)
+			_, err = x.Squeeze(-1)
 			if err == nil {
 				t.Fatal("expected error because of dimension (-1) being out of range")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
@@ -2668,13 +2668,13 @@ func TestSqueeze(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros(nil) scalar / Squeeze(0) / returns error: dimension out of range [0,0)", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0.) scalar | Squeeze(0) | returns error: dimension out of range [0,0)", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Squeeze(0)
+			_, err = x.Squeeze(0)
 			if err == nil {
 				t.Fatal("expected error because of dimension (0) being out of range")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
@@ -2682,13 +2682,13 @@ func TestSqueeze(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1]) 1D tensor / Squeeze(1) / returns error: dimension out of range [0,1)", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+		t.Run("Full([1], 0.) 1D tensor | Squeeze(1) | returns error: dimension out of range [0,1)", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Squeeze(1)
+			_, err = x.Squeeze(1)
 			if err == nil {
 				t.Fatal("expected error because of dimension (1) being out of range")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
@@ -2696,13 +2696,13 @@ func TestSqueeze(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1,2,3]) 3D tensor / Squeeze(3) / returns error: dimension out of range [0,3)", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([1,2,3], 0.) 3D tensor | Squeeze(3) | returns error: dimension out of range [0,3)", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Squeeze(3)
+			_, err = x.Squeeze(3)
 			if err == nil {
 				t.Fatal("expected error because of dimension (3) being out of range")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected dimension to be in range [0,3): got (3)" {
@@ -2710,13 +2710,13 @@ func TestSqueeze(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1,2,3]) 3D tensor / Squeeze(2) / returns error: squeeze dimension size is 3, not 1", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([1,2,3], 0.) 3D tensor | Squeeze(2) | returns error: squeeze dimension size is 3, not 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Squeeze(2)
+			_, err = x.Squeeze(2)
 			if err == nil {
 				t.Fatal("expected error because of dimension (2) not being equal to (1)")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (3)" {
@@ -2724,13 +2724,13 @@ func TestSqueeze(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1,2,3]) 3D tensor / Squeeze(1) / returns error: squeeze dimension size is 2, not 1", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([1,2,3], 0.) 3D tensor | Squeeze(1) | returns error: squeeze dimension size is 2, not 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Squeeze(1)
+			_, err = x.Squeeze(1)
 			if err == nil {
 				t.Fatal("expected error because of dimension (1) not being equal to (1)")
 			} else if err.Error() != "Squeeze input dimension validation failed: expected squeeze dimension to be (1): got (2)" {

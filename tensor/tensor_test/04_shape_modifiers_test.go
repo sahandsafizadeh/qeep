@@ -1202,123 +1202,123 @@ func TestFlatten(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Zeros([1]) 1D tensor / Flatten(0) / returns [1] 1D tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+		t.Run("Full([1], 0.) 1D tensor | Flatten(0) | returns [1] 1D tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Flatten(0)
+			y, err := x.Flatten(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(0) / returns [24] 1D tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+		t.Run("Full([2,3,4], 0.) 3D tensor | Flatten(0) | returns [24] 1D tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Flatten(0)
+			y, err := x.Flatten(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{24}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{24}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(1) / returns [2,12] 2D tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+		t.Run("Full([2,3,4], 0.) 3D tensor | Flatten(1) | returns [2,12] 2D tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Flatten(1)
+			y, err := x.Flatten(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{2, 12}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{2, 12}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2,3,4]) 3D tensor / Flatten(2) / returns same shape [2,3,4]", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+		t.Run("Full([2,3,4], 0.) 3D tensor | Flatten(2) | returns same shape [2,3,4]", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Flatten(2)
+			y, err := x.Flatten(2)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([1,2,3,4,5,6]) 6D tensor / Flatten(2) / returns [1,2,360] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+		t.Run("Full([1,2,3,4,5,6], 0.) 6D tensor | Flatten(2) | returns [1,2,360] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Flatten(2)
+			y, err := x.Flatten(2)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2, 360}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{1, 2, 360}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of([2,3,4]) 3D tensor with sequential values 0..23 / Flatten(1) / returns [2,12] tensor with values preserved in row-major order", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("Of([2,3,4]) 3D tensor with sequential values 0..23 | Flatten(1) | returns [2,12] tensor with values preserved in row-major order", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{
 					{0., 1., 2., 3.},
 					{4., 5., 6., 7.},
@@ -1334,12 +1334,12 @@ func TestFlatten(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Flatten(1)
+			y, err := x.Flatten(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{0., 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.},
 				{12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23.},
 			}, &tensor.Config{Device: dev})
@@ -1347,10 +1347,64 @@ func TestFlatten(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Full([2,3,4], 0.) 3D tensor | Flatten(1) then Device() | returns the device the input was created on", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Flatten(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("untracked Full([2,3,4], 0.) 3D tensor | Flatten(1) | y is not gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Flatten(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked Full([2,3,4], 0.) 3D tensor | Flatten(1) | y is gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Flatten(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
 			}
 		})
 
@@ -1425,146 +1479,146 @@ func TestUnSqueeze(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Zeros(nil) scalar / UnSqueeze(0) / returns [1] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0.) scalar | UnSqueeze(0) | returns [1] tensor", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.UnSqueeze(0)
+			y, err := x.UnSqueeze(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2]) 1D tensor / UnSqueeze(0) / returns [1,2] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+		t.Run("Full([2], 0.) 1D tensor | UnSqueeze(0) | returns [1,2] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.UnSqueeze(0)
+			y, err := x.UnSqueeze(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2]) 1D tensor / UnSqueeze(1) / returns [2,1] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+		t.Run("Full([2], 0.) 1D tensor | UnSqueeze(1) | returns [2,1] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.UnSqueeze(1)
+			y, err := x.UnSqueeze(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2,3]) 2D tensor / UnSqueeze(0) / returns [1,2,3] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([2,3], 0.) 2D tensor | UnSqueeze(0) | returns [1,2,3] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.UnSqueeze(0)
+			y, err := x.UnSqueeze(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{1, 2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2,3]) 2D tensor / UnSqueeze(1) / returns [2,1,3] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([2,3], 0.) 2D tensor | UnSqueeze(1) | returns [2,1,3] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.UnSqueeze(1)
+			y, err := x.UnSqueeze(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{2, 1, 3}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{2, 1, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2,3]) 2D tensor / UnSqueeze(2) / returns [2,3,1] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([2,3], 0.) 2D tensor | UnSqueeze(2) | returns [2,3,1] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.UnSqueeze(2)
+			y, err := x.UnSqueeze(2)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{2, 3, 1}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{2, 3, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of([2,3]) 2D tensor with distinct values / UnSqueeze(1) / returns [2,1,3] tensor with values preserved", func(t *testing.T) {
-			ten, err := tensor.Of([][]float64{
+		t.Run("Of([2,3]) 2D tensor with distinct values | UnSqueeze(1) | returns [2,1,3] tensor with values preserved", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{
 				{1., 2., 3.},
 				{4., 5., 6.},
 			}, &tensor.Config{Device: dev})
@@ -1572,12 +1626,12 @@ func TestUnSqueeze(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.UnSqueeze(1)
+			y, err := x.UnSqueeze(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{{1., 2., 3.}},
 				{{4., 5., 6.}},
 			}, &tensor.Config{Device: dev})
@@ -1585,10 +1639,64 @@ func TestUnSqueeze(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Full([2,3], 0.) 2D tensor | UnSqueeze(1) then Device() | returns the device the input was created on", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.UnSqueeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("untracked Full([2,3], 0.) 2D tensor | UnSqueeze(1) | y is not gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.UnSqueeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked Full([2,3], 0.) 2D tensor | UnSqueeze(1) | y is gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.UnSqueeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
 			}
 		})
 
@@ -1663,100 +1771,100 @@ func TestSqueeze(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Zeros([1]) 1D tensor / Squeeze(0) / returns scalar tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+		t.Run("Full([1], 0.) 1D tensor | Squeeze(0) | returns scalar tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Squeeze(0)
+			y, err := x.Squeeze(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			h, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([1,2,3]) 3D tensor / Squeeze(0) / returns [2,3] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([1,2,3], 0.) 3D tensor | Squeeze(0) | returns [2,3] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Squeeze(0)
+			y, err := x.Squeeze(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2,1,3]) 3D tensor / Squeeze(1) / returns [2,3] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 1, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([2,1,3], 0.) 3D tensor | Squeeze(1) | returns [2,3] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 1, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Squeeze(1)
+			y, err := x.Squeeze(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Zeros([2,3,1]) 3D tensor / Squeeze(2) / returns [2,3] tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 3, 1}, &tensor.Config{Device: dev})
+		t.Run("Full([2,3,1], 0.) 3D tensor | Squeeze(2) | returns [2,3] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Squeeze(2)
+			y, err := x.Squeeze(2)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of([2,1,3]) 3D tensor with distinct values / Squeeze(1) / returns [2,3] tensor with values preserved", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("Of([2,1,3]) 3D tensor with distinct values | Squeeze(1) | returns [2,3] tensor with values preserved", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{{1., 2., 3.}},
 				{{4., 5., 6.}},
 			}, &tensor.Config{Device: dev})
@@ -1764,12 +1872,12 @@ func TestSqueeze(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Squeeze(1)
+			y, err := x.Squeeze(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{1., 2., 3.},
 				{4., 5., 6.},
 			}, &tensor.Config{Device: dev})
@@ -1777,10 +1885,64 @@ func TestSqueeze(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Full([2,1,3], 0.) 3D tensor | Squeeze(1) then Device() | returns the device the input was created on", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 1, 3}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Squeeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("untracked Full([2,1,3], 0.) 3D tensor | Squeeze(1) | y is not gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 1, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Squeeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked Full([2,1,3], 0.) 3D tensor | Squeeze(1) | y is gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 1, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Squeeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
 			}
 		})
 

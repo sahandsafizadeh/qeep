@@ -222,6 +222,60 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
+		t.Run("[2,2] tensor | Transpose() then Device() | returns the device the input was created on", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{{1., 2.}, {3., 4.}}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("untracked [2,2] tensor | Transpose() | y is not gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{{1., 2.}}, &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked [2,2] tensor | Transpose() | y is gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{{1., 2.}}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
 		// =============== gradients ===============
 
 		// ============================== extra functionalities ==============================

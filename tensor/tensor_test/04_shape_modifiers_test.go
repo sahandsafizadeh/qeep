@@ -500,13 +500,13 @@ func TestTranspose(t *testing.T) {
 
 		// ============================== validations ==============================
 
-		t.Run("Zeros(nil) scalar / Transpose() / returns error: fewer than 2 dimensions", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("Full(nil, 0.) scalar | Transpose() | returns error: fewer than 2 dimensions", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Transpose()
+			_, err = x.Transpose()
 			if err == nil {
 				t.Fatal("expected error because of tensor having less than 2 dimensions")
 			} else if err.Error() != "Transpose tensor's dimension validation failed: expected tensor to have at least (2) dimensions for transpose: got (0)" {
@@ -514,13 +514,13 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([3]) 1D tensor / Transpose() / returns error: fewer than 2 dimensions", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+		t.Run("Full([3], 0.) 1D tensor | Transpose() | returns error: fewer than 2 dimensions", func(t *testing.T) {
+			x, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Transpose()
+			_, err = x.Transpose()
 			if err == nil {
 				t.Fatal("expected error because of tensor having less than 2 dimensions")
 			} else if err.Error() != "Transpose tensor's dimension validation failed: expected tensor to have at least (2) dimensions for transpose: got (1)" {

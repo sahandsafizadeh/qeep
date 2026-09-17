@@ -475,6 +475,29 @@ func TestTranspose(t *testing.T) {
 
 		// ============================== side effects ==============================
 
+		t.Run("grad-tracked [2,2] tensor | Transpose() then ResetGradient(source, false) | y stays gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{{1., 2.}}, &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Transpose()
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / Transpose() / returns error: fewer than 2 dimensions", func(t *testing.T) {

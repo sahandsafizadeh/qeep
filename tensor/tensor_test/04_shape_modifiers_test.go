@@ -1661,6 +1661,29 @@ func TestFlatten(t *testing.T) {
 
 		// ============================== side effects ==============================
 
+		t.Run("grad-tracked [2,3,4] tensor | Flatten(1) then ResetGradient(source, false) | y stays gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Flatten(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / Flatten(-1) / returns error: dimension out of range [0,0)", func(t *testing.T) {
@@ -2145,6 +2168,29 @@ func TestUnSqueeze(t *testing.T) {
 
 		// ============================== side effects ==============================
 
+		t.Run("grad-tracked [2,3] tensor | UnSqueeze(1) then ResetGradient(source, false) | y stays gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.UnSqueeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
 		// ============================== validations ==============================
 
 		t.Run("Zeros(nil) scalar / UnSqueeze(-1) / returns error: dimension out of range [0,0]", func(t *testing.T) {
@@ -2582,6 +2628,29 @@ func TestSqueeze(t *testing.T) {
 		})
 
 		// ============================== side effects ==============================
+
+		t.Run("grad-tracked [2,1,3] tensor | Squeeze(1) then ResetGradient(source, false) | y stays gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 1, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Squeeze(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
 
 		// ============================== validations ==============================
 

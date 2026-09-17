@@ -113,7 +113,7 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
-		t.Run("3D tensor shape [2,2,2] | Transpose() | transposes last two dimensions", func(t *testing.T) {
+		t.Run("3D tensor shape [2,2,2] | Transpose() | returns tensor with last two dimensions transposed", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{1., 2.},
@@ -154,7 +154,7 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
-		t.Run("4D tensor shape [2,2,2,3] | Transpose() | transposes last two dims leaving batch dims unchanged", func(t *testing.T) {
+		t.Run("4D tensor shape [2,2,2,3] | Transpose() | returns tensor with last two dims transposed and batch dims unchanged", func(t *testing.T) {
 			x, err := tensor.Of([][][][]float64{
 				{
 					{
@@ -239,7 +239,7 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
-		t.Run("untracked [2,2] tensor | Transpose() | y is not gradient-tracked", func(t *testing.T) {
+		t.Run("untracked [1,2] tensor | Transpose() | y is not gradient-tracked", func(t *testing.T) {
 			x, err := tensor.Of([][]float64{{1., 2.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
@@ -258,7 +258,7 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [2,2] tensor | Transpose() | y is gradient-tracked", func(t *testing.T) {
+		t.Run("grad-tracked [1,2] tensor | Transpose() | y is gradient-tracked", func(t *testing.T) {
 			x, err := tensor.Of([][]float64{{1., 2.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -340,7 +340,7 @@ func TestTranspose(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [3,4] tensor | Transpose then BackPropagate | gradient of x is all-ones [3,4]", func(t *testing.T) {
+		t.Run("grad-tracked [3,4] tensor | Transpose() then BackPropagate | gradient of x is all-ones [3,4]", func(t *testing.T) {
 			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -475,7 +475,7 @@ func TestTranspose(t *testing.T) {
 
 		// ============================== side effects ==============================
 
-		t.Run("grad-tracked [2,2] tensor | Transpose() then ResetGradient(source, false) | y stays gradient-tracked", func(t *testing.T) {
+		t.Run("grad-tracked [1,2] tensor | Transpose() then ResetGradient(source, false) | y stays gradient-tracked", func(t *testing.T) {
 			x, err := tensor.Of([][]float64{{1., 2.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,

@@ -224,7 +224,10 @@ func TestTranspose(t *testing.T) {
 		})
 
 		t.Run("[2,2] tensor | Transpose() then Device() | returns the device the input was created on", func(t *testing.T) {
-			x, err := tensor.Of([][]float64{{1., 2.}, {3., 4.}}, &tensor.Config{Device: dev})
+			x, err := tensor.Of([][]float64{
+				{1., 2.},
+				{3., 4.},
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}

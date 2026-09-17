@@ -11,77 +11,77 @@ func TestTranspose(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("1x1 matrix / Transpose() / returns same matrix", func(t *testing.T) {
-			ten, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
+		t.Run("1x1 matrix | Transpose() | returns same matrix", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Transpose()
+			y, err := x.Transpose()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
+			h, err := tensor.Of([][]float64{{1.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("1x3 row tensor / Transpose() / returns 3x1 column tensor", func(t *testing.T) {
-			ten, err := tensor.Of([][]float64{{1., 0., 2.}}, &tensor.Config{Device: dev})
+		t.Run("1x3 row tensor | Transpose() | returns 3x1 column tensor", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{{1., 0., 2.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Transpose()
+			y, err := x.Transpose()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{{1.}, {0.}, {2.}}, &tensor.Config{Device: dev})
+			h, err := tensor.Of([][]float64{{1.}, {0.}, {2.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("3x1 column tensor / Transpose() / returns 1x3 row tensor", func(t *testing.T) {
-			ten, err := tensor.Of([][]float64{{-2.}, {0.}, {-1.}}, &tensor.Config{Device: dev})
+		t.Run("3x1 column tensor | Transpose() | returns 1x3 row tensor", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{{-2.}, {0.}, {-1.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Transpose()
+			y, err := x.Transpose()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{{-2., 0., -1.}}, &tensor.Config{Device: dev})
+			h, err := tensor.Of([][]float64{{-2., 0., -1.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("3x4 matrix / Transpose() / returns 4x3 transposed matrix", func(t *testing.T) {
-			ten, err := tensor.Of([][]float64{
+		t.Run("3x4 matrix | Transpose() | returns 4x3 transposed matrix", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{
 				{0., 1., 2., 3.},
 				{0., 1., 2., 3.},
 				{0., 1., 2., 3.},
@@ -90,12 +90,12 @@ func TestTranspose(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Transpose()
+			y, err := x.Transpose()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{0., 0., 0.},
 				{1., 1., 1.},
 				{2., 2., 2.},
@@ -105,15 +105,15 @@ func TestTranspose(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("3D tensor shape [2,2,2] / Transpose() / transposes last two dimensions", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("3D tensor shape [2,2,2] | Transpose() | transposes last two dimensions", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{
 					{1., 2.},
 					{3., 4.},
@@ -127,12 +127,12 @@ func TestTranspose(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Transpose()
+			y, err := x.Transpose()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{
 					{1., 3.},
 					{2., 4.},
@@ -146,15 +146,15 @@ func TestTranspose(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("4D tensor shape [2,2,2,3] / Transpose() / transposes last two dims leaving batch dims unchanged", func(t *testing.T) {
-			ten, err := tensor.Of([][][][]float64{
+		t.Run("4D tensor shape [2,2,2,3] | Transpose() | transposes last two dims leaving batch dims unchanged", func(t *testing.T) {
+			x, err := tensor.Of([][][][]float64{
 				{
 					{
 						{1., 2., 3.},
@@ -180,12 +180,12 @@ func TestTranspose(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Transpose()
+			y, err := x.Transpose()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][][]float64{
+			h, err := tensor.Of([][][][]float64{
 				{
 					{
 						{1., 4.},
@@ -215,7 +215,7 @@ func TestTranspose(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")

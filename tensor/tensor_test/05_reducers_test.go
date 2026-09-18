@@ -10,7 +10,7 @@ import (
 func TestSum(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor / Sum() / returns 9", func(t *testing.T) {
 			ten, err := tensor.Of(9., &tensor.Config{Device: dev})
@@ -84,13 +84,21 @@ func TestSum(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
+		// ============================== validations ==============================
 	})
 }
 
 func TestMax(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor / Max() / returns 9", func(t *testing.T) {
 			ten, err := tensor.Of(9., &tensor.Config{Device: dev})
@@ -164,13 +172,21 @@ func TestMax(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
+		// ============================== validations ==============================
 	})
 }
 
 func TestMin(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor / Min() / returns 9", func(t *testing.T) {
 			ten, err := tensor.Of(9., &tensor.Config{Device: dev})
@@ -244,13 +260,21 @@ func TestMin(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
+		// ============================== validations ==============================
 	})
 }
 
 func TestAvg(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor / Avg() / returns 9", func(t *testing.T) {
 			ten, err := tensor.Of(9., &tensor.Config{Device: dev})
@@ -350,13 +374,21 @@ func TestAvg(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
+		// ============================== validations ==============================
 	})
 }
 
 func TestVar(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor / Var() / returns 0", func(t *testing.T) {
 			ten, err := tensor.Of(9., &tensor.Config{Device: dev})
@@ -557,13 +589,21 @@ func TestVar(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
+		// ============================== validations ==============================
 	})
 }
 
 func TestStd(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor / Std() / returns 0", func(t *testing.T) {
 			ten, err := tensor.Of(9., &tensor.Config{Device: dev})
@@ -764,13 +804,21 @@ func TestStd(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
+		// ============================== validations ==============================
 	})
 }
 
 func TestMean(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor / Mean() / returns 9", func(t *testing.T) {
 			ten, err := tensor.Of(9., &tensor.Config{Device: dev})
@@ -870,13 +918,21 @@ func TestMean(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
+		// ============================== validations ==============================
 	})
 }
 
 func TestSumAlong(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / SumAlong(0) / returns scalar 1", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -1109,6 +1165,12 @@ func TestSumAlong(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / SumAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -1172,7 +1234,7 @@ func TestSumAlong(t *testing.T) {
 func TestMaxAlong(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / MaxAlong(0) / returns scalar 1", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -1332,6 +1394,12 @@ func TestMaxAlong(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / MaxAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -1395,7 +1463,7 @@ func TestMaxAlong(t *testing.T) {
 func TestMinAlong(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / MinAlong(0) / returns scalar 1", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -1555,6 +1623,12 @@ func TestMinAlong(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / MinAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -1618,7 +1692,7 @@ func TestMinAlong(t *testing.T) {
 func TestAvgAlong(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / AvgAlong(0) / returns scalar 1", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -1938,6 +2012,12 @@ func TestAvgAlong(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / AvgAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -2001,7 +2081,7 @@ func TestAvgAlong(t *testing.T) {
 func TestVarAlong(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / VarAlong(0) / returns scalar 0", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -2346,6 +2426,12 @@ func TestVarAlong(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / VarAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -2409,7 +2495,7 @@ func TestVarAlong(t *testing.T) {
 func TestStdAlong(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / StdAlong(0) / returns scalar 0", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -2754,6 +2840,12 @@ func TestStdAlong(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / StdAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -2817,7 +2909,7 @@ func TestStdAlong(t *testing.T) {
 func TestMeanAlong(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / MeanAlong(0) / returns scalar 1", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -3137,6 +3229,12 @@ func TestMeanAlong(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / MeanAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -3200,7 +3298,7 @@ func TestMeanAlong(t *testing.T) {
 func TestArgmax(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / Argmax(0) / returns scalar 0", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -3429,6 +3527,12 @@ func TestArgmax(t *testing.T) {
 			}
 		})
 
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
+
 		// ============================== validations ==============================
 
 		t.Run("scalar tensor / Argmax(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
@@ -3492,7 +3596,7 @@ func TestArgmax(t *testing.T) {
 func TestArgmin(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Ones([1]) tensor / Argmin(0) / returns scalar 0", func(t *testing.T) {
 			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
@@ -3720,6 +3824,12 @@ func TestArgmin(t *testing.T) {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
+
+		// =============== gradients ===============
+
+		// ============================== extra functionalities ==============================
+
+		// ============================== side effects ==============================
 
 		// ============================== validations ==============================
 

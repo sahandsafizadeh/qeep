@@ -1348,123 +1348,123 @@ func TestSumAlong(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Ones([1]) tensor / SumAlong(0) / returns scalar 1", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
+		t.Run("Full([1], 1) tensor | SumAlong(0) | returns scalar 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.SumAlong(0)
+			y, err := x.SumAlong(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of(1., &tensor.Config{Device: dev})
+			h, err := tensor.Of(1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Ones([3]) tensor / SumAlong(0) / returns scalar 3", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{3}, &tensor.Config{Device: dev})
+		t.Run("Full([3], 1) tensor | SumAlong(0) | returns scalar 3", func(t *testing.T) {
+			x, err := tensor.Full([]int{3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.SumAlong(0)
+			y, err := x.SumAlong(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of(3., &tensor.Config{Device: dev})
+			h, err := tensor.Of(3., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Ones([3,4,5]) tensor / SumAlong(0) / returns Full([4,5], 3)", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{3, 4, 5}, &tensor.Config{Device: dev})
+		t.Run("Full([3,4,5], 1) tensor | SumAlong(0) | returns Full([4,5], 3)", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4, 5}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.SumAlong(0)
+			y, err := x.SumAlong(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Full([]int{4, 5}, 3., &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{4, 5}, 3., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Ones([3,4,5]) tensor / SumAlong(1) / returns Full([3,5], 4)", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{3, 4, 5}, &tensor.Config{Device: dev})
+		t.Run("Full([3,4,5], 1) tensor | SumAlong(1) | returns Full([3,5], 4)", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4, 5}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.SumAlong(1)
+			y, err := x.SumAlong(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Full([]int{3, 5}, 4., &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{3, 5}, 4., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Ones([3,4,5]) tensor / SumAlong(2) / returns Full([3,4], 5)", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{3, 4, 5}, &tensor.Config{Device: dev})
+		t.Run("Full([3,4,5], 1) tensor | SumAlong(2) | returns Full([3,4], 5)", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4, 5}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.SumAlong(2)
+			y, err := x.SumAlong(2)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Full([]int{3, 4}, 5., &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{3, 4}, 5., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("4D tensor shape [2,2,2,2] / SumAlong(1) / returns [2,2,2] tensor", func(t *testing.T) {
-			ten, err := tensor.Of([][][][]float64{
+		t.Run("4D tensor shape [2,2,2,2] | SumAlong(1) | returns [2,2,2] tensor", func(t *testing.T) {
+			x, err := tensor.Of([][][][]float64{
 				{
 					{
 						{1., 2.},
@@ -1490,12 +1490,12 @@ func TestSumAlong(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.SumAlong(1)
+			y, err := x.SumAlong(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{
 					{6., 8.},
 					{10., 12.},
@@ -1509,15 +1509,15 @@ func TestSumAlong(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("4D tensor shape [2,3,2,2] / SumAlong(3) / returns [2,3,2] tensor", func(t *testing.T) {
-			ten, err := tensor.Of([][][][]float64{
+		t.Run("4D tensor shape [2,3,2,2] | SumAlong(3) | returns [2,3,2] tensor", func(t *testing.T) {
+			x, err := tensor.Of([][][][]float64{
 				{
 					{
 						{1., 2.},
@@ -1551,12 +1551,12 @@ func TestSumAlong(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.SumAlong(3)
+			y, err := x.SumAlong(3)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{
 					{3., 7.},
 					{11., 15.},
@@ -1572,7 +1572,7 @@ func TestSumAlong(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
@@ -1581,19 +1581,138 @@ func TestSumAlong(t *testing.T) {
 
 		// =============== gradients ===============
 
+		t.Run("grad-tracked [2,4,4] tensor | SumAlong(1) then BackPropagate | gradient of x is all-ones [2,4,4]", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 4, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.SumAlong(1)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			h, err := tensor.Full([]int{2, 4, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("grad-tracked [4,3] tensor | SumAlong(0) then BackPropagate | gradient of x is all-ones [4,3]", func(t *testing.T) {
+			x, err := tensor.Full([]int{4, 3}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.SumAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			h, err := tensor.Full([]int{4, 3}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("grad-tracked [2,3,4] tensor | SumAlong(2) then BackPropagate | gradient of x is all-ones [2,3,4]", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.SumAlong(2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			h, err := tensor.Full([]int{2, 3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("untracked [1] tensor | SumAlong(0) then BackPropagate | y has nil gradient", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.SumAlong(0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
 		// ============================== extra functionalities ==============================
 
 		// ============================== side effects ==============================
 
 		// ============================== validations ==============================
 
-		t.Run("scalar tensor / SumAlong(-1) / returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("scalar tensor | SumAlong(-1) | returns error: dimension -1 out of range [0,0)", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.SumAlong(-1)
+			_, err = x.SumAlong(-1)
 			if err == nil {
 				t.Fatal("expected error because of reduced dimension (-1) being out of range")
 			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (-1)" {
@@ -1601,13 +1720,13 @@ func TestSumAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor / SumAlong(0) / returns error: dimension 0 out of range [0,0)", func(t *testing.T) {
-			ten, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+		t.Run("scalar tensor | SumAlong(0) | returns error: dimension 0 out of range [0,0)", func(t *testing.T) {
+			x, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.SumAlong(0)
+			_, err = x.SumAlong(0)
 			if err == nil {
 				t.Fatal("expected error because of reduced dimension (0) being out of range")
 			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,0): got (0)" {
@@ -1615,13 +1734,13 @@ func TestSumAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1]) tensor / SumAlong(1) / returns error: dimension 1 out of range [0,1)", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+		t.Run("Full([1], 0) tensor | SumAlong(1) | returns error: dimension 1 out of range [0,1)", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.SumAlong(1)
+			_, err = x.SumAlong(1)
 			if err == nil {
 				t.Fatal("expected error because of reduced dimension (1) being out of range")
 			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,1): got (1)" {
@@ -1629,13 +1748,13 @@ func TestSumAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([3,1]) tensor / SumAlong(2) / returns error: dimension 2 out of range [0,2)", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{3, 1}, &tensor.Config{Device: dev})
+		t.Run("Full([3,1], 0) tensor | SumAlong(2) | returns error: dimension 2 out of range [0,2)", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.SumAlong(2)
+			_, err = x.SumAlong(2)
 			if err == nil {
 				t.Fatal("expected error because of reduced dimension (2) being out of range")
 			} else if err.Error() != "SumAlong input dimension validation failed: expected dimension to be in range [0,2): got (2)" {

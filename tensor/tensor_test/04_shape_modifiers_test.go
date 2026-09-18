@@ -2745,64 +2745,64 @@ func TestBroadcast(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Of(5) scalar / Broadcast(nil) / returns same scalar", func(t *testing.T) {
-			ten, err := tensor.Of(5., &tensor.Config{Device: dev})
+		t.Run("Of(5) scalar | Broadcast(nil) | returns same scalar", func(t *testing.T) {
+			x, err := tensor.Of(5., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Broadcast(nil)
+			y, err := x.Broadcast(nil)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of(5., &tensor.Config{Device: dev})
+			h, err := tensor.Of(5., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of(5) scalar / Broadcast([2,1]) / returns [2,1] tensor filled with 5", func(t *testing.T) {
-			ten, err := tensor.Of(5., &tensor.Config{Device: dev})
+		t.Run("Of(5) scalar | Broadcast([2,1]) | returns [2,1] tensor filled with 5", func(t *testing.T) {
+			x, err := tensor.Of(5., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Broadcast([]int{2, 1})
+			y, err := x.Broadcast([]int{2, 1})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{{5.}, {5.}}, &tensor.Config{Device: dev})
+			h, err := tensor.Of([][]float64{{5.}, {5.}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of([5]) 1D single-element tensor / Broadcast([3,2]) / returns [3,2] tensor filled with 5", func(t *testing.T) {
-			ten, err := tensor.Of([]float64{5.}, &tensor.Config{Device: dev})
+		t.Run("Of([5]) 1D single-element tensor | Broadcast([3,2]) | returns [3,2] tensor filled with 5", func(t *testing.T) {
+			x, err := tensor.Of([]float64{5.}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Broadcast([]int{3, 2})
+			y, err := x.Broadcast([]int{3, 2})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{5., 5.},
 				{5., 5.},
 				{5., 5.},
@@ -2811,25 +2811,25 @@ func TestBroadcast(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of([1,2]) 1D tensor / Broadcast([3,3,2]) / repeats values across new batch dimensions", func(t *testing.T) {
-			ten, err := tensor.Of([]float64{1., 2.}, &tensor.Config{Device: dev})
+		t.Run("Of([1,2]) 1D tensor | Broadcast([3,3,2]) | repeats values across new batch dimensions", func(t *testing.T) {
+			x, err := tensor.Of([]float64{1., 2.}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Broadcast([]int{3, 3, 2})
+			y, err := x.Broadcast([]int{3, 3, 2})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{
 					{1., 2.},
 					{1., 2.},
@@ -2850,25 +2850,25 @@ func TestBroadcast(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of shape [2,1,1] with values 0 and 1 / Broadcast([2,3,4]) / each value broadcast over its [3,4] slice", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{{{0.}}, {{1.}}}, &tensor.Config{Device: dev})
+		t.Run("Of shape [2,1,1] with values 0 and 1 | Broadcast([2,3,4]) | each value broadcast over its [3,4] slice", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{{{0.}}, {{1.}}}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Broadcast([]int{2, 3, 4})
+			y, err := x.Broadcast([]int{2, 3, 4})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{
 					{0., 0., 0., 0.},
 					{0., 0., 0., 0.},
@@ -2884,15 +2884,15 @@ func TestBroadcast(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of shape [2,1,4] with rows [0..3] and [4..7] / Broadcast([1,2,3,4]) / each row broadcast across 3 repetitions", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("Of shape [2,1,4] with rows [0..3] and [4..7] | Broadcast([1,2,3,4]) | each row broadcast across 3 repetitions", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{{0., 1., 2., 3.}},
 				{{4., 5., 6., 7.}},
 			}, &tensor.Config{Device: dev})
@@ -2900,12 +2900,12 @@ func TestBroadcast(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Broadcast([]int{1, 2, 3, 4})
+			y, err := x.Broadcast([]int{1, 2, 3, 4})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][][]float64{
+			h, err := tensor.Of([][][][]float64{
 				{
 					{
 						{0., 1., 2., 3.},
@@ -2923,15 +2923,15 @@ func TestBroadcast(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of shape [2,1,4] with rows [0..3] and [4..7] / Broadcast([2,1,4]) / returns same tensor unchanged", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("Of shape [2,1,4] with rows [0..3] and [4..7] | Broadcast([2,1,4]) | returns same tensor unchanged", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{{0., 1., 2., 3.}},
 				{{4., 5., 6., 7.}},
 			}, &tensor.Config{Device: dev})
@@ -2939,12 +2939,12 @@ func TestBroadcast(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Broadcast([]int{2, 1, 4})
+			y, err := x.Broadcast([]int{2, 1, 4})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{{0., 1., 2., 3.}},
 				{{4., 5., 6., 7.}},
 			}, &tensor.Config{Device: dev})
@@ -2952,65 +2952,436 @@ func TestBroadcast(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Ones([4,1,1,3]) / Broadcast([6,5,4,3,3,3]) / returns all-ones [6,5,4,3,3,3] tensor", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{4, 1, 1, 3}, &tensor.Config{Device: dev})
+		t.Run("Full([4,1,1,3], 1.) | Broadcast([6,5,4,3,3,3]) | returns all-ones [6,5,4,3,3,3] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{4, 1, 1, 3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Broadcast([]int{6, 5, 4, 3, 3, 3})
+			y, err := x.Broadcast([]int{6, 5, 4, 3, 3, 3})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{6, 5, 4, 3, 3, 3}, &tensor.Config{Device: dev})
+			h, err := tensor.Full([]int{6, 5, 4, 3, 3, 3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("Full([2,3], 0.) 2D tensor | Broadcast([4,2,3]) then Device() | returns the device the input was created on", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{4, 2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("untracked Full([2,3], 0.) 2D tensor | Broadcast([4,2,3]) | y is not gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{4, 2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked Full([2,3], 0.) 2D tensor | Broadcast([4,2,3]) | y is gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{4, 2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
 			}
 		})
 
 		// =============== gradients ===============
 
-		// ============================== extra functionalities ==============================
-
-		// ============================== side effects ==============================
-
-		// ============================== validations ==============================
-
-		t.Run("Zeros([3,2]) / Broadcast([3,-2]) / returns error: non-positive dimension", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{3, 2}, &tensor.Config{Device: dev})
+		t.Run("grad-tracked [2,3] tensor | Broadcast([4,2,3]) | Gradient() returns nil", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast([]int{3, -2})
+			y, err := x.Broadcast([]int{4, 2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("untracked [2,3] tensor | Broadcast([4,2,3]) | Gradient() returns nil", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{4, 2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("untracked [2,3] tensor | Broadcast([4,2,3]) then BackPropagate | y has nil gradient", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{4, 2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("grad-tracked [3,1,4] tensor | Broadcast([6,5,3,3,4]) then BackPropagate | gradient of x is Full([3,1,4], 90.)", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 1, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{6, 5, 3, 3, 4})
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			h, err := tensor.Full([]int{3, 1, 4}, 90., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("grad-tracked [1,1] tensor | Broadcast([4,4]) then BackPropagate | gradient of x is Full([1,1], 16.)", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 1}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{4, 4})
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			h, err := tensor.Full([]int{1, 1}, 16., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		// ============================== extra functionalities ==============================
+
+		t.Run("large [2^20] tensor | Broadcast([2, 2^20]) | returns [2, 2^20] tensor filled with 7", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{2, n})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{2, n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := y.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("large grad-tracked [2^20] tensor | Broadcast([2, 2^20]) then BackPropagate | gradient of x is Full([2^20], 2)", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{n}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{2, n})
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g := x.Gradient()
+
+			h, err := tensor.Full([]int{n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("[1,2^10] tensor | concurrent repeated Broadcast then Equals over every iteration | never errors and always equal", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			x, err := tensor.Full([]int{1, n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{2, n}, 7., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						y, err := x.Broadcast([]int{2, n})
+						if err != nil {
+							t.Error(err)
+							return
+						}
+
+						if eq, err := y.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("Full([2,3], 0.) 2D tensor | Broadcast([4,2,3]) then mutating the input shape slice | y remains unaffected [4,2,3] tensor", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			shape := []int{4, 2, 3}
+
+			y, err := x.Broadcast(shape)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			shape[0] = 1
+			shape[1] = 1
+
+			h, err := tensor.Full([]int{4, 2, 3}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := y.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("grad-tracked [2,3] tensor | Broadcast([4,2,3]) then ResetGradient(source, false) | y stays gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x.Broadcast([]int{4, 2, 3})
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
+		// ============================== validations ==============================
+
+		t.Run("Full([3,2], 0.) | Broadcast([-1]) | returns error: non-positive dimension", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x.Broadcast([]int{-1})
 			if err == nil {
-				t.Fatal("expected error because of negative dimension")
+				t.Fatal("expected error because of non-positive dimension")
+			} else if err.Error() != "Broadcast input shape validation failed: expected positive dimension sizes: got (-1) at position (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([3,2], 0.) | Broadcast([0]) | returns error: non-positive dimension", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x.Broadcast([]int{0})
+			if err == nil {
+				t.Fatal("expected error because of non-positive dimension")
+			} else if err.Error() != "Broadcast input shape validation failed: expected positive dimension sizes: got (0) at position (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([3,2], 0.) | Broadcast([3,-2]) | returns error: non-positive dimension", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x.Broadcast([]int{3, -2})
+			if err == nil {
+				t.Fatal("expected error because of non-positive dimension")
 			} else if err.Error() != "Broadcast input shape validation failed: expected positive dimension sizes: got (-2) at position (1)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("Zeros([3,2]) / Broadcast([1,1,1,1,1,1,1,1]) / returns error: too many dimensions", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{3, 2}, &tensor.Config{Device: dev})
+		t.Run("Full([3,2], 0.) | Broadcast([2,0,1]) | returns error: non-positive dimension", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast([]int{1, 1, 1, 1, 1, 1, 1, 1})
+			_, err = x.Broadcast([]int{2, 0, 1})
+			if err == nil {
+				t.Fatal("expected error because of non-positive dimension")
+			} else if err.Error() != "Broadcast input shape validation failed: expected positive dimension sizes: got (0) at position (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([3,2], 0.) | Broadcast([1,1,1,1,1,1,1,1]) | returns error: too many dimensions", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x.Broadcast([]int{1, 1, 1, 1, 1, 1, 1, 1})
 			if err == nil {
 				t.Fatal("expected error because of too many dimensions")
 			} else if err.Error() != "Broadcast input shape validation failed: expected at most (6) dimensions: got (8)" {
@@ -3018,13 +3389,13 @@ func TestBroadcast(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1,2]) 2D tensor / Broadcast(nil) / returns error: source has more dimensions than target", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+		t.Run("Full([1,2], 0.) 2D tensor | Broadcast(nil) | returns error: source has more dimensions than target", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast(nil)
+			_, err = x.Broadcast(nil)
 			if err == nil {
 				t.Fatal("expected error because of source number of dimensions (2) being greater than that of target (0)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected number of dimensions in source tensor to be less than or equal to that of target shape: (2) > (0)" {
@@ -3032,13 +3403,13 @@ func TestBroadcast(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([1,2]) 2D tensor / Broadcast([2]) / returns error: source has more dimensions than target", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+		t.Run("Full([1,2], 0.) 2D tensor | Broadcast([2]) | returns error: source has more dimensions than target", func(t *testing.T) {
+			x, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast([]int{2})
+			_, err = x.Broadcast([]int{2})
 			if err == nil {
 				t.Fatal("expected error because of source number of dimensions (2) being greater than that of target (1)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected number of dimensions in source tensor to be less than or equal to that of target shape: (2) > (1)" {
@@ -3046,13 +3417,13 @@ func TestBroadcast(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([2]) 1D tensor / Broadcast([1]) / returns error: incompatible size at dimension 0", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+		t.Run("Full([2], 0.) 1D tensor | Broadcast([1]) | returns error: incompatible size at dimension 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast([]int{1})
+			_, err = x.Broadcast([]int{1})
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (0)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (1)" {
@@ -3060,13 +3431,13 @@ func TestBroadcast(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([2]) 1D tensor / Broadcast([3]) / returns error: incompatible size at dimension 0", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+		t.Run("Full([2], 0.) 1D tensor | Broadcast([3]) | returns error: incompatible size at dimension 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast([]int{3})
+			_, err = x.Broadcast([]int{3})
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (0)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
@@ -3074,13 +3445,13 @@ func TestBroadcast(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([4,2,1]) / Broadcast([4,3,5]) / returns error: incompatible size at dimension 1", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+		t.Run("Full([4,2,1], 0.) | Broadcast([4,3,5]) | returns error: incompatible size at dimension 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast([]int{4, 3, 5})
+			_, err = x.Broadcast([]int{4, 3, 5})
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
@@ -3088,13 +3459,13 @@ func TestBroadcast(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([2,1,4,1]) / Broadcast([2,3,4,4,5]) / returns error: incompatible size at dimension 1", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+		t.Run("Full([2,1,4,1], 0.) | Broadcast([2,3,4,4,5]) | returns error: incompatible size at dimension 1", func(t *testing.T) {
+			x, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast([]int{2, 3, 4, 4, 5})
+			_, err = x.Broadcast([]int{2, 3, 4, 4, 5})
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
@@ -3102,13 +3473,13 @@ func TestBroadcast(t *testing.T) {
 			}
 		})
 
-		t.Run("Zeros([3,1,3,6]) / Broadcast([1,2,3,4,5,6]) / returns error: incompatible size at dimension 4", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+		t.Run("Full([3,1,3,6], 0.) | Broadcast([1,2,3,4,5,6]) | returns error: incompatible size at dimension 4", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			_, err = ten.Broadcast([]int{1, 2, 3, 4, 5, 6})
+			_, err = x.Broadcast([]int{1, 2, 3, 4, 5, 6})
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (4)")
 			} else if err.Error() != "Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {

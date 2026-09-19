@@ -6171,54 +6171,54 @@ func TestArgmax(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Ones([1]) tensor / Argmax(0) / returns scalar 0", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
+		t.Run("Full([1], 1) tensor | Argmax(0) | returns scalar 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmax(0)
+			y, err := x.Argmax(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			h, err := tensor.Of(0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Ones([3]) tensor / Argmax(0) / returns scalar 0", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{3}, &tensor.Config{Device: dev})
+		t.Run("Full([3], 1) tensor | Argmax(0) | returns scalar 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmax(0)
+			y, err := x.Argmax(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			h, err := tensor.Of(0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("tensor shape [2,3,3] / Argmax(0) / returns argmax indices along dim 0", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("tensor shape [2,3,3] | Argmax(0) | returns argmax indices along dim 0", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{
 					{1., 2., -5.},
 					{0., -1., 3.},
@@ -6234,12 +6234,12 @@ func TestArgmax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmax(0)
+			y, err := x.Argmax(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{1., 0., 1.},
 				{1., 1., 0.},
 				{0., 1., 0.},
@@ -6248,15 +6248,15 @@ func TestArgmax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("tensor shape [2,3,3] / Argmax(1) / returns argmax indices along dim 1", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("tensor shape [2,3,3] | Argmax(1) | returns argmax indices along dim 1", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{
 					{1., 2., -5.},
 					{0., -1., 3.},
@@ -6272,12 +6272,12 @@ func TestArgmax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmax(1)
+			y, err := x.Argmax(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{2., 0., 2.},
 				{0., 1., 2.},
 			}, &tensor.Config{Device: dev})
@@ -6285,15 +6285,15 @@ func TestArgmax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("tensor shape [2,3,3] / Argmax(2) / returns argmax indices along dim 2", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("tensor shape [2,3,3] | Argmax(2) | returns argmax indices along dim 2", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{
 					{1., 2., -5.},
 					{0., -1., 3.},
@@ -6309,12 +6309,12 @@ func TestArgmax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmax(2)
+			y, err := x.Argmax(2)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{1., 2., 0.},
 				{0., 0., 2.},
 			}, &tensor.Config{Device: dev})
@@ -6322,15 +6322,15 @@ func TestArgmax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("tensor shape [2,4,2,2] / Argmax(1) / returns argmax indices along dim 1", func(t *testing.T) {
-			ten, err := tensor.Of([][][][]float64{
+		t.Run("tensor shape [2,4,2,2] | Argmax(1) | returns argmax indices along dim 1", func(t *testing.T) {
+			x, err := tensor.Of([][][][]float64{
 				{
 					{
 						{3., -1.},
@@ -6372,12 +6372,12 @@ func TestArgmax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmax(1)
+			y, err := x.Argmax(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{
 					{2., 1.},
 					{3., 0.},
@@ -6391,7 +6391,7 @@ func TestArgmax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
@@ -6469,54 +6469,54 @@ func TestArgmin(t *testing.T) {
 
 		// ============================== main functionalities ==============================
 
-		t.Run("Ones([1]) tensor / Argmin(0) / returns scalar 0", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{1}, &tensor.Config{Device: dev})
+		t.Run("Full([1], 1) tensor | Argmin(0) | returns scalar 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmin(0)
+			y, err := x.Argmin(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			h, err := tensor.Of(0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Ones([3]) tensor / Argmin(0) / returns scalar 0", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{3}, &tensor.Config{Device: dev})
+		t.Run("Full([3], 1) tensor | Argmin(0) | returns scalar 0", func(t *testing.T) {
+			x, err := tensor.Full([]int{3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmin(0)
+			y, err := x.Argmin(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of(0., &tensor.Config{Device: dev})
+			h, err := tensor.Of(0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("tensor shape [2,3,3] / Argmin(0) / returns argmin indices along dim 0", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("tensor shape [2,3,3] | Argmin(0) | returns argmin indices along dim 0", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{
 					{1., 2., -5.},
 					{0., -1., 3.},
@@ -6532,12 +6532,12 @@ func TestArgmin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmin(0)
+			y, err := x.Argmin(0)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{0., 1., 0.},
 				{0., 0., 1.},
 				{1., 0., 1.},
@@ -6546,15 +6546,15 @@ func TestArgmin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("tensor shape [2,3,3] / Argmin(1) / returns argmin indices along dim 1", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("tensor shape [2,3,3] | Argmin(1) | returns argmin indices along dim 1", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{
 					{1., 2., -5.},
 					{0., -1., 3.},
@@ -6570,12 +6570,12 @@ func TestArgmin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmin(1)
+			y, err := x.Argmin(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{1., 2., 0.},
 				{2., 2., 1.},
 			}, &tensor.Config{Device: dev})
@@ -6583,15 +6583,15 @@ func TestArgmin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("tensor shape [2,3,3] / Argmin(2) / returns argmin indices along dim 2", func(t *testing.T) {
-			ten, err := tensor.Of([][][]float64{
+		t.Run("tensor shape [2,3,3] | Argmin(2) | returns argmin indices along dim 2", func(t *testing.T) {
+			x, err := tensor.Of([][][]float64{
 				{
 					{1., 2., -5.},
 					{0., -1., 3.},
@@ -6607,12 +6607,12 @@ func TestArgmin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmin(2)
+			y, err := x.Argmin(2)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][]float64{
+			h, err := tensor.Of([][]float64{
 				{2., 1., 1.},
 				{1., 2., 1.},
 			}, &tensor.Config{Device: dev})
@@ -6620,15 +6620,15 @@ func TestArgmin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("tensor shape [2,4,2,2] / Argmin(1) / returns argmin indices along dim 1", func(t *testing.T) {
-			ten, err := tensor.Of([][][][]float64{
+		t.Run("tensor shape [2,4,2,2] | Argmin(1) | returns argmin indices along dim 1", func(t *testing.T) {
+			x, err := tensor.Of([][][][]float64{
 				{
 					{
 						{3., -1.},
@@ -6670,12 +6670,12 @@ func TestArgmin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			act, err := ten.Argmin(1)
+			y, err := x.Argmin(1)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Of([][][]float64{
+			h, err := tensor.Of([][][]float64{
 				{
 					{1., 0.},
 					{2., 1.},
@@ -6689,7 +6689,7 @@ func TestArgmin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if eq, err := act.Equals(exp); err != nil {
+			if eq, err := y.Equals(h); err != nil {
 				t.Fatal(err)
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")

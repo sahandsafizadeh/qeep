@@ -2225,6 +2225,29 @@ func TestEq(t *testing.T) {
 			}
 		})
 	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Eq / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Eq(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Eq tensors' device validation failed: expected input tensor to be on %s", d1) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
 }
 
 func TestNe(t *testing.T) {
@@ -2480,6 +2503,29 @@ func TestNe(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Ne tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Ne / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Ne(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Ne tensors' device validation failed: expected input tensor to be on %s", d1) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -2743,6 +2789,29 @@ func TestGt(t *testing.T) {
 			}
 		})
 	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Gt / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Gt(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Gt tensors' device validation failed: expected input tensor to be on %s", d1) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
 }
 
 func TestGe(t *testing.T) {
@@ -2998,6 +3067,29 @@ func TestGe(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Ge tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Ge / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Ge(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Ge tensors' device validation failed: expected input tensor to be on %s", d1) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3261,6 +3353,29 @@ func TestLt(t *testing.T) {
 			}
 		})
 	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Lt / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Lt(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Lt tensors' device validation failed: expected input tensor to be on %s", d1) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
 }
 
 func TestLe(t *testing.T) {
@@ -3516,6 +3631,29 @@ func TestLe(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "Le tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Le / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Le(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Le tensors' device validation failed: expected input tensor to be on %s", d1) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -4081,6 +4219,29 @@ func TestElMax(t *testing.T) {
 			}
 		})
 	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / ElMax / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.ElMax(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("ElMax tensors' device validation failed: expected input tensor to be on %s", d1) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
 }
 
 func TestElMin(t *testing.T) {
@@ -4638,6 +4799,29 @@ func TestElMin(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (1)")
 			} else if err.Error() != "ElMin tensors' dimension validation failed: expected sizes to match at dimension (1): (5) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / ElMin / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.ElMin(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("ElMin tensors' device validation failed: expected input tensor to be on %s", d1) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -5232,6 +5416,29 @@ func TestAdd(t *testing.T) {
 			}
 		})
 	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Add / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Add(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Add tensors' device validation failed: expected input tensor to be on %s", d1) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
 }
 
 func TestSub(t *testing.T) {
@@ -5818,6 +6025,29 @@ func TestSub(t *testing.T) {
 			}
 		})
 	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Sub / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Sub(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Sub tensors' device validation failed: expected input tensor to be on %s", d1) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
 }
 
 func TestMul(t *testing.T) {
@@ -6359,6 +6589,29 @@ func TestMul(t *testing.T) {
 			}
 		})
 	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Mul / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Mul(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Mul tensors' device validation failed: expected input tensor to be on %s", d1) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
 }
 
 func TestDiv(t *testing.T) {
@@ -6889,6 +7142,29 @@ func TestDiv(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (4)")
 			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Div / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Div(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Div tensors' device validation failed: expected input tensor to be on %s", d1) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -7554,6 +7830,29 @@ func TestDot(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at last dimension")
 			} else if err.Error() != "Dot tensors' dimension validation failed: expected sizes to match at last dimensions: (4) != (5)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / Dot / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Dot tensors' device validation failed: expected input tensor to be on %s", d1) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -8551,6 +8850,29 @@ func TestMatMul(t *testing.T) {
 			}
 		})
 	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2,2], 1.) on d1 and Full([2,2], 1.) on d2 / MatMul / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("MatMul tensors' device validation failed: expected input tensor to be on %s", d1) {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
 }
 
 func TestPatch(t *testing.T) {
@@ -9326,6 +9648,29 @@ func TestPatch(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of index not covering source tensor at dimension (1)")
 			} else if err.Error() != "Patch input index or tensors' dimension validation failed: expected index to exactly cover source tensor at dimension (1): #[2,3) != (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+
+	tensor.RunTestLogicCrossDevice(func(d1 tensor.Device, d2 tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("Full([2], 1.) on d1 and Full([1], 1.) on d2 / Patch([{0,1}]) / returns error: tensors not on the same device", func(t *testing.T) {
+			t1, err := tensor.Full([]int{2}, 1., &tensor.Config{Device: d1})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Full([]int{1}, 1., &tensor.Config{Device: d2})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Patch([]tensor.Range{{From: 0, To: 1}}, t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors not being on the same device")
+			} else if err.Error() != fmt.Sprintf("Patch tensors' device validation failed: expected input tensor to be on %s", d1) {
 				t.Fatal("unexpected error message returned")
 			}
 		})

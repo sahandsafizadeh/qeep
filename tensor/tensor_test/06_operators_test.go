@@ -82,14 +82,14 @@ func TestScale(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Scale(5) / returns zeros tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Scale(5.)
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -167,8 +167,8 @@ func TestScale(t *testing.T) {
 			}
 		})
 
-		t.Run("RandN([3,4]) grad-tracked / Scale(-2) then BackPropagate / gradient of x is Full([3,4], -2)", func(t *testing.T) {
-			x, err := tensor.RandN([]int{3, 4}, 0., 1., &tensor.Config{
+		t.Run("Full([3,4], 1) grad-tracked / Scale(-2) then BackPropagate / gradient of x is Full([3,4], -2)", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -232,7 +232,7 @@ func TestScale(t *testing.T) {
 		})
 
 		t.Run("x untracked / Scale(0) then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -331,14 +331,14 @@ func TestPow(t *testing.T) {
 		})
 
 		t.Run("ones tensor [1,2,3,4] / Pow(1000) / returns ones tensor", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Pow(1000)
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -513,7 +513,7 @@ func TestPow(t *testing.T) {
 		})
 
 		t.Run("x untracked / Pow(0) then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -612,14 +612,14 @@ func TestExp(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Exp() / returns ones tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Exp()
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -698,7 +698,7 @@ func TestExp(t *testing.T) {
 		})
 
 		t.Run("x untracked / Exp then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -821,14 +821,14 @@ func TestLog(t *testing.T) {
 		})
 
 		t.Run("ones tensor [1,2,3,4] / Log() / returns zeros tensor", func(t *testing.T) {
-			ten, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Log()
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -907,7 +907,7 @@ func TestLog(t *testing.T) {
 		})
 
 		t.Run("x untracked / Log then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1000,14 +1000,14 @@ func TestSin(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Sin() / returns zeros tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Sin()
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1086,7 +1086,7 @@ func TestSin(t *testing.T) {
 		})
 
 		t.Run("x untracked / Sin then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1179,14 +1179,14 @@ func TestCos(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Cos() / returns ones tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Cos()
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1265,7 +1265,7 @@ func TestCos(t *testing.T) {
 		})
 
 		t.Run("x untracked / Cos then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1338,14 +1338,14 @@ func TestTan(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Tan() / returns zeros tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Tan()
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1424,7 +1424,7 @@ func TestTan(t *testing.T) {
 		})
 
 		t.Run("x untracked / Tan then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1497,14 +1497,14 @@ func TestSinh(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Sinh() / returns zeros tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Sinh()
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1583,7 +1583,7 @@ func TestSinh(t *testing.T) {
 		})
 
 		t.Run("x untracked / Sinh then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1656,14 +1656,14 @@ func TestCosh(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Cosh() / returns ones tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Cosh()
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1742,7 +1742,7 @@ func TestCosh(t *testing.T) {
 		})
 
 		t.Run("x untracked / Cosh then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -1855,14 +1855,14 @@ func TestTanh(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Tanh() / returns zeros tensor", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			act := ten.Tanh()
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -1941,7 +1941,7 @@ func TestTanh(t *testing.T) {
 		})
 
 		t.Run("x untracked / Tanh then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -2064,11 +2064,11 @@ func TestEq(t *testing.T) {
 		})
 
 		t.Run("ones tensor [1,2,3,4] / Eq(ones tensor [1,2,3,4]) / returns ones tensor", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2078,7 +2078,7 @@ func TestEq(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2101,7 +2101,7 @@ func TestEq(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2122,7 +2122,7 @@ func TestEq(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Eq(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2136,11 +2136,11 @@ func TestEq(t *testing.T) {
 		})
 
 		t.Run("scalar tensor and tensor [1] / Eq / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2154,11 +2154,11 @@ func TestEq(t *testing.T) {
 		})
 
 		t.Run("tensors [1] and [1,1] / Eq / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2172,11 +2172,11 @@ func TestEq(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,5] / Eq / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2190,11 +2190,11 @@ func TestEq(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2] and [2,1] / Eq / returns error: size mismatch at dimension 0", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2208,11 +2208,11 @@ func TestEq(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,4,2] / Eq / returns error: size mismatch at dimension 1", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 4, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2346,11 +2346,11 @@ func TestNe(t *testing.T) {
 		})
 
 		t.Run("ones tensor [1,2,3,4] / Ne(ones tensor [1,2,3,4]) / returns zeros tensor", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2360,7 +2360,7 @@ func TestNe(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2383,7 +2383,7 @@ func TestNe(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2404,7 +2404,7 @@ func TestNe(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Ne(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2418,11 +2418,11 @@ func TestNe(t *testing.T) {
 		})
 
 		t.Run("scalar tensor and tensor [1] / Ne / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2436,11 +2436,11 @@ func TestNe(t *testing.T) {
 		})
 
 		t.Run("tensors [1] and [1,1] / Ne / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2454,11 +2454,11 @@ func TestNe(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,5] / Ne / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2472,11 +2472,11 @@ func TestNe(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2] and [2,1] / Ne / returns error: size mismatch at dimension 0", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2490,11 +2490,11 @@ func TestNe(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,4,2] / Ne / returns error: size mismatch at dimension 1", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 4, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2628,11 +2628,11 @@ func TestGt(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Gt(ones tensor [1,2,3,4]) / returns zeros tensor", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2642,7 +2642,7 @@ func TestGt(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2665,7 +2665,7 @@ func TestGt(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2686,7 +2686,7 @@ func TestGt(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Gt(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2700,11 +2700,11 @@ func TestGt(t *testing.T) {
 		})
 
 		t.Run("scalar tensor and tensor [1] / Gt / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2718,11 +2718,11 @@ func TestGt(t *testing.T) {
 		})
 
 		t.Run("tensors [1] and [1,1] / Gt / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2736,11 +2736,11 @@ func TestGt(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,5] / Gt / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2754,11 +2754,11 @@ func TestGt(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2] and [2,1] / Gt / returns error: size mismatch at dimension 0", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2772,11 +2772,11 @@ func TestGt(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,4,2] / Gt / returns error: size mismatch at dimension 1", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 4, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2910,11 +2910,11 @@ func TestGe(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Ge(ones tensor [1,2,3,4]) / returns zeros tensor", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2924,7 +2924,7 @@ func TestGe(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2947,7 +2947,7 @@ func TestGe(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2968,7 +2968,7 @@ func TestGe(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Ge(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2982,11 +2982,11 @@ func TestGe(t *testing.T) {
 		})
 
 		t.Run("scalar tensor and tensor [1] / Ge / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3000,11 +3000,11 @@ func TestGe(t *testing.T) {
 		})
 
 		t.Run("tensors [1] and [1,1] / Ge / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3018,11 +3018,11 @@ func TestGe(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,5] / Ge / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3036,11 +3036,11 @@ func TestGe(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2] and [2,1] / Ge / returns error: size mismatch at dimension 0", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3054,11 +3054,11 @@ func TestGe(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,4,2] / Ge / returns error: size mismatch at dimension 1", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 4, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3192,11 +3192,11 @@ func TestLt(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Lt(ones tensor [1,2,3,4]) / returns ones tensor", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3206,7 +3206,7 @@ func TestLt(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3229,7 +3229,7 @@ func TestLt(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3250,7 +3250,7 @@ func TestLt(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Lt(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3264,11 +3264,11 @@ func TestLt(t *testing.T) {
 		})
 
 		t.Run("scalar tensor and tensor [1] / Lt / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3282,11 +3282,11 @@ func TestLt(t *testing.T) {
 		})
 
 		t.Run("tensors [1] and [1,1] / Lt / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3300,11 +3300,11 @@ func TestLt(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,5] / Lt / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3318,11 +3318,11 @@ func TestLt(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2] and [2,1] / Lt / returns error: size mismatch at dimension 0", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3336,11 +3336,11 @@ func TestLt(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,4,2] / Lt / returns error: size mismatch at dimension 1", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 4, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3474,11 +3474,11 @@ func TestLe(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / Le(ones tensor [1,2,3,4]) / returns ones tensor", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3488,7 +3488,7 @@ func TestLe(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3511,7 +3511,7 @@ func TestLe(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3532,7 +3532,7 @@ func TestLe(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Le(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3546,11 +3546,11 @@ func TestLe(t *testing.T) {
 		})
 
 		t.Run("scalar tensor and tensor [1] / Le / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3564,11 +3564,11 @@ func TestLe(t *testing.T) {
 		})
 
 		t.Run("tensors [1] and [1,1] / Le / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3582,11 +3582,11 @@ func TestLe(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,5] / Le / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3600,11 +3600,11 @@ func TestLe(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2] and [2,1] / Le / returns error: size mismatch at dimension 0", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3618,11 +3618,11 @@ func TestLe(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,4,2] / Le / returns error: size mismatch at dimension 1", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 4, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3756,11 +3756,11 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / ElMax(ones tensor [1,2,3,4]) / returns ones tensor", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3770,7 +3770,7 @@ func TestElMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4020,14 +4020,14 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("a untracked, b grad-tracked / ElMax then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -4050,14 +4050,14 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("a grad-tracked, b untracked / ElMax then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -4080,14 +4080,14 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("a untracked, b untracked / ElMax then BackPropagate / y has nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -4116,7 +4116,7 @@ func TestElMax(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / ElMax(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4130,11 +4130,11 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("scalar tensor and tensor [1] / ElMax / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4148,11 +4148,11 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("tensors [1] and [1,1] / ElMax / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4166,11 +4166,11 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,5] / ElMax / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4184,11 +4184,11 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2] and [2,1] / ElMax / returns error: size mismatch at dimension 0", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4202,11 +4202,11 @@ func TestElMax(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,4,2] / ElMax / returns error: size mismatch at dimension 1", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 4, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4340,11 +4340,11 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("zeros tensor [1,2,3,4] / ElMin(ones tensor [1,2,3,4]) / returns zeros tensor", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4354,7 +4354,7 @@ func TestElMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4604,14 +4604,14 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("a untracked, b grad-tracked / ElMin then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -4634,14 +4634,14 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("a grad-tracked, b untracked / ElMin then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -4664,14 +4664,14 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("a untracked, b untracked / ElMin then BackPropagate / y has nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -4700,7 +4700,7 @@ func TestElMin(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / ElMin(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4714,11 +4714,11 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("scalar tensor and tensor [1] / ElMin / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4732,11 +4732,11 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("tensors [1] and [1,1] / ElMin / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4750,11 +4750,11 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,5] / ElMin / returns error: number of dimensions mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4768,11 +4768,11 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2] and [2,1] / ElMin / returns error: size mismatch at dimension 0", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4786,11 +4786,11 @@ func TestElMin(t *testing.T) {
 		})
 
 		t.Run("tensors [6,5,2] and [6,4,2] / ElMin / returns error: size mismatch at dimension 1", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 4, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4927,11 +4927,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("zeros [3,1,5,1] / Add(ones [1,2,3,4,1,6]) / broadcasts to ones [1,2,3,4,5,6]", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 1, 5, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 1, 5, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4, 1, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4, 1, 6}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -4941,7 +4941,7 @@ func TestAdd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5108,14 +5108,14 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("two grad-tracked [2,3] tensors / Add then BackPropagate / gradient of each is all-ones [2,3]", func(t *testing.T) {
-			a, err := tensor.RandN([]int{2, 3}, 0., 1., &tensor.Config{
+			a, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.RandN([]int{2, 3}, 0., 1., &tensor.Config{
+			b, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -5135,14 +5135,14 @@ func TestAdd(t *testing.T) {
 			acta := a.Gradient()
 			actb := b.Gradient()
 
-			expa, err := tensor.Ones([]int{2, 3}, &tensor.Config{
+			expa, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			expb, err := tensor.Ones([]int{2, 3}, &tensor.Config{
+			expb, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -5163,14 +5163,14 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("a untracked, b grad-tracked / Add then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -5193,14 +5193,14 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("a grad-tracked, b untracked / Add then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -5223,14 +5223,14 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("a untracked, b untracked / Add then BackPropagate / y has nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -5259,7 +5259,7 @@ func TestAdd(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Add(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 5, 2, 4, 1}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 5, 2, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5273,11 +5273,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("tensors [2] and [3] / Add / returns error: broadcast incompatibility at dimension 0 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5291,11 +5291,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("tensors [3] and [2] / Add / returns error: broadcast incompatibility at dimension 0 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5309,11 +5309,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("tensors [4,2,1] and [4,3,5] / Add / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5327,11 +5327,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("tensors [4,3,5] and [4,2,1] / Add / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5345,11 +5345,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("tensors [2,1,4,1] and [2,3,4,4,5] / Add / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 3, 4, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5363,11 +5363,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("tensors [2,3,4,4,5] and [2,1,4,1] / Add / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5381,11 +5381,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("tensors [3,1,3,6] and [1,2,3,4,5,6] / Add / returns error: broadcast incompatibility at dimension 4 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5399,11 +5399,11 @@ func TestAdd(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2,3,4,5,6] and [3,1,3,6] / Add / returns error: broadcast incompatibility at dimension 4 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5540,11 +5540,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("ones [3,1,5,1] / Sub(zeros [1,2,3,4,1,6]) / broadcasts to ones [1,2,3,4,5,6]", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{3, 1, 5, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 1, 5, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 1, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4, 1, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5554,7 +5554,7 @@ func TestSub(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5577,7 +5577,7 @@ func TestSub(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5717,14 +5717,14 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("two grad-tracked [2,3] tensors / Sub then BackPropagate / gradient of a is all-ones [2,3], gradient of b is all-neg-ones [2,3]", func(t *testing.T) {
-			a, err := tensor.RandN([]int{2, 3}, 0., 1., &tensor.Config{
+			a, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.RandN([]int{2, 3}, 0., 1., &tensor.Config{
+			b, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -5772,14 +5772,14 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("a untracked, b grad-tracked / Sub then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -5802,14 +5802,14 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("a grad-tracked, b untracked / Sub then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -5832,14 +5832,14 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("a untracked, b untracked / Sub then BackPropagate / y has nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -5868,7 +5868,7 @@ func TestSub(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Sub(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 5, 2, 4, 1}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 5, 2, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5882,11 +5882,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("tensors [2] and [3] / Sub / returns error: broadcast incompatibility at dimension 0 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5900,11 +5900,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("tensors [3] and [2] / Sub / returns error: broadcast incompatibility at dimension 0 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5918,11 +5918,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("tensors [4,2,1] and [4,3,5] / Sub / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5936,11 +5936,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("tensors [4,3,5] and [4,2,1] / Sub / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5954,11 +5954,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("tensors [2,1,4,1] and [2,3,4,4,5] / Sub / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 3, 4, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5972,11 +5972,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("tensors [2,3,4,4,5] and [2,1,4,1] / Sub / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -5990,11 +5990,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("tensors [3,1,3,6] and [1,2,3,4,5,6] / Sub / returns error: broadcast incompatibility at dimension 4 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6008,11 +6008,11 @@ func TestSub(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2,3,4,5,6] and [3,1,3,6] / Sub / returns error: broadcast incompatibility at dimension 4 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6149,11 +6149,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("ones [3,1,5,1] / Mul(zeros [1,2,3,4,1,6]) / broadcasts to zeros [1,2,3,4,5,6]", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{3, 1, 5, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 1, 5, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 1, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4, 1, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6163,7 +6163,7 @@ func TestMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6336,14 +6336,14 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("a untracked, b grad-tracked / Mul then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -6366,14 +6366,14 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("a grad-tracked, b untracked / Mul then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -6396,14 +6396,14 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("a untracked, b untracked / Mul then BackPropagate / y has nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -6432,7 +6432,7 @@ func TestMul(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Mul(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 5, 2, 4, 1}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 5, 2, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6446,11 +6446,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("tensors [2] and [3] / Mul / returns error: broadcast incompatibility at dimension 0 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6464,11 +6464,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("tensors [3] and [2] / Mul / returns error: broadcast incompatibility at dimension 0 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6482,11 +6482,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("tensors [4,2,1] and [4,3,5] / Mul / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6500,11 +6500,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("tensors [4,3,5] and [4,2,1] / Mul / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6518,11 +6518,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("tensors [2,1,4,1] and [2,3,4,4,5] / Mul / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 3, 4, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6536,11 +6536,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("tensors [2,3,4,4,5] and [2,1,4,1] / Mul / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6554,11 +6554,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("tensors [3,1,3,6] and [1,2,3,4,5,6] / Mul / returns error: broadcast incompatibility at dimension 4 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6572,11 +6572,11 @@ func TestMul(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2,3,4,5,6] and [3,1,3,6] / Mul / returns error: broadcast incompatibility at dimension 4 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6713,11 +6713,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("zeros [3,1,5,1] / Div(ones [1,2,3,4,1,6]) / broadcasts to zeros [1,2,3,4,5,6]", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 1, 5, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 1, 5, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 2, 3, 4, 1, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4, 1, 6}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6727,7 +6727,7 @@ func TestDiv(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6750,7 +6750,7 @@ func TestDiv(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{3}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -6842,7 +6842,7 @@ func TestDiv(t *testing.T) {
 
 			act := x.Gradient()
 
-			exp, err := tensor.Zeros([]int{2, 2}, &tensor.Config{
+			exp, err := tensor.Full([]int{2, 2}, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -6893,14 +6893,14 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("a untracked, b grad-tracked / Div then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -6923,14 +6923,14 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("a grad-tracked, b untracked / Div then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -6953,14 +6953,14 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("a untracked, b untracked / Div then BackPropagate / y has nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros(nil, &tensor.Config{
+			a, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros(nil, &tensor.Config{
+			b, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -6989,7 +6989,7 @@ func TestDiv(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Div(nil) / returns error: device mismatch", func(t *testing.T) {
-			ten, err := tensor.Zeros([]int{1, 5, 2, 4, 1}, &tensor.Config{Device: dev})
+			ten, err := tensor.Full([]int{1, 5, 2, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7003,11 +7003,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("tensors [2] and [3] / Div / returns error: broadcast incompatibility at dimension 0 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7021,11 +7021,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("tensors [3] and [2] / Div / returns error: broadcast incompatibility at dimension 0 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7039,11 +7039,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("tensors [4,2,1] and [4,3,5] / Div / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7057,11 +7057,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("tensors [4,3,5] and [4,2,1] / Div / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 2, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7075,11 +7075,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("tensors [2,1,4,1] and [2,3,4,4,5] / Div / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 3, 4, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7093,11 +7093,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("tensors [2,3,4,4,5] and [2,1,4,1] / Div / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 1, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7111,11 +7111,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("tensors [3,1,3,6] and [1,2,3,4,5,6] / Div / returns error: broadcast incompatibility at dimension 4 of first operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7129,11 +7129,11 @@ func TestDiv(t *testing.T) {
 		})
 
 		t.Run("tensors [1,2,3,4,5,6] and [3,1,3,6] / Div / returns error: broadcast incompatibility at dimension 4 of second operand", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{1, 2, 3, 4, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 1, 3, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7231,11 +7231,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("2D ones tensor [5,1] and 2D ones tensor [5,1] / Dot / returns 1D ones tensor [5]", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{5, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{5, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{5, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{5, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7245,7 +7245,7 @@ func TestDot(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{5}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{5}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7258,11 +7258,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("2D ones tensor [5,4] and 2D ones tensor [5,4] / Dot / returns 1D tensor [5] filled with 4", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{5, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{5, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{5, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{5, 4}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7285,11 +7285,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("5D ones tensor [4,5,1,7,8] and 6D ones tensor [3,4,1,6,1,8] / Dot / returns 5D tensor [3,4,5,6,7] filled with 8", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{4, 5, 1, 7, 8}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 5, 1, 7, 8}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{3, 4, 1, 6, 1, 8}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 4, 1, 6, 1, 8}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7513,14 +7513,14 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("a untracked, b grad-tracked / Dot then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros([]int{1}, &tensor.Config{
+			a, err := tensor.Full([]int{1}, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros([]int{1}, &tensor.Config{
+			b, err := tensor.Full([]int{1}, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -7543,14 +7543,14 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("a grad-tracked, b untracked / Dot then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros([]int{1}, &tensor.Config{
+			a, err := tensor.Full([]int{1}, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros([]int{1}, &tensor.Config{
+			b, err := tensor.Full([]int{1}, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -7573,14 +7573,14 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("a untracked, b untracked / Dot then BackPropagate / y has nil gradient", func(t *testing.T) {
-			a, err := tensor.Zeros([]int{1}, &tensor.Config{
+			a, err := tensor.Full([]int{1}, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros([]int{1}, &tensor.Config{
+			b, err := tensor.Full([]int{1}, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -7609,7 +7609,7 @@ func TestDot(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / Dot(nil) / returns error: device mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7623,7 +7623,7 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("0D tensor and 0D tensor / Dot / returns error: tensors must have at least 1 dimension", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7637,11 +7637,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("0D tensor and 1D tensor / Dot / returns error: first tensor must have at least 1 dimension", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7655,11 +7655,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("1D tensor and 0D tensor / Dot / returns error: second tensor must have at least 1 dimension", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7673,11 +7673,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("1D tensor of size 3 and 1D tensor of size 2 / Dot / returns error: last dimensions do not match", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7691,11 +7691,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("2D tensor [8,4] and 3D tensor [5,2,4] / Dot / returns error: batch dimensions not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{8, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{8, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{5, 2, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{5, 2, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7709,11 +7709,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("3D tensor [5,2,4] and 2D tensor [8,4] / Dot / returns error: first operand batch dimensions not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{5, 2, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{5, 2, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{8, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{8, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7727,11 +7727,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("3D tensor [2,3,4] and 3D tensor [3,3,4] / Dot / returns error: leading batch dimensions not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7745,11 +7745,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("5D tensor [4,1,3,5,2] and 5D tensor [4,6,2,5,2] / Dot / returns error: middle batch dimensions not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{4, 1, 3, 5, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 1, 3, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{4, 6, 2, 5, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 6, 2, 5, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7763,11 +7763,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("3D tensor [2,3,4] and 3D tensor [3,2,4] / Dot / returns error: both operands not broadcastable: first operand is reported", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 2, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 2, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7781,11 +7781,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("2D tensor [2,3] and 2D tensor [2,4] / Dot / returns error: last dimensions do not match", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7799,11 +7799,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("1D tensor [3] and 2D tensor [2,4] / Dot / returns error: last dimensions do not match", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -7817,11 +7817,11 @@ func TestDot(t *testing.T) {
 		})
 
 		t.Run("3D tensor [2,3,4] and 3D tensor [3,3,5] / Dot / returns error: last dimensions error takes precedence over broadcasting error", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 3, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 3, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8141,11 +8141,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("3D ones tensor [5,1,1] / MatMul([5,1,1] ones) / returns [5,1,1] ones", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{5, 1, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{5, 1, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{5, 1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{5, 1, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8155,7 +8155,7 @@ func TestMatMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{5, 1, 1}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{5, 1, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8168,11 +8168,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("3D ones tensor [4,2,1] / MatMul([4,1,1] ones) / returns [4,2,1] ones", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 2, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{4, 1, 1}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 1, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8182,7 +8182,7 @@ func TestMatMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{4, 2, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8195,11 +8195,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("3D ones tensor [4,1,1] / MatMul([4,1,2] ones) / returns [4,1,2] ones", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{4, 1, 1}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{4, 1, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{4, 1, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{4, 1, 2}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8209,7 +8209,7 @@ func TestMatMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			exp, err := tensor.Ones([]int{4, 1, 2}, &tensor.Config{Device: dev})
+			exp, err := tensor.Full([]int{4, 1, 2}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8222,11 +8222,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("4D ones tensor [5,4,2,2] / MatMul([5,4,2,2] ones) / returns [5,4,2,2] tensor filled with 2", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{5, 4, 2, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{5, 4, 2, 2}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{5, 4, 2, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{5, 4, 2, 2}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8249,11 +8249,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("6D ones tensor [7,6,1,4,3,2] / MatMul([1,5,1,2,3] ones) / returns [7,6,5,4,3,3] tensor filled with 2", func(t *testing.T) {
-			t1, err := tensor.Ones([]int{7, 6, 1, 4, 3, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{7, 6, 1, 4, 3, 2}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Ones([]int{1, 5, 1, 2, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{1, 5, 1, 2, 3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8386,8 +8386,8 @@ func TestMatMul(t *testing.T) {
 			}
 		})
 
-		t.Run("Eye(3) grad-tracked / x.MatMul(x) then BackPropagate / gradient of x is Full([3,3], 2)", func(t *testing.T) {
-			x, err := tensor.Eye(3, &tensor.Config{
+		t.Run("Identity [3,3] grad-tracked / x.MatMul(x) then BackPropagate / gradient of x is Full([3,3], 2)", func(t *testing.T) {
+			x, err := tensor.Of([][]float64{{1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -8421,7 +8421,7 @@ func TestMatMul(t *testing.T) {
 			}
 		})
 
-		t.Run("Full([2,3],1) grad-tracked, Full([3,2],1) and Zeros([2,2]) untracked / x.MatMul(W).Add(b) then BackPropagate / gradient of x is Full([2,3], 2)", func(t *testing.T) {
+		t.Run("Full([2,3],1) grad-tracked, Full([3,2],1) and Full([2,2],0) untracked / x.MatMul(W).Add(b) then BackPropagate / gradient of x is Full([2,3], 2)", func(t *testing.T) {
 			x, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -8436,7 +8436,7 @@ func TestMatMul(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Zeros([]int{2, 2}, &tensor.Config{
+			b, err := tensor.Full([]int{2, 2}, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -8475,14 +8475,14 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("a untracked, b grad-tracked / MatMul then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Eye(1, &tensor.Config{
+			a, err := tensor.Of([][]float64{{1.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Eye(1, &tensor.Config{
+			b, err := tensor.Of([][]float64{{1.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -8505,14 +8505,14 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("a grad-tracked, b untracked / MatMul then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			a, err := tensor.Eye(1, &tensor.Config{
+			a, err := tensor.Of([][]float64{{1.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Eye(1, &tensor.Config{
+			b, err := tensor.Of([][]float64{{1.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -8535,14 +8535,14 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("a untracked, b untracked / MatMul then BackPropagate / y has nil gradient", func(t *testing.T) {
-			a, err := tensor.Eye(1, &tensor.Config{
+			a, err := tensor.Of([][]float64{{1.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := tensor.Eye(1, &tensor.Config{
+			b, err := tensor.Of([][]float64{{1.}}, &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -8571,7 +8571,7 @@ func TestMatMul(t *testing.T) {
 		// ============================== validations ==============================
 
 		t.Run("nil input tensor / MatMul(nil) / returns error: device mismatch", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8585,7 +8585,7 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("1D tensor of size 3 and 1D tensor of size 3 / MatMul / returns error: tensors must have at least 2 dimensions", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8599,11 +8599,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("1D tensor of size 3 and 2D tensor [2,3] / MatMul / returns error: first tensor must have at least 2 dimensions", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8617,11 +8617,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("2D tensor [2,3] and 1D tensor of size 3 / MatMul / returns error: second tensor must have at least 2 dimensions", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8635,11 +8635,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("2D tensor [3,3] and 2D tensor [2,3] / MatMul / returns error: inner dimensions do not match", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8653,11 +8653,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("4D tensor [5,5,3,2] and 3D tensor [5,3,3] / MatMul / returns error: inner dimensions do not match", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{5, 5, 3, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{5, 5, 3, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{5, 3, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{5, 3, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8671,11 +8671,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("3D tensor [3,4,3] and 4D tensor [5,6,3,4] / MatMul / returns error: first tensor batch dimensions not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 4, 3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 4, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{5, 6, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{5, 6, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8689,11 +8689,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("3D tensor [6,4,3] and 5D tensor [6,2,5,3,4] / MatMul / returns error: batch dimensions not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{6, 4, 3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{6, 4, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 2, 5, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{6, 2, 5, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8707,11 +8707,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("0D tensor and 0D tensor / MatMul / returns error: tensors must have at least 2 dimensions", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t2, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8725,11 +8725,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("0D tensor and 2D tensor [2,2] / MatMul / returns error: first tensor must have at least 2 dimensions", func(t *testing.T) {
-			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 2}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8743,11 +8743,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("2D tensor [2,2] and 0D tensor / MatMul / returns error: second tensor must have at least 2 dimensions", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 2}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			t2, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8761,11 +8761,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("3D tensor [2,3,4] and 3D tensor [3,4,5] / MatMul / returns error: first tensor leading batch dimension not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 4, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8779,11 +8779,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("3D tensor [3,3,4] and 3D tensor [2,4,5] / MatMul / returns error: second tensor leading batch dimension not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{3, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{3, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 4, 5}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8797,11 +8797,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("6D tensor [2,1,3,5,4,3] and 6D tensor [2,6,2,5,3,4] / MatMul / returns error: middle batch dimensions not broadcastable", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 1, 3, 5, 4, 3}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 1, 3, 5, 4, 3}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{2, 6, 2, 5, 3, 4}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{2, 6, 2, 5, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8815,11 +8815,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("4D tensor [2,3,4,5] and 4D tensor [3,2,5,6] / MatMul / returns error: both operands not broadcastable: first operand is reported", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4, 5}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4, 5}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 2, 5, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 2, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -8833,11 +8833,11 @@ func TestMatMul(t *testing.T) {
 		})
 
 		t.Run("3D tensor [2,3,4] and 3D tensor [3,5,6] / MatMul / returns error: inner dimensions error takes precedence over broadcasting error", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			t1, err := tensor.Full([]int{2, 3, 4}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{3, 5, 6}, &tensor.Config{Device: dev})
+			t2, err := tensor.Full([]int{3, 5, 6}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -9307,14 +9307,14 @@ func TestPatch(t *testing.T) {
 		})
 
 		t.Run("grad-tracked [4,4,4] base and [2,2,2] patch / Patch([1:3],[1:3],[1:3]) then BackPropagate / base gradient is 1 outside window 0 inside, patch gradient is all-ones", func(t *testing.T) {
-			x, err := tensor.RandN([]int{4, 4, 4}, 0., 1., &tensor.Config{
+			x, err := tensor.Full([]int{4, 4, 4}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			p, err := tensor.RandN([]int{2, 2, 2}, 0., 1., &tensor.Config{
+			p, err := tensor.Full([]int{2, 2, 2}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -9366,7 +9366,7 @@ func TestPatch(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			expp, err := tensor.Ones([]int{2, 2, 2}, &tensor.Config{
+			expp, err := tensor.Full([]int{2, 2, 2}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -9387,21 +9387,21 @@ func TestPatch(t *testing.T) {
 		})
 
 		t.Run("grad-tracked [4,5] base, [2,2] patch p1 and p2 / sequential Patch then BackPropagate / gradients flow through both patch levels", func(t *testing.T) {
-			x, err := tensor.RandN([]int{4, 5}, 0., 1., &tensor.Config{
+			x, err := tensor.Full([]int{4, 5}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			p1, err := tensor.RandN([]int{2, 2}, 0., 1., &tensor.Config{
+			p1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			p2, err := tensor.RandN([]int{2, 2}, 0., 1., &tensor.Config{
+			p2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -9438,14 +9438,14 @@ func TestPatch(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			expp1, err := tensor.Ones([]int{2, 2}, &tensor.Config{
+			expp1, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			expp2, err := tensor.Ones([]int{2, 2}, &tensor.Config{
+			expp2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -9471,14 +9471,14 @@ func TestPatch(t *testing.T) {
 		})
 
 		t.Run("x untracked, p grad-tracked / Patch(nil) then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			p, err := tensor.Zeros(nil, &tensor.Config{
+			p, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -9501,14 +9501,14 @@ func TestPatch(t *testing.T) {
 		})
 
 		t.Run("x grad-tracked, p untracked / Patch(nil) then BackPropagate / y has non-nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			p, err := tensor.Zeros(nil, &tensor.Config{
+			p, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
@@ -9531,14 +9531,14 @@ func TestPatch(t *testing.T) {
 		})
 
 		t.Run("x untracked, p untracked / Patch(nil) then BackPropagate / y has nil gradient", func(t *testing.T) {
-			x, err := tensor.Zeros(nil, &tensor.Config{
+			x, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			p, err := tensor.Zeros(nil, &tensor.Config{
+			p, err := tensor.Full(nil, 0., &tensor.Config{
 				Device:    dev,
 				GradTrack: false,
 			})

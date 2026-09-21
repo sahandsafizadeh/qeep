@@ -8,10 +8,12 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+// use primary ops, use naming convention, add division, tensor declaration, scenario descriptions, scenario description match.
+
 func TestScale(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value 1 / Scale(0) / returns scalar 0", func(t *testing.T) {
 			ten, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -104,7 +106,7 @@ func TestScale(t *testing.T) {
 func TestPow(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value e / Pow(0) / returns scalar 1", func(t *testing.T) {
 			ten, err := tensor.Of(math.E, &tensor.Config{Device: dev})
@@ -197,7 +199,7 @@ func TestPow(t *testing.T) {
 func TestExp(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value 1 / Exp() / returns e", func(t *testing.T) {
 			ten, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -290,7 +292,7 @@ func TestExp(t *testing.T) {
 func TestLog(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value -1 / Log() / returns NaN", func(t *testing.T) {
 			ten, err := tensor.Of(-1., &tensor.Config{Device: dev})
@@ -407,7 +409,7 @@ func TestLog(t *testing.T) {
 func TestSin(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value 0 / Sin() / returns 0", func(t *testing.T) {
 			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
@@ -494,7 +496,7 @@ func TestSin(t *testing.T) {
 func TestCos(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value 0 / Cos() / returns 1", func(t *testing.T) {
 			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
@@ -581,7 +583,7 @@ func TestCos(t *testing.T) {
 func TestTan(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value 0 / Tan() / returns 0", func(t *testing.T) {
 			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
@@ -648,7 +650,7 @@ func TestTan(t *testing.T) {
 func TestSinh(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value 0 / Sinh() / returns 0", func(t *testing.T) {
 			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
@@ -715,7 +717,7 @@ func TestSinh(t *testing.T) {
 func TestCosh(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value 0 / Cosh() / returns 1", func(t *testing.T) {
 			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
@@ -782,7 +784,7 @@ func TestCosh(t *testing.T) {
 func TestTanh(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar tensor with value 0 / Tanh() / returns 0", func(t *testing.T) {
 			ten, err := tensor.Of(0., &tensor.Config{Device: dev})
@@ -889,7 +891,7 @@ func TestTanh(t *testing.T) {
 func TestEq(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 1 / Eq(scalar 1) / returns scalar 1", func(t *testing.T) {
 			t1, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -1142,7 +1144,7 @@ func TestEq(t *testing.T) {
 func TestNe(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 1 / Ne(scalar 1) / returns scalar 0", func(t *testing.T) {
 			t1, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -1395,7 +1397,7 @@ func TestNe(t *testing.T) {
 func TestGt(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 1 / Gt(scalar 1) / returns scalar 0", func(t *testing.T) {
 			t1, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -1648,7 +1650,7 @@ func TestGt(t *testing.T) {
 func TestGe(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 1 / Ge(scalar 1) / returns scalar 1", func(t *testing.T) {
 			t1, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -1901,7 +1903,7 @@ func TestGe(t *testing.T) {
 func TestLt(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 1 / Lt(scalar 1) / returns scalar 0", func(t *testing.T) {
 			t1, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -2154,7 +2156,7 @@ func TestLt(t *testing.T) {
 func TestLe(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 1 / Le(scalar 1) / returns scalar 1", func(t *testing.T) {
 			t1, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -2407,7 +2409,7 @@ func TestLe(t *testing.T) {
 func TestElMax(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 1 / ElMax(scalar 1) / returns scalar 1", func(t *testing.T) {
 			t1, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -2660,7 +2662,7 @@ func TestElMax(t *testing.T) {
 func TestElMin(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 1 / ElMin(scalar 1) / returns scalar 1", func(t *testing.T) {
 			t1, err := tensor.Of(1., &tensor.Config{Device: dev})
@@ -2913,7 +2915,7 @@ func TestElMin(t *testing.T) {
 func TestAdd(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 4 / Add(scalar 2) / returns scalar 6", func(t *testing.T) {
 			t1, err := tensor.Of(4., &tensor.Config{Device: dev})
@@ -3223,7 +3225,7 @@ func TestAdd(t *testing.T) {
 func TestSub(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 4 / Sub(scalar 2) / returns scalar 2", func(t *testing.T) {
 			t1, err := tensor.Of(4., &tensor.Config{Device: dev})
@@ -3533,7 +3535,7 @@ func TestSub(t *testing.T) {
 func TestMul(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 4 / Mul(scalar 2) / returns scalar 8", func(t *testing.T) {
 			t1, err := tensor.Of(4., &tensor.Config{Device: dev})
@@ -3843,7 +3845,7 @@ func TestMul(t *testing.T) {
 func TestDiv(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("scalar 4 / Div(scalar 2) / returns scalar 2", func(t *testing.T) {
 			t1, err := tensor.Of(4., &tensor.Config{Device: dev})
@@ -4153,7 +4155,7 @@ func TestDiv(t *testing.T) {
 func TestDot(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("1D tensor [5] and 1D tensor [2] / Dot / returns scalar 10", func(t *testing.T) {
 			t1, err := tensor.Of([]float64{5.}, &tensor.Config{Device: dev})
@@ -4451,7 +4453,7 @@ func TestDot(t *testing.T) {
 func TestMatMul(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("2D tensor [[5]] / MatMul([[2]]) / returns [[10]]", func(t *testing.T) {
 			t1, err := tensor.Of([][]float64{{5.}}, &tensor.Config{Device: dev})
@@ -5061,7 +5063,7 @@ func TestMatMul(t *testing.T) {
 func TestPatch(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 
-		// ============================== main paths ==============================
+		// ============================== main functionalities ==============================
 
 		t.Run("Full(nil, 0.) scalar and Full(nil, 1.) scalar / Patch(nil) / replaces scalar value", func(t *testing.T) {
 			t1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})

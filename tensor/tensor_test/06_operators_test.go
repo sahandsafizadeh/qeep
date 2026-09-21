@@ -4605,6 +4605,132 @@ func TestDot(t *testing.T) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
+
+		t.Run("3D tensor [5,2,4] and 2D tensor [8,4] / Dot / returns error: first operand batch dimensions not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{5, 2, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{8, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Dot tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (8)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor [2,3,4] and 3D tensor [3,3,4] / Dot / returns error: leading batch dimensions not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Dot tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("5D tensor [4,1,3,5,2] and 5D tensor [4,6,2,5,2] / Dot / returns error: middle batch dimensions not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 1, 3, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 6, 2, 5, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (2)")
+			} else if err.Error() != "Dot tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor [2,3,4] and 3D tensor [3,2,4] / Dot / returns error: both operands not broadcastable: first operand is reported", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 2, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0) for both operands")
+			} else if err.Error() != "Dot tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("2D tensor [2,3] and 2D tensor [2,4] / Dot / returns error: last dimensions do not match", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at last dimension")
+			} else if err.Error() != "Dot tensors' dimension validation failed: expected sizes to match at last dimensions: (3) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("1D tensor [3] and 2D tensor [2,4] / Dot / returns error: last dimensions do not match", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at last dimension")
+			} else if err.Error() != "Dot tensors' dimension validation failed: expected sizes to match at last dimensions: (3) != (4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor [2,3,4] and 3D tensor [3,3,5] / Dot / returns error: last dimensions error takes precedence over broadcasting error", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Dot(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at last dimension")
+			} else if err.Error() != "Dot tensors' dimension validation failed: expected sizes to match at last dimensions: (4) != (5)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
 	})
 }
 
@@ -5218,6 +5344,150 @@ func TestMatMul(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible sizes at dimension (2)")
 			} else if err.Error() != "MatMul tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (5) or source size to be (1) at dimension (2): got shape (6)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("0D tensor and 0D tensor / MatMul / returns error: tensors must have at least 2 dimensions", func(t *testing.T) {
+			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having less than (2) dimensions")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (0) and (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("0D tensor and 2D tensor [2,2] / MatMul / returns error: first tensor must have at least 2 dimensions", func(t *testing.T) {
+			t1, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having less than (2) dimensions")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (0) and (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("2D tensor [2,2] and 0D tensor / MatMul / returns error: second tensor must have at least 2 dimensions", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros(nil, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of tensors having less than (2) dimensions")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected tensors to have at least (2) dimensions for matrix multiplication: got (2) and (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor [2,3,4] and 3D tensor [3,4,5] / MatMul / returns error: first tensor leading batch dimension not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "MatMul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor [3,3,4] and 3D tensor [2,4,5] / MatMul / returns error: second tensor leading batch dimension not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "MatMul tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("6D tensor [2,1,3,5,4,3] and 6D tensor [2,6,2,5,3,4] / MatMul / returns error: middle batch dimensions not broadcastable", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 1, 3, 5, 4, 3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 6, 2, 5, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (2)")
+			} else if err.Error() != "MatMul tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("4D tensor [2,3,4,5] and 4D tensor [3,2,5,6] / MatMul / returns error: both operands not broadcastable: first operand is reported", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 2, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0) for both operands")
+			} else if err.Error() != "MatMul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("3D tensor [2,3,4] and 3D tensor [3,5,6] / MatMul / returns error: inner dimensions error takes precedence over broadcasting error", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.MatMul(t2)
+			if err == nil {
+				t.Fatal("expected error because of size incompatiblity in the inner dimensions")
+			} else if err.Error() != "MatMul tensors' dimension validation failed: expected dimension (2) of first tensor to be equal to dimension (1) of second tensor for matrix multiplication: (4) != (5)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

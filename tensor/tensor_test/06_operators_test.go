@@ -3074,20 +3074,146 @@ func TestAdd(t *testing.T) {
 			}
 		})
 
-		t.Run("tensors [1,5,2,4,1] and [6,4,3] / Add / returns error: broadcast incompatibility at dimension 2", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 5, 2, 4, 1}, &tensor.Config{Device: dev})
+		t.Run("tensors [2] and [3] / Add / returns error: broadcast incompatibility at dimension 0 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			_, err = t1.Add(t2)
 			if err == nil {
-				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [3] and [2] / Add / returns error: broadcast incompatibility at dimension 0 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Add(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [4,2,1] and [4,3,5] / Add / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Add(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [4,3,5] and [4,2,1] / Add / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Add(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [2,1,4,1] and [2,3,4,4,5] / Add / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Add(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [2,3,4,4,5] and [2,1,4,1] / Add / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Add(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [3,1,3,6] and [1,2,3,4,5,6] / Add / returns error: broadcast incompatibility at dimension 4 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Add(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [1,2,3,4,5,6] and [3,1,3,6] / Add / returns error: broadcast incompatibility at dimension 4 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Add(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
+			} else if err.Error() != "Add tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3258,20 +3384,146 @@ func TestSub(t *testing.T) {
 			}
 		})
 
-		t.Run("tensors [1,5,2,4,1] and [6,4,3] / Sub / returns error: broadcast incompatibility at dimension 2", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 5, 2, 4, 1}, &tensor.Config{Device: dev})
+		t.Run("tensors [2] and [3] / Sub / returns error: broadcast incompatibility at dimension 0 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			_, err = t1.Sub(t2)
 			if err == nil {
-				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [3] and [2] / Sub / returns error: broadcast incompatibility at dimension 0 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Sub(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [4,2,1] and [4,3,5] / Sub / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Sub(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [4,3,5] and [4,2,1] / Sub / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Sub(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [2,1,4,1] and [2,3,4,4,5] / Sub / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Sub(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [2,3,4,4,5] and [2,1,4,1] / Sub / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Sub(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [3,1,3,6] and [1,2,3,4,5,6] / Sub / returns error: broadcast incompatibility at dimension 4 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Sub(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [1,2,3,4,5,6] and [3,1,3,6] / Sub / returns error: broadcast incompatibility at dimension 4 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Sub(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
+			} else if err.Error() != "Sub tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3442,20 +3694,146 @@ func TestMul(t *testing.T) {
 			}
 		})
 
-		t.Run("tensors [1,5,2,4,1] and [6,4,3] / Mul / returns error: broadcast incompatibility at dimension 2", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 5, 2, 4, 1}, &tensor.Config{Device: dev})
+		t.Run("tensors [2] and [3] / Mul / returns error: broadcast incompatibility at dimension 0 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			_, err = t1.Mul(t2)
 			if err == nil {
-				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [3] and [2] / Mul / returns error: broadcast incompatibility at dimension 0 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Mul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [4,2,1] and [4,3,5] / Mul / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Mul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [4,3,5] and [4,2,1] / Mul / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Mul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [2,1,4,1] and [2,3,4,4,5] / Mul / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Mul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [2,3,4,4,5] and [2,1,4,1] / Mul / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Mul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [3,1,3,6] and [1,2,3,4,5,6] / Mul / returns error: broadcast incompatibility at dimension 4 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Mul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [1,2,3,4,5,6] and [3,1,3,6] / Mul / returns error: broadcast incompatibility at dimension 4 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Mul(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
+			} else if err.Error() != "Mul tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -3626,20 +4004,146 @@ func TestDiv(t *testing.T) {
 			}
 		})
 
-		t.Run("tensors [1,5,2,4,1] and [6,4,3] / Div / returns error: broadcast incompatibility at dimension 2", func(t *testing.T) {
-			t1, err := tensor.Zeros([]int{1, 5, 2, 4, 1}, &tensor.Config{Device: dev})
+		t.Run("tensors [2] and [3] / Div / returns error: broadcast incompatibility at dimension 0 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t2, err := tensor.Zeros([]int{6, 4, 3}, &tensor.Config{Device: dev})
+			t2, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			_, err = t1.Div(t2)
 			if err == nil {
-				t.Fatal("expected error because of incompatible sizes at dimension (2)")
-			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (2): got shape (6)" {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [3] and [2] / Div / returns error: broadcast incompatibility at dimension 0 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Div(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (0)")
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (0): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [4,2,1] and [4,3,5] / Div / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Div(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [4,3,5] and [4,2,1] / Div / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{4, 3, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{4, 2, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Div(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [2,1,4,1] and [2,3,4,4,5] / Div / returns error: broadcast incompatibility at dimension 1 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Div(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [2,3,4,4,5] and [2,1,4,1] / Div / returns error: broadcast incompatibility at dimension 1 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{2, 3, 4, 4, 5}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{2, 1, 4, 1}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Div(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (1)")
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (2) or source size to be (1) at dimension (1): got shape (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [3,1,3,6] and [1,2,3,4,5,6] / Div / returns error: broadcast incompatibility at dimension 4 of first operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Div(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast first operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("tensors [1,2,3,4,5,6] and [3,1,3,6] / Div / returns error: broadcast incompatibility at dimension 4 of second operand", func(t *testing.T) {
+			t1, err := tensor.Zeros([]int{1, 2, 3, 4, 5, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			t2, err := tensor.Zeros([]int{3, 1, 3, 6}, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = t1.Div(t2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible sizes at dimension (4)")
+			} else if err.Error() != "Div tensors' broadcasting failed: failed to broadcast second operand: Broadcast input shape validation failed: expected target shape to be (3) or source size to be (1) at dimension (4): got shape (5)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

@@ -128,7 +128,11 @@ func TestScale(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 5) grad-tracked / Scale(-2) then BackPropagate / gradient of x is -2", func(t *testing.T) {
@@ -156,7 +160,11 @@ func TestScale(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("RandN([3,4]) grad-tracked / Scale(-2) then BackPropagate / gradient of x is Full([3,4], -2)", func(t *testing.T) {
@@ -184,7 +192,11 @@ func TestScale(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 1) grad-tracked / Scale(2) then Scale(3) then BackPropagate / gradient of x is 6", func(t *testing.T) {
@@ -212,7 +224,11 @@ func TestScale(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Scale(0) then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -361,7 +377,11 @@ func TestPow(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 5) grad-tracked / Pow(1) then BackPropagate / gradient of x is 1", func(t *testing.T) {
@@ -389,7 +409,11 @@ func TestPow(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 4) grad-tracked / Pow(0.5) then BackPropagate / gradient of x is 0.25", func(t *testing.T) {
@@ -417,7 +441,11 @@ func TestPow(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 2) grad-tracked / Pow(2) then Pow(3) then BackPropagate / gradient of x is 192", func(t *testing.T) {
@@ -445,7 +473,11 @@ func TestPow(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Of([1,3]{1,2,3}) grad-tracked / Pow(2) then BackPropagate / gradient of x is [2,4,6]", func(t *testing.T) {
@@ -473,7 +505,11 @@ func TestPow(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Pow(0) then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -622,7 +658,11 @@ func TestExp(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 1) grad-tracked / Exp then Log then BackPropagate / gradient of x is 1", func(t *testing.T) {
@@ -650,7 +690,11 @@ func TestExp(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Exp then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -823,7 +867,11 @@ func TestLog(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 1) grad-tracked / Log then Exp then BackPropagate / gradient of x is 1", func(t *testing.T) {
@@ -851,7 +899,11 @@ func TestLog(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Log then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -994,7 +1046,11 @@ func TestSin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 0) grad-tracked / Sin then BackPropagate / gradient of x is cos(0) = 1", func(t *testing.T) {
@@ -1022,7 +1078,11 @@ func TestSin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Sin then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -1165,7 +1225,11 @@ func TestCos(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 0) grad-tracked / Cos then BackPropagate / gradient of x is -sin(0) = 0", func(t *testing.T) {
@@ -1193,7 +1257,11 @@ func TestCos(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Cos then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -1316,7 +1384,11 @@ func TestTan(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, π/4) grad-tracked / Tan then BackPropagate / gradient of x is sec²(π/4)", func(t *testing.T) {
@@ -1344,7 +1416,11 @@ func TestTan(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Tan then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -1467,7 +1543,11 @@ func TestSinh(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 1) grad-tracked / Sinh then BackPropagate / gradient of x is cosh(1)", func(t *testing.T) {
@@ -1495,7 +1575,11 @@ func TestSinh(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Sinh then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -1618,7 +1702,11 @@ func TestCosh(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 1) grad-tracked / Cosh then BackPropagate / gradient of x is sinh(1)", func(t *testing.T) {
@@ -1646,7 +1734,11 @@ func TestCosh(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Cosh then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -1809,7 +1901,11 @@ func TestTanh(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 1) grad-tracked / Tanh then BackPropagate / gradient of x is sech²(1)", func(t *testing.T) {
@@ -1837,7 +1933,11 @@ func TestTanh(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked / Tanh then BackPropagate / y has nil gradient", func(t *testing.T) {
@@ -3612,8 +3712,16 @@ func TestElMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 2) and Full(nil, 2) both grad-tracked / ElMax then BackPropagate / gradient of a is 0.5, gradient of b is 0.5", func(t *testing.T) {
@@ -3659,8 +3767,16 @@ func TestElMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("same grad-tracked scalar tensor / a.ElMax(a) then BackPropagate / gradient of a is 1 (both tie contributions accumulate)", func(t *testing.T) {
@@ -3691,7 +3807,11 @@ func TestElMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("grad-tracked [2,3] tensors with mixed a>b / a<b / a==b / ElMax then BackPropagate / per-element gradient pattern 0 or 1 or 0.5", func(t *testing.T) {
@@ -3749,8 +3869,16 @@ func TestElMax(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("a untracked, b grad-tracked / ElMax then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -4145,8 +4273,16 @@ func TestElMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 2) and Full(nil, 2) both grad-tracked / ElMin then BackPropagate / gradient of a is 0.5, gradient of b is 0.5", func(t *testing.T) {
@@ -4192,8 +4328,16 @@ func TestElMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("same grad-tracked scalar tensor / a.ElMin(a) then BackPropagate / gradient of a is 1 (both tie contributions accumulate)", func(t *testing.T) {
@@ -4224,7 +4368,11 @@ func TestElMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("grad-tracked [2,3] tensors with mixed a<b / a>b / a==b / ElMin then BackPropagate / per-element gradient pattern 0 or 1 or 0.5", func(t *testing.T) {
@@ -4282,8 +4430,16 @@ func TestElMin(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("a untracked, b grad-tracked / ElMin then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -4681,8 +4837,16 @@ func TestAdd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("same grad-tracked scalar tensor / x.Add(x) then BackPropagate / gradient of x is 2", func(t *testing.T) {
@@ -4713,7 +4877,11 @@ func TestAdd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("same grad-tracked scalar tensor / x.Add(x).Add(x) then BackPropagate / gradient of x is 3", func(t *testing.T) {
@@ -4748,7 +4916,11 @@ func TestAdd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("two grad-tracked [2,3] tensors / Add then BackPropagate / gradient of each is all-ones [2,3]", func(t *testing.T) {
@@ -4794,8 +4966,16 @@ func TestAdd(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("a untracked, b grad-tracked / Add then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -5247,8 +5427,16 @@ func TestSub(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("same grad-tracked scalar tensor / x.Sub(x) then BackPropagate / gradient of x is 0", func(t *testing.T) {
@@ -5279,7 +5467,11 @@ func TestSub(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 3) grad-tracked / x.Sub(x.Scale(2)) then BackPropagate / gradient of x is -1", func(t *testing.T) {
@@ -5310,7 +5502,11 @@ func TestSub(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("two grad-tracked [2,3] tensors / Sub then BackPropagate / gradient of a is all-ones [2,3], gradient of b is all-neg-ones [2,3]", func(t *testing.T) {
@@ -5356,8 +5552,16 @@ func TestSub(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("a untracked, b grad-tracked / Sub then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -5809,8 +6013,16 @@ func TestMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Of([2,2]{1,2,3,4}) grad-tracked / x.Mul(x) then BackPropagate / gradient of x is 2x element-wise", func(t *testing.T) {
@@ -5847,7 +6059,11 @@ func TestMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 2) grad-tracked / x.Mul(x).Mul(x) then BackPropagate / gradient of x is 3x²=12", func(t *testing.T) {
@@ -5882,7 +6098,11 @@ func TestMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("a untracked, b grad-tracked / Mul then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -6334,8 +6554,16 @@ func TestDiv(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Of([2,2]{1,2,3,4}) grad-tracked / x.Div(x) then BackPropagate / gradient of x is all-zeros", func(t *testing.T) {
@@ -6369,7 +6597,11 @@ func TestDiv(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full(nil, 2) grad-tracked / x.Div(x.Pow(2)) then BackPropagate / gradient of x is -1/x²=-0.25", func(t *testing.T) {
@@ -6400,7 +6632,11 @@ func TestDiv(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("a untracked, b grad-tracked / Div then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -6898,8 +7134,16 @@ func TestDot(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Of([3]{1,2,3}) grad-tracked / x.Dot(x) then BackPropagate / gradient of x is 2x=[2,4,6]", func(t *testing.T) {
@@ -6930,7 +7174,11 @@ func TestDot(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Of([4]{1,2,3,4}) and Of([4]{4,3,2,1}) both grad-tracked / Dot then BackPropagate / gradient of a is b, gradient of b is a", func(t *testing.T) {
@@ -6976,8 +7224,16 @@ func TestDot(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("a untracked, b grad-tracked / Dot then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -7819,8 +8075,16 @@ func TestMatMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, acta, expa)
-			assertGradientEquals(t, actb, expb)
+			if eq, err := acta.Equals(expa); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actb.Equals(expb); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Eye(3) grad-tracked / x.MatMul(x) then BackPropagate / gradient of x is Full([3,3], 2)", func(t *testing.T) {
@@ -7851,7 +8115,11 @@ func TestMatMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("Full([2,3],1) grad-tracked, Full([3,2],1) and Zeros([2,2]) untracked / x.MatMul(W).Add(b) then BackPropagate / gradient of x is Full([2,3], 2)", func(t *testing.T) {
@@ -7900,7 +8168,11 @@ func TestMatMul(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, act, exp)
+			if eq, err := act.Equals(exp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("a untracked, b grad-tracked / MatMul then BackPropagate / y has non-nil gradient", func(t *testing.T) {
@@ -8700,8 +8972,16 @@ func TestPatch(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, actx, expx)
-			assertGradientEquals(t, actp, expp)
+			if eq, err := actx.Equals(expx); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actp.Equals(expp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("grad-tracked [4,4,4] base and [2,2,2] patch / Patch([1:3],[1:3],[1:3]) then BackPropagate / base gradient is 1 outside window 0 inside, patch gradient is all-ones", func(t *testing.T) {
@@ -8772,8 +9052,16 @@ func TestPatch(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, actx, expx)
-			assertGradientEquals(t, actp, expp)
+			if eq, err := actx.Equals(expx); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actp.Equals(expp); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("grad-tracked [4,5] base, [2,2] patch p1 and p2 / sequential Patch then BackPropagate / gradients flow through both patch levels", func(t *testing.T) {
@@ -8843,9 +9131,21 @@ func TestPatch(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assertGradientEquals(t, actx, expx)
-			assertGradientEquals(t, actp1, expp1)
-			assertGradientEquals(t, actp2, expp2)
+			if eq, err := actx.Equals(expx); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actp1.Equals(expp1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := actp2.Equals(expp2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
 		})
 
 		t.Run("x untracked, p grad-tracked / Patch(nil) then BackPropagate / y has non-nil gradient", func(t *testing.T) {

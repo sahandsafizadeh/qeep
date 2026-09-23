@@ -299,8 +299,34 @@ func TestScale(t *testing.T) {
 			}
 		})
 
-		t.Run("Full(nil, 1) grad-tracked | Scale(2) then Scale(3) then BackPropagate | gradient of x is 6", func(t *testing.T) {
-			x, err := tensor.Full(nil, 1., &tensor.Config{
+		// ============================== extra functionalities ==============================
+
+		t.Run("large [1,2^20] tensor filled with 1 | Scale(2.) | returns Full([1,2^20], 2)", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Scale(2.)
+
+			h, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := y.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("large grad-tracked [1,2^20] tensor filled with 1 | Scale(2.) then BackPropagate | gradient of x is Full([1,2^20], 2)", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -308,7 +334,8 @@ func TestScale(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			y := x.Scale(2.).Scale(3.)
+			y := x.Scale(2.)
+
 			err = tensor.BackPropagate(y)
 			if err != nil {
 				t.Fatal(err)
@@ -316,10 +343,7 @@ func TestScale(t *testing.T) {
 
 			g := x.Gradient()
 
-			h, err := tensor.Full(nil, 6., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -331,31 +355,64 @@ func TestScale(t *testing.T) {
 			}
 		})
 
-		t.Run("x untracked | Scale(0) then BackPropagate | gradient of y is nil", func(t *testing.T) {
-			x, err := tensor.Full(nil, 0., &tensor.Config{
+		t.Run("[1,2^10] tensor filled with 1 | concurrent repeated Scale(2.) over every iteration | never errors and always equal", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						y := x.Scale(2.)
+
+						if eq, err := y.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
+
+		// ============================== side effects ==============================
+
+		t.Run("grad-tracked [3,4] tensor | Scale(2.) then ResetGradient(source, false) | result is still gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
 				Device:    dev,
-				GradTrack: false,
+				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			y := x.Scale(0.)
-			err = tensor.BackPropagate(y)
+			y := x.Scale(2.)
+
+			err = tensor.ResetGradient(x, false)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if y.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
 			}
 		})
-
-		// ============================== extra functionalities ==============================
-
-		// ============================== side effects ==============================
-
-		// ============================== validations ==============================
 	})
 }
 

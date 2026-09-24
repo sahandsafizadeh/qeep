@@ -1982,7 +1982,105 @@ func TestCos(t *testing.T) {
 			}
 		})
 
+		t.Run("[3,4] tensor | Cos() then Device() | returns the device the input was created on", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Cos()
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("untracked [3,4] tensor | Cos() | y is not gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Cos()
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked [3,4] tensor | Cos() | y is gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Cos()
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
 		// =============== gradients ===============
+
+		t.Run("grad-tracked [3,4] tensor | Cos() | Gradient() returns nil", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Cos()
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("untracked [3,4] tensor | Cos() | Gradient() returns nil", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Cos()
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("untracked [3,4] tensor | Cos() then BackPropagate | gradient is nil", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Cos()
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
 
 		t.Run("Full(nil, π/6) grad-tracked | Cos then BackPropagate | gradient of x is -sin(π/6)", func(t *testing.T) {
 			x, err := tensor.Full(nil, math.Pi/6, &tensor.Config{
@@ -1994,6 +2092,7 @@ func TestCos(t *testing.T) {
 			}
 
 			y := x.Cos()
+
 			err = tensor.BackPropagate(y)
 			if err != nil {
 				t.Fatal(err)
@@ -2001,10 +2100,7 @@ func TestCos(t *testing.T) {
 
 			g := x.Gradient()
 
-			h, err := tensor.Full(nil, -math.Sin(math.Pi/6), &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h, err := tensor.Full(nil, -math.Sin(math.Pi/6), &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2026,6 +2122,7 @@ func TestCos(t *testing.T) {
 			}
 
 			y := x.Cos()
+
 			err = tensor.BackPropagate(y)
 			if err != nil {
 				t.Fatal(err)
@@ -2033,10 +2130,7 @@ func TestCos(t *testing.T) {
 
 			g := x.Gradient()
 
-			h, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -2048,31 +2142,120 @@ func TestCos(t *testing.T) {
 			}
 		})
 
-		t.Run("x untracked | Cos then BackPropagate | gradient of y is nil", func(t *testing.T) {
-			x, err := tensor.Full(nil, 0., &tensor.Config{
+		// ============================== extra functionalities ==============================
+
+		t.Run("large [1,2^20] tensor filled with 1 | Cos() | returns Full([1,2^20], cos(1))", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Cos()
+
+			h, err := tensor.Full([]int{1, n}, math.Cos(1.), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := y.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("large grad-tracked [1,2^20] tensor filled with 1 | Cos() then BackPropagate | gradient of x is Full([1,2^20], -sin(1))", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{
 				Device:    dev,
-				GradTrack: false,
+				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			y := x.Cos()
+
 			err = tensor.BackPropagate(y)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if y.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
+			g := x.Gradient()
+
+			h, err := tensor.Full([]int{1, n}, -math.Sin(1.), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		// ============================== extra functionalities ==============================
+		t.Run("[1,2^10] tensor filled with 1 | concurrent repeated Cos() over every iteration | never errors and always equal", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{1, n}, math.Cos(1.), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						y := x.Cos()
+
+						if eq, err := y.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
 
 		// ============================== side effects ==============================
 
-		// ============================== validations ==============================
+		t.Run("grad-tracked [3,4] tensor | Cos() then ResetGradient(source, false) | result is still gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Cos()
+
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
 	})
 }
 

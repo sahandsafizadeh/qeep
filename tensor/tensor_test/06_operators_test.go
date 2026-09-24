@@ -3390,7 +3390,105 @@ func TestTanh(t *testing.T) {
 			}
 		})
 
+		t.Run("[3,4] tensor | Tanh() then Device() | returns the device the input was created on", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Tanh()
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("untracked [3,4] tensor | Tanh() | y is not gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Tanh()
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked [3,4] tensor | Tanh() | y is gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Tanh()
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
 		// =============== gradients ===============
+
+		t.Run("grad-tracked [3,4] tensor | Tanh() | Gradient() returns nil", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Tanh()
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("untracked [3,4] tensor | Tanh() | Gradient() returns nil", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Tanh()
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("untracked [3,4] tensor | Tanh() then BackPropagate | gradient is nil", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Tanh()
+
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
 
 		t.Run("Full(nil, 0) grad-tracked | Tanh then BackPropagate | gradient of x is sech²(0) = 1", func(t *testing.T) {
 			x, err := tensor.Full(nil, 0., &tensor.Config{
@@ -3402,6 +3500,7 @@ func TestTanh(t *testing.T) {
 			}
 
 			y := x.Tanh()
+
 			err = tensor.BackPropagate(y)
 			if err != nil {
 				t.Fatal(err)
@@ -3409,10 +3508,7 @@ func TestTanh(t *testing.T) {
 
 			g := x.Gradient()
 
-			h, err := tensor.Full(nil, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h, err := tensor.Full(nil, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3434,6 +3530,7 @@ func TestTanh(t *testing.T) {
 			}
 
 			y := x.Tanh()
+
 			err = tensor.BackPropagate(y)
 			if err != nil {
 				t.Fatal(err)
@@ -3441,10 +3538,7 @@ func TestTanh(t *testing.T) {
 
 			g := x.Gradient()
 
-			h, err := tensor.Full(nil, math.Pow(math.Cosh(1.), -2), &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h, err := tensor.Full(nil, math.Pow(math.Cosh(1.), -2), &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -3456,31 +3550,120 @@ func TestTanh(t *testing.T) {
 			}
 		})
 
-		t.Run("x untracked | Tanh then BackPropagate | gradient of y is nil", func(t *testing.T) {
-			x, err := tensor.Full(nil, 0., &tensor.Config{
+		// ============================== extra functionalities ==============================
+
+		t.Run("large [1,2^20] tensor filled with 1 | Tanh() | returns Full([1,2^20], tanh(1))", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Tanh()
+
+			h, err := tensor.Full([]int{1, n}, math.Tanh(1.), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := y.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("large grad-tracked [1,2^20] tensor filled with 1 | Tanh() then BackPropagate | gradient of x is Full([1,2^20], sech²(1))", func(t *testing.T) {
+			n := 1 << 20
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{
 				Device:    dev,
-				GradTrack: false,
+				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			y := x.Tanh()
+
 			err = tensor.BackPropagate(y)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if y.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
+			g := x.Gradient()
+
+			h, err := tensor.Full([]int{1, n}, math.Pow(math.Cosh(1.), -2), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		// ============================== extra functionalities ==============================
+		t.Run("[1,2^10] tensor filled with 1 | concurrent repeated Tanh() over every iteration | never errors and always equal", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{1, n}, math.Tanh(1.), &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						y := x.Tanh()
+
+						if eq, err := y.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
 
 		// ============================== side effects ==============================
 
-		// ============================== validations ==============================
+		t.Run("grad-tracked [3,4] tensor | Tanh() then ResetGradient(source, false) | result is still gradient-tracked", func(t *testing.T) {
+			x, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y := x.Tanh()
+
+			err = tensor.ResetGradient(x, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
 	})
 }
 

@@ -1560,7 +1560,7 @@ func TestSin(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi÷6 | Sin() | returns 0.5", func(t *testing.T) {
+		t.Run("scalar tensor with value π÷6 | Sin() | returns 0.5", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/6, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -1580,7 +1580,7 @@ func TestSin(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi÷2 | Sin() | returns 1", func(t *testing.T) {
+		t.Run("scalar tensor with value π÷2 | Sin() | returns 1", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/2, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -1922,7 +1922,7 @@ func TestCos(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi÷3 | Cos() | returns 0.5", func(t *testing.T) {
+		t.Run("scalar tensor with value π÷3 | Cos() | returns 0.5", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/3, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -1942,7 +1942,7 @@ func TestCos(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi÷2 | Cos() | returns 0", func(t *testing.T) {
+		t.Run("scalar tensor with value π÷2 | Cos() | returns 0", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/2, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -2284,7 +2284,7 @@ func TestTan(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi÷4 | Tan() | returns 1", func(t *testing.T) {
+		t.Run("scalar tensor with value π÷4 | Tan() | returns 1", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/4, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)

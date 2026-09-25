@@ -6,7 +6,6 @@
 // Tensor implementations must support automatic gradient computation using the gradtrack package.
 // Every tensor must maintain a valid gradient state (i.e., a GradContext), which must be the only mutable part of a tensor.
 // Because of this, tensors are safe for concurrent use during inference; concurrent use is unsafe only while training and updating gradients.
-// After backpropagation, the GradContext becomes invalid and must be explicitly reset.
 package tensor
 
 import (
@@ -88,6 +87,11 @@ func BackPropagate(t Tensor) error {
 	return dispatch.BackPropagate(t)
 }
 
+// ResetGradient replaces t's gradient context with a fresh one, discarding any accumulated gradient.
+func ResetGradient(t Tensor, tracked bool) error {
+	return dispatch.ResetGradient(t, tracked)
+}
+
 // Save writes tensor's elements and shape to path. Gradient state is not stored.
 func Save(t Tensor, path string) error {
 	return dispatch.Save(t, path)
@@ -98,7 +102,7 @@ func RunTestLogicOnDevices(testLogic func(Device)) {
 	dispatch.RunTestLogicOnDevices(testLogic)
 }
 
-// RunTestLogicCrossDevice is a test helper that runs testLogic on every ordered pair of distinct available devices.
+// RunTestLogicCrossDevice is a test helper that runs testLogic on every pair of available devices.
 func RunTestLogicCrossDevice(testLogic func(Device, Device)) {
 	dispatch.RunTestLogicCrossDevice(testLogic)
 }

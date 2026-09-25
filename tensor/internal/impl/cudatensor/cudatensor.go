@@ -780,10 +780,6 @@ func (t *CUDATensor) GradientTracked() bool {
 	return t.gctx.Tracked()
 }
 
-func (t *CUDATensor) ResetGradContext(tracked bool) {
-	t.gctx = gradtrack.NewGradContext(tracked)
-}
-
 /*---------- internal methods ----------*/
 
 func (t *CUDATensor) GradientContext() *gradtrack.GradContext {

@@ -242,31 +242,29 @@ func Save(t core.Tensor, path string) (err error) {
 	return nil
 }
 
-func Load(path string, conf *core.Config) (t core.Tensor, err error) {
-	conf, err = toValidConfig(conf)
+func BackPropagate(t core.Tensor) (err error) {
+	err = validateImplementation(t)
 	if err != nil {
-		return t, fmt.Errorf("Load tensor config data validation failed: %w", err)
+		return fmt.Errorf("BackPropagate tensor implementation validation failed: %w", err)
 	}
 
-	s, err := persist.Load(path)
+	err = gradtrack.BackPropagate(t)
 	if err != nil {
-		return t, fmt.Errorf("Load operation failed: %w", err)
+		return fmt.Errorf("BackPropagate operation failed: %w", err)
 	}
 
-	switch conf.Device {
-	case core.CPU:
-		t, err = cputensor.Import(s, conf.GradTrack)
-	case core.CUDA:
-		t, err = cudatensor.Import(s, conf.GradTrack)
-	default:
-		panic("unreachable: unsupported device")
-	}
+	return nil
+}
 
+func ResetGradient(t core.Tensor, tracked bool) (err error) {
+	err = validateImplementation(t)
 	if err != nil {
-		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+		return fmt.Errorf("ResetGradient tensor implementation validation failed: %w", err)
 	}
 
-	return t, nil
+	gradtrack.ResetGradient(t, tracked)
+
+	return nil
 }
 
 func RunTestLogicOnDevices(testLogic func(core.Device)) {

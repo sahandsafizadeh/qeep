@@ -20,6 +20,10 @@ func (gctx *GradContext) Gradient() core.Tensor {
 	return gctx.gradient
 }
 
+func (gctx *GradContext) Reset(tracked bool) {
+	*gctx = *NewGradContext(tracked)
+}
+
 func anyIsBPDirty(ts ...core.Tensor) bool {
 	for _, t := range ts {
 		gctx := gradContextOf(t)

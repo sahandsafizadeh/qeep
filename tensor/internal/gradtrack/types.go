@@ -5,6 +5,7 @@ import "github.com/sahandsafizadeh/qeep/tensor/internal/core"
 type gctxTensor interface {
 	core.Tensor
 	GradientContext() *GradContext
+	ResetGradContext(tracked bool)
 }
 
 type GradContext struct {

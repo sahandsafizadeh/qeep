@@ -6,6 +6,22 @@ import (
 	"github.com/sahandsafizadeh/qeep/tensor"
 )
 
+func TestResetGradient(t *testing.T) {
+	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
+
+		// ============================== validations ==============================
+
+		t.Run("nil tensor | ResetGradient | returns error: unsupported tensor implementation", func(t *testing.T) {
+			err := tensor.ResetGradient(nil, true)
+			if err == nil {
+				t.Fatal("expected error because of nil input tensor")
+			} else if err.Error() != "ResetGradient tensor implementation validation failed: unsupported tensor implementation" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+	})
+}
+
 func TestBackPropagate(t *testing.T) {
 	tensor.RunTestLogicOnDevices(func(dev tensor.Device) {
 

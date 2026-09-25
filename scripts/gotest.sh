@@ -20,7 +20,7 @@ echo -e "${CYAN}▶ Running tests with coverage...${NC}"
 echo -e "----------------------------------------"
 
 cover_pkgs=$(go list -tags="$GO_BUILD_TAGS" ./... | grep -v "$EXCLUDED_COVERAGE_PATH" | tr '\n' ',')
-go test -tags="$GO_BUILD_TAGS" -coverpkg="$cover_pkgs" -coverprofile="$PROFILE_OUT" ./... || {
+go test -race -tags="$GO_BUILD_TAGS" -coverpkg="$cover_pkgs" -coverprofile="$PROFILE_OUT" ./... || {
     echo -e "${RED}❌ Tests failed.${NC}"
     exit 1
 }

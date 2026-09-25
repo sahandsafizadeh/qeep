@@ -170,23 +170,23 @@ func Transfer(t core.Tensor, to core.Device) (o core.Tensor, err error) {
 		return o, fmt.Errorf("Transfer tensor implementation validation failed: %w", err)
 	}
 
+	if t.Device() == to {
+		return t, nil
+	}
+
+	expt := t.(core.ExporterTensor)
+
 	switch to {
-	case core.CPU, core.CUDA:
+	case core.CPU:
+		o, err = cputensor.Transfer(expt)
+	case core.CUDA:
+		o, err = cudatensor.Transfer(expt)
 	default:
 		return o, fmt.Errorf("Transfer target device validation failed: invalid input device")
 	}
 
-	switch to {
-	case core.CPU:
-		o, err = cputensor.Transfer(t.(core.ExporterTensor))
-	case core.CUDA:
-		o, err = cudatensor.Transfer(t.(core.ExporterTensor))
-	default:
-		panic("unreachable: unsupported device")
-	}
-
 	if err != nil {
-		return t, fmt.Errorf("%s initialization: %w", to, err)
+		return o, fmt.Errorf("%s initialization: %w", to, err)
 	}
 
 	return o, nil

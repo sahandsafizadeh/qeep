@@ -81,6 +81,11 @@ func Concat(ts []Tensor, dim int) (Tensor, error) {
 	return dispatch.Concat(ts, dim)
 }
 
+// Save writes tensor's elements and shape to path. Gradient state is not stored.
+func Save(t Tensor, path string) error {
+	return dispatch.Save(t, path)
+}
+
 // BackPropagate computes gradients for t and all tensors in its computation graph.
 // After backpropagation, gradient contexts become invalid and must be reset before reuse.
 func BackPropagate(t Tensor) error {
@@ -90,11 +95,6 @@ func BackPropagate(t Tensor) error {
 // ResetGradient replaces t's gradient context with a fresh one, discarding any accumulated gradient.
 func ResetGradient(t Tensor, tracked bool) error {
 	return dispatch.ResetGradient(t, tracked)
-}
-
-// Save writes tensor's elements and shape to path. Gradient state is not stored.
-func Save(t Tensor, path string) error {
-	return dispatch.Save(t, path)
 }
 
 // RunTestLogicOnDevices is a test helper that runs testLogic on every available device.

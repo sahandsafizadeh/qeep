@@ -3,5 +3,6 @@
   "go.lintTool": "golangci-lint",
   "go.lintFlags": ["--fast"],
   "go.lintOnSave": "package",
-  "go.testFlags": ["-race"]
+  "go.testFlags": ["-race"],
+  "go.testTimeout": "120s"
 }

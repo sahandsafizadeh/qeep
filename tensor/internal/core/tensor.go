@@ -65,7 +65,6 @@ type Tensor interface {
 	/*---------------- gradient ---------------*/
 	Gradient() Tensor
 	GradientTracked() bool
-	ResetGradContext(bool)
 }
 
 type ExporterTensor interface {

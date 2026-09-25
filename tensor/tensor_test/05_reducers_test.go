@@ -2250,7 +2250,7 @@ func TestMaxAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [2,4,4] tensor with rows 1/2/3/4 | MaxAlong(1) then BackPropagate | gradient concentrates on max row", func(t *testing.T) {
+		t.Run("grad-tracked [2,4,4] tensor with rows [1, 2, 3, 4] | MaxAlong(1) then BackPropagate | gradient concentrates on max row", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{1., 1., 1., 1.},
@@ -2340,7 +2340,7 @@ func TestMaxAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [3,2,2] tensor with batch values 1/3/2 | MaxAlong(0) then BackPropagate | gradient is 1 at batch-max positions, 0 elsewhere", func(t *testing.T) {
+		t.Run("grad-tracked [3,2,2] tensor with batch values [1, 3, 2] | MaxAlong(0) then BackPropagate | gradient is 1 at batch-max positions, 0 elsewhere", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{1., 1.},
@@ -2864,7 +2864,7 @@ func TestMinAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [2,4,4] tensor with rows 1/2/3/4 | MinAlong(1) then BackPropagate | gradient concentrates on min row", func(t *testing.T) {
+		t.Run("grad-tracked [2,4,4] tensor with rows [1, 2, 3, 4] | MinAlong(1) then BackPropagate | gradient concentrates on min row", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{1., 1., 1., 1.},
@@ -2954,7 +2954,7 @@ func TestMinAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [3,2,2] tensor with batch values 2/1/3 | MinAlong(0) then BackPropagate | gradient is 1 at batch-min positions, 0 elsewhere", func(t *testing.T) {
+		t.Run("grad-tracked [3,2,2] tensor with batch values [2, 1, 3] | MinAlong(0) then BackPropagate | gradient is 1 at batch-min positions, 0 elsewhere", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{2., 2.},
@@ -3729,7 +3729,7 @@ func TestAvgAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("large grad-tracked [1,2^20] tensor | AvgAlong(1) then BackPropagate | gradient of x is 1/2^20 everywhere [1,2^20]", func(t *testing.T) {
+		t.Run("large grad-tracked [1,2^20] tensor | AvgAlong(1) then BackPropagate | gradient of x is 1÷2^20 everywhere [1,2^20]", func(t *testing.T) {
 			n := 1 << 20
 
 			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{
@@ -4385,7 +4385,7 @@ func TestVarAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [2,3,4] tensor with rows 1/2/3 | VarAlong(1) then BackPropagate | gradient reflects variance derivative", func(t *testing.T) {
+		t.Run("grad-tracked [2,3,4] tensor with rows [1, 2, 3] | VarAlong(1) then BackPropagate | gradient reflects variance derivative", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{1., 1., 1., 1.},
@@ -4439,7 +4439,7 @@ func TestVarAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [2,4,3] tensor with rows 1/2/3/4 | VarAlong(1) then BackPropagate | gradient reflects variance derivative analytically", func(t *testing.T) {
+		t.Run("grad-tracked [2,4,3] tensor with rows [1, 2, 3, 4] | VarAlong(1) then BackPropagate | gradient reflects variance derivative analytically", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{1., 1., 1.},
@@ -5212,7 +5212,7 @@ func TestStdAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [2,3,4] tensor with rows 1/2/3 | StdAlong(1) then BackPropagate | gradient is -0.5/0/0.5 pattern", func(t *testing.T) {
+		t.Run("grad-tracked [2,3,4] tensor with rows [1, 2, 3] | StdAlong(1) then BackPropagate | gradient is [-0.5, 0, 0.5] pattern", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{1., 1., 1., 1.},
@@ -5266,7 +5266,7 @@ func TestStdAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [2,4,3] tensor with asymmetric group 1/1/1/5 | StdAlong(1) then BackPropagate | gradient is -1/6 on the three equal rows and 1/2 on the outlier", func(t *testing.T) {
+		t.Run("grad-tracked [2,4,3] tensor with asymmetric group [1, 1, 1, 5] | StdAlong(1) then BackPropagate | gradient is -1÷6 on the three equal rows and 1÷2 on the outlier", func(t *testing.T) {
 			x, err := tensor.Of([][][]float64{
 				{
 					{1., 1., 1.},
@@ -6007,7 +6007,7 @@ func TestMeanAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("large grad-tracked [1,2^20] tensor | MeanAlong(1) then BackPropagate | gradient of x is 1/2^20 everywhere [1,2^20]", func(t *testing.T) {
+		t.Run("large grad-tracked [1,2^20] tensor | MeanAlong(1) then BackPropagate | gradient of x is 1÷2^20 everywhere [1,2^20]", func(t *testing.T) {
 			n := 1 << 20
 
 			x, err := tensor.Full([]int{1, n}, 1., &tensor.Config{

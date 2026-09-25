@@ -860,7 +860,7 @@ func TestExp(t *testing.T) {
 			}
 		})
 
-		t.Run("1D tensor [-1, 0, 1] | Exp() | returns [1/e, 1, e]", func(t *testing.T) {
+		t.Run("1D tensor [-1, 0, 1] | Exp() | returns [1÷e, 1, e]", func(t *testing.T) {
 			x, err := tensor.Of([]float64{-1., 0., 1.}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -1560,7 +1560,7 @@ func TestSin(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi/6 | Sin() | returns 0.5", func(t *testing.T) {
+		t.Run("scalar tensor with value pi÷6 | Sin() | returns 0.5", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/6, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -1580,7 +1580,7 @@ func TestSin(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi/2 | Sin() | returns 1", func(t *testing.T) {
+		t.Run("scalar tensor with value pi÷2 | Sin() | returns 1", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/2, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -1720,7 +1720,7 @@ func TestSin(t *testing.T) {
 			}
 		})
 
-		t.Run("Full(nil, π/3) grad-tracked | Sin then BackPropagate | gradient of x is cos(π/3)", func(t *testing.T) {
+		t.Run("Full(nil, π÷3) grad-tracked | Sin then BackPropagate | gradient of x is cos(π÷3)", func(t *testing.T) {
 			x, err := tensor.Full(nil, math.Pi/3, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -1782,7 +1782,7 @@ func TestSin(t *testing.T) {
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("large [1,2^20] tensor filled with π/2 | Sin() | returns Full([1,2^20], 1)", func(t *testing.T) {
+		t.Run("large [1,2^20] tensor filled with π÷2 | Sin() | returns Full([1,2^20], 1)", func(t *testing.T) {
 			n := 1 << 20
 
 			x, err := tensor.Full([]int{1, n}, math.Pi/2, &tensor.Config{Device: dev})
@@ -1804,7 +1804,7 @@ func TestSin(t *testing.T) {
 			}
 		})
 
-		t.Run("large grad-tracked [1,2^20] tensor filled with π/2 | Sin() then BackPropagate | gradient of x is Full([1,2^20], 0)", func(t *testing.T) {
+		t.Run("large grad-tracked [1,2^20] tensor filled with π÷2 | Sin() then BackPropagate | gradient of x is Full([1,2^20], 0)", func(t *testing.T) {
 			n := 1 << 20
 
 			x, err := tensor.Full([]int{1, n}, math.Pi/2, &tensor.Config{
@@ -1836,7 +1836,7 @@ func TestSin(t *testing.T) {
 			}
 		})
 
-		t.Run("[1,2^10] tensor filled with π/2 | concurrent repeated Sin() over every iteration | never errors and always equal", func(t *testing.T) {
+		t.Run("[1,2^10] tensor filled with π÷2 | concurrent repeated Sin() over every iteration | never errors and always equal", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4
@@ -1922,7 +1922,7 @@ func TestCos(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi/3 | Cos() | returns 0.5", func(t *testing.T) {
+		t.Run("scalar tensor with value pi÷3 | Cos() | returns 0.5", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/3, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -1942,7 +1942,7 @@ func TestCos(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi/2 | Cos() | returns 0", func(t *testing.T) {
+		t.Run("scalar tensor with value pi÷2 | Cos() | returns 0", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/2, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -2082,7 +2082,7 @@ func TestCos(t *testing.T) {
 			}
 		})
 
-		t.Run("Full(nil, π/6) grad-tracked | Cos then BackPropagate | gradient of x is -sin(π/6)", func(t *testing.T) {
+		t.Run("Full(nil, π÷6) grad-tracked | Cos then BackPropagate | gradient of x is -sin(π÷6)", func(t *testing.T) {
 			x, err := tensor.Full(nil, math.Pi/6, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -2284,7 +2284,7 @@ func TestTan(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value pi/4 | Tan() | returns 1", func(t *testing.T) {
+		t.Run("scalar tensor with value pi÷4 | Tan() | returns 1", func(t *testing.T) {
 			x, err := tensor.Of(math.Pi/4, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -2454,7 +2454,7 @@ func TestTan(t *testing.T) {
 			}
 		})
 
-		t.Run("Full(nil, π/4) grad-tracked | Tan then BackPropagate | gradient of x is sec²(π/4)", func(t *testing.T) {
+		t.Run("Full(nil, π÷4) grad-tracked | Tan then BackPropagate | gradient of x is sec²(π÷4)", func(t *testing.T) {
 			x, err := tensor.Full(nil, math.Pi/4, &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
@@ -2626,7 +2626,7 @@ func TestSinh(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value 1 | Sinh() | returns (e^2-1)/(2e)", func(t *testing.T) {
+		t.Run("scalar tensor with value 1 | Sinh() | returns (e^2-1)÷(2e)", func(t *testing.T) {
 			x, err := tensor.Of(1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -2968,7 +2968,7 @@ func TestCosh(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value 1 | Cosh() | returns (e^2+1)/(2e)", func(t *testing.T) {
+		t.Run("scalar tensor with value 1 | Cosh() | returns (e^2+1)÷(2e)", func(t *testing.T) {
 			x, err := tensor.Of(1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -3350,7 +3350,7 @@ func TestTanh(t *testing.T) {
 			}
 		})
 
-		t.Run("scalar tensor with value 1 | Tanh() | returns (e^2-1)/(e^2+1)", func(t *testing.T) {
+		t.Run("scalar tensor with value 1 | Tanh() | returns (e^2-1)÷(e^2+1)", func(t *testing.T) {
 			x, err := tensor.Of(1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)

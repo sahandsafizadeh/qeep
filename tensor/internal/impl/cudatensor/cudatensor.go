@@ -311,9 +311,10 @@ func (t *CUDATensor) Argmax(dim int) (o core.Tensor, err error) {
 		return o, fmt.Errorf("Argmax input dimension validation failed: %w", err)
 	}
 
-	o = t.argmax(dim)
+	r := t.argmax(dim)
+	r.gctx = gradtrack.NewGradContext(false)
 
-	return o, nil
+	return r, nil
 }
 
 func (t *CUDATensor) Argmin(dim int) (o core.Tensor, err error) {
@@ -322,9 +323,10 @@ func (t *CUDATensor) Argmin(dim int) (o core.Tensor, err error) {
 		return o, fmt.Errorf("Argmin input dimension validation failed: %w", err)
 	}
 
-	o = t.argmin(dim)
+	r := t.argmin(dim)
+	r.gctx = gradtrack.NewGradContext(false)
 
-	return o, nil
+	return r, nil
 }
 
 func (t *CUDATensor) SumAlong(dim int) (o core.Tensor, err error) {

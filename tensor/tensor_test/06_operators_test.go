@@ -12669,7 +12669,7 @@ func TestPatch(t *testing.T) {
 			}
 		})
 
-		t.Run("Full([4,3,2], 0.) and Full([3,2,1], 1.) | Patch(nil) | patches from origin with nil ranges", func(t *testing.T) {
+		t.Run("Full([4,3,2], 0.) and Full([3,2,1], 2.) | Patch(nil) | patches from origin with nil ranges", func(t *testing.T) {
 			x1, err := tensor.Full([]int{4, 3, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -12717,7 +12717,7 @@ func TestPatch(t *testing.T) {
 			}
 		})
 
-		t.Run("Full([4,3,2], 0.) and Full([3,2,1], 1.) | Patch([{1,4}]) | patches from dim-0 offset 1", func(t *testing.T) {
+		t.Run("Full([4,3,2], 0.) and Full([3,2,1], 3.) | Patch([{1,4}]) | patches from dim-0 offset 1", func(t *testing.T) {
 			x1, err := tensor.Full([]int{4, 3, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -12765,7 +12765,7 @@ func TestPatch(t *testing.T) {
 			}
 		})
 
-		t.Run("Full([4,3,2], 0.) and Full([3,2,1], 1.) | Patch([{1,4},{1,3},{1,2}]) | patches from all-dimension offset", func(t *testing.T) {
+		t.Run("Full([4,3,2], 0.) and Full([3,2,1], 4.) | Patch([{1,4},{1,3},{1,2}]) | patches from all-dimension offset", func(t *testing.T) {
 			x1, err := tensor.Full([]int{4, 3, 2}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -12842,7 +12842,187 @@ func TestPatch(t *testing.T) {
 			}
 		})
 
+		t.Run("[3,4] tensor | Patch([3,4] tensor) then Device() | returns the device the inputs were created on", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("two untracked [3,4] tensors | Patch | y is not gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked [3,4] tensor and untracked [3,4] tensor | Patch | y is gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
+		t.Run("untracked [3,4] tensor and grad-tracked [3,4] tensor | Patch | y is gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
 		// =============== gradients ===============
+
+		t.Run("two grad-tracked Full(nil) tensors | Patch(nil) | Gradient() returns nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("two untracked Full(nil) tensors | Patch(nil) | Gradient() returns nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("two untracked Full(nil) tensors | Patch(nil) then BackPropagate | gradient is nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
 
 		t.Run("grad-tracked [4,5] x1 and grad-tracked [3,3] x2 | Patch([1:4],[1:4]) then BackPropagate | gradient of x1 is 1 outside patch window, 0 inside; gradient of x2 is all-ones", func(t *testing.T) {
 			x1, err := tensor.Of([][]float64{
@@ -12886,10 +13066,7 @@ func TestPatch(t *testing.T) {
 				{1., 0., 0., 0., 1.},
 				{1., 0., 0., 0., 1.},
 				{1., 0., 0., 0., 1.},
-			}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -12897,10 +13074,7 @@ func TestPatch(t *testing.T) {
 				{1., 1., 1.},
 				{1., 1., 1.},
 				{1., 1., 1.},
-			}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -12970,17 +13144,11 @@ func TestPatch(t *testing.T) {
 					{1., 1., 1., 1.},
 					{1., 1., 1., 1.},
 				},
-			}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			h2, err := tensor.Full([]int{2, 2, 2}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h2, err := tensor.Full([]int{2, 2, 2}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -12997,22 +13165,48 @@ func TestPatch(t *testing.T) {
 			}
 		})
 
-		t.Run("grad-tracked [4,5] x1, [2,2] x2 and [2,2] x3 | sequential Patch then BackPropagate | gradients flow through both patch levels", func(t *testing.T) {
-			x1, err := tensor.Full([]int{4, 5}, 1., &tensor.Config{
+		// ============================== extra functionalities ==============================
+
+		t.Run("large [1,2^20] tensors filled with 3 and 2 | Patch(nil) | returns Full([1,2^20], 2)", func(t *testing.T) {
+			n := 1 << 20
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := y.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("large [1,2^20] grad-tracked tensors filled with 3 and 2 | Patch(nil) then BackPropagate | gradient of x1 is Full([1,2^20], 0), gradient of x2 is Full([1,2^20], 1)", func(t *testing.T) {
+			n := 1 << 20
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
 			if err != nil {
 				t.Fatal(err)
 			}
-			x2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x3, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{
 				Device:    dev,
 				GradTrack: true,
 			})
@@ -13020,11 +13214,7 @@ func TestPatch(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			mid, err := x1.Patch([]tensor.Range{{From: 0, To: 2}, {From: 0, To: 2}}, x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := mid.Patch([]tensor.Range{{From: 2, To: 4}, {From: 2, To: 4}}, x3)
+			y, err := x1.Patch(nil, x2)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -13035,31 +13225,12 @@ func TestPatch(t *testing.T) {
 
 			g1 := x1.Gradient()
 			g2 := x2.Gradient()
-			g3 := x3.Gradient()
 
-			h1, err := tensor.Of([][]float64{
-				{0., 0., 1., 1., 1.},
-				{0., 0., 1., 1., 1.},
-				{1., 1., 0., 0., 1.},
-				{1., 1., 0., 0., 1.},
-			}, &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h1, err := tensor.Full([]int{1, n}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			h2, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			h3, err := tensor.Full([]int{2, 2}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h2, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -13074,106 +13245,113 @@ func TestPatch(t *testing.T) {
 			} else if !eq {
 				t.Fatal("expected tensors to be equal")
 			}
-			if eq, err := g3.Equals(h3); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
 		})
 
-		t.Run("x1 untracked, x2 grad-tracked | Patch(nil) then BackPropagate | gradient of y is non-nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+		t.Run("[1,2^10] tensors filled with 3 and 2 | concurrent repeated Patch over every iteration | never errors and always equal", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			y, err := x1.Patch(nil, x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
+			h, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			if y.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						y, err := x1.Patch(nil, x2)
+						if err != nil {
+							t.Error(err)
+							return
+						}
+
+						if eq, err := y.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
 			}
+			wg.Wait()
 		})
-
-		t.Run("x1 grad-tracked, x2 untracked | Patch(nil) then BackPropagate | gradient of y is non-nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x1.Patch(nil, x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if y.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			}
-		})
-
-		t.Run("x1 untracked, x2 untracked | Patch(nil) then BackPropagate | gradient of y is nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x1.Patch(nil, x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if y.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			}
-		})
-
-		// ============================== extra functionalities ==============================
 
 		// ============================== side effects ==============================
+
+		t.Run("grad-tracked [3,4] x1 and untracked [3,4] x2 | Patch(nil) then ResetGradient(x1, false) | result is still gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x1, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
+		t.Run("untracked [3,4] x1 and grad-tracked [3,4] x2 | Patch(nil) then ResetGradient(x2, false) | result is still gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Patch(nil, x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x2, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
 
 		// ============================== validations ==============================
 
@@ -13241,6 +13419,186 @@ func TestPatch(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error because of incompatible index with target tensor")
 			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to fall in range [0,3] at dimension (0): got [2,4)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full(nil, 0.) and Full(nil, 0.) scalars | Patch with 1 range | returns error: index length exceeds dimensions", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible index len (1) with dimension len (0)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index length to be smaller than or equal to the number of dimensions: (1) > (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1], 0.) and Full([1], 0.) | Patch with 2 ranges | returns error: index length exceeds dimensions", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{}, {}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of incompatible index len (2) with dimension len (1)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index length to be smaller than or equal to the number of dimensions: (2) > (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1], 0.) and Full([1], 0.) | Patch([{1,1}]) | returns error: from not smaller than to", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{From: 1, To: 1}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of to index (1) not being larger than from index (1)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected range 'From' to be smaller than 'To' except for special both (0) case (fetchAll): (1) >= (1) at dimension (0)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1], 0.) and Full([1], 0.) | Patch([{-1,0}]) | returns error: negative from index at dimension 0", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{From: -1, To: 0}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of negative from index (-1)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to be in range [0,1) at dimension (0): got (-1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1], 0.) and Full([1], 0.) | Patch([{1,2}]) | returns error: from index 1 out of range [0,1)", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{From: 1, To: 2}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of from index (1) being out of range [0,1) at dimension (0)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to be in range [0,1) at dimension (0): got (1)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([1], 0.) and Full([1], 0.) | Patch([{0,2}]) | returns error: to index 2 out of range [0,1]", func(t *testing.T) {
+			x1, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{From: 0, To: 2}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of to index (2) being out of range [0,1) at dimension (0)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to fall in range [0,1] at dimension (0): got [0,2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([2], 0.) and Full([1], 0.) | Patch([{2,3}]) | returns error: from index 2 out of range [0,2)", func(t *testing.T) {
+			x1, err := tensor.Full([]int{2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{From: 2, To: 3}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of from index (2) being out of range [0,2) at dimension (0)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to be in range [0,2) at dimension (0): got (2)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([2,2], 0.) and Full([2,1], 0.) | Patch([{0,2},{0,3}]) second range invalid | returns error: to index 3 out of range [0,2] at dimension 1", func(t *testing.T) {
+			x1, err := tensor.Full([]int{2, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{2, 1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{From: 0, To: 2}, {From: 0, To: 3}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of to index (3) being out of range [0,2) at dimension (1)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to fall in range [0,2] at dimension (1): got [0,3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([2,2,2], 0.) and Full([2,1,2], 0.) | Patch([{0,2},{3,4},{0,2}]) second range invalid | returns error: from index 3 out of range [0,2) at dimension 1", func(t *testing.T) {
+			x1, err := tensor.Full([]int{2, 2, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{2, 1, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{From: 0, To: 2}, {From: 3, To: 4}, {From: 0, To: 2}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of from index (3) being out of range [0,2) at dimension (1)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to be in range [0,2) at dimension (1): got (3)" {
+				t.Fatal("unexpected error message returned")
+			}
+		})
+
+		t.Run("Full([2,2,2], 0.) and Full([2,2,1], 0.) | Patch([{0,2},{0,2},{1,5}]) third range invalid | returns error: to index 5 out of range [0,2] at dimension 2", func(t *testing.T) {
+			x1, err := tensor.Full([]int{2, 2, 2}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{2, 2, 1}, 0., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = x1.Patch([]tensor.Range{{From: 0, To: 2}, {From: 0, To: 2}, {From: 1, To: 5}}, x2)
+			if err == nil {
+				t.Fatal("expected error because of to index (5) being out of range [0,2) at dimension (2)")
+			} else if err.Error() != "Patch input index or tensors' dimension validation failed: index incompatible with target tensor: expected index to fall in range [0,2] at dimension (2): got [1,5)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

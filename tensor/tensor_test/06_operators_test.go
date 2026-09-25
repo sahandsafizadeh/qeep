@@ -9039,7 +9039,7 @@ func TestAdd(t *testing.T) {
 			}
 		})
 
-		t.Run("zeros [3,1,5,1] | Add(ones [1,2,3,4,1,6]) | broadcasts to ones [1,2,3,4,5,6]", func(t *testing.T) {
+		t.Run("zeros [3,1,5,1] | Add(ones [1,2,3,4,1,6]) | returns ones [1,2,3,4,5,6] (broadcast)", func(t *testing.T) {
 			x1, err := tensor.Full([]int{3, 1, 5, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -9089,7 +9089,187 @@ func TestAdd(t *testing.T) {
 			}
 		})
 
+		t.Run("[3,4] tensor | Add([3,4] tensor) then Device() | returns the device the inputs were created on", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("two untracked [3,4] tensors | Add | y is not gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked [3,4] tensor and untracked [3,4] tensor | Add | y is gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
+		t.Run("untracked [3,4] tensor and grad-tracked [3,4] tensor | Add | y is gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
 		// =============== gradients ===============
+
+		t.Run("two grad-tracked Full(nil) tensors | Add | Gradient() returns nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("two untracked Full(nil) tensors | Add | Gradient() returns nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("two untracked Full(nil) tensors | Add then BackPropagate | gradient is nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
 
 		t.Run("Full(nil, 3) and Full(nil, 2) both grad-tracked | Add then BackPropagate | gradient of x1 is 1, gradient of x2 is 1", func(t *testing.T) {
 			x1, err := tensor.Full(nil, 3., &tensor.Config{
@@ -9119,17 +9299,11 @@ func TestAdd(t *testing.T) {
 			g1 := x1.Gradient()
 			g2 := x2.Gradient()
 
-			h1, err := tensor.Full(nil, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h1, err := tensor.Full(nil, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			h2, err := tensor.Full(nil, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h2, err := tensor.Full(nil, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -9166,49 +9340,7 @@ func TestAdd(t *testing.T) {
 
 			g := x.Gradient()
 
-			h, err := tensor.Full(nil, 2., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := g.Equals(h); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
-		})
-
-		t.Run("same grad-tracked scalar tensor | x.Add(x).Add(x) then BackPropagate | gradient of x is 3", func(t *testing.T) {
-			x, err := tensor.Full(nil, 2., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			tmp, err := x.Add(x)
-			if err != nil {
-				t.Fatal(err)
-			}
-			y, err := tmp.Add(x)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			g := x.Gradient()
-
-			h, err := tensor.Full(nil, 3., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h, err := tensor.Full(nil, 2., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -9248,17 +9380,11 @@ func TestAdd(t *testing.T) {
 			g1 := x1.Gradient()
 			g2 := x2.Gradient()
 
-			h1, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h1, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			h2, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h2, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -9275,103 +9401,193 @@ func TestAdd(t *testing.T) {
 			}
 		})
 
-		t.Run("x1 untracked, x2 grad-tracked | Add then BackPropagate | gradient of y is non-nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x1.Add(x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if y.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			}
-		})
-
-		t.Run("x1 grad-tracked, x2 untracked | Add then BackPropagate | gradient of y is non-nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x1.Add(x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if y.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			}
-		})
-
-		t.Run("x1 untracked, x2 untracked | Add then BackPropagate | gradient of y is nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x1.Add(x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if y.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			}
-		})
-
 		// ============================== extra functionalities ==============================
+
+		t.Run("large [1,2^20] tensors filled with 3 and 2 | Add | returns Full([1,2^20], 5)", func(t *testing.T) {
+			n := 1 << 20
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{1, n}, 5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := y.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("large [1,2^20] grad-tracked tensors filled with 3 and 2 | Add then BackPropagate | gradient of each is Full([1,2^20], 1)", func(t *testing.T) {
+			n := 1 << 20
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g1 := x1.Gradient()
+			g2 := x2.Gradient()
+
+			h, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g1.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := g2.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("[1,2^10] tensors filled with 3 and 2 | concurrent repeated Add over every iteration | never errors and always equal", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{1, n}, 5., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						y, err := x1.Add(x2)
+						if err != nil {
+							t.Error(err)
+							return
+						}
+
+						if eq, err := y.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
 
 		// ============================== side effects ==============================
 
+		t.Run("grad-tracked [3,4] x1 and untracked [3,4] x2 | Add then ResetGradient(x1, false) | result is still gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x1, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
+		t.Run("untracked [3,4] x1 and grad-tracked [3,4] x2 | Add then ResetGradient(x2, false) | result is still gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Add(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x2, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
 		// ============================== validations ==============================
 
-		t.Run("nil input tensor | Add(nil) | returns error: device mismatch", func(t *testing.T) {
+		t.Run("[1,5,2,4,1] tensor | Add(nil) | returns error: device mismatch", func(t *testing.T) {
 			x, err := tensor.Full([]int{1, 5, 2, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -9652,7 +9868,7 @@ func TestSub(t *testing.T) {
 			}
 		})
 
-		t.Run("ones [3,1,5,1] | Sub(zeros [1,2,3,4,1,6]) | broadcasts to ones [1,2,3,4,5,6]", func(t *testing.T) {
+		t.Run("ones [3,1,5,1] | Sub(zeros [1,2,3,4,1,6]) | returns ones [1,2,3,4,5,6] (broadcast)", func(t *testing.T) {
 			x1, err := tensor.Full([]int{3, 1, 5, 1}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -9702,7 +9918,187 @@ func TestSub(t *testing.T) {
 			}
 		})
 
+		t.Run("[3,4] tensor | Sub([3,4] tensor) then Device() | returns the device the inputs were created on", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if d := y.Device(); d != dev {
+				t.Fatalf("expected tensor's device to be (%s), got (%s)", dev, d)
+			}
+		})
+
+		t.Run("two untracked [3,4] tensors | Sub | y is not gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.GradientTracked() {
+				t.Fatal("expected gradient not to be tracked")
+			}
+		})
+
+		t.Run("grad-tracked [3,4] tensor and untracked [3,4] tensor | Sub | y is gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
+		t.Run("untracked [3,4] tensor and grad-tracked [3,4] tensor | Sub | y is gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to be tracked")
+			}
+		})
+
 		// =============== gradients ===============
+
+		t.Run("two grad-tracked Full(nil) tensors | Sub | Gradient() returns nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("two untracked Full(nil) tensors | Sub | Gradient() returns nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 7., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
+
+		t.Run("two untracked Full(nil) tensors | Sub then BackPropagate | gradient is nil", func(t *testing.T) {
+			x1, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full(nil, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if y.Gradient() != nil {
+				t.Fatal("expected gradient to be nil")
+			}
+		})
 
 		t.Run("Full(nil, 3) and Full(nil, 2) both grad-tracked | Sub then BackPropagate | gradient of x1 is 1, gradient of x2 is -1", func(t *testing.T) {
 			x1, err := tensor.Full(nil, 3., &tensor.Config{
@@ -9732,17 +10128,11 @@ func TestSub(t *testing.T) {
 			g1 := x1.Gradient()
 			g2 := x2.Gradient()
 
-			h1, err := tensor.Full(nil, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h1, err := tensor.Full(nil, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			h2, err := tensor.Full(nil, -1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h2, err := tensor.Full(nil, -1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -9779,45 +10169,7 @@ func TestSub(t *testing.T) {
 
 			g := x.Gradient()
 
-			h, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if eq, err := g.Equals(h); err != nil {
-				t.Fatal(err)
-			} else if !eq {
-				t.Fatal("expected tensors to be equal")
-			}
-		})
-
-		t.Run("Full(nil, 3) grad-tracked | x.Sub(x.Scale(2)) then BackPropagate | gradient of x is -1", func(t *testing.T) {
-			x, err := tensor.Full(nil, 3., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x.Sub(x.Scale(2.))
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			g := x.Gradient()
-
-			h, err := tensor.Full(nil, -1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h, err := tensor.Full(nil, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -9857,17 +10209,11 @@ func TestSub(t *testing.T) {
 			g1 := x1.Gradient()
 			g2 := x2.Gradient()
 
-			h1, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h1, err := tensor.Full([]int{2, 3}, 1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
-			h2, err := tensor.Full([]int{2, 3}, -1., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
+			h2, err := tensor.Full([]int{2, 3}, -1., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -9884,103 +10230,197 @@ func TestSub(t *testing.T) {
 			}
 		})
 
-		t.Run("x1 untracked, x2 grad-tracked | Sub then BackPropagate | gradient of y is non-nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x1.Sub(x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if y.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			}
-		})
-
-		t.Run("x1 grad-tracked, x2 untracked | Sub then BackPropagate | gradient of y is non-nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: true,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x1.Sub(x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if y.Gradient() == nil {
-				t.Fatal("expected gradient not to be nil")
-			}
-		})
-
-		t.Run("x1 untracked, x2 untracked | Sub then BackPropagate | gradient of y is nil", func(t *testing.T) {
-			x1, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-			x2, err := tensor.Full(nil, 0., &tensor.Config{
-				Device:    dev,
-				GradTrack: false,
-			})
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			y, err := x1.Sub(x2)
-			if err != nil {
-				t.Fatal(err)
-			}
-			err = tensor.BackPropagate(y)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if y.Gradient() != nil {
-				t.Fatal("expected gradient to be nil")
-			}
-		})
-
 		// ============================== extra functionalities ==============================
+
+		t.Run("large [1,2^20] tensors filled with 3 and 2 | Sub | returns Full([1,2^20], 1)", func(t *testing.T) {
+			n := 1 << 20
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := y.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("large [1,2^20] grad-tracked tensors filled with 3 and 2 | Sub then BackPropagate | gradient of x1 is Full([1,2^20], 1), gradient of x2 is Full([1,2^20], -1)", func(t *testing.T) {
+			n := 1 << 20
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.BackPropagate(y)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			g1 := x1.Gradient()
+			g2 := x2.Gradient()
+
+			h1, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			h2, err := tensor.Full([]int{1, n}, -1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := g1.Equals(h1); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+			if eq, err := g2.Equals(h2); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
+			}
+		})
+
+		t.Run("[1,2^10] tensors filled with 3 and 2 | concurrent repeated Sub over every iteration | never errors and always equal", func(t *testing.T) {
+			const (
+				n  = 1 << 10
+				ni = 1 << 4
+				ng = 1 << 8
+			)
+
+			x1, err := tensor.Full([]int{1, n}, 3., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{1, n}, 2., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			h, err := tensor.Full([]int{1, n}, 1., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var wg sync.WaitGroup
+			for range ng {
+				wg.Go(func() {
+					for range ni {
+						y, err := x1.Sub(x2)
+						if err != nil {
+							t.Error(err)
+							return
+						}
+
+						if eq, err := y.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
+						}
+					}
+				})
+			}
+			wg.Wait()
+		})
 
 		// ============================== side effects ==============================
 
+		t.Run("grad-tracked [3,4] x1 and untracked [3,4] x2 | Sub then ResetGradient(x1, false) | result is still gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x1, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
+		t.Run("untracked [3,4] x1 and grad-tracked [3,4] x2 | Sub then ResetGradient(x2, false) | result is still gradient-tracked", func(t *testing.T) {
+			x1, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: false,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			x2, err := tensor.Full([]int{3, 4}, 1., &tensor.Config{
+				Device:    dev,
+				GradTrack: true,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			y, err := x1.Sub(x2)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = tensor.ResetGradient(x2, false)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !y.GradientTracked() {
+				t.Fatal("expected gradient to still be tracked")
+			}
+		})
+
 		// ============================== validations ==============================
 
-		t.Run("nil input tensor | Sub(nil) | returns error: device mismatch", func(t *testing.T) {
+		t.Run("[1,5,2,4,1] tensor | Sub(nil) | returns error: device mismatch", func(t *testing.T) {
 			x, err := tensor.Full([]int{1, 5, 2, 4, 1}, 0., &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)

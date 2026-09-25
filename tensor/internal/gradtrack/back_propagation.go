@@ -16,6 +16,10 @@ func BackPropagate(t core.Tensor) (err error) {
 	return nil
 }
 
+func ResetGradient(t core.Tensor, tracked bool) {
+	gradContextOf(t).Reset(tracked)
+}
+
 func backpropagate(t core.Tensor) (err error) {
 	root := createBackpropRoot(t)
 	states := prepareBackpropStates(root)

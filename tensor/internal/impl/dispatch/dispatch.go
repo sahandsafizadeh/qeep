@@ -164,6 +164,33 @@ func Of[T core.InputDataType](data T, conf *core.Config) (t core.Tensor, err err
 	return t, nil
 }
 
+func Load(path string, conf *core.Config) (t core.Tensor, err error) {
+	conf, err = toValidConfig(conf)
+	if err != nil {
+		return t, fmt.Errorf("Load tensor config data validation failed: %w", err)
+	}
+
+	snapshot, err := persist.Load(path)
+	if err != nil {
+		return t, fmt.Errorf("Load operation failed: %w", err)
+	}
+
+	switch conf.Device {
+	case core.CPU:
+		t, err = cputensor.Import(snapshot, conf.GradTrack)
+	case core.CUDA:
+		t, err = cudatensor.Import(snapshot, conf.GradTrack)
+	default:
+		panic("unreachable: unsupported device")
+	}
+
+	if err != nil {
+		return t, fmt.Errorf("%s initialization: %w", conf.Device, err)
+	}
+
+	return t, nil
+}
+
 func Transfer(t core.Tensor, to core.Device) (o core.Tensor, err error) {
 	err = validateImplementation(t)
 	if err != nil {

@@ -214,27 +214,15 @@ func Concat(ts []core.Tensor, dim int) (t core.Tensor, err error) {
 	return t, nil
 }
 
-func BackPropagate(t core.Tensor) (err error) {
-	err = validateImplementation(t)
-	if err != nil {
-		return fmt.Errorf("BackPropagate tensor implementation validation failed: %w", err)
-	}
-
-	err = gradtrack.BackPropagate(t)
-	if err != nil {
-		return fmt.Errorf("BackPropagate operation failed: %w", err)
-	}
-
-	return nil
-}
-
 func Save(t core.Tensor, path string) (err error) {
 	err = validateImplementation(t)
 	if err != nil {
 		return fmt.Errorf("Save tensor implementation validation failed: %w", err)
 	}
 
-	err = persist.Save(t.(core.ExporterTensor).Export(), path)
+	snapshot := t.(core.ExporterTensor).Export()
+
+	err = persist.Save(snapshot, path)
 	if err != nil {
 		return fmt.Errorf("Save operation failed: %w", err)
 	}

@@ -281,10 +281,6 @@ func (t *CUDATensor) GradientTracked() bool {
 	panic(message)
 }
 
-func (t *CUDATensor) ResetGradContext(tracked bool) {
-	panic(message)
-}
-
 /*---------- internal methods ----------*/
 
 func (t *CUDATensor) GradientContext() *gradtrack.GradContext {

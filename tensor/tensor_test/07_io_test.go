@@ -3,10 +3,10 @@ package tensor_test
 import (
 	"archive/zip"
 	"encoding/binary"
+	"fmt"
 	"math"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"testing"
 

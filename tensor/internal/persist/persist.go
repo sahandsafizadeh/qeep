@@ -29,7 +29,7 @@ func Save(s *core.Snapshot, path string) (err error) {
 		}
 	}()
 
-	err = writeTensorArchive(s, f)
+	err = writeTensorArchive(f, s)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func Load(path string) (s *core.Snapshot, err error) {
 	return s, nil
 }
 
-func writeTensorArchive(s *core.Snapshot, f *os.File) (err error) {
+func writeTensorArchive(f *os.File, s *core.Snapshot) (err error) {
 	zw := zip.NewWriter(f)
 
 	defer func() {
@@ -66,12 +66,12 @@ func writeTensorArchive(s *core.Snapshot, f *os.File) (err error) {
 		}
 	}()
 
-	err = writeBinaryFile(toint8s(s.Dims), metaFileName, zw)
+	err = writeBinaryFile(zw, metaFileName, toint8s(s.Dims))
 	if err != nil {
 		return fmt.Errorf("failed to write %q file: %w", metaFileName, err)
 	}
 
-	err = writeBinaryFile(s.Data, dataFileName, zw)
+	err = writeBinaryFile(zw, dataFileName, s.Data)
 	if err != nil {
 		return fmt.Errorf("failed to write %q file: %w", dataFileName, err)
 	}
@@ -79,54 +79,18 @@ func writeTensorArchive(s *core.Snapshot, f *os.File) (err error) {
 	return nil
 }
 
-func toInt64s(dims []int) (ds []int64) {
-	ds = make([]int64, len(dims))
-	for i, d := range dims {
-		ds[i] = int64(d)
-	}
-
-	return ds
-}
-
-// maxDimSize keeps dimension sizes read from file within a platform independent range,
-// so that the number of elements they imply can be computed without overflow.
-const maxDimSize = math.MaxInt32
-
-// Load reads a tensor snapshot from the zip archive at path, as written by Save.
-// The ".qeep" extension is appended to path if it's missing.
-func Load(path string) (s *core.Snapshot, err error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open tensor file: %w", err)
-	}
-
-	defer func() {
-		cerr := f.Close()
-		if err == nil && cerr != nil {
-			err = fmt.Errorf("failed to close tensor file: %w", cerr)
-		}
-	}()
-
+func readTensorArchive(f *os.File) (s *core.Snapshot, err error) {
 	info, err := f.Stat()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read tensor file information: %w", err)
 	}
 
-	s, err = readArchive(f, info.Size())
-	if err != nil {
-		return nil, err
-	}
-
-	return s, nil
-}
-
-func readArchive(r io.ReaderAt, size int64) (s *core.Snapshot, err error) {
-	zr, err := zip.NewReader(r, size)
+	zr, err := zip.NewReader(f, info.Size())
 	if err != nil {
 		return nil, fmt.Errorf("failed to open tensor archive: %w", err)
 	}
 
-	meta, err := readBinaryFile[int64](zr, metaFileName)
+	meta, err := readBinaryFile[int8](zr, metaFileName)
 	if err != nil {
 		return nil, err
 	}
@@ -142,13 +106,13 @@ func readArchive(r io.ReaderAt, size int64) (s *core.Snapshot, err error) {
 	}, nil
 }
 
-func writeBinaryFile[T int8 | float64](data []T, name string, zw *zip.Writer) (err error) {
+func writeBinaryFile[T int8 | float64](zw *zip.Writer, name string, content []T) (err error) {
 	w, err := zw.Create(name)
 	if err != nil {
 		return err
 	}
 
-	err = binary.Write(w, binary.LittleEndian, data)
+	err = binary.Write(w, binary.LittleEndian, content)
 	if err != nil {
 		return err
 	}
@@ -156,10 +120,10 @@ func writeBinaryFile[T int8 | float64](data []T, name string, zw *zip.Writer) (e
 	return nil
 }
 
-func readBinaryFile[T int64 | float64](zr *zip.Reader, name string) (data []T, err error) {
+func readBinaryFile[T int8 | float64](zr *zip.Reader, name string) (content []T, err error) {
 	f, err := zr.Open(name)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open %q file of tensor archive: %w", name, err)
+		return content, err
 	}
 
 	defer func() {
@@ -182,14 +146,14 @@ func readBinaryFile[T int64 | float64](zr *zip.Reader, name string) (data []T, e
 		return nil, fmt.Errorf("corrupt %q file of tensor archive: size (%d) is not a multiple of (%d)", name, size, elemSize)
 	}
 
-	data = make([]T, size/elemSize)
+	content = make([]T, size/elemSize)
 
-	err = binary.Read(f, binary.LittleEndian, data)
+	err = binary.Read(f, binary.LittleEndian, content)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read %q file of tensor archive: %w", name, err)
 	}
 
-	return data, nil
+	return content, nil
 }
 
 func toint8s(dims []int) (res []int8) {

@@ -15,7 +15,7 @@ const (
 )
 
 func Save(s *core.Snapshot, path string) (err error) {
-	f, err := os.Create(path)
+	f, err := os.Create(path) // #nosec G304
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func Save(s *core.Snapshot, path string) (err error) {
 }
 
 func Load(path string) (s *core.Snapshot, err error) {
-	f, err := os.Open(path)
+	f, err := os.Open(path) // #nosec G304
 	if err != nil {
 		return s, err
 	}

@@ -127,9 +127,8 @@ func readBinaryFile[T int8 | float64](zr *zip.Reader, name string) (content []T,
 	}
 
 	defer func() {
-		cerr := f.Close()
-		if err == nil && cerr != nil {
-			err = fmt.Errorf("failed to close %q file of tensor archive: %w", name, cerr)
+		if dferr := f.Close(); err == nil && dferr != nil {
+			err = dferr
 		}
 	}()
 
@@ -139,14 +138,15 @@ func readBinaryFile[T int8 | float64](zr *zip.Reader, name string) (content []T,
 	}
 
 	var elem T
-	elemSize := int64(binary.Size(elem))
+	elemsize := binary.Size(elem)
+	unitsize := int64(elemsize)
+	filesize := info.Size()
 
-	size := info.Size()
-	if size%elemSize != 0 {
-		return nil, fmt.Errorf("corrupt %q file of tensor archive: size (%d) is not a multiple of (%d)", name, size, elemSize)
+	if filesize%unitsize != 0 {
+		return content, fmt.Errorf("corrupt file in archive: file size (%d) is not a multiple of expected unit (%d)", filesize, unitsize)
 	}
 
-	content = make([]T, size/elemSize)
+	content = make([]T, filesize/unitsize)
 
 	err = binary.Read(f, binary.LittleEndian, content)
 	if err != nil {
@@ -155,6 +155,8 @@ func readBinaryFile[T int8 | float64](zr *zip.Reader, name string) (content []T,
 
 	return content, nil
 }
+
+/* ----- helpers ----- */
 
 func toint8s(dims []int) (res []int8) {
 	res = make([]int8, len(dims))

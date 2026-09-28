@@ -82,22 +82,22 @@ func writeTensorArchive(f *os.File, s *core.Snapshot) (err error) {
 func readTensorArchive(f *os.File) (s *core.Snapshot, err error) {
 	info, err := f.Stat()
 	if err != nil {
-		return nil, fmt.Errorf("failed to read tensor file information: %w", err)
+		return s, err
 	}
 
 	zr, err := zip.NewReader(f, info.Size())
 	if err != nil {
-		return nil, fmt.Errorf("failed to open tensor archive: %w", err)
+		return s, err
 	}
 
 	meta, err := readBinaryFile[int8](zr, metaFileName)
 	if err != nil {
-		return nil, err
+		return s, fmt.Errorf("failed to read %q file: %w", metaFileName, err)
 	}
 
 	data, err := readBinaryFile[float64](zr, dataFileName)
 	if err != nil {
-		return nil, err
+		return s, fmt.Errorf("failed to read %q file: %w", dataFileName, err)
 	}
 
 	return &core.Snapshot{
@@ -135,7 +135,7 @@ func readBinaryFile[T int8 | float64](zr *zip.Reader, name string) (content []T,
 
 	info, err := f.Stat()
 	if err != nil {
-		return nil, fmt.Errorf("failed to read %q file information of tensor archive: %w", name, err)
+		return content, err
 	}
 
 	var elem T
@@ -150,7 +150,7 @@ func readBinaryFile[T int8 | float64](zr *zip.Reader, name string) (content []T,
 
 	err = binary.Read(f, binary.LittleEndian, content)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read %q file of tensor archive: %w", name, err)
+		return content, err
 	}
 
 	return content, nil

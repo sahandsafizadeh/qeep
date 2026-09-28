@@ -66,7 +66,7 @@ func writeTensorArchive(s *core.Snapshot, f *os.File) (err error) {
 		}
 	}()
 
-	err = writeBinaryFile(toint64(s.Dims), metaFileName, zw)
+	err = writeBinaryFile(toint64s(s.Dims), metaFileName, zw)
 	if err != nil {
 		return fmt.Errorf("failed to write %q file: %w", metaFileName, err)
 	}
@@ -167,7 +167,7 @@ func readBinaryFile[T int64 | float64](zr *zip.Reader, name string) (data []T, e
 
 	data = make([]T, size/elemSize)
 
-	err = binary.Read(f, byteOrder, data)
+	err = binary.Read(f, binary.LittleEndian, data)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read %q file of tensor archive: %w", name, err)
 	}
@@ -175,50 +175,20 @@ func readBinaryFile[T int64 | float64](zr *zip.Reader, name string) (data []T, e
 	return data, nil
 }
 
-func toSnapshot(data []float64, meta []int64) (s *core.Snapshot, err error) {
-	dims, err := toDims(meta)
-	if err != nil {
-		return nil, err
+func toint64s(dims []int) (res []int64) {
+	res = make([]int64, len(dims))
+	for i, d := range dims {
+		res[i] = int64(d)
 	}
 
-	err = validateDataLenAgainstDims(len(data), dims)
-	if err != nil {
-		return nil, err
-	}
-
-	return &core.Snapshot{
-		Dims: dims,
-		Data: data,
-	}, nil
+	return res
 }
 
-func toDims(ms []int64) (dims []int, err error) {
-	dims = make([]int, len(ms))
-	for i, m := range ms {
-		if m <= 0 || m > maxDimSize {
-			return nil, fmt.Errorf("corrupt tensor archive: invalid dimension size (%d) at position (%d)", m, i)
-		}
-
-		dims[i] = int(m)
+func toints(dims []int64) (res []int) {
+	res = make([]int, len(dims))
+	for i, d := range dims {
+		res[i] = int(d)
 	}
 
-	return dims, nil
-}
-
-func validateDataLenAgainstDims(n int, dims []int) (err error) {
-	count := 1
-	for _, d := range dims {
-		count *= d
-
-		// dimensions are capped: leaving early keeps the product from overflowing
-		if count > n {
-			break
-		}
-	}
-
-	if count != n {
-		return fmt.Errorf("corrupt tensor archive: dimensions %v do not match the number of elements (%d)", dims, n)
-	}
-
-	return nil
+	return res
 }

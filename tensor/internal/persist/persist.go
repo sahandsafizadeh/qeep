@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"encoding/binary"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
@@ -30,7 +29,7 @@ func Save(s *core.Snapshot, path string) (err error) {
 		}
 	}()
 
-	err = writeArchive(f, s)
+	err = writeTensorArchive(s, f)
 	if err != nil {
 		return err
 	}
@@ -38,36 +37,43 @@ func Save(s *core.Snapshot, path string) (err error) {
 	return nil
 }
 
-func writeArchive(w io.Writer, s *core.Snapshot) (err error) {
-	zw := zip.NewWriter(w)
-
-	err = writeBinaryFile(zw, dataFileName, s.Data)
+func Load(path string) (s *core.Snapshot, err error) {
+	f, err := os.Open(path)
 	if err != nil {
-		return err
+		return s, err
 	}
 
-	err = writeBinaryFile(zw, metaFileName, toInt64s(s.Dims))
+	defer func() {
+		if dferr := f.Close(); err == nil && dferr != nil {
+			err = dferr
+		}
+	}()
+
+	s, err = readTensorArchive(f)
 	if err != nil {
-		return err
+		return s, err
 	}
 
-	err = zw.Close()
-	if err != nil {
-		return fmt.Errorf("failed to close tensor archive: %w", err)
-	}
-
-	return nil
+	return s, nil
 }
 
-func writeBinaryFile(zw *zip.Writer, name string, data any) (err error) {
-	w, err := zw.Create(name)
+func writeTensorArchive(s *core.Snapshot, f *os.File) (err error) {
+	zw := zip.NewWriter(f)
+
+	defer func() {
+		if dferr := zw.Close(); err == nil && dferr != nil {
+			err = dferr
+		}
+	}()
+
+	err = writeBinaryFile(toint64(s.Dims), metaFileName, zw)
 	if err != nil {
-		return fmt.Errorf("failed to create %q file of tensor archive: %w", name, err)
+		return fmt.Errorf("failed to write %q file: %w", metaFileName, err)
 	}
 
-	err = binary.Write(w, byteOrder, data)
+	err = writeBinaryFile(s.Data, dataFileName, zw)
 	if err != nil {
-		return fmt.Errorf("failed to write %q file of tensor archive: %w", name, err)
+		return fmt.Errorf("failed to write %q file: %w", dataFileName, err)
 	}
 
 	return nil

@@ -66,7 +66,7 @@ func writeTensorArchive(f *os.File, s *core.Snapshot) (err error) {
 		}
 	}()
 
-	err = writeBinaryFile(zw, metaFileName, toint8s(s.Dims))
+	err = writeBinaryFile(zw, metaFileName, toint64s(s.Dims))
 	if err != nil {
 		return fmt.Errorf("failed to write %q file: %w", metaFileName, err)
 	}
@@ -90,7 +90,7 @@ func readTensorArchive(f *os.File) (s *core.Snapshot, err error) {
 		return s, err
 	}
 
-	meta, err := readBinaryFile[int8](zr, metaFileName)
+	meta, err := readBinaryFile[int64](zr, metaFileName)
 	if err != nil {
 		return s, fmt.Errorf("failed to read %q file: %w", metaFileName, err)
 	}
@@ -106,7 +106,7 @@ func readTensorArchive(f *os.File) (s *core.Snapshot, err error) {
 	}, nil
 }
 
-func writeBinaryFile[T int8 | float64](zw *zip.Writer, name string, content []T) (err error) {
+func writeBinaryFile[T int64 | float64](zw *zip.Writer, name string, content []T) (err error) {
 	w, err := zw.Create(name)
 	if err != nil {
 		return err
@@ -120,7 +120,7 @@ func writeBinaryFile[T int8 | float64](zw *zip.Writer, name string, content []T)
 	return nil
 }
 
-func readBinaryFile[T int8 | float64](zr *zip.Reader, name string) (content []T, err error) {
+func readBinaryFile[T int64 | float64](zr *zip.Reader, name string) (content []T, err error) {
 	f, err := zr.Open(name)
 	if err != nil {
 		return content, err
@@ -158,16 +158,16 @@ func readBinaryFile[T int8 | float64](zr *zip.Reader, name string) (content []T,
 
 /* ----- helpers ----- */
 
-func toint8s(dims []int) (res []int8) {
-	res = make([]int8, len(dims))
+func toint64s(dims []int) (res []int64) {
+	res = make([]int64, len(dims))
 	for i, d := range dims {
-		res[i] = int8(d)
+		res[i] = int64(d)
 	}
 
 	return res
 }
 
-func toints(dims []int8) (res []int) {
+func toints(dims []int64) (res []int) {
 	res = make([]int, len(dims))
 	for i, d := range dims {
 		res[i] = int(d)

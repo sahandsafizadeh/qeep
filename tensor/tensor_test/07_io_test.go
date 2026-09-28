@@ -1226,7 +1226,7 @@ func TestSaveLoad(t *testing.T) {
 			}
 		})
 
-		t.Run("valid tensor | Save to unwritable path | returns error: failed to create tensor file", func(t *testing.T) {
+		t.Run("valid tensor | Save to unwritable path | returns error: no such file or directory", func(t *testing.T) {
 			x, err := tensor.Of([]float64{1., 2.}, &tensor.Config{Device: dev})
 			if err != nil {
 				t.Fatal(err)
@@ -1237,7 +1237,7 @@ func TestSaveLoad(t *testing.T) {
 			err = tensor.Save(x, path)
 			if err == nil {
 				t.Fatal("expected error because of unwritable path")
-			} else if !strings.HasPrefix(err.Error(), "Save operation failed: failed to create tensor file") {
+			} else if err.Error() != fmt.Sprintf("Save operation failed: open %s: no such file or directory", path) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -1263,18 +1263,18 @@ func TestSaveLoad(t *testing.T) {
 			}
 		})
 
-		t.Run("non-existing path | Load | returns error: failed to open tensor file", func(t *testing.T) {
+		t.Run("non-existing path | Load | returns error: no such file or directory", func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "does-not-exist.qeep")
 
 			_, err := tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because of non-existing path")
-			} else if !strings.HasPrefix(err.Error(), "Load operation failed: failed to open tensor file") {
+			} else if err.Error() != fmt.Sprintf("Load operation failed: open %s: no such file or directory", path) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("non-archive file | Load | returns error: failed to open tensor archive", func(t *testing.T) {
+		t.Run("non-archive file | Load | returns error: not a valid zip file", func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "tensor.qeep")
 
 			err := os.WriteFile(path, []byte("this is not a zip archive"), 0o644)
@@ -1285,12 +1285,12 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because path is not an archive")
-			} else if !strings.HasPrefix(err.Error(), "Load operation failed: failed to open tensor archive") {
+			} else if err.Error() != "Load operation failed: zip: not a valid zip file" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("archive missing expected files | Load | returns error: failed to open \"meta\" file", func(t *testing.T) {
+		t.Run("archive missing expected files | Load | returns error: failed to read \"meta\" file", func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "tensor.qeep")
 
 			err := createTensorArchive(path, map[string][]byte{
@@ -1303,12 +1303,12 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because archive is missing expected files")
-			} else if err.Error() != "Load operation failed: failed to open \"meta\" file of tensor archive: open meta: file does not exist" {
+			} else if err.Error() != "Load operation failed: failed to read \"meta\" file: open meta: file does not exist" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("archive missing expected files | Load | returns error: failed to open \"data\" file", func(t *testing.T) {
+		t.Run("archive missing expected files | Load | returns error: failed to read \"data\" file", func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "tensor.qeep")
 
 			err := createTensorArchive(path, map[string][]byte{
@@ -1321,7 +1321,7 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because archive is missing expected files")
-			} else if err.Error() != "Load operation failed: failed to open \"data\" file of tensor archive: open data: file does not exist" {
+			} else if err.Error() != "Load operation failed: failed to read \"data\" file: open data: file does not exist" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -1340,12 +1340,12 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because meta content is not a valid int64 encoding")
-			} else if err.Error() != "Load operation failed: corrupt \"meta\" file of tensor archive: size (4) is not a multiple of (8)" {
+			} else if err.Error() != "Load operation failed: failed to read \"meta\" file: corrupt file in archive: file size (4) is not a multiple of expected unit (8)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
 
-		t.Run("archive with unreadable meta content | Load | returns error: invalid dimension size", func(t *testing.T) {
+		t.Run("archive with non-positive dimension in meta | Load | returns error: expected positive dimension sizes", func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "tensor.qeep")
 
 			err := createTensorArchive(path, map[string][]byte{
@@ -1359,7 +1359,7 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because meta content is not a valid dimension")
-			} else if err.Error() != "Load operation failed: corrupt tensor archive: invalid dimension size (0) at position (0)" {
+			} else if err.Error() != "CPU initialization: Import snapshot validation failed: expected positive dimension sizes: got (0) at position (0)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -1378,7 +1378,7 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because data content can't be read into a data slice")
-			} else if err.Error() != "Load operation failed: corrupt \"data\" file of tensor archive: size (4) is not a multiple of (8)" {
+			} else if err.Error() != "Load operation failed: failed to read \"data\" file: corrupt file in archive: file size (4) is not a multiple of expected unit (8)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -1397,7 +1397,7 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because dims don't match the data")
-			} else if err.Error() != "Load operation failed: corrupt tensor archive: dimensions [3] do not match the number of elements (2)" {
+			} else if err.Error() != "CPU initialization: Import snapshot validation failed: expected number of elements in snapshot data to match its dims: (2) != (3)" {
 				t.Fatal("unexpected error message returned")
 			}
 		})

@@ -5,27 +5,28 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
-	"math"
 	"os"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 )
 
+const (
+	metaFileName = "meta"
+	dataFileName = "data"
+)
+
 func Save(s *core.Snapshot, path string) (err error) {
 	f, err := os.Create(path)
 	if err != nil {
-		return fmt.Errorf("failed to create tensor file: %w", err)
+		return err
 	}
 
 	defer func() {
-		cerr := f.Close()
-		if err == nil && cerr != nil {
-			err = fmt.Errorf("failed to close tensor file: %w", cerr)
+		if dferr := f.Close(); err == nil && dferr != nil {
+			err = dferr
 		}
-
-		// a partially written file is not loadable: leave nothing behind
 		if err != nil {
-			os.Remove(path)
+			_ = os.Remove(path)
 		}
 	}()
 

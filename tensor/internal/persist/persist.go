@@ -66,7 +66,7 @@ func writeTensorArchive(s *core.Snapshot, f *os.File) (err error) {
 		}
 	}()
 
-	err = writeBinaryFile(toint64s(s.Dims), metaFileName, zw)
+	err = writeBinaryFile(toint8s(s.Dims), metaFileName, zw)
 	if err != nil {
 		return fmt.Errorf("failed to write %q file: %w", metaFileName, err)
 	}
@@ -136,7 +136,24 @@ func readArchive(r io.ReaderAt, size int64) (s *core.Snapshot, err error) {
 		return nil, err
 	}
 
-	return toSnapshot(data, meta)
+	return &core.Snapshot{
+		Dims: toints(meta),
+		Data: data,
+	}, nil
+}
+
+func writeBinaryFile[T int8 | float64](data []T, name string, zw *zip.Writer) (err error) {
+	w, err := zw.Create(name)
+	if err != nil {
+		return err
+	}
+
+	err = binary.Write(w, binary.LittleEndian, data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func readBinaryFile[T int64 | float64](zr *zip.Reader, name string) (data []T, err error) {
@@ -175,16 +192,16 @@ func readBinaryFile[T int64 | float64](zr *zip.Reader, name string) (data []T, e
 	return data, nil
 }
 
-func toint64s(dims []int) (res []int64) {
-	res = make([]int64, len(dims))
+func toint8s(dims []int) (res []int8) {
+	res = make([]int8, len(dims))
 	for i, d := range dims {
-		res[i] = int64(d)
+		res[i] = int8(d)
 	}
 
 	return res
 }
 
-func toints(dims []int64) (res []int) {
+func toints(dims []int8) (res []int) {
 	res = make([]int, len(dims))
 	for i, d := range dims {
 		res[i] = int(d)

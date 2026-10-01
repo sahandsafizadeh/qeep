@@ -113,7 +113,7 @@ func tensorFromData(data any) *CUDATensor {
 	return newCUDATensor(dims, data_c)
 }
 
-func tensorFromSnapshot(s *core.Snapshot) *CPUTensor {
+func tensorFromSnapshot(s *core.Snapshot) *CUDATensor {
 	dims := s.Dims
 	inputData := make([]C.double, len(s.Data))
 	for i, v := range s.Data {

@@ -1359,7 +1359,7 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because meta content is not a valid dimension")
-			} else if err.Error() != "CPU initialization: Import snapshot validation failed: expected positive dimension sizes: got (0) at position (0)" {
+			} else if err.Error() != fmt.Sprintf("%s initialization: Import snapshot validation failed: expected positive dimension sizes: got (0) at position (0)", dev) {
 				t.Fatal("unexpected error message returned")
 			}
 		})
@@ -1397,7 +1397,7 @@ func TestSaveLoad(t *testing.T) {
 			_, err = tensor.Load(path, &tensor.Config{Device: dev})
 			if err == nil {
 				t.Fatal("expected error because dims don't match the data")
-			} else if err.Error() != "CPU initialization: Import snapshot validation failed: expected number of elements in snapshot data to match its dims: (2) != (3)" {
+			} else if err.Error() != fmt.Sprintf("%s initialization: Import snapshot validation failed: expected number of elements in snapshot data to match its dims: (2) != (3)", dev) {
 				t.Fatal("unexpected error message returned")
 			}
 		})

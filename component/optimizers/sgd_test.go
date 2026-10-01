@@ -131,7 +131,9 @@ func TestSGD(t *testing.T) {
 			}
 
 			// step 2: grad=30, v=0.5*40+30=50, x = 11 - 0.1*50 = 6
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(2.).Scale(3.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -155,7 +157,9 @@ func TestSGD(t *testing.T) {
 			}
 
 			// step 3: grad=20, v=0.5*50+20=45, x = 6 - 0.1*45 = 1.5
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(2.).Scale(2.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -221,7 +225,9 @@ func TestSGD(t *testing.T) {
 			}
 
 			// step 2: grad=30, delta=30+0.2*94+0.5*60=78.8, x = 94 - 0.1*78.8 = 86.12
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(2.).Scale(3.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -245,7 +251,9 @@ func TestSGD(t *testing.T) {
 			}
 
 			// step 3: grad=20, delta=20+0.2*86.12+0.5*78.8=76.624, x = 86.12 - 0.1*76.624 = 78.4576
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(2.).Scale(2.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -307,7 +315,9 @@ func TestSGD(t *testing.T) {
 			}
 
 			// step 2: default momentum=0, grad=50, no velocity accumulation, x = 0 - 0.01*50 = -0.5
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(2.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -369,7 +379,9 @@ func TestSGD(t *testing.T) {
 			}
 
 			// step 2: default momentum=0, grad=50, no velocity accumulation, x = 1.5 - 0.01*50 = 1.0
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(2.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)

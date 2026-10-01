@@ -87,30 +87,40 @@ func (n *Node) Optimize(optimizer contract.Optimizer) (err error) {
 	return nil
 }
 
-func (n *Node) DisableGrad() {
+func (n *Node) DisableGrad() (err error) {
 	wl, ok := n.layer.(contract.WeightedLayer)
 	if !ok {
-		return
+		return nil
 	}
 
 	for _, w := range wl.Weights() {
 		// due to lazy weight initialization, weight might still need a Forward call
 		if wv := *w.Value; wv != nil {
-			wv.ResetGradContext(false)
+			err = tensor.ResetGradient(wv, false)
+			if err != nil {
+				return fmt.Errorf("disable grad operation on node: %w", err)
+			}
 		}
 	}
+
+	return nil
 }
 
-func (n *Node) EnableGrad() {
+func (n *Node) EnableGrad() (err error) {
 	wl, ok := n.layer.(contract.WeightedLayer)
 	if !ok {
-		return
+		return nil
 	}
 
 	for _, w := range wl.Weights() {
 		// due to lazy weight initialization, weight might still need a Forward call
 		if wv := *w.Value; wv != nil {
-			wv.ResetGradContext(w.Trainable)
+			err = tensor.ResetGradient(wv, w.Trainable)
+			if err != nil {
+				return fmt.Errorf("enable grad operation on node: %w", err)
+			}
 		}
 	}
+
+	return nil
 }

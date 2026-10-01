@@ -51,6 +51,7 @@ func NewSimple(x [][]float64, y [][]float64, conf *SimpleConfig) (bg *Simple, er
 
 func (bg *Simple) Reset() {
 	if bg.shuffle {
+		//#nosec G404 -- math/rand is used only to shuffle training data, not for anything security-sensitive
 		rand.Shuffle(len(bg.x), func(i, j int) {
 			bg.x[i], bg.x[j] = bg.x[j], bg.x[i]
 			bg.y[i], bg.y[j] = bg.y[j], bg.y[i]

@@ -55,7 +55,9 @@ func TestAdam(t *testing.T) {
 			}
 
 			// step 2: x = 1 → 0
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(4.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -79,7 +81,9 @@ func TestAdam(t *testing.T) {
 			}
 
 			// step 3: x = 0 → -1
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(4.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -146,7 +150,9 @@ func TestAdam(t *testing.T) {
 			}
 
 			// step 2: x = 2 → 1
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(4.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -170,7 +176,9 @@ func TestAdam(t *testing.T) {
 			}
 
 			// step 3: x = 1 → 0
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(4.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -293,7 +301,9 @@ func TestAdam(t *testing.T) {
 			}
 
 			// step 2: x ≈ 0.998
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(4.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)
@@ -373,7 +383,9 @@ func TestAdam(t *testing.T) {
 			}
 
 			// step 2: x ≈ 0.998
-			x.ResetGradContext(true)
+			if err := tensor.ResetGradient(x, true); err != nil {
+				t.Fatal(err)
+			}
 			y = x.Scale(4.).Scale(5.).Scale(5.)
 
 			err = tensor.BackPropagate(y)

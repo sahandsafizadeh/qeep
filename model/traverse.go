@@ -21,15 +21,13 @@ func (m *Model) optimize() (err error) {
 
 func (m *Model) disableGrad() (err error) {
 	return traverse(m.inputs, func(n *node.Node) error {
-		n.DisableGrad()
-		return nil
+		return n.DisableGrad()
 	})
 }
 
 func (m *Model) enableGrad() (err error) {
 	return traverse(m.inputs, func(n *node.Node) error {
-		n.EnableGrad()
-		return nil
+		return n.EnableGrad()
 	})
 }
 

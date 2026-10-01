@@ -227,9 +227,15 @@ func TestNode(t *testing.T) {
 			na.SetNLayer(2)
 
 			// ----- when -----
-			ni.EnableGrad()
-			nw.EnableGrad()
-			na.EnableGrad()
+			if err := ni.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
+			if err := nw.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
+			if err := na.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
 
 			if err := ni.Forward(); err != nil {
 				t.Fatal(err)
@@ -313,9 +319,15 @@ func TestNode(t *testing.T) {
 			na.SetNLayer(2)
 
 			// ----- when -----
-			ni.EnableGrad()
-			nw.EnableGrad()
-			na.EnableGrad()
+			if err := ni.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
+			if err := nw.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
+			if err := na.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
 
 			if err := ni.Forward(); err != nil {
 				t.Fatal(err)
@@ -410,9 +422,15 @@ func TestNode(t *testing.T) {
 			na.SetNLayer(2)
 
 			// ----- when -----
-			ni.EnableGrad()
-			nw.EnableGrad()
-			na.EnableGrad()
+			if err := ni.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
+			if err := nw.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
+			if err := na.EnableGrad(); err != nil {
+				t.Fatal(err)
+			}
 
 			if err := ni.Forward(); err != nil {
 				t.Fatal(err)
@@ -439,9 +457,15 @@ func TestNode(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			ni.DisableGrad()
-			nw.DisableGrad()
-			na.DisableGrad()
+			if err := ni.DisableGrad(); err != nil {
+				t.Fatal(err)
+			}
+			if err := nw.DisableGrad(); err != nil {
+				t.Fatal(err)
+			}
+			if err := na.DisableGrad(); err != nil {
+				t.Fatal(err)
+			}
 
 			if err := ni.Forward(); err != nil {
 				t.Fatal(err)

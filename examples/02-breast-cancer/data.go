@@ -66,6 +66,7 @@ func splitData(x [][]float64, y [][]float64) *dataSplit {
 	lenvl := int(float64(lend) * validDataRatio)
 	lente := int(float64(lend) * testDataRatio)
 
+	//#nosec G404 -- math/rand is used only to shuffle training data, not for anything security-sensitive
 	rand.Shuffle(lend, func(i, j int) {
 		x[i], x[j] = x[j], x[i]
 		y[i], y[j] = y[j], y[i]

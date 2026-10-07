@@ -8,7 +8,7 @@ fmt:
 lint:
 	@./scripts/golint.sh $(QEEP_BUILD_TAGS)
 
-cover:
+test:
 	@./scripts/gotest.sh $(QEEP_BUILD_TAGS)
 
 install_linters:

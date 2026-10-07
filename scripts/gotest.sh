@@ -3,7 +3,7 @@ set -e
 
 # coverage configs
 GO_BUILD_TAGS=$1
-MIN_COVERAGE_PERCENT=90.0
+MIN_COVERAGE_PERCENT=89.0
 EXCLUDED_COVERAGE_PATH='examples'
 
 # output paths

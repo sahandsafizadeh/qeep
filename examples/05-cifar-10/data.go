@@ -31,8 +31,7 @@ func prepareData() (data *dataSplit, err error) {
 	lend := len(xTrain)
 	lenvl := int(float64(lend) * validDataRatio)
 
-	//#nosec G404 -- math/rand is used only to shuffle training data, not for anything security-sensitive
-	rand.Shuffle(lend, func(i, j int) {
+	rand.Shuffle(lend, func(i, j int) { // #nosec G404
 		xTrain[i], xTrain[j] = xTrain[j], xTrain[i]
 		yTrain[i], yTrain[j] = yTrain[j], yTrain[i]
 	})

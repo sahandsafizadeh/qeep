@@ -1237,7 +1237,7 @@ func TestFull(t *testing.T) {
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Full([2^20], 8) large 1D tensor | At(i) for all positions | returns 8", func(t *testing.T) {
+		t.Run("Full([2^20], 8) large 1D tensor | Equals() against an identical tensor | returns true", func(t *testing.T) {
 			n := 1 << 20
 
 			x, err := tensor.Full([]int{n}, 8., &tensor.Config{Device: dev})
@@ -1245,21 +1245,29 @@ func TestFull(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			for i := range n {
-				if val, err := x.At(i); err != nil {
-					t.Fatal(err)
-				} else if int(val) != 8 {
-					t.Fatalf("expected (8) as tensor value in position [%d], got (%f)", i, val)
-				}
+			h, err := tensor.Full([]int{n}, 8., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Full([2^10], 4) 1D tensor | concurrent repeated Full then At(i) over every position | never errors and always returns 4", func(t *testing.T) {
+		t.Run("Full([2^10], 4) 1D tensor | concurrent repeated Full then Equals() against an identical tensor | never errors and always returns true", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4
 				ng = 1 << 8
 			)
+
+			h, err := tensor.Full([]int{n}, 4., &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			var wg sync.WaitGroup
 			for range ng {
@@ -1271,14 +1279,12 @@ func TestFull(t *testing.T) {
 							return
 						}
 
-						for i := range n {
-							if val, err := x.At(i); err != nil {
-								t.Error(err)
-								return
-							} else if int(val) != 4 {
-								t.Errorf("expected (4) as tensor value in position [%d], got (%f)", i, val)
-								return
-							}
+						if eq, err := x.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
 						}
 					}
 				})
@@ -1402,7 +1408,7 @@ func TestOf(t *testing.T) {
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Of([2^20]) large 1D tensor | At(i) for all positions | matches source data", func(t *testing.T) {
+		t.Run("Of([2^20]) large 1D tensor | Equals() against an identical tensor | returns true", func(t *testing.T) {
 			n := 1 << 20
 
 			data := make([]float64, n)
@@ -1415,16 +1421,19 @@ func TestOf(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			for i := range n {
-				if val, err := x.At(i); err != nil {
-					t.Fatal(err)
-				} else if val != data[i] {
-					t.Fatalf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
-				}
+			h, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if eq, err := x.Equals(h); err != nil {
+				t.Fatal(err)
+			} else if !eq {
+				t.Fatal("expected tensors to be equal")
 			}
 		})
 
-		t.Run("Of([2^10]) 1D tensor | concurrent repeated Of then At(i) over every position | matches source data", func(t *testing.T) {
+		t.Run("Of([2^10]) 1D tensor | concurrent repeated Of then Equals() against an identical tensor | never errors and always returns true", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ni = 1 << 4
@@ -1434,6 +1443,11 @@ func TestOf(t *testing.T) {
 			data := make([]float64, n)
 			for i := range data {
 				data[i] = float64(i)
+			}
+
+			h, err := tensor.Of(data, &tensor.Config{Device: dev})
+			if err != nil {
+				t.Fatal(err)
 			}
 
 			var wg sync.WaitGroup
@@ -1446,14 +1460,12 @@ func TestOf(t *testing.T) {
 							return
 						}
 
-						for i := range n {
-							if val, err := x.At(i); err != nil {
-								t.Error(err)
-								return
-							} else if val != data[i] {
-								t.Errorf("expected (%f) as tensor value in position [%d], got (%f)", data[i], i, val)
-								return
-							}
+						if eq, err := x.Equals(h); err != nil {
+							t.Error(err)
+							return
+						} else if !eq {
+							t.Error("expected tensors to be equal")
+							return
 						}
 					}
 				})

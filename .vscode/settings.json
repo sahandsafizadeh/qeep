@@ -5,5 +5,5 @@
   "go.lintOnSave": "package",
   // "go.buildTags": "cuda",
   "go.testFlags": ["-race"],
-  "go.testTimeout": "120s"
+  "go.testTimeout": "300s"
 }

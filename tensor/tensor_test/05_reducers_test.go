@@ -3457,7 +3457,7 @@ func TestAvgAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("1D large tensor with 1000 elements each 1e306 | AvgAlong(0) | returns 1e306 despite overflow in naive sum", func(t *testing.T) {
+		t.Run("1D tensor with 1000 elements each 1e306 | AvgAlong(0) | returns 1e306 despite overflow in naive sum", func(t *testing.T) {
 			data := make([]float64, 1000)
 			for i := range data {
 				data[i] = 1e306
@@ -4174,7 +4174,7 @@ func TestVarAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("1D large tensor with 1000 elements each 1e155 | VarAlong(0) | returns scalar 0 despite x^2 overflow in naive computation", func(t *testing.T) {
+		t.Run("1D tensor with 1000 elements each 1e155 | VarAlong(0) | returns scalar 0 despite x^2 overflow in naive computation", func(t *testing.T) {
 			data := make([]float64, 1000)
 			for i := range data {
 				data[i] = 1e155
@@ -5001,7 +5001,7 @@ func TestStdAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("1D large tensor with 1000 elements each 1e155 | StdAlong(0) | returns scalar 0 despite x^2 overflow in naive computation", func(t *testing.T) {
+		t.Run("1D tensor with 1000 elements each 1e155 | StdAlong(0) | returns scalar 0 despite x^2 overflow in naive computation", func(t *testing.T) {
 			data := make([]float64, 1000)
 			for i := range data {
 				data[i] = 1e155
@@ -5735,7 +5735,7 @@ func TestMeanAlong(t *testing.T) {
 			}
 		})
 
-		t.Run("1D large tensor with 1000 elements each 1e306 | MeanAlong(0) | returns 1e306 despite overflow in naive sum", func(t *testing.T) {
+		t.Run("1D tensor with 1000 elements each 1e306 | MeanAlong(0) | returns 1e306 despite overflow in naive sum", func(t *testing.T) {
 			data := make([]float64, 1000)
 			for i := range data {
 				data[i] = 1e306

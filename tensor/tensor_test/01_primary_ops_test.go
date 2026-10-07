@@ -1080,7 +1080,7 @@ func TestEquals(t *testing.T) {
 			if eq, err := x1.Equals(x2); err != nil {
 				t.Fatal(err)
 			} else if eq {
-				t.Fatal("expected large 1D tensors differing in a single element to not be equal")
+				t.Error("expected equal 1D tensors to be equal")
 			}
 		})
 
@@ -1725,7 +1725,7 @@ func TestAt(t *testing.T) {
 
 		// ============================== extra functionalities ==============================
 
-		t.Run("Of([2^10]) large 1D tensor | concurrent At(i) over every position | matches source data", func(t *testing.T) {
+		t.Run("Of([2^10]) 1D tensor | concurrent At(i) over every position | matches source data", func(t *testing.T) {
 			const (
 				n  = 1 << 10
 				ng = 1 << 8

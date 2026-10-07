@@ -58,7 +58,7 @@ func shareCUDATensorData(dst *CUDATensor, src *CUDATensor) {
 	src.sbuf.mutx.Unlock()
 
 	sbuf := src.sbuf
-	runtime.KeepAlive(src) // keep src reachable until after increment
+	runtime.KeepAlive(src)
 
 	dst.sbuf = sbuf
 	runtime.AddCleanup(dst, freeCUDATensorData, sbuf)

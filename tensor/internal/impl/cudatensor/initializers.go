@@ -9,6 +9,7 @@ package cudatensor
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
@@ -147,6 +148,7 @@ func tensorFromConcat(ts []*CUDATensor, dim int) *CUDATensor {
 	view_o_c := toCUDAView_C(dims)
 
 	data_c := C.Concat(ts_c, size_c, dim_c, view_o_c)
+	runtime.KeepAlive(ts)
 
 	return newCUDATensor(dims, data_c)
 }

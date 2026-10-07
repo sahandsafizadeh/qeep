@@ -9,6 +9,7 @@ package cudatensor
 import "C"
 
 import (
+	"runtime"
 	"slices"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
@@ -38,6 +39,7 @@ func (t *CUDATensor) reshape(shape []int) *CUDATensor {
 		view_o_c := toCUDAView_C(shape)
 
 		data_c := C.Compact(t_c, view_o_c)
+		runtime.KeepAlive(t)
 
 		return newCUDATensor(shape, data_c)
 	}

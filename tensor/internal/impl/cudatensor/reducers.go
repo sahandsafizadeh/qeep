@@ -8,7 +8,11 @@ package cudatensor
 */
 import "C"
 
-import "github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
+import (
+	"runtime"
+
+	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
+)
 
 func (t *CUDATensor) sum() float64 {
 	return applyReduction(t, func(x C.CUDATensor) C.double {
@@ -106,6 +110,7 @@ func applyReduction(x *CUDATensor, rf_c reducerFunc_C) float64 {
 	x_c := toCUDATensor_C(x)
 
 	data_c := rf_c(x_c)
+	runtime.KeepAlive(x)
 
 	return float64(data_c)
 }
@@ -118,6 +123,7 @@ func applyDimReduction(x *CUDATensor, dim int, drf_c dimReducerFunc_C) *CUDATens
 	view_o_c := toCUDAView_C(dims)
 
 	data_c := drf_c(x_c, dim_c, view_o_c)
+	runtime.KeepAlive(x)
 
 	return newCUDATensor(dims, data_c)
 }

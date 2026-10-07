@@ -9,6 +9,7 @@ package cudatensor
 import "C"
 
 import (
+	"runtime"
 	"unsafe"
 
 	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
@@ -24,6 +25,7 @@ func (t *CUDATensor) at(index []int) float64 {
 	index_c := toDimArr_C(index)
 
 	elem_c := C.At(t_c, index_c)
+	runtime.KeepAlive(t)
 
 	return float64(elem_c)
 }
@@ -57,6 +59,7 @@ func (t *CUDATensor) export() *core.Snapshot {
 	view_o_c := toCUDAView_C(t.dims)
 
 	C.Export(t_c, output_data_c, view_o_c)
+	runtime.KeepAlive(t)
 
 	dims := make([]int, len(t.dims))
 	copy(dims, t.dims)

@@ -9,6 +9,8 @@ package cudatensor
 import "C"
 
 import (
+	"runtime"
+
 	"github.com/sahandsafizadeh/qeep/tensor/internal/core"
 	"github.com/sahandsafizadeh/qeep/tensor/internal/impl/common/dimsutil"
 )
@@ -179,6 +181,8 @@ func (t *CUDATensor) patch(index []core.Range, u *CUDATensor) *CUDATensor {
 	view_o_c := toCUDAView_C(dims)
 
 	data_c := C.Patch(t_c, ranges_c, u_c, view_o_c)
+	runtime.KeepAlive(t)
+	runtime.KeepAlive(u)
 
 	return newCUDATensor(dims, data_c)
 }
@@ -189,6 +193,7 @@ func applyHalfBinaryOperation(x *CUDATensor, a float64, dims []int, hbf_c halfBi
 	view_o_c := toCUDAView_C(dims)
 
 	data_c := hbf_c(x_c, a_c, view_o_c)
+	runtime.KeepAlive(x)
 
 	return newCUDATensor(dims, data_c)
 }
@@ -198,6 +203,7 @@ func applyUnaryOperation(x *CUDATensor, dims []int, uf_c unaryOperatorFunc_C) *C
 	view_o_c := toCUDAView_C(dims)
 
 	data_c := uf_c(x_c, view_o_c)
+	runtime.KeepAlive(x)
 
 	return newCUDATensor(dims, data_c)
 }
@@ -208,6 +214,8 @@ func applyBinaryOperation(a *CUDATensor, b *CUDATensor, dims []int, bf_c binaryO
 	view_o_c := toCUDAView_C(dims)
 
 	data_c := bf_c(a_c, b_c, view_o_c)
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
 
 	return newCUDATensor(dims, data_c)
 }

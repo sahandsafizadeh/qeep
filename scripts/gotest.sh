@@ -16,6 +16,16 @@ RED='\033[0;31m'
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 
+echo -e "----------------------------------------"
+echo -e "${CYAN}▶ Running tests with race detector...${NC}"
+echo -e "----------------------------------------"
+
+go test -tags="$GO_BUILD_TAGS" -race ./... || {
+    echo -e "${RED}❌ Tests failed.${NC}"
+    exit 1
+}
+
+echo -e "----------------------------------------"
 echo -e "${CYAN}▶ Running tests with coverage...${NC}"
 echo -e "----------------------------------------"
 

@@ -1,10 +1,9 @@
 {
   "go.formatTool": "gofmt",
   "go.lintTool": "golangci-lint",
-  "go.lintFlags": [
-    "--fast"
-  ],
+  "go.lintFlags": ["--fast"],
   "go.lintOnSave": "package",
   // "go.buildTags": "cuda",
+  "go.testFlags": ["-race"],
   "go.testTimeout": "120s"
 }
